@@ -1,0 +1,164 @@
+import { Conference, Session, MapImage } from '@/types/conference';
+
+export const pacificonData: Conference = {
+  id: 'pacificon-2026',
+  name: 'Pacificon 2026',
+  location: 'San Ramon, California',
+  venue: 'San Ramon Marriott',
+  startDate: '2026-10-16', // Third Friday of October 2026
+  endDate: '2026-10-18',
+  timezone: 'America/Los_Angeles',
+  primaryColor: '#1e40af', // blue-800
+  secondaryColor: '#3b82f6', // blue-500
+  website: 'https://www.pacificon.org'
+};
+
+export const sampleSessions: Session[] = [
+  {
+    id: 'session-1',
+    conferenceId: 'pacificon-2026',
+    title: 'Introduction to HF Digital Modes',
+    description: 'Learn about popular digital modes including FT8, PSK31, and RTTY. This session covers equipment requirements, software setup, and operating techniques.',
+    speaker: 'John Smith, K6JS',
+    location: 'Main Ballroom',
+    startTime: '2026-10-16T09:00:00',
+    endTime: '2026-10-16T10:30:00',
+    category: 'Technical',
+    track: 'Digital Modes'
+  },
+  {
+    id: 'session-2',
+    conferenceId: 'pacificon-2026',
+    title: 'Emergency Communications: ARES and RACES',
+    description: 'Overview of emergency communication organizations and how to get involved in public service.',
+    speaker: 'Sarah Johnson, KI6SJ',
+    location: 'Room 101',
+    startTime: '2026-10-16T09:00:00',
+    endTime: '2026-10-16T10:00:00',
+    category: 'Public Service',
+    track: 'EmComm'
+  },
+  {
+    id: 'session-3',
+    conferenceId: 'pacificon-2026',
+    title: 'Antenna Theory and Design',
+    description: 'Deep dive into antenna fundamentals, including impedance matching, SWR, and practical antenna designs for limited space.',
+    speaker: 'Michael Chen, W6MC',
+    location: 'Main Ballroom',
+    startTime: '2026-10-16T11:00:00',
+    endTime: '2026-10-16T12:30:00',
+    category: 'Technical',
+    track: 'Antennas'
+  },
+  {
+    id: 'session-4',
+    conferenceId: 'pacificon-2026',
+    title: 'Working DX: Tips and Techniques',
+    description: 'Learn strategies for making successful DX contacts, understanding propagation, and using spotting networks.',
+    speaker: 'Robert Davis, N6RD',
+    location: 'Room 102',
+    startTime: '2026-10-16T11:00:00',
+    endTime: '2026-10-16T12:00:00',
+    category: 'Operating',
+    track: 'DX'
+  },
+  {
+    id: 'session-5',
+    conferenceId: 'pacificon-2026',
+    title: 'Software Defined Radio (SDR) Fundamentals',
+    description: 'Introduction to SDR technology, popular SDR devices, and software applications for amateur radio.',
+    speaker: 'Lisa Anderson, KF6LA',
+    location: 'Main Ballroom',
+    startTime: '2026-10-16T14:00:00',
+    endTime: '2026-10-16T15:30:00',
+    category: 'Technical',
+    track: 'Digital'
+  },
+  {
+    id: 'session-6',
+    conferenceId: 'pacificon-2026',
+    title: 'VHF/UHF Contesting',
+    description: 'Strategies for VHF/UHF contests, equipment recommendations, and rover operations.',
+    speaker: 'David Wilson, K6DW',
+    location: 'Room 101',
+    startTime: '2026-10-16T14:00:00',
+    endTime: '2026-10-16T15:00:00',
+    category: 'Operating',
+    track: 'Contesting'
+  },
+  {
+    id: 'session-7',
+    conferenceId: 'pacificon-2026',
+    title: 'Getting Started with Satellite Operations',
+    description: 'Learn how to work amateur radio satellites, including equipment requirements, tracking software, and operating procedures.',
+    speaker: 'Emily Martinez, KJ6EM',
+    location: 'Room 102',
+    startTime: '2026-10-16T14:00:00',
+    endTime: '2026-10-16T15:00:00',
+    category: 'Operating',
+    track: 'Satellite'
+  },
+  {
+    id: 'session-8',
+    conferenceId: 'pacificon-2026',
+    title: 'Youth Forum: Getting Young People Excited About Ham Radio',
+    description: 'Discussion panel on programs and activities that attract youth to amateur radio.',
+    speaker: 'Panel Discussion',
+    location: 'Main Ballroom',
+    startTime: '2026-10-16T16:00:00',
+    endTime: '2026-10-16T17:00:00',
+    category: 'General',
+    track: 'Youth'
+  },
+  {
+    id: 'session-9',
+    conferenceId: 'pacificon-2026',
+    title: 'ARRL Update and New Initiatives',
+    description: 'Update from ARRL Pacific Division leadership on current programs and future plans.',
+    speaker: 'ARRL Officials',
+    location: 'Main Ballroom',
+    startTime: '2026-10-17T09:00:00',
+    endTime: '2026-10-17T10:00:00',
+    category: 'General',
+    track: 'ARRL'
+  },
+  {
+    id: 'session-10',
+    conferenceId: 'pacificon-2026',
+    title: 'Building Your Own Station',
+    description: 'Tips for setting up a home station, from selecting equipment to installation and grounding.',
+    speaker: 'Tom Harris, W6TH',
+    location: 'Room 101',
+    startTime: '2026-10-17T09:00:00',
+    endTime: '2026-10-17T10:30:00',
+    category: 'Technical',
+    track: 'Station Building'
+  }
+];
+
+// Mock map images - in production these would be URLs from Firebase Storage
+export const sampleMaps: MapImage[] = [
+  {
+    id: 'map-1',
+    conferenceId: 'pacificon-2026',
+    name: 'Main Floor',
+    url: 'https://images.unsplash.com/photo-1762497403897-c105a5bc61e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb25mZXJlbmNlJTIwdmVudWUlMjBmbG9vciUyMHBsYW58ZW58MXx8fHwxNzY5MzEzOTY2fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    floor: '1',
+    order: 1
+  },
+  {
+    id: 'map-2',
+    conferenceId: 'pacificon-2026',
+    name: 'Second Floor',
+    url: 'https://images.unsplash.com/photo-1656177128839-19fccb6307d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3RlbCUyMGNvbnZlbnRpb24lMjBjZW50ZXIlMjBsYXlvdXR8ZW58MXx8fHwxNzY5MzEzOTY3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    floor: '2',
+    order: 2
+  },
+  {
+    id: 'map-3',
+    conferenceId: 'pacificon-2026',
+    name: 'Vendor Hall',
+    url: 'https://images.unsplash.com/photo-1759477274116-e3cb02d2b9d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldmVudCUyMGhhbGwlMjBpbnRlcmlvcnxlbnwxfHx8fDE3NjkzMTIxMjV8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    order: 3
+  }
+];
