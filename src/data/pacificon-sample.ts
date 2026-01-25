@@ -8,7 +8,8 @@ export const pacificonData: Conference = {
   startDate: '2026-10-16', // Third Friday of October 2026
   endDate: '2026-10-18',
   timezone: 'America/Los_Angeles',
-  primaryColor: '#1e40af', // blue-800
+  timezoneNumeric: '-0700', // DST, PDT ends early Nov
+  primaryColor: '#ff4e00', // international orange
   secondaryColor: '#3b82f6', // blue-500
   website: 'https://www.pacificon.org'
 };
@@ -133,7 +134,19 @@ export const sampleSessions: Session[] = [
     endTime: '2026-10-17T10:30:00',
     category: 'Technical',
     track: 'Station Building'
-  }
+  },
+  {
+    id: 'session-11',
+    conferenceId: 'pacificon-2026',
+    title: 'Building Your Own Station II',
+    description: 'Tips for setting up a home station, from selecting equipment to installation and grounding.',
+    speaker: 'Tom Harris, W6TH',
+    location: 'Room 101',
+    startTime: '2026-10-18T09:00:00',
+    endTime: '2026-10-18T10:30:00',
+    category: 'Technical',
+    track: 'Station Building'
+  },
 ];
 
 // Mock map images - in production these would be URLs from Firebase Storage
@@ -162,3 +175,4 @@ export const sampleMaps: MapImage[] = [
     order: 3
   }
 ];
+

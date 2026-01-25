@@ -33,13 +33,13 @@ export default function App() {
               <Map className="h-4 w-4" />
               <span className="hidden sm:inline">Maps</span>
             </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span className="hidden sm:inline">Profile</span>
-            </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
               <span className="hidden sm:inline">Alerts</span>
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">Profile</span>
             </TabsTrigger>
           </TabsList>
 
@@ -47,12 +47,16 @@ export default function App() {
             <ScheduleView 
               sessions={sampleSessions}
               bookmarkedSessions={bookmarkedSessions}
+              conference={pacificonData}
               onToggleBookmark={handleToggleBookmark}
             />
           </TabsContent>
 
           <TabsContent value="maps">
-            <MapsView maps={sampleMaps} />
+            <MapsView
+              maps={sampleMaps}
+              conference={pacificonData}
+            />
           </TabsContent>
 
           <TabsContent value="profile">

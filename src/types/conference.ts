@@ -3,9 +3,10 @@ export interface Conference {
   name: string;
   location: string;
   venue: string;
-  startDate: string;
-  endDate: string;
+  startDate: string; // stored in local time for the conference timezone
+  endDate: string; // stored in local time for the conference timezone
   timezone: string;
+  timezoneNumeric: string;
   primaryColor: string;
   secondaryColor: string;
   website: string;
@@ -19,7 +20,7 @@ export interface Session {
   speaker: string;
   location: string;
   startTime: string; // stored in local time for the conference timezone
-  endTime: string;
+  endTime: string; // stored in local time for the conference timezone
   category: string;
   track?: string;
 }

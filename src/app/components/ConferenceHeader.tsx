@@ -5,22 +5,53 @@ interface ConferenceHeaderProps {
   conference: Conference;
 }
 
+function formatHeaderFull(isoDate: Date, tzString: string) {
+  const timeFormatter = new Intl.DateTimeFormat ('en-US', {
+    timeZone: tzString,
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+  return timeFormatter.format(isoDate);
+}
+
+function formatHeaderMonth(isoDate: Date, tzString: string) {
+  const timeFormatter = new Intl.DateTimeFormat ('en-US', {
+    timeZone: tzString,
+    month: 'long',
+  });
+  return timeFormatter.format(isoDate);
+};
+
+// had tz difficulties, used split instead
+//function formatHeaderDay(isoDate: Date, tzString: string) {
+//  const timeFormatter = new Intl.DateTimeFormat ('en-US', {
+//    timeZone: tzString,
+//    day: 'numeric',
+//  });
+//  return timeFormatter.format(isoDate);
+//};
+
+function formatHeaderYear(isoDate: Date, tzString: string) {
+  const timeFormatter = new Intl.DateTimeFormat ('en-US', {
+    timeZone: tzString,
+    year: 'numeric'
+  });
+  return timeFormatter.format(isoDate);
+}
+
 export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    
-    const options: Intl.DateTimeFormatOptions = { 
-      month: 'long', 
-      day: 'numeric',
-      year: 'numeric'
-    };
+    const startDateNum = start.split('-')[2];
+    const endDateNum = end.split('-')[2];
     
     if (startDate.getMonth() === endDate.getMonth() && startDate.getFullYear() === endDate.getFullYear()) {
-      return `${startDate.toLocaleDateString('en-US', { month: 'long' })} ${startDate.getDate()}-${endDate.getDate()}, ${startDate.getFullYear()}`;
+      return `${formatHeaderMonth(startDate, conference.timezone)} ${startDateNum}-${endDateNum}, ${formatHeaderYear(startDate, conference.timezone)}`;
     }
-    
-    return `${startDate.toLocaleDateString('en-US', options)} - ${endDate.toLocaleDateString('en-US', options)}`;
+
+    return `${formatHeaderFull(startDate, conference.timezone)} - ${formatHeaderFull(endDate, conference.timezone)}`;
   };
 
   return (
@@ -37,16 +68,6 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
           <MapPin className="h-5 w-5" />
           <span>{conference.venue} - {conference.location}</span>
         </div>
-        
-        <a 
-          href={conference.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          <ExternalLink className="h-4 w-4" />
-          <span>Visit Conference Website</span>
-        </a>
       </div>
     </div>
   );

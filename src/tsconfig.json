@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    //"baseUrl": "./src", // The base directory for resolving non-relative module names
+    "paths": {
+      "@/*": ["./src/*"], // Maps @/ to the baseUrl directory (src)
+      "@/types/conference": ["./types/conference"], // Explicit mapping for the specific module
+      "@/app/components/ui/*": ["./app/components/ui/*"],
+      "@/app/components/figma/*": ["./app/components/figma/*"],
+    },
+    // Ensure moduleResolution is set appropriately (e.g., "node", "Bundler", etc.)
+    "moduleResolution": "bundler", // using modern bundler
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-native",
+  }
+}

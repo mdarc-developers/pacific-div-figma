@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { Session } from '@/types/conference';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
+import { Button } from '@/app/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Clock, MapPin, User, Bookmark } from 'lucide-react';
-import { Button } from '@/app/components/ui/button';
+import { Session, Conference } from '@/types/conference';
 
 interface ScheduleViewProps {
   sessions: Session[];
   bookmarkedSessions?: string[];
+  conference: Conference;
   onToggleBookmark?: (sessionId: string) => void;
 }
 
-export function ScheduleView({ sessions, bookmarkedSessions = [], onToggleBookmark }: ScheduleViewProps) {
+export function ScheduleView({ sessions, bookmarkedSessions = [], conference, onToggleBookmark }: ScheduleViewProps) {
   const [selectedDay, setSelectedDay] = useState<string>('all');
 
   // Group sessions by date
@@ -29,25 +30,32 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], onToggleBookma
   };
 
   const groupedSessions = groupSessionsByDate(sessions);
-  const dates = Object.keys(groupedSessions).sort();
-
-  const formatTime = (datetime: string) => {
-    const date = new Date(datetime);
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+  const dateKeys = Object.keys(groupedSessions).sort();
+  function formatSessionTime(timeString: string, tzString: string) {
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      timeZone: conference.timezone,
+      hour: 'numeric',
       minute: '2-digit',
       hour12: true 
-    });
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+    };
+    const dateObj = new Date(timeString+tzString);
+    const timeFormatter = new Intl.DateTimeFormat('en-US', timeOptions);  
+    return timeFormatter.format(dateObj);
+  }
+  
+  function formatSessionDate(dateString: string, tzString: string) {
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      timeZone: conference.timezone,
       weekday: 'long',
       month: 'long',
       day: 'numeric'
-    });
-  };
+    };
+    const dateObj = new Date(dateString+"T11:00:00"+tzString);
+    const timeFormatter = new Intl.DateTimeFormat('en-US', dateOptions);  
+    return timeFormatter.format(dateObj);
+  }
+
+  //const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   const renderSession = (session: Session) => {
     const isBookmarked = bookmarkedSessions.includes(session.id);
@@ -84,7 +92,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], onToggleBookma
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Clock className="h-4 w-4" />
-              <span>{formatTime(session.startTime)} - {formatTime(session.endTime)}</span>
+              <span>{formatSessionTime(session.startTime, conference.timezoneNumeric)} - {formatSessionTime(session.endTime, conference.timezoneNumeric)}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <MapPin className="h-4 w-4" />
@@ -105,17 +113,17 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], onToggleBookma
       <Tabs value={selectedDay} onValueChange={setSelectedDay} className="w-full">
         <TabsList className="w-full mb-6 flex-wrap h-auto">
           <TabsTrigger value="all">All Days</TabsTrigger>
-          {dates.map(date => (
+          {dateKeys.map(date => (
             <TabsTrigger key={date} value={date}>
-              {formatDate(date)}
+              {formatSessionDate(date, conference.timezoneNumeric)}
             </TabsTrigger>
           ))}
         </TabsList>
 
         <TabsContent value="all">
-          {dates.map(date => (
+          {dateKeys.map(date => (
             <div key={date} className="mb-8">
-              <h3 className="text-xl font-semibold mb-4">{formatDate(date)}</h3>
+              <h3 className="text-xl font-semibold mb-4">{formatSessionDate(date, conference.timezoneNumeric)}</h3>
               {groupedSessions[date]
                 .sort((a, b) => a.startTime.localeCompare(b.startTime))
                 .map(renderSession)}
@@ -123,7 +131,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], onToggleBookma
           ))}
         </TabsContent>
 
-        {dates.map(date => (
+        {dateKeys.map(date => (
           <TabsContent key={date} value={date}>
             {groupedSessions[date]
               .sort((a, b) => a.startTime.localeCompare(b.startTime))
