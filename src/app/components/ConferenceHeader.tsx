@@ -56,17 +56,56 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
 
   return (
     <div className="mb-8">
-      <h1 className="text-3xl md:text-4xl font-bold mb-3">{conference.name}</h1>
+      <h1 className="text-3xl md:text-4xl font-bold mb-3">{conference.name}
+        &nbsp;&nbsp;<a 
+          href={conference.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+        >
+        <ExternalLink className="h-4 w-4" />
+        website
+        </a>
+      </h1>
       
       <div className="space-y-2 text-gray-700 dark:text-gray-300">
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
-          <span>{formatDateRange(conference.startDate, conference.endDate)}</span>
+          <span>{formatDateRange(conference.startDate, conference.endDate)}
+            &nbsp;<a
+                href="https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+              <img
+                border="0"
+                src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
+                alt="Google Calendar"
+              />
+            </a>
+          </span>
         </div>
         
         <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-5" />
-          <span>{conference.venue} - {conference.location}</span>
+          <span><a
+            href={conference.venueWebsite} target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
+              <ExternalLink className="h-4 w-4" />
+            {conference.venue}</a>,
+            &nbsp;{conference.location}
+            &nbsp;&nbsp;<a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(conference.location) || ''}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+              >
+              <ExternalLink className="h-4 w-4" />
+              <MapPin className="flex h-5 w-5" />map
+            </a>
+            &nbsp;&nbsp;{conference.venueGPS}
+            &nbsp;&nbsp;{conference.venueGridsquare}
+          </span>
         </div>
       </div>
     </div>

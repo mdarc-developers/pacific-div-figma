@@ -3,15 +3,20 @@ import { Conference, Session, MapImage } from '@/types/conference';
 export const pacificonData: Conference = {
   id: 'pacificon-2026',
   name: 'Pacificon 2026',
-  location: 'San Ramon, California',
   venue: 'San Ramon Marriott',
+  location: '2600 Bishop Drive, San Ramon, CA 94583',
+  venuePhone: '925-867-9200',
+  venueGPS: '37.7629,-121.9674',
+  venueGridsquare: 'CM97as',
+  venueWebsite: 'https://www.marriott.com/en-us/hotels/oaksr-san-ramon-marriott/overview/',
   startDate: '2026-10-16', // Third Friday of October 2026
   endDate: '2026-10-18',
   timezone: 'America/Los_Angeles',
   timezoneNumeric: '-0700', // DST, PDT ends early Nov
   primaryColor: '#ff4e00', // international orange
   secondaryColor: '#3b82f6', // blue-500
-  website: 'https://www.pacificon.org'
+  conferenceWebsite: 'https://www.pacificon.org',
+  parkingWebsite: 'https://www.pacificon.org/resources/parking'
 };
 
 export const sampleSessions: Session[] = [

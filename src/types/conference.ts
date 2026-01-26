@@ -1,15 +1,20 @@
 export interface Conference {
   id: string;
   name: string;
-  location: string;
   venue: string;
-  startDate: string; // stored in local time for the conference timezone
-  endDate: string; // stored in local time for the conference timezone
+  location: string;
+  venuePhone: string;
+  venueGPS: string;
+  venueGridSquare: string;
+  venueWebsite: string;
+  startDate: string; // stored in local date and time for the conference timezone
+  endDate: string; // stored in local date and time for the conference timezone
   timezone: string;
   timezoneNumeric: string;
   primaryColor: string;
   secondaryColor: string;
-  website: string;
+  conferenceWebsite: string;
+  parkingWebsite: string;
 }
 
 export interface Session {
@@ -19,8 +24,8 @@ export interface Session {
   description: string;
   speaker: string;
   location: string;
-  startTime: string; // stored in local time for the conference timezone
-  endTime: string; // stored in local time for the conference timezone
+  startTime: string; // stored in local date and time for the conference timezone
+  endTime: string; // stored in local date and time for the conference timezone
   category: string;
   track?: string;
 }
