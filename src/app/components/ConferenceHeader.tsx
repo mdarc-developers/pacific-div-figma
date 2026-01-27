@@ -60,7 +60,7 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
   <div className="flex items-center gap-2">
     <button
     onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
-    className="text-gray-600 hover:text-gray-900 transition-colors align-top self-stretch"
+    className="bg-muted hover:text-gray-900 transition-colors self-stretch rounded-xl mb-3"
     aria-label={isHeaderCollapsed ? "Expand" : "Collapse"
     }
   >
