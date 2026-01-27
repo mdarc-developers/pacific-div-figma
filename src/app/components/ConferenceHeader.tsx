@@ -73,9 +73,9 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
     </svg> </button>
     
-    <div className="mb-8">
+    <div className="mb-6">
       {isHeaderCollapsed ? (
-      <h1 className="text-3xl md:text-4xl font-bold mb-3">{conference.name}</h1>
+      <h1 className="text-3xl md:text-4xl font-bold">{conference.name}</h1>
     ) : (
       <>
       <h1 className="text-3xl md:text-4xl font-bold mb-3">{conference.name}
