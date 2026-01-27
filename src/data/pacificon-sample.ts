@@ -17,7 +17,8 @@ export const pacificonData: Conference = {
   secondaryColor: '#3b82f6', // blue-500
   conferenceWebsite: 'https://www.pacificon.org',
   parkingWebsite: 'https://www.pacificon.org/resources/parking',
-  icalUrl: '/pacificon-2026.ics'
+  icalUrl: '/pacificon-2026.ics',
+  contactEmail: 'webmaster@pacificon.org'
 };
 
 export const sampleSessions: Session[] = [
@@ -160,17 +161,17 @@ export const sampleMaps: MapImage[] = [
   {
     id: 'map-1',
     conferenceId: 'pacificon-2026',
-    name: 'Hotel',
-    url: '/pacificon-hotel-2025.jpg',
-    //floor: '1',
+    name: 'Exhibitors',
+    url: '/pacificon-exhibitors-2025.png',
+    //floor: '2',
     order: 1
   },
   {
     id: 'map-2',
     conferenceId: 'pacificon-2026',
-    name: 'Exhibitors',
-    url: '/pacificon-exhibitors-2025.png',
-    //floor: '2',
+    name: 'Hotel',
+    url: '/pacificon-hotel-2025.jpg',
+    //floor: '1',
     order: 2
   },
   {

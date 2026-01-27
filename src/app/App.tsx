@@ -4,11 +4,12 @@ import { Calendar, Map, User, Bell } from 'lucide-react';
 import { ScheduleView } from '@/app/components/ScheduleView';
 import { MapsView } from '@/app/components/MapsView';
 import { ConferenceHeader } from '@/app/components/ConferenceHeader';
+import { ConferenceFooter } from '@/app/components/ConferenceFooter';
 import { pacificonData, sampleSessions, sampleMaps } from '@/data/pacificon-sample';
 
 export default function App() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState('schedule');
+  const [activeTab, setActiveTab] = useState('maps');
 
   const handleToggleBookmark = (sessionId: string) => {
     setBookmarkedSessions(prev => 
@@ -25,13 +26,13 @@ export default function App() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="schedule" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Schedule</span>
-            </TabsTrigger>
             <TabsTrigger value="maps" className="flex items-center gap-2">
               <Map className="h-4 w-4" />
               <span className="hidden sm:inline">Maps</span>
+            </TabsTrigger>
+            <TabsTrigger value="schedule" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span className="hidden sm:inline">Schedule</span>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
@@ -93,20 +94,8 @@ export default function App() {
           </TabsContent>
         </Tabs>
 
-        <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>
-            Questions or suggestions? {' '}
-            <a 
-              href="mailto:webmaster@pacificon.org" 
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              webmaster@pacificon.org
-            </a>
-          </p>
-          <p className="mt-2">
-            Multi-conference support • Offline capable
-          </p>
-        </footer>
+        <ConferenceFooter conference={pacificonData} />
+
       </div>
     </div>
   );

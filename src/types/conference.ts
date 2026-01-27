@@ -16,6 +16,7 @@ export interface Conference {
   conferenceWebsite: string;
   parkingWebsite: string;
   icalUrl: string;
+  contactEmail: string;
 }
 
 export interface Session {
