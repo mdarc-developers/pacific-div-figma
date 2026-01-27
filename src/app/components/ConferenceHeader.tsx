@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { Conference } from '@/types/conference';
 import { Calendar, MapPin, ExternalLink } from 'lucide-react';
-
 interface ConferenceHeaderProps {
   conference: Conference;
+  onToggleHeaderCollapsed?: (setHeaderCollapsed: boolean) => void;
 }
 
 function formatHeaderFull(isoDate: Date, tzString: string) {
@@ -40,7 +41,7 @@ function formatHeaderYear(isoDate: Date, tzString: string) {
   return timeFormatter.format(isoDate);
 }
 
-export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
+export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: ConferenceHeaderProps) {
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -53,9 +54,29 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
 
     return `${formatHeaderFull(startDate, conference.timezone)} - ${formatHeaderFull(endDate, conference.timezone)}`;
   };
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
   return (
+  <div className="flex items-center gap-2">
+    <button
+    onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+    className="text-gray-600 hover:text-gray-900 transition-colors"
+    aria-label={isHeaderCollapsed ? "Expand" : "Collapse"}
+  >
+    <svg
+      className={`w-5 h-5 transition-transform flex ${isHeaderCollapsed ? '-rotate-90' : ''}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg> </button>
+    
     <div className="mb-8">
+      {isHeaderCollapsed ? (
+      <h1 className="text-3xl md:text-4xl font-bold mb-3">{conference.name}</h1>
+    ) : (
+      <>
       <h1 className="text-3xl md:text-4xl font-bold mb-3">{conference.name}
         &nbsp;&nbsp;<a 
           href={conference.website}
@@ -86,7 +107,6 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
                 rel="noopener noreferrer"
               >
               <img
-                border="0"
                 src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
                 alt="Google Calendar"
               />
@@ -116,6 +136,9 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
           </span>
         </div>
       </div>
+      </>
+    )}
+    </div>
     </div>
   );
 }
