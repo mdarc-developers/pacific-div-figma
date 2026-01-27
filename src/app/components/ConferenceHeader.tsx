@@ -85,8 +85,7 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
           rel="noopener noreferrer"
           className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
         >
-        <ExternalLink className="h-4 w-4" />
-        website
+        website<ExternalLink className="h-4 w-4" />
         </a>
       </h1>
       
@@ -95,14 +94,14 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
           <Calendar className="h-5 w-5" />
           <span>{formatDateRange(conference.startDate, conference.endDate)}
             &nbsp;<a
-                href="/pacificon-2026.ics"
+                href={conference.icalUrl}
+                download
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
               >
-              <ExternalLink className="h-4 w-4" />
-              iCal
+              &nbsp;iCal<ExternalLink className="h-4 w-4" />
             </a>
-            &nbsp;<a
+            &nbsp;&nbsp;&nbsp;<a
                 href="https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org"
                 target="_blank"
                 rel="noopener noreferrer"

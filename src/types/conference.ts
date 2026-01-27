@@ -15,6 +15,7 @@ export interface Conference {
   secondaryColor: string;
   conferenceWebsite: string;
   parkingWebsite: string;
+  icalUrl: string;
 }
 
 export interface Session {

@@ -16,7 +16,8 @@ export const pacificonData: Conference = {
   primaryColor: '#ff4e00', // international orange
   secondaryColor: '#3b82f6', // blue-500
   conferenceWebsite: 'https://www.pacificon.org',
-  parkingWebsite: 'https://www.pacificon.org/resources/parking'
+  parkingWebsite: 'https://www.pacificon.org/resources/parking',
+  icalUrl: '/pacificon-2026.ical'
 };
 
 export const sampleSessions: Session[] = [
