@@ -118,9 +118,9 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
           <span><a
             href={conference.venueWebsite} target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
-              <ExternalLink className="h-4 w-4" />
-            {conference.venue}</a>,
+            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+            >
+            {conference.venue}<ExternalLink className="h-4 w-4" /></a>,
             &nbsp;{conference.location}
             &nbsp;&nbsp;<a
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(conference.location) || ''}`}
@@ -128,11 +128,10 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
               >
-              <ExternalLink className="h-4 w-4" />
-              <MapPin className="flex h-5 w-5" />map
+              <MapPin className="flex h-5 w-5" />map<ExternalLink className="h-4 w-4" />
             </a>
-            &nbsp;&nbsp;{conference.venueGPS}
-            &nbsp;&nbsp;{conference.venueGridsquare}
+            &nbsp;&nbsp;&nbsp;{conference.venueGPS}
+            &nbsp;&nbsp;&nbsp;{conference.venueGridsquare}
           </span>
         </div>
       </div>
