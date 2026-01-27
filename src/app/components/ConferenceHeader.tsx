@@ -60,8 +60,9 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
   <div className="flex items-center gap-2">
     <button
     onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
-    className="text-gray-600 hover:text-gray-900 transition-colors"
-    aria-label={isHeaderCollapsed ? "Expand" : "Collapse"}
+    className="text-gray-600 hover:text-gray-900 transition-colors align-top self-stretch"
+    aria-label={isHeaderCollapsed ? "Expand" : "Collapse"
+    }
   >
     <svg
       className={`w-5 h-5 transition-transform flex ${isHeaderCollapsed ? '-rotate-90' : ''}`}
