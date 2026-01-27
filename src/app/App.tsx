@@ -95,7 +95,7 @@ export default function App() {
 
         <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
           <p>
-            For questions or suggestions, contact:{' '}
+            Questions or suggestions? {' '}
             <a 
               href="mailto:webmaster@pacificon.org" 
               className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -104,7 +104,7 @@ export default function App() {
             </a>
           </p>
           <p className="mt-2">
-            Multi-conference support • Timezone aware • Offline capable
+            Multi-conference support • Offline capable
           </p>
         </footer>
       </div>
