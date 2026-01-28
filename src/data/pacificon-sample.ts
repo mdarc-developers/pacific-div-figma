@@ -2,7 +2,7 @@ import { Conference, Session, MapImage } from '@/types/conference';
 
 export const pacificonData: Conference = {
   id: 'pacificon-2026',
-  name: 'Pacificon 2026',
+  name: 'Pacificon 2025',
   venue: 'San Ramon Marriott',
   location: '2600 Bishop Drive, San Ramon, CA 94583',
   venuePhone: '925-867-9200',

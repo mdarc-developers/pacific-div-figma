@@ -81,4 +81,6 @@ export interface Message {
   boardId?: string; // for public board messages
   votes: number;
   createdAt: string;
+  isAdmin: boolean;
+  adminRole: string;
 }

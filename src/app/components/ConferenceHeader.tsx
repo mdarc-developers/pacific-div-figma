@@ -41,6 +41,25 @@ function formatHeaderYear(isoDate: Date, tzString: string) {
   return timeFormatter.format(isoDate);
 }
 
+function contrastingColor(color: string) {
+  // Convert hex to RGB array if needed (example function below)
+  let rgb = (typeof color === 'string') ? hexToRGBArray(color) : color;
+  // Calculate Luma (brightness)
+  let luma = (0.2126 * rgb[0]) + (0.7152 * rgb[1]) + (0.0722 * rgb[2]);
+  // Use black text if the background is light, white text if the background is dark
+  return (luma >= 165) ? '#000000' : '#FFFFFF';
+}
+function hexToRGBArray(hex: string) {
+  if (hex.startsWith('#')) hex = hex.substring(1);
+  if (hex.length === 3) hex = hex.replace(/./g, '$&$&'); // Expand shorthand
+  if (hex.length !== 6) throw new Error(`Invalid HEX color: ${hex}`);
+  let rgb = [];
+  for (let i = 0; i <= 2; i++) {
+    rgb[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+  return rgb;
+}
+
 export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: ConferenceHeaderProps) {
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
@@ -56,8 +75,10 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
   };
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
+  const headerTextColor = contrastingColor(conference.primaryColor);
+
   return (
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-2 px-2">
     <button
     onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
     className="bg-muted hover:text-gray-900 transition-colors self-stretch rounded-xl mb-3"
@@ -72,7 +93,9 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
     </svg> </button>
     
-    <div className="mb-6">
+    <div className="mb-6 self-stretch w-full rounded-xl p-4"
+      style={{backgroundColor: conference.primaryColor, color: headerTextColor}}
+    >
       {isHeaderCollapsed ? (
       <h1 className="text-3xl md:text-4xl font-bold">{conference.name}</h1>
       ) : (
@@ -88,7 +111,10 @@ export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: Confer
         </a>
       </h1>
       
-      <div className="space-y-2 text-gray-700 dark:text-gray-300">
+      <div className="space-y-2"
+        // text-gray-700 dark:text-gray-300"
+        style={{backgroundColor: conference.primaryColor, color: headerTextColor}}
+      >
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
           <span>{formatDateRange(conference.startDate, conference.endDate)}
