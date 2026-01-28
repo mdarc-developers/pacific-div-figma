@@ -8,4 +8,7 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
+
+  Run `npm run build` to prepare for deployment to firebase
   
+  Run `npm run deploy` to copy to firebase  and https://pacific-div.web.app
