@@ -18,20 +18,20 @@ interface ScheduleViewProps {
 
 interface CalendarProps {
   events: EventInput[];
+  startDate: string;
 }
 const events = [];
 
-const Calendar: React.FC<CalendarProps> = ({ events }) => {  // = new Calendar( document.getElementById('calendar', {
+const Calendar: React.FC<CalendarProps> = ({ events, startDate }) => {  // = new Calendar( document.getElementById('calendar', {
   return (
     <div className="calendar">
       <FullCalendar
         plugins={[timeGridPlugin]}
         initialView="timeGridThreeDay"
-        initialDate= "2026-10-16"
+        initialDate= {startDate}
         events={events}
         visibleRange={{
-          start: "2026-10-16",
-          end: "2026-10-19"
+          start: {startDate},
         }}
         views={{
           timeGridThreeDay: {
@@ -188,7 +188,7 @@ const calendarEvents: EventInput[] = sessions.map(session => ({
           </TabsContent>
         ))}
       </Tabs>
-<Calendar events={calendarEvents} />
+<Calendar events={calendarEvents} startDate={conference.startDate} />
     </div>
   );
 }
