@@ -30,7 +30,7 @@ export function MapsView({ maps }: MapsViewProps) {
         <TabsList className="w-full mb-6 flex-wrap h-auto">
           {sortedMaps.map(map => (
             <TabsTrigger key={map.id} value={map.id}>
-              {map.name}
+              {map.name} Map
               {map.floor && ` (Floor ${map.floor})`}
             </TabsTrigger>
           ))}

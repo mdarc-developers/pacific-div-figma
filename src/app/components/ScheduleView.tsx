@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, React } from 'react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Clock, MapPin, User, Bookmark } from 'lucide-react';
 import { Session, Conference } from '@/types/conference';
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { EventInput } from "@fullcalendar/core";
 
 interface ScheduleViewProps {
   sessions: Session[];
@@ -12,6 +15,41 @@ interface ScheduleViewProps {
   conference: Conference;
   onToggleBookmark?: (sessionId: string) => void;
 }
+
+interface CalendarProps {
+  events: EventInput[];
+}
+const events = [];
+
+const Calendar: React.FC<CalendarProps> = ({ events }) => {  // = new Calendar( document.getElementById('calendar', {
+  return (
+    <div className="calendar">
+      <FullCalendar
+        plugins={[timeGridPlugin]}
+        initialView="timeGridThreeDay"
+        initialDate= "2026-10-16"
+        events={events}
+        visibleRange={{
+          start: "2026-10-16",
+          end: "2026-10-19"
+        }}
+        views={{
+          timeGridThreeDay: {
+            type: 'timeGrid',
+            duration: {days: 3},
+            buttonText: '3 days'
+          }
+        }}
+        headerToolbar={{
+          left: 'prev, next today',
+          center: 'title',
+          right: 'timeGridThreeDay, timeGridDay'
+        }}
+      />
+  </div>
+  );
+};
+
 
 export function ScheduleView({ sessions, bookmarkedSessions = [], conference, onToggleBookmark }: ScheduleViewProps) {
   const [selectedDay, setSelectedDay] = useState<string>('all');
@@ -108,6 +146,17 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
     );
   };
 
+const calendarEvents: EventInput[] = sessions.map(session => ({
+  id: session.id,
+  title: session.title,
+  start: session.startTime + conference.timezoneNumeric,
+  end: session.endTime + conference.timezoneNumeric,
+  extendedProps: {
+    speaker: session.speaker,
+    location: session.location
+  }
+}));
+
   return (
     <div className="w-full">
       <Tabs value={selectedDay} onValueChange={setSelectedDay} className="w-full">
@@ -139,6 +188,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
           </TabsContent>
         ))}
       </Tabs>
+<Calendar events={calendarEvents} />
     </div>
   );
 }
