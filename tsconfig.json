@@ -6,9 +6,19 @@
       ], // Maps @/ to the baseUrl directory (src)
     },
     // Ensure moduleResolution is set appropriately (e.g., "node", "Bundler", etc.)
+    "module": "esnext",
     "moduleResolution": "bundler", // using modern bundler
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-native",
-  }
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "esModuleInterop": true,
+    "types": [],
+  },
+  "include": [
+    "src"
+  ],
 }
