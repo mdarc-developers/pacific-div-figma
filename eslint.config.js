@@ -19,4 +19,12 @@ export default defineConfig([
     "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx", ".ts", ".tsx"] }],
     }
   },
+  {
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
 ]);
+
