@@ -1,4 +1,4 @@
-import { useState, React } from 'react';
+import { useState } from 'react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
@@ -20,23 +20,21 @@ interface CalendarProps {
   events: EventInput[];
   startDate: string;
 }
-const events = [];
-
-const Calendar: React.FC<CalendarProps> = ({ events, startDate }) => {  // = new Calendar( document.getElementById('calendar', {
+const Calendar = ({ events, startDate }: CalendarProps) => {
   return (
     <div className="calendar">
       <FullCalendar
         plugins={[timeGridPlugin]}
         initialView="timeGridThreeDay"
-        initialDate= {startDate}
+        initialDate={startDate}
         events={events}
-        visibleRange={{
-          start: {startDate},
-        }}
+        //visibleRange={{
+        //  start: { startDate },
+        //}}
         views={{
           timeGridThreeDay: {
             type: 'timeGrid',
-            duration: {days: 3},
+            duration: { days: 3 },
             buttonText: '3 days'
           }
         }}
@@ -46,7 +44,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, startDate }) => {  // = new
           right: 'timeGridThreeDay, timeGridDay'
         }}
       />
-  </div>
+    </div>
   );
 };
 
@@ -74,13 +72,13 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
       timeZone: conference.timezone,
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     };
-    const dateObj = new Date(timeString+tzString);
-    const timeFormatter = new Intl.DateTimeFormat('en-US', timeOptions);  
+    const dateObj = new Date(timeString + tzString);
+    const timeFormatter = new Intl.DateTimeFormat('en-US', timeOptions);
     return timeFormatter.format(dateObj);
   }
-  
+
   function formatSessionDate(dateString: string, tzString: string) {
     const dateOptions: Intl.DateTimeFormatOptions = {
       timeZone: conference.timezone,
@@ -88,8 +86,8 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
       month: 'long',
       day: 'numeric'
     };
-    const dateObj = new Date(dateString+"T11:00:00"+tzString);
-    const timeFormatter = new Intl.DateTimeFormat('en-US', dateOptions);  
+    const dateObj = new Date(dateString + "T11:00:00" + tzString);
+    const timeFormatter = new Intl.DateTimeFormat('en-US', dateOptions);
     return timeFormatter.format(dateObj);
   }
 
@@ -97,7 +95,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
 
   const renderSession = (session: Session) => {
     const isBookmarked = bookmarkedSessions.includes(session.id);
-    
+
     return (
       <Card key={session.id} className="mb-4">
         <CardHeader>
@@ -116,7 +114,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
                 onClick={() => onToggleBookmark(session.id)}
                 className="ml-2"
               >
-                <Bookmark 
+                <Bookmark
                   className={`h-5 w-5 ${isBookmarked ? 'fill-current text-blue-600' : ''}`}
                 />
               </Button>
@@ -146,16 +144,16 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
     );
   };
 
-const calendarEvents: EventInput[] = sessions.map(session => ({
-  id: session.id,
-  title: session.title,
-  start: session.startTime + conference.timezoneNumeric,
-  end: session.endTime + conference.timezoneNumeric,
-  extendedProps: {
-    speaker: session.speaker,
-    location: session.location
-  }
-}));
+  const calendarEvents: EventInput[] = sessions.map(session => ({
+    id: session.id,
+    title: session.title,
+    start: session.startTime + conference.timezoneNumeric,
+    end: session.endTime + conference.timezoneNumeric,
+    extendedProps: {
+      speaker: session.speaker,
+      location: session.location
+    }
+  }));
 
   return (
     <div className="w-full">
@@ -188,7 +186,7 @@ const calendarEvents: EventInput[] = sessions.map(session => ({
           </TabsContent>
         ))}
       </Tabs>
-<Calendar events={calendarEvents} startDate={conference.startDate} />
+      <Calendar events={calendarEvents} startDate={conference.startDate} />
     </div>
   );
 }

@@ -1,22 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ProfileView } from '@/app/components/ProfileView';
-import { User } from "lucide-react";
-import { useAuth } from '../contexts/AuthContext';
+//import { User } from "lucide-react";
+import { useAuth } from '@/app/contexts/AuthContext';
+//import { Conference } from '@/types/conference';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { Toaster, toast } from "sonner";
 
 interface LoginPageProps {
   bookmarkedSessions?: string[];
-  conference: Conference;
+  //conference: Conference;
   onToggleBookmark?: (sessionId: string) => void;
 }
 
-
-export function ProfilePage ({ bookmarkedSessions = [], conference, onToggleBookmark }: LoginPageProps) {
+export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -25,6 +25,11 @@ export function ProfilePage ({ bookmarkedSessions = [], conference, onToggleBook
 
   const auth = getAuth();
   const authCurrentUser = auth.currentUser;
+
+  if (!authCurrentUser) {
+    return <ProfileView />;
+  }
+
   const authUserEmail = authCurrentUser.email;
 
   const handleLogout = async () => {
@@ -39,27 +44,37 @@ export function ProfilePage ({ bookmarkedSessions = [], conference, onToggleBook
   const handleEmailVerification = async () => {
     try {
       setError('');
-      await sendEmailVerification(authCurrentUser);
-      toast('Email Verification Sent');
-    } catch (err: any) {
-      setError(err.message || 'Failed to sendEmailVerification');
+      if (authCurrentUser != null) {
+        await sendEmailVerification(authCurrentUser);
+        toast('Email Verification Sent');
+      } else {
+        toast('No Email To Verify');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to sendEmailVerification';
+      setError(message);
     }
   };
 
   const handlePasswordReset = async () => {
     try {
       setError('');
-      await sendPasswordResetEmail(auth, authUserEmail);
-      toast('Password Reset Email Sent');
-    } catch (err: any) {
-      setError(err.message || 'Failed to sendPasswordResetEmail');
+      if (authUserEmail != null) {
+        await sendPasswordResetEmail(auth, authUserEmail);
+        toast('Password Reset Email Sent');
+      } else {
+        toast('No Email To Send Password Reset');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to sendPasswordResetEmail';
+      setError(message);
     }
   };
 
   return (
     <div className="profile-container">
       <h1>Profile</h1>
-      
+
       <div className="profile-info">
 
         {user.displayName && (
@@ -78,7 +93,7 @@ export function ProfilePage ({ bookmarkedSessions = [], conference, onToggleBook
               >
                 &lt;reset password&gt;
               </button> </>
-            </p>
+          </p>
         </div>
 
         {user.photoURL && (
@@ -108,7 +123,7 @@ export function ProfilePage ({ bookmarkedSessions = [], conference, onToggleBook
           <label>Email Verified:</label>
           <p>{user.emailVerified ? 'Yes' :
             //<form onSubmit={handleEmailVerification}>
-              <> <Toaster />
+            <> <Toaster />
               <button type="button" onClick={handleEmailVerification}
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
@@ -125,11 +140,10 @@ export function ProfilePage ({ bookmarkedSessions = [], conference, onToggleBook
 
         <div className="profile-field">
           <label>Bookmarks:</label>
-        {bookmarkedSessions > 0 ? 
-          <p>{ bookmarkedSessions }</p>
-         : 
-          <p>&lt;none yet&gt;</p>
-        }
+          {bookmarkedSessions.length > 0 ?
+            <p>{bookmarkedSessions}</p> :
+            <p>&lt;none yet&gt;</p>
+          }
         </div>
 
         <div className="profile-field">
@@ -167,6 +181,10 @@ export function ProfilePage ({ bookmarkedSessions = [], conference, onToggleBook
       <button onClick={handleLogout} className="logout-button">
         Log Out
       </button>
+
+      {error && (
+        <p className="text-red-500 dark:text-red-400 mt-4 text-sm">{error}</p>
+      )}
     </div>
   );
 }

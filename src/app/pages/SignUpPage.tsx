@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Conference } from '@/types/conference';
+//import { Conference } from '@/types/conference';
 import { User } from "lucide-react";
 
-interface SignUpPageProps {
-  bookmarkedSessions?: string[];
-  conference: Conference;
-  onToggleBookmark?: (sessionId: string) => void;
-}
+//interface SignUpPageProps {
+//bookmarkedSessions?: string[];
+//conference: Conference;
+//onToggleBookmark?: (sessionId: string) => void;
+//}
 
-//export function ScheduleView({ sessions, bookmarkedSessions = [], conference, onToggleBookmark }: ScheduleViewProps) {
-export function SignUpPage ({ bookmarkedSessions = [], conference, onToggleBookmark }: SignUpPageProps) {
+const getErrorMessage = (err: unknown): string => {
+  if (err instanceof Error) return err.message;
+  return 'An unexpected error occurred';
+};
+
+//export function SignUpPage({ bookmarkedSessions = [], onToggleBookmark }: SignUpPageProps) {
+export function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,8 +48,8 @@ export function SignUpPage ({ bookmarkedSessions = [], conference, onToggleBookm
       setLoading(true);
       await signUp(email, password);
       // Navigation handled by useEffect when user state updates
-    } catch (err: any) {
-      setError(err.message || 'Failed to create an account');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to create an account');
     } finally {
       setLoading(false);
     }
@@ -56,8 +61,8 @@ export function SignUpPage ({ bookmarkedSessions = [], conference, onToggleBookm
       setLoading(true);
       await signInWithGoogle();
       // Navigation handled by useEffect when user state updates
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign up with Google');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to sign up with Google');
     } finally {
       setLoading(false);
     }
@@ -69,44 +74,41 @@ export function SignUpPage ({ bookmarkedSessions = [], conference, onToggleBookm
       <form onSubmit={handleSubmit}>
         <h2 className="text-xl font-semibold mb-2">Sign Up</h2>
         {error && <div className="error">{error}</div>}
-        
-        <input
-          type="email"
+
+        <input type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           disabled={loading}
-        /><br/>
-        
-        <input
-          type="password"
+        /><br />
+
+        <input type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           disabled={loading}
-        /><br/>
-        
-        <input
-          type="password"
+        /><br />
+
+        <input type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
           disabled={loading}
-        /><br/>
-        
+        /><br />
+
         <button type="submit" disabled={loading}>
           {loading ? 'Creating Account...' : 'Sign Up'}
         </button> |
-        
+
         <button type="button" onClick={handleGoogleSignUp} disabled={loading}>
           &nbsp;Sign up with Google
         </button>
-        
+
         <p>
-          <br/>
+          <br />
           Already have an account?
           <Link
             to="/login"

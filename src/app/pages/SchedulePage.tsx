@@ -6,7 +6,7 @@ export function SchedulePage() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
 
   const handleToggleBookmark = (sessionId: string) => {
-    setBookmarkedSessions(prev => 
+    setBookmarkedSessions(prev =>
       prev.includes(sessionId)
         ? prev.filter(id => id !== sessionId)
         : [...prev, sessionId]
@@ -14,8 +14,7 @@ export function SchedulePage() {
   };
 
   return (
-    <ScheduleView 
-      sessions={sampleSessions}
+    <ScheduleView sessions={sampleSessions}
       bookmarkedSessions={bookmarkedSessions}
       conference={pacificonData}
       onToggleBookmark={handleToggleBookmark}

@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"], // Maps @/ to the baseUrl directory (src)
+      "@/*": [
+        "./src/*"
+      ], // Maps @/ to the baseUrl directory (src)
     },
     // Ensure moduleResolution is set appropriately (e.g., "node", "Bundler", etc.)
     "moduleResolution": "bundler", // using modern bundler
@@ -10,4 +12,3 @@
     "jsx": "react-native",
   }
 }
-
