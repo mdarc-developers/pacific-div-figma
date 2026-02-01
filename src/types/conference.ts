@@ -5,7 +5,7 @@ export interface Conference {
   location: string;
   venuePhone: string;
   venueGPS: string;
-  venueGridSquare: string;
+  venueGridsquare: string;
   venueWebsite: string;
   startDate: string; // stored in local date and time for the conference timezone
   endDate: string; // stored in local date and time for the conference timezone

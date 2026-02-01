@@ -157,7 +157,7 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
                     <MapPin className="flex h-5 w-5" />map<ExternalLink className="h-4 w-4" />
                   </a>
                   &nbsp;&nbsp;&nbsp;{conference.venueGPS}
-                  &nbsp;&nbsp;&nbsp;{conference.venueGridSquare}
+                  &nbsp;&nbsp;&nbsp;{conference.venueGridsquare}
                 </span>
               </div>
             </div>
