@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapImage, Conference } from '@/types/conference';
+import { MapImage } from '@/types/conference';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
@@ -7,7 +7,6 @@ import { Map as MapIcon } from 'lucide-react';
 
 interface MapsViewProps {
   maps: MapImage[];
-  conference: Conference;
 }
 
 export function MapsView({ maps }: MapsViewProps) {
@@ -30,7 +29,7 @@ export function MapsView({ maps }: MapsViewProps) {
         <TabsList className="w-full mb-6 flex-wrap h-auto">
           {sortedMaps.map(map => (
             <TabsTrigger key={map.id} value={map.id}>
-              {map.name} Map
+              {map.name}
               {map.floor && ` (Floor ${map.floor})`}
             </TabsTrigger>
           ))}

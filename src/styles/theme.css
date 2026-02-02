@@ -141,7 +141,6 @@
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
-    display: flex;
   }
 
   h2 {
@@ -178,9 +177,5 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
-  }
-  
-  span {
-    display: flex;
   }
 }

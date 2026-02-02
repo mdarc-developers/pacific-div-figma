@@ -191,7 +191,6 @@ The architecture supports multiple conferences:
 ## Architecture Notes
 
 - **Timezone Storage**: All times are stored in local time for the conference
-  fields timezone (i.e. "Pacific/Los_Angeles") and timezoneNumeric (i.e. "-0700" is PDT) help
 - **Offline Support**: Use Firestore offline persistence and Service Workers
 - **CSV Export**: Admin interfaces should allow exporting data back to CSV
 - **Callsign Verification**: Optional link to qrz.com for callsign lookup
@@ -199,4 +198,4 @@ The architecture supports multiple conferences:
 
 ## Need Help?
 
-Contact webmaster@pacificon.org or pacific-div@mdarc.org for assistance with Firebase setup.
+Contact webmaster@pacificon.org for assistance with Firebase setup.
