@@ -2,15 +2,23 @@ import { Conference, Session, MapImage } from '@/types/conference';
 
 export const pacificonData: Conference = {
   id: 'pacificon-2026',
-  name: 'Pacificon 2026',
-  location: 'San Ramon, California',
+  name: 'Pacificon 2025',
   venue: 'San Ramon Marriott',
+  location: '2600 Bishop Drive, San Ramon, CA 94583',
+  venuePhone: '925-867-9200',
+  venueGPS: '37.7629,-121.9674',
+  venueGridsquare: 'CM97as',
+  venueWebsite: 'https://www.marriott.com/en-us/hotels/oaksr-san-ramon-marriott/overview/',
   startDate: '2026-10-16', // Third Friday of October 2026
   endDate: '2026-10-18',
   timezone: 'America/Los_Angeles',
-  primaryColor: '#1e40af', // blue-800
+  timezoneNumeric: '-0700', // DST, PDT ends early Nov
+  primaryColor: '#ff4e00', // international orange
   secondaryColor: '#3b82f6', // blue-500
-  website: 'https://www.pacificon.org'
+  conferenceWebsite: 'https://www.pacificon.org',
+  parkingWebsite: 'https://www.pacificon.org/resources/parking',
+  icalUrl: '/pacificon-2026.ics',
+  contactEmail: 'webmaster@pacificon.org'
 };
 
 export const sampleSessions: Session[] = [
@@ -133,32 +141,59 @@ export const sampleSessions: Session[] = [
     endTime: '2026-10-17T10:30:00',
     category: 'Technical',
     track: 'Station Building'
-  }
+  },
+  {
+    id: 'session-11',
+    conferenceId: 'pacificon-2026',
+    title: 'Building Your Own Station II',
+    description: 'Tips for setting up a home station, from selecting equipment to installation and grounding.',
+    speaker: 'Tom Harris, W6TH',
+    location: 'Room 101',
+    startTime: '2026-10-18T09:00:00',
+    endTime: '2026-10-18T10:30:00',
+    category: 'Technical',
+    track: 'Station Building'
+  },
 ];
 
-// Mock map images - in production these would be URLs from Firebase Storage
+// Mock map images - in production these would be bundled images
 export const sampleMaps: MapImage[] = [
   {
     id: 'map-1',
     conferenceId: 'pacificon-2026',
-    name: 'Main Floor',
-    url: 'https://images.unsplash.com/photo-1762497403897-c105a5bc61e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb25mZXJlbmNlJTIwdmVudWUlMjBmbG9vciUyMHBsYW58ZW58MXx8fHwxNzY5MzEzOTY2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    floor: '1',
+    name: 'Exhibitors',
+    url: '/pacificon-exhibitors-2025.png',
+    //floor: '2',
     order: 1
   },
   {
     id: 'map-2',
     conferenceId: 'pacificon-2026',
-    name: 'Second Floor',
-    url: 'https://images.unsplash.com/photo-1656177128839-19fccb6307d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3RlbCUyMGNvbnZlbnRpb24lMjBjZW50ZXIlMjBsYXlvdXR8ZW58MXx8fHwxNzY5MzEzOTY3fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    floor: '2',
+    name: 'Hotel',
+    url: '/pacificon-hotel-2025.jpg',
+    //floor: '1',
     order: 2
   },
   {
     id: 'map-3',
     conferenceId: 'pacificon-2026',
-    name: 'Vendor Hall',
-    url: 'https://images.unsplash.com/photo-1759477274116-e3cb02d2b9d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldmVudCUyMGhhbGwlMjBpbnRlcmlvcnxlbnwxfHx8fDE3NjkzMTIxMjV8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    name: 'Hamfest Parking',
+    url: '/hamfest-parking-map-20260101.jpg',
     order: 3
-  }
+  },
+  {
+    id: 'map-4',
+    conferenceId: 'pacificon-2026',
+    name: 'Hamfest Layout',
+    url: '/hamfest-layout-2026.png',
+    order: 4
+  },
+  {
+    id: 'map-5',
+    conferenceId: 'pacificon-2026',
+    name: 'Hamcation Site',
+    url: '/hamcation-map-2026.png',
+    order: 5
+  },
 ];
+
