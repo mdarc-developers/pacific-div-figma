@@ -32,3 +32,7 @@ export const storage = getStorage(app);
 
 export default app;
 
+//match /userSettings/{uid} {
+//  allow read, write: if request.auth != null && request.auth.uid == uid;
+//}
+

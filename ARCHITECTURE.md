@@ -316,3 +316,21 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 9. **React.StrictMode is disabled.** `main.tsx` has it commented out. This was likely done to avoid double-invocation warnings during Firebase Auth listener setup. Re-enable with care.
 
 10. **The `conference` prop is passed from `App.tsx` to every route** but several pages (e.g., `MapsPage`) ignore it and re-import `pacificonData` directly. Unify this once the data source becomes dynamic.
+
+## 13. How the sync works from /src/lib/firebase.ts
+
+1. On mount, the hook fetches `public/settings/defaults.csv` (bundled by
+   Vite/CRA, served as a static asset). It parses every row into a `uid → UserSettings` map.
+
+2. It checks Firestore at `userSettings/{uid}`. If a doc already exists, that's
+   the source of truth. If not, it seeds Firestore from the CSV row for that
+   uid (or from empty defaults if the uid isn't in the CSV).
+
+3. An `onSnapshot` listener keeps the local React state in sync in real time —
+   so changes from another tab or device propagate instantly.
+
+4. Every toggle / input change calls `updateDoc` on Firestore; the listener
+   pushes the result back into state automatically.
+
+5. Firestore security rule suggestion: only each user can read/write their own doc
+
