@@ -1,6 +1,7 @@
 import { useConference } from '@/app/contexts/ConferenceContext';
 
 export function ConferenceFooter() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   return (
     <>
