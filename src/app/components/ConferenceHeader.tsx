@@ -169,6 +169,7 @@ export function ConferenceHeader() {
 
       <div className="mb-6 self-stretch w-full rounded-xl p-4"
         style={{ backgroundColor: activeConference.primaryColor, color: headerTextColor }}
+        onClick={isHeaderCollapsed ? () => setIsHeaderCollapsed(false) : undefined}
       >
         {isHeaderCollapsed ? (
           <h1 className="text-3xl md:text-4xl font-bold">{activeConference.name}</h1>
