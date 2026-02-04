@@ -14,8 +14,15 @@ import { AlertsPage } from '@/app/pages/AlertsPage';
 import { ProfilePage } from '@/app/pages/ProfilePage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { SignUpPage } from '@/app/pages/SignUpPage';
-import { pacificonData } from '@/data/pacificon-sample';
+//import { pacificonData } from '@/data/pacificon-sample';
 //import { pacificonData, sampleSessions, sampleMaps } from '@/data/pacificon-sample';
+//import { useConference } from '@/app/contexts/ConferenceContext';
+//import { allConferences } from '@/data/all-conferences';
+//import { Conference } from '@/types/conference';
+
+
+//activeConference: Conference | null;
+//allConferences: Conference[] | null;
 
 export default function App() {
   //const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
@@ -29,25 +36,27 @@ export default function App() {
   //  );
   //};
 
+  //const { activeConference, allConferencesList, setActiveConference } = useConference();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <ConferenceHeader conference={pacificonData} />
+        <ConferenceHeader />
 
         <Navigation />
 
         <Routes>
           <Route path="/" element={<Navigate to="/maps" replace />} />
-          <Route path="/maps" element={<MapsPage conference={pacificonData} />} />
-          <Route path="/schedule" element={<SchedulePage conference={pacificonData} />} />
-          <Route path="/alerts" element={<AlertsPage conference={pacificonData} />} />
-          <Route path="/profile" element={<ProfilePage conference={pacificonData} />} />
-          <Route path="/login" element={<LoginPage conference={pacificonData} />} />
-          <Route path="/signup" element={<SignUpPage conference={pacificonData} />} />
+          <Route path="/maps" element={<MapsPage />} />
+          <Route path="/schedule" element={<SchedulePage />} />
+          <Route path="/alerts" element={<AlertsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>
 
-        <ConferenceFooter conference={pacificonData} />
+        <ConferenceFooter />
 
       </div>
     </div>

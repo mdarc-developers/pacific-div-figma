@@ -1,6 +1,6 @@
-# Amateur Radio Attendee Conference App — Technical Architecture
+# Amateur Radio Conference Attendee App — Technical Architecture
 
-> **Purpose of this document:** Provide a complete, self-contained technical reference so that a future AI model (or developer) can understand the full stack, conventions, data flow, and planned roadmap without needing to read every source file.
+**Purpose of this document:** Provide a complete, self-contained technical reference so that AI models and developers can understand the full stack, conventions, data flow, and planned roadmap without needing to read every source file.
 
 ---
 
@@ -9,12 +9,12 @@
 | Item                | Value                                                                       |
 | ------------------- | --------------------------------------------------------------------------- |
 | Figma source        | https://www.figma.com/design/fAJt1K7Tm5xlgtypyfRTq5/Attendee-Conference-App |
-| Production URL      | https://pacific-div.web.app                                                 |
-| Conference website  | https://www.pacificon.org                                                   |
+| URL                 | https://pacific-div.web.app                                                 |
+| Conference websites | https://www.pacificon.org , Hamcation.com , Hamvention.org , Hamfest.org    |
 | Contact             | webmaster@pacificon.org                                                     |
 | Firebase project ID | `pacific-div`                                                               |
 
-The app is purpose-built for amateur radio (ham radio) ARRL Division conferences. The sample data models a 3-day event https://www.pacificon.org at the San Ramon Marriott, Oct 16–18, 2026.
+The app is purpose-built for amateur radio (ham radio) ARRL Division conferences. The sample data models a 3-day event https://www.pacificon.org at the San Ramon Marriott each Oct.
 
 ---
 
@@ -35,9 +35,20 @@ The app is purpose-built for amateur radio (ham radio) ARRL Division conferences
 | Lint                | ESLint 9 (flat config) + typescript-eslint + eslint-plugin-react | Runs inside Vite via `@nabla/vite-plugin-eslint`                                                                                      |
 | Hosting & CI        | Firebase Hosting + GitHub Actions                                | Two workflows: deploy-on-merge-to-main (live), deploy-on-PR (preview channel)                                                         |
 
-### Notable _installed but currently unused_ dependencies
+### Notable dependencies _installed but not currently used_
 
-`@mui/material`, `@mui/icons-material`, `@emotion/*`, `react-dnd`, `react-slick`, `react-responsive-masonry`, `recharts`, `motion`, `next-themes`, `react-hook-form`, `vaul`, `cmdk`, and most of the Radix primitives beyond `tabs`, `accordion`, and `tooltip`. These appear to have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
+* `next-themes` for dark and light
+* `@mui/material`, `@mui/icons-material`
+* `@emotion/*` writes css styles with javascript though we use tailwindcss
+* `vaul` is a drawer
+* Most of the Radix primitives beyond `tabs`, `accordion`, and `tooltip`. These have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
+* `react-dnd` for drag and drop
+* `react-slick` for carousel
+* `react-responsive-masonry` for zooming
+* `motion` for animation
+* `recharts` charting for react
+* `react-hook-form` forms and validation library 
+* `cmdk` for a command menu
 
 ---
 
@@ -98,22 +109,23 @@ pacific-div-figma-main/
 ## 4. Routing & Component Hierarchy
 
 ```
-<AuthProvider>                         ← Firebase onAuthStateChanged listener
+<AuthProvider>                         # Firebase onAuthStateChanged listener
   <BrowserRouter>
     <App>
-      <ConferenceHeader />             ← Always visible; collapsible
-      <Navigation />                   ← Always visible; 4-tab grid
+      <ConferenceHeader />             # Always visible; collapsible
+        <ConferenceSelecer />          # coming soon
+      <Navigation />                   # Always visible; 4-tab grid
       <Routes>
         /          → redirect → /maps
-        /maps      → <MapsPage>        → <MapsView>
-        /schedule  → <SchedulePage>    → <ScheduleView> + <Calendar>
-        /alerts    → <AlertsPage>      → <AlertsView> | inline email display
-        /profile   → <ProfilePage>     → <ProfileView> | full profile, links to /login and /signup
-        /login     → <LoginPage>
-        /signup    → <SignUpPage>
+        /maps      → <MapsPage>        # <MapsView>
+        /schedule  → <SchedulePage>    # <ScheduleView> + <Calendar>
+        /alerts    → <AlertsPage>      # <AlertsView> | inline email display
+        /profile   → <ProfilePage>     # <ProfileView> | full profile, links to /login and /signup
+          /login     → <LoginPage>
+          /signup    → <SignUpPage>
         *          → redirect → /404.html
       </Routes>
-      <ConferenceFooter />             ← Always visible
+      <ConferenceFooter />             - Always visible
     </App>
   </BrowserRouter>
 </AuthProvider>
@@ -299,23 +311,19 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 
 1. **Path alias.** All imports use `@/` which maps to `src/`. Both `vite.config.ts` (runtime) and `tsconfig.json` (editor/type-checking) declare this alias.
 
-2. **Page vs View split.** Every tab follows a two-layer pattern: a _Page_ component lives in `src/app/pages/` and owns route-level state (e.g., bookmark array, auth checks). It delegates all rendering to a _View_ component in `src/app/components/`. When adding new tabs, follow this pattern.
+2. **Page vs View split.** Every tab follows a two-layer pattern: a _Page_ component lives in `src/app/pages/` and owns route-level state (e.g., bookmark array, auth checks). It delegates all rendering to a _View_ component in `src/app/components/`. When adding new tabs, follow this pattern. This developed from the prototype and was needed when the routing pages were implemented.
 
 3. **Unauthenticated vs authenticated rendering.** `AlertsPage` and `ProfilePage` do **not** use `ProtectedRoute`. Instead they conditionally render a static "sign in" placeholder (the View) or the full authenticated UI directly in the Page. This is intentional — the tabs remain visible and informational even when logged out.
 
 4. **Hard-coded data is temporary.** `MapsPage` and `SchedulePage` import directly from `pacificon-sample.ts`. This is the single point to replace when Firestore integration lands. Do **not** add more direct sample-data imports elsewhere.
 
-5. **Timezone handling is tricky.** Session times are stored without an offset (`"2026-10-16T09:00:00"`). At render time, `conference.timezoneNumeric` (e.g., `"-0700"`) is **concatenated** onto the string before passing to `new Date()` or FullCalendar. The IANA string (`conference.timezone`) is used separately for `Intl.DateTimeFormat`. Day-of-month is extracted via `split('-')[2]` rather than the formatter due to a noted cross-browser edge case.
+5. **Timezone handling is tricky.** Session times are stored purposely without an offset (`"2026-10-16T09:00:00"`). At render time, `conference.timezoneNumeric` (e.g., `"-0700"`) is **concatenated** onto the string before passing to `new Date()` or FullCalendar. The IANA string (`conference.timezone`) is used separately for `Intl.DateTimeFormat`. Day-of-month is extracted via `split('-')[2]` rather than the formatter due to a noted cross-browser edge case.
 
-6. **shadcn UI components are wrappers.** Everything in `src/app/components/ui/` is a thin styled wrapper over a Radix primitive. Do not edit them directly; treat them as a stable design-system layer.
+6. **shadcn UI components are wrappers.** Everything in `src/app/components/ui/` is a thin styled wrapper over a Radix primitive. Do not edit them directly unless there are bugs; treat them as a stable design-system layer. Fixes wwere installed for bugs in the CLI installed Button and Dialog files. These were reported months ago.
 
 7. **`ProtectedRoute` exists but is unused.** It is a ready-made HOC for guarding routes. Wire it in when features (e.g., messaging) require authentication.
 
-8. **Commented-out code is intentional scaffolding.** Large blocks of commented code (in `App.tsx`, `ConferenceHeader.tsx`, `ProfilePage.tsx`, etc.) represent prior iterations or planned wiring. Read them for context before removing.
-
-9. **React.StrictMode is disabled.** `main.tsx` has it commented out. This was likely done to avoid double-invocation warnings during Firebase Auth listener setup. Re-enable with care.
-
-10. **The `conference` prop is passed from `App.tsx` to every route** but several pages (e.g., `MapsPage`) ignore it and re-import `pacificonData` directly. Unify this once the data source becomes dynamic.
+8. **Commented-out code is intentional scaffolding.** Blocks of commented code (in `App.tsx`, `ConferenceHeader.tsx`, `ProfilePage.tsx`, etc.) represent prior iterations or planned wiring. Read them for context before removing.
 
 ## 13. How the sync works from /src/lib/firebase.ts
 

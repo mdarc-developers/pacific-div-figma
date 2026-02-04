@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await signOut(auth);
   };
 
-  const value = {
+  const authValue = {
     user,
     loading,
     signIn,
@@ -67,5 +67,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     logout
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>;
 };

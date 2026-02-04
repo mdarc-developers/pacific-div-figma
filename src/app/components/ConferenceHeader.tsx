@@ -1,10 +1,46 @@
 import { useState } from 'react';
 import { Conference } from '@/types/conference';
-import { Calendar, MapPin, ExternalLink } from 'lucide-react';
-interface ConferenceHeaderProps {
-  conference: Conference;
-  onToggleHeaderCollapsed?: (setHeaderCollapsed: boolean) => void;
-}
+import { ChevronDown, Calendar, MapPin, ExternalLink } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/app/components/ui/dialog';
+import { Button } from '@/app/components/ui/button';
+import { Card, CardContent } from '@/app/components/ui/card';
+import { Badge } from '@/app/components/ui/badge';
+//import { allConferences } from '@/data/all-conferences';
+import { useConference } from '@/app/contexts/ConferenceContext';
+
+//const conferences = uc.allConferences;
+//const activeConference = allConferences[0];
+
+//interface ConferenceHeaderProps {
+//conference: Conference;
+//onToggleHeaderCollapsed?: (setHeaderCollapsed: boolean) => void;
+//onSelectConference?: (conference: Conference) => void;
+//}
+
+//import { forwardRef } from 'react';
+//
+//const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+//  ({ className, variant, size, ...props }, ref) => {
+//    return (
+//      <button
+//        ref={ref}
+//        className={/* your classes */}
+//        {...props}
+//      />
+//    );
+//  }
+//);
+//
+//Button.displayName = 'Button';
+//
+//export { Button };
 
 function formatHeaderFull(isoDate: Date, tzString: string) {
   const timeFormatter = new Intl.DateTimeFormat('en-US', {
@@ -49,6 +85,18 @@ function contrastingColor(color: string) {
   // Use black text if the background is light, white text if the background is dark
   return (luma >= 165) ? '#000000' : '#FFFFFF';
 }
+
+function contrastingLinkColor(color: string) {
+  // Convert hex to RGB array if needed (example function below)
+  const rgb = (typeof color === 'string') ? hexToRGBArray(color) : color;
+  // Calculate Luma (brightness)
+  const luma = (0.2126 * rgb[0]) + (0.7152 * rgb[1]) + (0.0722 * rgb[2]);
+  // Use black text if the background is light, white text if the background is dark
+  //    light 155dfc blue-600 oklch(54.6% 0.245 262.881)
+  // or dark  9098dc blue-400 oklch(70.7% 0.165 254.624)
+  return (luma >= 165) ? '#155dfc' : '#9098dc';
+}
+
 function hexToRGBArray(hex: string) {
   if (hex.startsWith('#')) hex = hex.substring(1);
   if (hex.length === 3) hex = hex.replace(/./g, '$&$&'); // Expand shorthand
@@ -61,7 +109,15 @@ function hexToRGBArray(hex: string) {
 }
 
 //export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: ConferenceHeaderProps) {
-export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
+export function ConferenceHeader() {
+
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
+
+  const headerTextColor = contrastingColor(activeConference.primaryColor);
+  const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
+
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -69,14 +125,31 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
     const endDateNum = end.split('-')[2];
 
     if (startDate.getMonth() === endDate.getMonth() && startDate.getFullYear() === endDate.getFullYear()) {
-      return `${formatHeaderMonth(startDate, conference.timezone)} ${startDateNum}-${endDateNum}, ${formatHeaderYear(startDate, conference.timezone)}`;
+      return `${formatHeaderMonth(startDate, activeConference.timezone)} ${startDateNum}-${endDateNum}, ${formatHeaderYear(startDate, activeConference.timezone)}`;
     }
 
-    return `${formatHeaderFull(startDate, conference.timezone)} - ${formatHeaderFull(endDate, conference.timezone)}`;
+    return `${formatHeaderFull(startDate, activeConference.timezone)} - ${formatHeaderFull(endDate, activeConference.timezone)}`;
   };
-  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
-  const headerTextColor = contrastingColor(conference.primaryColor);
+  const isUpcoming = (conference: Conference) => {
+    const startDate = new Date(conference.startDate);
+    const today = new Date();
+    return startDate > today;
+  };
+
+  const isCurrent = (conference: Conference) => {
+    const startDate = new Date(conference.startDate);
+    const endDate = new Date(conference.endDate);
+    const today = new Date();
+    return today >= startDate && today <= endDate;
+  };
+
+  const handleSelectConference = (conference: Conference) => {
+    //onSelectConference(conference);
+    setActiveConference(conference);
+    //console.log(conference);
+    setIsSelectOpen(false);
+  };
 
   return (
     <div className="flex items-center gap-2 px-2">
@@ -95,35 +168,135 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
         </svg> </button>
 
       <div className="mb-6 self-stretch w-full rounded-xl p-4"
-        style={{ backgroundColor: conference.primaryColor, color: headerTextColor }}
+        style={{ backgroundColor: activeConference.primaryColor, color: headerTextColor }}
       >
         {isHeaderCollapsed ? (
-          <h1 className="text-3xl md:text-4xl font-bold">{conference.name}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">{activeConference.name}</h1>
         ) : (
-          <>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">{conference.name}
-              &nbsp;&nbsp;<a
-                href={conference.venueWebsite}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                website<ExternalLink className="h-4 w-4" />
-              </a>
-            </h1>
+          <> <div className="flex self-stretch w-full">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">{activeConference.name}
+                &nbsp;&nbsp;<a
+                  href={activeConference.venueWebsite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:underline"
+                  style={{ color: headerLinkColor }}
+                >
+                  website<ExternalLink className="h-4 w-4" />
+                </a>
+              </h1></div>
+            <div className="ml-auto">
+
+              <Dialog open={isSelectOpen} onOpenChange={setIsSelectOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="gap-2 max-w-[200px] sm:max-w-none"
+                  >
+                    <span className="truncate">{activeConference.name}</span>
+                    <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Select Conference</DialogTitle>
+                    <DialogDescription>
+                      Amateur radio
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-4 mt-4">
+                    {allConferencesList.map((conference) => {
+                      const isActive = conference.id === activeConference.id;
+                      const upcoming = isUpcoming(conference);
+                      //const upcoming = true;
+                      const current = isCurrent(conference);
+                      //const current = true;
+
+                      return (
+                        <Card
+                          key={conference.id}
+                          className={`cursor-pointer transition-all hover:shadow-md ${isActive ? 'ring-2 ring-blue-500' : ''
+                            }`}
+                          onClick={() => handleSelectConference(conference)}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                  <h3 className="font-semibold text-lg">
+                                    {conference.name}
+                                  </h3>
+                                  {current && (
+                                    <Badge className="bg-green-600">
+                                      Currently Active
+                                    </Badge>
+                                  )}
+                                  {upcoming && !current && (
+                                    <Badge variant="secondary">
+                                      Upcoming
+                                    </Badge>
+                                  )}
+                                  {!upcoming && !current && (
+                                    <Badge variant="outline">
+                                      Past Event
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 flex-shrink-0" />
+                                    <span className="truncate">
+                                      {formatDateRange(conference.startDate, conference.endDate)}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                                    <span className="truncate">
+                                      {conference.venue}<br />{conference.location}
+                                    </span>
+                                  </div>
+
+
+                                </div>
+
+                              </div>
+
+                              {isActive && (
+                                <div className="flex-shrink-0">
+                                  <Badge variant="default">
+                                    Selected
+                                  </Badge>
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+            </div>
+          </div>
 
             <div className="space-y-2"
               // text-gray-700 dark:text-gray-300"
-              style={{ backgroundColor: conference.primaryColor, color: headerTextColor }}
+              style={{ backgroundColor: activeConference.primaryColor, color: headerTextColor }}
             >
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                <span>{formatDateRange(conference.startDate, conference.endDate)}
+                <span>{formatDateRange(activeConference.startDate, activeConference.endDate)}
                   &nbsp;<a
-                    href={conference.icalUrl}
+                    href={activeConference.icalUrl}
                     download
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+                    className="flex items-center gap-2 hover:underline"
+                    style={{ color: headerLinkColor }}
                   >
                     &nbsp;iCal<ExternalLink className="h-4 w-4" />
                   </a>
@@ -142,22 +315,24 @@ export function ConferenceHeader({ conference }: ConferenceHeaderProps) {
 
               <div className="flex items-center gap-2">
                 <span><a
-                  href={conference.venueWebsite} target="_blank"
+                  href={activeConference.venueWebsite} target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+                  className="flex items-center gap-2 hover:underline"
+                  style={{ color: headerLinkColor }}
                 >
-                  {conference.venue}<ExternalLink className="h-4 w-4" /></a>,
-                  &nbsp;{conference.location}
+                  {activeConference.venue}<ExternalLink className="h-4 w-4" /></a>,
+                  &nbsp;{activeConference.location}
                   &nbsp;&nbsp;<a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(conference.location) || ''}`}
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ''}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+                    className="flex items-center gap-2 hover:underline"
+                    style={{ color: headerLinkColor }}
                   >
                     <MapPin className="flex h-5 w-5" />map<ExternalLink className="h-4 w-4" />
                   </a>
-                  &nbsp;&nbsp;&nbsp;{conference.venueGPS}
-                  &nbsp;&nbsp;&nbsp;{conference.venueGridSquare}
+                  &nbsp;&nbsp;&nbsp;{activeConference.venueGPS}
+                  &nbsp;&nbsp;&nbsp;{activeConference.venueGridSquare}
                 </span>
               </div>
             </div>

@@ -1,0 +1,85 @@
+import { Conference } from '@/types/conference';
+
+export const allConferences: Conference[] = [
+  {
+    id: 'pacificon-2026',
+    name: 'Pacificon 2025',
+    venue: 'San Ramon Marriott',
+    startDate: '2026-10-16', // Third Friday of October 2026
+    endDate: '2026-10-18',
+    timezone: 'America/Los_Angeles',
+    primaryColor: '#ff4e00', // international orange
+    secondaryColor: '#3b82f6', // blue-500
+    location: '2600 Bishop Drive, San Ramon, CA 94583', // changed
+    conferenceWebsite: 'https://www.pacificon.org', // changed
+    venuePhone: '925-867-9200',
+    venueGPS: '37.7629,-121.9674',
+    venueGridSquare: 'CM97as',
+    venueWebsite: 'https://www.marriott.com/en-us/hotels/oaksr-san-ramon-marriott/overview/',
+    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+    parkingWebsite: 'https://www.pacificon.org/resources/parking',
+    icalUrl: '/pacificon-2026.ics',
+    contactEmail: 'webmaster@pacificon.org'
+  },
+  {
+    id: 'hamcation-2026',
+    name: 'Hamcation 2026',
+    location: '4603 W Colonial Drive, Orlando, FL 32808',
+    venue: 'Central Florida Fairgrounds',
+    startDate: '2026-02-13',
+    endDate: '2026-02-15',
+    timezone: 'America/New_York',
+    primaryColor: '#ffffff',
+    secondaryColor: '#f97316',
+    conferenceWebsite: 'https://www.hamcation.com',
+    venuePhone: '407-385-3247',
+    venueGPS: '28.5556,-81.4402',
+    venueGridSquare: 'EL98gn',
+    venueWebsite: 'https://www.centralfloridafair.com/',
+    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+    parkingWebsite: '',
+    icalUrl: '',
+    contactEmail: '',
+  },
+  {
+    id: 'hamvention-2026',
+    name: 'Hamvention 2026',
+    location: '120 Fairground Road, Xenia, OH 45385',
+    venue: 'Greene County Fairgrounds',
+    startDate: '2026-05-15',
+    endDate: '2026-05-17',
+    timezone: 'America/New_York',
+    primaryColor: '#dc2626',
+    secondaryColor: '#ef4444',
+    conferenceWebsite: 'https://www.hamvention.org',
+    venuePhone: '937-372-8621x12',
+    venueGPS: '39.6990,-83.9412',
+    venueGridSquare: 'EM89aq',
+    venueWebsite: 'https://greenecoexpocenter.com/',
+    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+    parkingWebsite: '',
+    icalUrl: '',
+    contactEmail: '',
+  },
+  {
+    id: 'huntsville-hamfest-2026',
+    name: 'Huntsville Hamfest 2026',
+    location: '700 Monroe Street SW, Huntsville, AL 35801',
+    venue: 'Von Braun Center',
+    startDate: '2026-08-21',
+    endDate: '2026-08-22',
+    timezone: 'America/Chicago',
+    primaryColor: '#7c3aed',
+    secondaryColor: '#8b5cf6',
+    conferenceWebsite: 'https://www.hamfest.org',
+    venuePhone: '256-533-1953',
+    venueGPS: '34.7269,-86.5934',
+    venueGridSquare: 'EM64qr',
+    venueWebsite: 'http://www.vonbrauncenter.com/',
+    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+    parkingWebsite: '',
+    icalUrl: '',
+    contactEmail: '',
+  }
+];
+

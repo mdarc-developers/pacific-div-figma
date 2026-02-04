@@ -1,24 +1,21 @@
-import { Conference } from '@/types/conference';
+import { useConference } from '@/app/contexts/ConferenceContext';
 
-interface ConferenceFooterProps {
-  conference: Conference;
-}
-
-export function ConferenceFooter({ conference }: ConferenceFooterProps) {
+export function ConferenceFooter() {
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
   return (
     <>
       <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
         <p>
           Questions or suggestions? {' '}
           <a
-            href={"mailto:" + (conference.contactEmail)}
+            href={"mailto:" + (activeConference.contactEmail)}
             className="text-blue-600 dark:text-blue-400 hover:underline"
           >
-            {conference.contactEmail}
+            {activeConference.contactEmail}
           </a>
         </p>
         <p className="mt-2">
-          Multi-conference support planned • Offline capable planned
+          Multi-conference support • Offline capable planned
         </p>
       </footer>
     </>

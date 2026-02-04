@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ProfileView } from '@/app/components/ProfileView';
 //import { User } from "lucide-react";
 import { useAuth } from '@/app/contexts/AuthContext';
+//import { useConference } from '@/app/contexts/ConferenceContext';
 //import { Conference } from '@/types/conference';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
@@ -73,6 +74,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
 
   return (
     <div className="profile-container">
+      <><Toaster /></>
       <h1>Profile</h1>
 
       <div className="profile-info">
@@ -87,12 +89,11 @@ export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
         <div className="profile-field">
           <label>User ID:</label>
           <p>{user.uid}
-            <> <Toaster />
               <button type="button" onClick={handlePasswordReset}
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
                 &lt;reset password&gt;
-              </button> </>
+              </button>
           </p>
         </div>
 
@@ -123,12 +124,11 @@ export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
           <label>Email Verified:</label>
           <p>{user.emailVerified ? 'Yes' :
             //<form onSubmit={handleEmailVerification}>
-            <> <Toaster />
               <button type="button" onClick={handleEmailVerification}
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
                 &lt;send verification now&gt;
-              </button> </>
+              </button>
             //</form>
           }</p>
         </div>

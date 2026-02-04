@@ -2,18 +2,18 @@ export interface Conference {
   id: string;
   name: string;
   venue: string;
+  startDate: string; // stored in local date and time for the conference timezone
+  endDate: string; // stored in local date and time for the conference timezone
+  timezone: string;
+  primaryColor: string;
+  secondaryColor: string;
   location: string;
+  conferenceWebsite: string;
   venuePhone: string;
   venueGPS: string;
   venueGridSquare: string;
   venueWebsite: string;
-  startDate: string; // stored in local date and time for the conference timezone
-  endDate: string; // stored in local date and time for the conference timezone
-  timezone: string;
   timezoneNumeric: string;
-  primaryColor: string;
-  secondaryColor: string;
-  conferenceWebsite: string;
   parkingWebsite: string;
   icalUrl: string;
   contactEmail: string;

@@ -1,11 +1,15 @@
 import { MapsView } from '@/app/components/MapsView';
-import { pacificonData, sampleMaps } from '@/data/pacificon-sample';
+//import { pacificonData, sampleMaps } from '@/data/pacificon-sample';
+import { sampleMaps } from '@/data/pacificon-sample';
+import { useConference } from '@/app/contexts/ConferenceContext';
 
 export function MapsPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
   return (
     <MapsView
       maps={sampleMaps}
-      conference={pacificonData}
+      conference={activeConference}
     />
   );
 }
