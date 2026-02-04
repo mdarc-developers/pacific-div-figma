@@ -167,7 +167,7 @@ export function ConferenceHeader() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg> </button>
 
-      <div className="mb-6 self-stretch w-full rounded-xl p-4"
+      <div className={`mb-6 self-stretch w-full rounded-xl p-4 ${isHeaderCollapsed ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
         style={{ backgroundColor: activeConference.primaryColor, color: headerTextColor }}
         onClick={isHeaderCollapsed ? () => setIsHeaderCollapsed(false) : undefined}
       >
