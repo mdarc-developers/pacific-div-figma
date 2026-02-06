@@ -359,13 +359,14 @@ export function ConferenceHeader() {
           to={to}
           title={label}
           className={({ isActive }) =>
-            `self-stretch mb-3 flex items-center gap-2 p-2 py-2 bg-gray-100 dark:bg-gray-800 rounded-md transition-colors ${isActive
+            `self-stretch mb-3 flex flex-col items-center justify-center gap-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-md transition-colors ${isActive
               ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm font-medium'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium'
             }`
           }
         >
           <Icon className="" title={label} size={30} />
+          <span>{label}</span>
         </NavLink>
       ))}
     </div> // container
