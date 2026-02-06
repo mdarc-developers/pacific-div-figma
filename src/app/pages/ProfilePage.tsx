@@ -73,55 +73,59 @@ export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
   };
 
   return (
-    <div className="profile-container">
+    <div className="max-w-md">
       <><Toaster /></>
-      <h1>Profile</h1>
+      <h1 className="text-3xl font-bold mb-8">Profile</h1>
 
-      <div className="profile-info">
+      <div className="space-y-6 profile-info">
 
         {user.displayName && (
           <div className="profile-field">
-            <label>Display Name:</label>
-            <p>{user.displayName}</p>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Display Name:</label>
+            {user.displayName}
           </div>
         )}
 
         <div className="profile-field">
-          <label>User ID:</label>
-          <p>{user.uid}
+          <label className="block text-sm font-medium text-gray-700 mb-2">User ID:</label>
+          {user.uid}
               <button type="button" onClick={handlePasswordReset}
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
                 &lt;reset password&gt;
               </button>
-          </p>
+          
         </div>
 
         {user.photoURL && (
           <div className="profile-field">
-            <label>Profile Picture:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture:</label>
             <img src={user.photoURL} alt="Profile" className="profile-picture" />
           </div>
         )}
 
         <div className="profile-field">
-          <label>Last Sign In:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Last Sign In:</label>
           <p>{user.metadata.lastSignInTime}</p>
         </div>
 
         <div className="profile-field">
-          <label>Account Created:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Account Created:</label>
           <p>{user.metadata.creationTime}</p>
         </div>
 
 
         <div className="profile-field">
-          <label>Email:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Email:</label>
           <p>{user.email}</p>
         </div>
 
         <div className="profile-field">
-          <label>Email Verified:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Email Verified:</label>
           <p>{user.emailVerified ? 'Yes' :
             //<form onSubmit={handleEmailVerification}>
               <button type="button" onClick={handleEmailVerification}
@@ -134,12 +138,14 @@ export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
         </div>
 
         <div className="profile-field">
-          <label>Email alert toggle:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Email alert toggle:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
-          <label>Bookmarks:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Bookmarks:</label>
           {bookmarkedSessions.length > 0 ?
             <p>{bookmarkedSessions}</p> :
             <p>&lt;none yet&gt;</p>
@@ -147,38 +153,44 @@ export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
         </div>
 
         <div className="profile-field">
-          <label>Dark mode:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Dark mode:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
-          <label>Prizes won:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Prizes won:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
-          <label>SMS Number:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          SMS Number:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
-          <label>SMS alert toggle:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          SMS alert toggle:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
-          <label>Messages:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Messages:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
-          <label>Messages toggle:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+          Messages toggle:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
       </div>
 
-      <button onClick={handleLogout} className="logout-button">
+      <button onClick={handleLogout} className="logout-button border border-2 border-solid shadow-md">
         Log Out
       </button>
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Conference } from '@/types/conference';
-import { ChevronDown, Calendar, MapPin, ExternalLink } from 'lucide-react';
+import { Bell, ChevronDown, Calendar, ExternalLink, MapPin, User } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 //import { allConferences } from '@/data/all-conferences';
 import { useConference } from '@/app/contexts/ConferenceContext';
+import { NavLink } from 'react-router-dom';
 
 //const conferences = uc.allConferences;
 //const activeConference = allConferences[0];
@@ -151,12 +152,18 @@ export function ConferenceHeader() {
     setIsSelectOpen(false);
   };
 
+  const navItems = [
+    { to: '/alerts', icon: Bell, label: 'Alerts' },
+    { to: '/profile', icon: User, label: 'Profile' },
+  ];
+
   return (
     <div className="flex items-center gap-2 px-2">
       <button
         onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
         className="bg-muted hover:text-gray-900 transition-colors self-stretch rounded-xl mb-3"
         aria-label={isHeaderCollapsed ? "Expand" : "Collapse"}
+        title="Collapse / Expand"
       >
         <svg
           className={`w-5 h-5 transition-transform flex ${isHeaderCollapsed ? '-rotate-90' : ''}`}
@@ -165,9 +172,12 @@ export function ConferenceHeader() {
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg> </button>
+        </svg>
+      </button>
 
-      <div className={`mb-6 self-stretch w-full rounded-xl p-4 ${isHeaderCollapsed ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
+      <div className={`mb-6 self-stretch w-full rounded-xl p-4 ${isHeaderCollapsed ?
+        'cursor-pointer hover:opacity-90 transition-opacity' :
+        ''}`}
         style={{ backgroundColor: activeConference.primaryColor, color: headerTextColor }}
         onClick={isHeaderCollapsed ? () => setIsHeaderCollapsed(false) : undefined}
       >
@@ -218,7 +228,9 @@ export function ConferenceHeader() {
                       return (
                         <Card
                           key={conference.id}
-                          className={`cursor-pointer transition-all hover:shadow-md ${isActive ? 'ring-2 ring-blue-500' : ''
+                          className={`cursor-pointer transition-all hover:shadow-md ${isActive ?
+                            'ring-2 ring-blue-500' :
+                            ''
                             }`}
                           onClick={() => handleSelectConference(conference)}
                         >
@@ -303,8 +315,8 @@ export function ConferenceHeader() {
                   </a>
                   &nbsp;&nbsp;&nbsp;<a
                     href="https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org"
-                    target="_blank"
                     rel="noopener noreferrer"
+                    target="_blank"
                   >
                     <img
                       src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
@@ -316,8 +328,9 @@ export function ConferenceHeader() {
 
               <div className="flex items-center gap-2">
                 <span><a
-                  href={activeConference.venueWebsite} target="_blank"
+                  href={activeConference.venueWebsite}
                   rel="noopener noreferrer"
+                  target="_blank"
                   className="flex items-center gap-2 hover:underline"
                   style={{ color: headerLinkColor }}
                 >
@@ -325,8 +338,8 @@ export function ConferenceHeader() {
                   &nbsp;{activeConference.location}
                   &nbsp;&nbsp;<a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ''}`}
-                    target="_blank"
                     rel="noopener noreferrer"
+                    target="_blank"
                     className="flex items-center gap-2 hover:underline"
                     style={{ color: headerLinkColor }}
                   >
@@ -337,9 +350,25 @@ export function ConferenceHeader() {
                 </span>
               </div>
             </div>
+            // backgroundColor: activeConference.primaryColor
           </>
         )}
       </div>
-    </div>
-  );
-}
+      {navItems.map(({ to, icon: Icon, label }) => (
+        <NavLink
+          key={to}
+          to={to}
+          title={label}
+          className={({ isActive }) =>
+            `self-stretch mb-3 flex items-center gap-2 p-2 py-2 bg-gray-100 dark:bg-gray-800 rounded-md transition-colors ${isActive
+              ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm font-medium'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium'
+            }`
+          }
+        >
+          <Icon size={30} />
+        </NavLink>
+      ))}
+    </div> // container
+  ); // return
+} // export function

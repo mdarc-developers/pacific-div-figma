@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { SearchBar } from '@/app/components/SearchBar';
 import { Navigation } from '@/app/components/Navigation';
 //import { useState } from 'react';
 //import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
@@ -43,6 +44,7 @@ export default function App() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <ConferenceHeader />
 
+        <SearchBar />
         <Navigation />
 
         <Routes>
