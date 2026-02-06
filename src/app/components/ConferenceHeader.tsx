@@ -350,7 +350,6 @@ export function ConferenceHeader() {
                 </span>
               </div>
             </div>
-            // backgroundColor: activeConference.primaryColor
           </>
         )}
       </div>
@@ -366,7 +365,7 @@ export function ConferenceHeader() {
             }`
           }
         >
-          <Icon size={30} />
+          <Icon className="" title={label} size={30} />
         </NavLink>
       ))}
     </div> // container
