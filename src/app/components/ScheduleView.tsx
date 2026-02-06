@@ -3,7 +3,7 @@ import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { Clock, MapPin, User, Bookmark } from 'lucide-react';
+import { Bookmark, Clock, MapPin, Mic } from 'lucide-react';
 import { Session, Conference } from '@/types/conference';
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -135,7 +135,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
               <span>{session.location}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-              <User className="h-4 w-4" />
+              <Mic className="h-4 w-4" />
               <span>{session.speaker}</span>
             </div>
           </div>

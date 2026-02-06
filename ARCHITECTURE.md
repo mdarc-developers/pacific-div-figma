@@ -30,7 +30,7 @@ The app is purpose-built for amateur radio (ham radio) ARRL Division conferences
 | Icons               | lucide-react 0.487                                               | Used throughout for nav, cards, header                                                                                                |
 | Calendar            | FullCalendar 6.x                                                 | 3-day and 1-day time-grid views in ScheduleView (`@fullcalendar/react` + `timeGridPlugin`)                                            |
 | Router              | react-router-dom 7.x                                             | Client-side routing; `BrowserRouter` at root uses React Router, getting ready for mobile apps                                         |
-| Backend / Auth      | Firebase 12.x                                                    | Auth (email+password, Google OAuth), Firestore (planned data layer), Storage (planned image hosting)                                  |
+| Backend / Auth      | Firebase 12.x                                                    | Auth (email+password, Google OAuth), Firestore (data layer), Storage (planned)                                                |
 | Toast notifications | Sonner 2.x                                                       | Used in ProfilePage for email-verification / password-reset feedback                                                                  |
 | Lint                | ESLint 9 (flat config) + typescript-eslint + eslint-plugin-react | Runs inside Vite via `@nabla/vite-plugin-eslint`                                                                                      |
 | Hosting & CI        | Firebase Hosting + GitHub Actions                                | Two workflows: deploy-on-merge-to-main (live), deploy-on-PR (preview channel)                                                         |
@@ -142,7 +142,7 @@ pacific-div-figma-main/
 
 ## 5. TypeScript Interfaces (`src/types/conference.ts`)
 
-All domain types live in a single file. Every interface carries a `conferenceId` foreign key to support the planned multi-conference model.
+All domain types live in a single file. Every interface carries a `conferenceId` foreign key to support the multi-conference model.
 
 ### Conference
 

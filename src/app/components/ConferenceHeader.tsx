@@ -153,7 +153,7 @@ export function ConferenceHeader() {
   };
 
   const navItems = [
-    { to: '/alerts', icon: Bell, label: 'Alerts' },
+    { to: '/alerts', icon: Bell, label: 'Alert' },
     { to: '/profile', icon: User, label: 'Profile' },
   ];
 
