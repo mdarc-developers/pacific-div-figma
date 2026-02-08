@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar, SquareUser, Map } from 'lucide-react';
+import { Calendar, SquareUser, Map, Mic } from 'lucide-react';
 
 export function Navigation() {
   const navItems = [
-    { to: '/maps', icon: Map, label: 'Maps' },
+    { to: '/maps', icon: Map, label: 'Venue' },
     { to: '/schedule', icon: Calendar, label: 'Schedule' },
+    { to: '/forums', icon: Mic, label: 'Forums' },
     //{ to: '/alerts', icon: Bell, label: 'Prizes' },
     //{ to: '/profile', icon: User, label: 'Profile' },
     { to: '/exhibitors', icon: SquareUser , label: 'Exhibitors' },
@@ -12,7 +13,7 @@ export function Navigation() {
 
   return (
     <nav className="w-full mb-8">
-      <div className="grid grid-cols-3 gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+      <div className="grid grid-cols-2 gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}

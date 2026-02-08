@@ -38,17 +38,11 @@ The app is purpose-built for amateur radio (ham radio) ARRL Division conferences
 ### Notable dependencies _installed but not currently used_
 
 * `next-themes` for dark and light
-* `@mui/material`, `@mui/icons-material`
-* `@emotion/*` writes css styles with javascript though we use tailwindcss
-* `vaul` is a drawer
 * Most of the Radix primitives beyond `tabs`, `accordion`, and `tooltip`. These have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
-* `react-dnd` for drag and drop
 * `react-slick` for carousel
 * `react-responsive-masonry` for zooming
-* `motion` for animation
 * `recharts` charting for react
 * `react-hook-form` forms and validation library 
-* `cmdk` for a command menu
 
 ---
 
@@ -71,6 +65,7 @@ pacific-div-figma-main/
 │   │   │   ├── Navigation.tsx         # 4-tab nav bar (Maps, Schedule, Prizes, Profile)
 │   │   │   ├── ProtectedRoute.tsx     # HOC: redirects to /login when no auth user
 │   │   │   ├── ScheduleView.tsx       # Card list + FullCalendar; bookmark toggle
+│   │   │   ├── SearchBar.tsx          # Search planned
 │   │   │   ├── MapsView.tsx           # Tabbed map viewer with ImageWithFallback
 │   │   │   ├── AlertsView.tsx         # Unauthenticated placeholder for Prizes tab
 │   │   │   ├── ProfileView.tsx        # Unauthenticated placeholder for Profile tab
@@ -78,30 +73,37 @@ pacific-div-figma-main/
 │   │   │   │   └── ImageWithFallback.tsx  # <img> that swaps to an inline SVG on error
 │   │   │   └── ui/                    # shadcn-style Radix wrappers (tabs, card, badge, button, …)
 │   │   ├── contexts/
-│   │   │   └── AuthContext.tsx        # React Context + Provider for Firebase Auth state
+│   │   │   ├── AuthContext.tsx        # React Context + Provider for Firebase Auth state
+│   │   │   └── ConferenceContext.tsx  # Conference selection
 │   │   └── pages/                     # Route-level containers; own state, delegate to Views
-│   │       ├── MapsPage.tsx
+│   │       ├── MapsPage.tsx           # renamed Venue
 │   │       ├── SchedulePage.tsx       # Owns bookmarkedSessions state
+│   │       ├── ForumsPage.tsx         # Focused on Forums and speakers
+│   │       ├── ExhibitorsPage.tsx     # Shows map, no list of vendors yet
 │   │       ├── AlertsPage.tsx         # Shows AlertsView when unauthed, email when authed
 │   │       ├── ProfilePage.tsx        # Full profile when authed; email verification & password reset
 │   │       ├── LoginPage.tsx          # Email/password + Google sign-in; redirects on auth
 │   │       └── SignUpPage.tsx         # Email/password + Google sign-up; client-side validation
 │   ├── data/
+│   │   ├── all-conferences.ts         # multi-conference
 │   │   └── pacificon-sample.ts        # Hard-coded seed: pacificonData, sampleSessions, sampleMaps
 │   ├── lib/
-│   │   └── firebase.ts               # initializeApp; exports auth, db, storage singletons
+│   │   └── firebase.ts                # initializeApp; exports auth, db, storage singletons
 │   ├── types/
-│   │   └── conference.ts             # All shared TypeScript interfaces (see §5)
+│   │   └── conference.ts              # All shared TypeScript interfaces (see §5)
 │   └── styles/
-│       ├── index.css                 # Import hub + Tailwind source directive
-│       ├── tailwind.css              # (currently empty — placeholder)
-│       ├── theme.css                 # CSS custom properties for light & dark, @theme inline mapping
-│       └── fonts.css                 # (currently empty — placeholder for custom fonts)
-├── vite.config.ts                    # Plugins (react, tailwindcss, eslint); @ alias → src/
-├── tsconfig.json                     # Strict, bundler module resolution, paths alias
-├── firebase.json                     # Hosting config; SPA rewrite rule
-├── .firebaserc                       # Points to project `pacific-div`
-└── package.json                      # Scripts: dev, build, deploy, lint
+│       ├── index.css                  # Import hub + Tailwind source directive
+│       ├── tailwind.css               # (currently empty — placeholder)
+│       ├── theme.css                  # CSS custom properties for light & dark, @theme inline mapping
+│       └── fonts.css                  # (currently empty — placeholder for custom fonts)
+├── vite.config.ts                     # Plugins (react, tailwindcss, eslint); @ alias → src/
+├── tsconfig.json                      # Strict, bundler module resolution, paths alias
+├── eslint.config.js                   # Lint config
+├── firebase.json                      # Hosting config; SPA rewrite rule
+├── .firebaserc                        # Points to project `pacific-div`
+├── .gitignore                         # Ignore files for git
+├── .webhintrc                         # no-inline-styles rule for conference header color
+└── package.json                       # Scripts: dev, build, deploy, lint
 ```
 
 ---
@@ -110,6 +112,7 @@ pacific-div-figma-main/
 
 ```
 <AuthProvider>                         # Firebase onAuthStateChanged listener
+<ConferenceProvider>                   # Conference selection
   <BrowserRouter>
     <App>
       <ConferenceHeader />             # Always visible; collapsible
@@ -117,17 +120,20 @@ pacific-div-figma-main/
       <Navigation />                   # Always visible; 4-tab grid
       <Routes>
         /          → redirect → /maps
-        /maps      → <MapsPage>        # <MapsView>
+        /maps      → <MapsPage>        # Venue, <MapsView>
         /schedule  → <SchedulePage>    # <ScheduleView> + <Calendar>
-        /alerts    → <AlertsPage>      # <AlertsView> | inline email display
-        /profile   → <ProfilePage>     # <ProfileView> | full profile, links to /login and /signup
-          /login     → <LoginPage>
-          /signup    → <SignUpPage>
+        /forums    → <ForumsPage>      # image + <ScheduleView> for now
+        /exhibitors→ <ExhibitorsPage>  # image, needs ExhibitorsView
+          /alerts    → <AlertsPage>      # <AlertsView>
+          /profile   → <ProfilePage>     # <ProfileView> | full profile, links to /login and /signup
+            /login     → <LoginPage>
+            /signup    → <SignUpPage>
         *          → redirect → /404.html
       </Routes>
       <ConferenceFooter />             - Always visible
     </App>
   </BrowserRouter>
+</ConferenceProvider>
 </AuthProvider>
 ```
 
@@ -158,7 +164,7 @@ A venue map. `order` controls tab sequence. `url` points to a `/public/` asset. 
 
 ### Prize / PrizeWinner
 
-Defined in the type system and in Firestore security rules but **not yet rendered**. PrizeWinner includes `notifiedAt` / `claimedAt` timestamps for a notification lifecycle.
+Defined in the type system and in Firestore security rules but **not yet wired**. PrizeWinner includes `notifiedAt` / `claimedAt` timestamps for a notification lifecycle.
 
 ### UserProfile
 
@@ -166,7 +172,7 @@ Extends Firebase Auth's `User` with app-specific fields: `callsign`, `darkMode`,
 
 ### Message
 
-A public-board or DM model. `isPublic` + optional `boardId` distinguish the two modes.
+** not yet wired ** A public-board or DM model. `isPublic` + optional `boardId` distinguish the two modes.
 `votes` supports an upvote pattern.
 
 ---
@@ -210,7 +216,7 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
   2. **FullCalendar** — a `timeGridThreeDay` view rendered below the card list. Events are mapped from sessions with the numeric timezone offset appended to produce correct absolute times.
 - Time formatting uses `Intl.DateTimeFormat` with the conference's IANA timezone string. Day numbers are extracted via `String.split('-')[2]` rather than `DateTimeFormat` to avoid a known cross-browser inconsistency noted in a code comment.
 
-### 7.3 Alerts / Prizes (`/alerts`)
+### 7.3 Alert / Prize (`/alerts`)
 
 - When **not authenticated**: shows `AlertsView` — a static placeholder prompting the user to sign in.
 - When **authenticated**: currently only displays the user's email. This is explicitly a stub; the full prize-notification UI is planned (see §9).
@@ -274,7 +280,7 @@ The codebase contains significant scaffolding for features that are **typed, doc
 | **Admin interfaces**                        | `FIREBASE_SETUP.md` §8 outlines roles                                                                  | Add `isAdmin` / `adminRole` to user doc; create guarded admin pages for sessions, prizes, winners.                                     |
 | **Offline support**                         | Footer mentions "Offline capable planned"                                                              | Enable Firestore offline persistence; optionally add a Service Worker for asset caching.                                               |
 | **CSV data import/export**                  | `FIREBASE_SETUP.md` §7 describes the pattern                                                           | Cloud Function to parse CSV from Storage into Firestore; admin export endpoint.                                                        |
-| **Callsign verification**                   | Mentioned in FIREBASE_SETUP.md                                                                         | Optional qrz.com API lookup on profile save.                                                                                           |
+| **Callsigns**                               | Verification mentioned in FIREBASE_SETUP.md                                                            | Planned, optional qrz.com API lookup on profile save.                                                                                           |
 
 ---
 
@@ -319,7 +325,7 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 
 5. **Timezone handling is tricky.** Session times are stored purposely without an offset (`"2026-10-16T09:00:00"`). At render time, `conference.timezoneNumeric` (e.g., `"-0700"`) is **concatenated** onto the string before passing to `new Date()` or FullCalendar. The IANA string (`conference.timezone`) is used separately for `Intl.DateTimeFormat`. Day-of-month is extracted via `split('-')[2]` rather than the formatter due to a noted cross-browser edge case.
 
-6. **shadcn UI components are wrappers.** Everything in `src/app/components/ui/` is a thin styled wrapper over a Radix primitive. Do not edit them directly unless there are bugs; treat them as a stable design-system layer. Fixes wwere installed for bugs in the CLI installed Button and Dialog files. These were reported months ago.
+6. **shadcn UI components are wrappers.** Everything in `src/app/components/ui/` is a thin styled wrapper over a Radix primitive. Do not edit them directly unless there are bugs; treat them as a stable design-system layer. Fixes were installed for bugs in the CLI installed Button and Dialog files. These were reported months ago.
 
 7. **`ProtectedRoute` exists but is unused.** It is a ready-made HOC for guarding routes. Wire it in when features (e.g., messaging) require authentication.
 

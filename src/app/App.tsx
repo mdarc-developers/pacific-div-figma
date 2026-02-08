@@ -10,7 +10,9 @@ import { Navigation } from '@/app/components/Navigation';
 import { ConferenceHeader } from '@/app/components/ConferenceHeader';
 import { ConferenceFooter } from '@/app/components/ConferenceFooter';
 import { MapsPage } from '@/app/pages/MapsPage';
+import { ExhibitorsPage } from '@/app/pages/ExhibitorsPage';
 import { SchedulePage } from '@/app/pages/SchedulePage';
+import { ForumsPage } from '@/app/pages/ForumsPage';
 import { AlertsPage } from '@/app/pages/AlertsPage';
 import { ProfilePage } from '@/app/pages/ProfilePage';
 import { LoginPage } from '@/app/pages/LoginPage';
@@ -50,7 +52,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/maps" replace />} />
           <Route path="/maps" element={<MapsPage />} />
+          <Route path="/exhibitors" element={<ExhibitorsPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
+          <Route path="/forums" element={<ForumsPage />} />
           <Route path="/alerts" element={<AlertsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />

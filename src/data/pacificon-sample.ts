@@ -161,17 +161,17 @@ export const sampleMaps: MapImage[] = [
   {
     id: 'map-1',
     conferenceId: 'pacificon-2026',
-    name: 'Exhibitors',
-    url: '/pacificon-exhibitors-2025.png',
-    //floor: '2',
+    name: 'Hotel',
+    url: '/pacificon-hotel-2025.jpg',
+    //floor: '1',
     order: 1
   },
   {
     id: 'map-2',
     conferenceId: 'pacificon-2026',
-    name: 'Hotel',
-    url: '/pacificon-hotel-2025.jpg',
-    //floor: '1',
+    name: 'Exhibitors',
+    url: '/pacificon-exhibitors-2025.png',
+    //floor: '2',
     order: 2
   },
   {

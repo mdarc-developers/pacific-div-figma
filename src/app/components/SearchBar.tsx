@@ -21,7 +21,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search schedule, speakers, exhibitors..."
+          placeholder="Search speakers, forums, events, exhibitors..."
           className="w-full px-4 py-2 pl-10 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <Search size={18} className="absolute left-3 top-2.5 text-gray-400" />
