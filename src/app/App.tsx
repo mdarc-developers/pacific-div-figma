@@ -50,7 +50,7 @@ export default function App() {
         <Navigation />
 
         <Routes>
-          <Route path="/" element={<Navigate to="/maps" replace />} />
+          <Route path="/" element={<Navigate to="/schedule" replace />} />
           <Route path="/maps" element={<MapsPage />} />
           <Route path="/exhibitors" element={<ExhibitorsPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
