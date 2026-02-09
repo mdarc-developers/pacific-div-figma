@@ -11,6 +11,7 @@ export function ForumsPage() {
     conferenceId: 'pacificon-2026',
     name: 'Forums',
     url: '/pacificon-forums-2025.jpg',
+    height: '256px',
   }
 
   const handleToggleBookmark = (sessionId: string) => {
@@ -21,6 +22,11 @@ export function ForumsPage() {
     );
   };
 
+  //const imageElement = document.getElementById("forums-map");
+  //imageElement.addEventListener("load", () => {
+  //    const renderedHeight = imageElement.getBoundingClientRect().height;
+  //});
+
   return (
     <div>
       <div className="w-full overflow-auto p-8">
@@ -28,6 +34,7 @@ export function ForumsPage() {
           src={map.url}
           alt={map.name}
           className="w-full h-auto max-w-full"
+          id={map.height}
         />
       </div>
       <ScheduleView sessions={sampleSessions}
