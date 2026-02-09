@@ -173,7 +173,8 @@ export const sampleMaps: MapImage[] = [
     url: '/pacificon-exhibitors-2025.png',
     //floor: '2',
     order: 2,
-    height: '256px'
+    height: '256px',
+    width: '582px'
   },
   {
     id: 'map-3',

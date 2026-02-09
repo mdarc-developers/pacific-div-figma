@@ -12,6 +12,7 @@ export function ForumsPage() {
     name: 'Forums',
     url: '/pacificon-forums-2025.jpg',
     height: '256px',
+    width: '582px',
   }
 
   const handleToggleBookmark = (sessionId: string) => {
@@ -34,7 +35,8 @@ export function ForumsPage() {
           src={map.url}
           alt={map.name}
           className="w-full h-auto max-w-full"
-          id={map.height}
+          height={map.height}
+          width={map.width}
         />
       </div>
       <ScheduleView sessions={sampleSessions}
