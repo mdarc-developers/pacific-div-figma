@@ -1,5 +1,5 @@
-import { MapsView } from '@/app/components/MapsView';
-import { useConference } from '@/app/contexts/ConferenceContext';
+//import { MapsView } from '@/app/components/MapsView';
+//import { useConference } from '@/app/contexts/ConferenceContext';
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 
 export function ExhibitorsPage() {
