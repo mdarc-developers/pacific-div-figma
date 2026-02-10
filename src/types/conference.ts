@@ -39,6 +39,8 @@ export interface MapImage {
   url: string;
   floor?: string;
   order: number;
+  origWidthNum?: number;
+  origHeightNum?: number;
 }
 
 export interface Prize {

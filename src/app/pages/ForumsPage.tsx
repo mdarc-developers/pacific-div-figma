@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScheduleView } from '@/app/components/ScheduleView';
-import { pacificonData, sampleSessions } from '@/data/pacificon-sample';
+import { sampleSessions, forumRooms, sampleMaps } from '@/data/pacificon-2026';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useConference } from '@/app/contexts/ConferenceContext';
+import { Conference, MapImage, Rooms } from '@/types/conference';
 
 type Room = {
   name: string;
@@ -10,74 +12,28 @@ type Room = {
   color: string;
 };
 
-// Define your room polygons here
-// Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-// NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
-// The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
-// your actual image. Their original x values (630–715) exceeded the image width of 582.
-const rooms: Room[] = [
-  // ... (your rooms data) ...
-  // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-  {
-    name: 'Salon 2',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-    color: '#10B981',
-  },
-  {
-    name: 'Salon E',
-    coords: [[55, 310], [215, 310], [215, 413], [55, 413]], // Center-Right Large
-    color: '#3B82F6',
-  },
-  {
-    name: 'Salon H',
-    coords: [[169, 414], [215, 414], [215, 487], [169, 487]], // Top Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Salon G',
-    coords: [[109, 414], [168, 414], [168, 487], [109, 487]], // Mid Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Salon F',
-    coords: [[55, 414], [108, 414], [108, 485], [55, 485]], // Bottom Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Pleasanton',
-    coords: [[193, 518], [255, 518], [255, 581], [193, 581]], // Far Right Top
-    color: '#8B5CF6',
-  },
-  {
-    name: 'Danville',
-    coords: [[135, 518], [192, 518], [192, 581], [135, 581]], // Far Right Mid
-    color: '#8B5CF6',
-  },
-  {
-    name: 'San Ramon Boardroom',
-    coords: [[58, 518], [134, 518], [134, 581], [58, 581]], // Far Right Bottom
-    color: '#8B5CF6',
-  },
-];
-
-const map = {
-  order: '2',
-  id: 'map-2',
-  conferenceId: 'pacificon-2026',
-  name: 'Forums',
-  url: '/pacificon-forums-2025.jpg',
-  origHeight: '256px',
-  origHeightNum: 256,
-  origWidth: '582px',
-  origWidthNum: 582,
-  //origAspect: (256 / 582),
-  get origAspect() { return this.origHeightNum / this.origWidthNum; },
-};
+//const forumMap = {
+//  order: '2',
+//  id: 'map-2',
+//  //conferenceId: 'pacificon-2026',
+//  name: 'Forums',
+//  url: '/pacificon-forums-2025.jpg',
+//  //origHeight: '256px',
+//  origHeightNum: 256,
+//  //origWidth: '582px',
+//  origWidthNum: 582,
+//  //origAspect: (256 / 582),
+//};
 
 export function ForumsPage() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
+  //let forumMap: MapImage = sampleMaps[5];
+  const forumMap = sampleMaps.find(m => m.origHeightNum !== undefined); // assume origWidthNum as well
+  function origAspect() { return forumMap.origHeightNum / forumMap.origWidthNum; };
 
   // REMOVE THIS line, as it's outside the component/hooks and causes issues:
   // window.addEventListener('resize', function () { leafletRef.invalidateSize(); }); 
@@ -90,9 +46,9 @@ export function ForumsPage() {
     );
   };
 
-  function wToH(fcalcW: number) {
-    return Math.round(fcalcW * map.origAspect);
-  };
+  //function wToH(fcalcW: number) {
+  //  return Math.round(fcalcW * forumMap.origAspect);
+  //};
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -100,7 +56,7 @@ export function ForumsPage() {
     const setHeight = () => {
       if (!mapRef.current) return;
       const calcW = mapRef.current.offsetWidth;
-      const calcH = Math.round(calcW * map.origAspect);
+      const calcH = Math.round(calcW * origAspect());
       mapRef.current.style.height = `${calcH}px`;
       leafletRef.current?.invalidateSize();
     };
@@ -116,7 +72,7 @@ export function ForumsPage() {
     //  const calcH = wToH(calcW);
     //  mapRef.current!.style.height = `${calcH}px`;
     //
-    //  // CRITICAL FIX: Invalidate map size after container size changes
+    //  // CRITICAL FIX: Invalidate forumMap size after container size changes
     //  if (leafletRef.current) {
     //    leafletRef.current.invalidateSize();
     //  }
@@ -127,19 +83,25 @@ export function ForumsPage() {
     return () => resizObs.disconnect();
   }, []); // Empty dependency array ensures this runs once when mounted
 
-  // Leaflet map initialisation — runs once on mount
+  // Leaflet forumMap initialisation — runs once on mount
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Initialize map instance
+    // Initialize forumMap instance
     const leafletMap = L.map(mapRef.current, {
       crs: L.CRS.Simple,
       minZoom: -1,
       maxZoom: 1,
-      zoomSnap: 0.1,
+      zoomSnap: 0,
+      zoomControl: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      touchZoom: false,
+      boxZoom: false,
+      keyboard: false
     });
 
-    // ... (rest of your map initialization code) ...
+    // ... (rest of your forumMap initialization code) ...
     // Click handler for finding coordinates while building room polygons
     leafletMap.on('click', (e) => {
       const { lat, lng } = e.latlng;
@@ -148,17 +110,21 @@ export function ForumsPage() {
 
     const bounds: L.LatLngBoundsExpression = [
       [0, 0],
-      //[wToH(map.origWidthNum), map.origWidthNum]
-      [map.origHeightNum, map.origWidthNum],
+      //[wToH(forumMap.origWidthNum), forumMap.origWidthNum]
+      [forumMap.origHeightNum, forumMap.origWidthNum],
     ];
-    L.imageOverlay(map.url, bounds).addTo(leafletMap);
+
+    // debug line
+    //console.log('forumMap at Leaflet init:', forumMap.origHeightNum, forumMap.origWidthNum);
+
+    L.imageOverlay(forumMap.url, bounds).addTo(leafletMap);
     leafletMap.fitBounds(bounds);
 
     // The initial setTimeout is usually fine for first load issues:
     // Small delay ensures container has rendered with correct dimensions before fit
     setTimeout(() => leafletMap.invalidateSize(), 100);
 
-    rooms.forEach(room => {
+    forumRooms.forEach(room => {
       const polygon = L.polygon(room.coords as [number, number][], {
         color: room.color,
         fillColor: room.color,
@@ -191,7 +157,7 @@ export function ForumsPage() {
       <div className="w-full" ref={mapRef} ></div>
       <ScheduleView sessions={sampleSessions}
         bookmarkedSessions={bookmarkedSessions}
-        conference={pacificonData}
+        conference={activeConference}
         onToggleBookmark={handleToggleBookmark}
       />
     </div>

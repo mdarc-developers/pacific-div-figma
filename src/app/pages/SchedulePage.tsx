@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { ScheduleView } from '@/app/components/ScheduleView';
-import { pacificonData, sampleSessions } from '@/data/pacificon-sample';
+import { sampleSessions } from '@/data/pacificon-2026';
 //import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
+import { useConference } from '@/app/contexts/ConferenceContext';
 
 export function SchedulePage() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
 //  const map = {
 //    order: '2',
 //    id: 'map-2',
@@ -25,7 +28,7 @@ export function SchedulePage() {
     <div>
       <ScheduleView sessions={sampleSessions}
         bookmarkedSessions={bookmarkedSessions}
-        conference={pacificonData}
+        conference={activeConference}
         onToggleBookmark={handleToggleBookmark}
       />
     </div>
