@@ -17,6 +17,7 @@ export interface Conference {
   parkingWebsite: string;
   icalUrl: string;
   contactEmail: string;
+  logoUrl: string;
 }
 
 export interface Session {
@@ -86,3 +87,11 @@ export interface Message {
   isAdmin: boolean;
   adminRole: string;
 }
+
+export interface Room {
+  name: string;
+  coords: [number, number][];
+  color: string;
+  origHeightNum?: number;
+  origWidthNum?: number;
+};

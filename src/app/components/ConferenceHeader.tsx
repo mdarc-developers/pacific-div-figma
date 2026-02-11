@@ -184,118 +184,130 @@ export function ConferenceHeader() {
         {isHeaderCollapsed ? (
           <h1 className="text-3xl md:text-4xl font-bold">{activeConference.name}</h1>
         ) : (
-          <> <div className="flex self-stretch w-full">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">{activeConference.name}
-                &nbsp;&nbsp;<a
-                  href={activeConference.venueWebsite}
+          <>
+            <div className="flex self-stretch w-full">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">{activeConference.name}
+                  &nbsp;&nbsp;<a
+                    href={activeConference.conferenceWebsite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 hover:underline"
+                    style={{ color: headerLinkColor }}
+                  >
+                    website<ExternalLink className="h-4 w-4" />
+                  </a>
+                </h1>
+              </div>
+              {(activeConference.logoUrl && !isHeaderCollapsed) ? (
+                <a
+                  href={activeConference.conferenceWebsite}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 hover:underline"
                   style={{ color: headerLinkColor }}
                 >
-                  website<ExternalLink className="h-4 w-4" />
+                  <img src={activeConference.logoUrl} alt="Conference Logo"></img>
                 </a>
-              </h1></div>
-            <div className="ml-auto">
+              ) : ""}
+              <div className="ml-auto">
 
-              <Dialog open={isSelectOpen} onOpenChange={setIsSelectOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="gap-2 max-w-[200px] sm:max-w-none"
-                  >
-                    <span className="truncate">{activeConference.name}</span>
-                    <ChevronDown className="h-4 w-4 flex-shrink-0" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Select Conference</DialogTitle>
-                    <DialogDescription>
-                      Amateur radio
-                    </DialogDescription>
-                  </DialogHeader>
+                <Dialog open={isSelectOpen} onOpenChange={setIsSelectOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="gap-2 max-w-[200px] sm:max-w-none"
+                    >
+                      <span className="truncate">{activeConference.name}</span>
+                      <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Select Conference</DialogTitle>
+                      <DialogDescription>
+                        Amateur radio
+                      </DialogDescription>
+                    </DialogHeader>
 
-                  <div className="space-y-4 mt-4">
-                    {allConferencesList.map((conference) => {
-                      const isActive = conference.id === activeConference.id;
-                      const upcoming = isUpcoming(conference);
-                      //const upcoming = true;
-                      const current = isCurrent(conference);
-                      //const current = true;
+                    <div className="space-y-4 mt-4">
+                      {allConferencesList.map((conference) => {
+                        const isActive = conference.id === activeConference.id;
+                        const upcoming = isUpcoming(conference);
+                        //const upcoming = true;
+                        const current = isCurrent(conference);
+                        //const current = true;
 
-                      return (
-                        <Card
-                          key={conference.id}
-                          className={`cursor-pointer transition-all hover:shadow-md ${isActive ?
-                            'ring-2 ring-blue-500' :
-                            ''
-                            }`}
-                          onClick={() => handleSelectConference(conference)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                  <h3 className="font-semibold text-lg">
-                                    {conference.name}
-                                  </h3>
-                                  {current && (
-                                    <Badge className="bg-green-600">
-                                      Currently Active
-                                    </Badge>
-                                  )}
-                                  {upcoming && !current && (
-                                    <Badge variant="secondary">
-                                      Upcoming
-                                    </Badge>
-                                  )}
-                                  {!upcoming && !current && (
-                                    <Badge variant="outline">
-                                      Past Event
-                                    </Badge>
-                                  )}
-                                </div>
-                                <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                        return (
+                          <Card
+                            key={conference.id}
+                            className={`cursor-pointer transition-all hover:shadow-md ${isActive ?
+                              'ring-2 ring-blue-500' :
+                              ''
+                              }`}
+                            onClick={() => handleSelectConference(conference)}
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                    <h3 className="font-semibold text-lg">
+                                      {conference.name}
+                                    </h3>
+                                    {current && (
+                                      <Badge className="bg-green-600">
+                                        Currently Active
+                                      </Badge>
+                                    )}
+                                    {upcoming && !current && (
+                                      <Badge variant="secondary">
+                                        Upcoming
+                                      </Badge>
+                                    )}
+                                    {!upcoming && !current && (
+                                      <Badge variant="outline">
+                                        Past Event
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
 
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 flex-shrink-0" />
-                                    <span className="truncate">
-                                      {formatDateRange(conference.startDate, conference.endDate)}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <Calendar className="h-4 w-4 flex-shrink-0" />
+                                      <span className="truncate">
+                                        {formatDateRange(conference.startDate, conference.endDate)}
+                                      </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                      <MapPin className="h-4 w-4 flex-shrink-0" />
+                                      <span className="truncate">
+                                        {conference.venue}<br />{conference.location}
+                                      </span>
+                                    </div>
+
+
                                   </div>
 
-                                  <div className="flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 flex-shrink-0" />
-                                    <span className="truncate">
-                                      {conference.venue}<br />{conference.location}
-                                    </span>
-                                  </div>
-
-
                                 </div>
 
+                                {isActive && (
+                                  <div className="flex-shrink-0">
+                                    <Badge variant="default">
+                                      Selected
+                                    </Badge>
+                                  </div>
+                                )}
                               </div>
-
-                              {isActive && (
-                                <div className="flex-shrink-0">
-                                  <Badge variant="default">
-                                    Selected
-                                  </Badge>
-                                </div>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </DialogContent>
-              </Dialog>
-
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
-          </div>
 
             <div className="space-y-2"
               // text-gray-700 dark:text-gray-300"
@@ -365,7 +377,7 @@ export function ConferenceHeader() {
             }`
           }
         >
-          <Icon className="" title={label} size={30} />
+          <Icon className="" size={30} />
           <span>{label}</span>
         </NavLink>
       ))}

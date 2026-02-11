@@ -3,12 +3,12 @@ import { Conference } from '@/types/conference';
 export const allConferences: Conference[] = [
   {
     id: 'pacificon-2026',
-    name: 'Pacificon 2025',
+    name: 'Pacificon 2026',
     venue: 'San Ramon Marriott',
     startDate: '2026-10-16', // Third Friday of October 2026
     endDate: '2026-10-18',
     timezone: 'America/Los_Angeles',
-    primaryColor: '#ff4e00', // international orange
+    primaryColor: '#056bd1', // our blue
     secondaryColor: '#3b82f6', // blue-500
     location: '2600 Bishop Drive, San Ramon, CA 94583', // changed
     conferenceWebsite: 'https://www.pacificon.org', // changed
@@ -19,7 +19,8 @@ export const allConferences: Conference[] = [
     timezoneNumeric: '-0700', // DST, PDT ends early Nov
     parkingWebsite: 'https://www.pacificon.org/resources/parking',
     icalUrl: '/pacificon-2026.ics',
-    contactEmail: 'webmaster@pacificon.org'
+    contactEmail: 'webmaster@pacificon.org',
+    logoUrl: '/2026-pacificon-logo-208-110.jpg'
   },
   {
     id: 'hamcation-2026',
@@ -40,6 +41,7 @@ export const allConferences: Conference[] = [
     parkingWebsite: '',
     icalUrl: '',
     contactEmail: '',
+    logoUrl: ''
   },
   {
     id: 'hamvention-2026',
@@ -60,6 +62,7 @@ export const allConferences: Conference[] = [
     parkingWebsite: '',
     icalUrl: '',
     contactEmail: '',
+    logoUrl: ''
   },
   {
     id: 'huntsville-hamfest-2026',
@@ -80,6 +83,7 @@ export const allConferences: Conference[] = [
     parkingWebsite: '',
     icalUrl: '',
     contactEmail: '',
+    logoUrl: ''
   }
 ];
 

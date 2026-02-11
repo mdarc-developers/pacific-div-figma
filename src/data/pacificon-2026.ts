@@ -1,4 +1,4 @@
-import { Conference, Session, MapImage, Rooms } from '@/types/conference';
+import { Session, MapImage, Room } from '@/types/conference';
 
 //export const pacificonData: Conference = {
 //  id: 'pacificon-2026',

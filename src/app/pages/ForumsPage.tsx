@@ -4,13 +4,8 @@ import { sampleSessions, forumRooms, sampleMaps } from '@/data/pacificon-2026';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useConference } from '@/app/contexts/ConferenceContext';
-import { Conference, MapImage, Rooms } from '@/types/conference';
-
-type Room = {
-  name: string;
-  coords: [number, number][];
-  color: string;
-};
+//import { Conference, MapImage, Room } from '@/types/conference';
+import { MapImage } from '@/types/conference';
 
 //const forumMap = {
 //  order: '2',
@@ -32,8 +27,24 @@ export function ForumsPage() {
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
   //let forumMap: MapImage = sampleMaps[5];
-  const forumMap = sampleMaps.find(m => m.origHeightNum !== undefined); // assume origWidthNum as well
-  function origAspect() { return forumMap.origHeightNum / forumMap.origWidthNum; };
+  const forumMap: MapImage = sampleMaps.find(m => m.origHeightNum !== undefined) || // assume origWidthNum as well
+  {
+    id: 'map-0',
+    conferenceId: 'pacificon-2026',
+    name: 'noForumMapFound',
+    url: '/pacificon-forums-2025.jpg',
+    order: 6,
+    origHeightNum: 256,
+    origWidthNum: 582
+  };
+
+  function origAspect(h?: number, w?: number) {
+    if (!h)
+      throw new Error("forumMap missing origHeightNum");
+    else if (!w)
+      throw new Error("forumMap missing origWidthNum");
+    return h / w;
+  };
 
   // REMOVE THIS line, as it's outside the component/hooks and causes issues:
   // window.addEventListener('resize', function () { leafletRef.invalidateSize(); }); 
@@ -56,7 +67,7 @@ export function ForumsPage() {
     const setHeight = () => {
       if (!mapRef.current) return;
       const calcW = mapRef.current.offsetWidth;
-      const calcH = Math.round(calcW * origAspect());
+      const calcH = Math.round(calcW * origAspect(forumMap.origHeightNum, forumMap.origWidthNum));
       mapRef.current.style.height = `${calcH}px`;
       leafletRef.current?.invalidateSize();
     };
@@ -111,7 +122,7 @@ export function ForumsPage() {
     const bounds: L.LatLngBoundsExpression = [
       [0, 0],
       //[wToH(forumMap.origWidthNum), forumMap.origWidthNum]
-      [forumMap.origHeightNum, forumMap.origWidthNum],
+      [forumMap.origHeightNum || 256, forumMap.origWidthNum || 582],
     ];
 
     // debug line
@@ -124,14 +135,14 @@ export function ForumsPage() {
     // Small delay ensures container has rendered with correct dimensions before fit
     setTimeout(() => leafletMap.invalidateSize(), 100);
 
-    forumRooms.forEach(room => {
-      const polygon = L.polygon(room.coords as [number, number][], {
-        color: room.color,
-        fillColor: room.color,
+    forumRooms.forEach(forumRoom => {
+      const polygon = L.polygon(forumRoom.coords as [number, number][], {
+        color: forumRoom.color,
+        fillColor: forumRoom.color,
         fillOpacity: 0.3,
         weight: 2,
       }).addTo(leafletMap);
-      polygon.bindPopup(room.name);
+      polygon.bindPopup(forumRoom.name);
       // Your mouseover/mouseout functions with arrow syntax to fix 'this' typing:
       polygon.on('mouseover', () => polygon.setStyle({ fillOpacity: 0.6 }));
       polygon.on('mouseout', () => polygon.setStyle({ fillOpacity: 0.3 }));
