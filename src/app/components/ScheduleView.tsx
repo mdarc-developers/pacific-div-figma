@@ -118,7 +118,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
           : ''
       }`}
     >
-      <Card className={isHighlighted ? 'border-blue-500 border-2' : ''}>
+      <Card key={session.id} className={`mb-4 transition-all ${isHighlighted ? 'ring-2 ring-blue-500 shadow-lg scale-105' : ''}`}>
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex-1">
