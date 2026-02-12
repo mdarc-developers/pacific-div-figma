@@ -22,28 +22,56 @@ export interface SearchFilters {
 }
 
 class SearchService {
-  private fuse: Fuse<Session> | null = null;
-  private sessions: Session[] = [];
+  private searchIndex: SearchIndex = {
+    fuse: null,
+    sessions: [],
+  };
+  //private fuse: Fuse<Session> | null = null;
+  //private sessions: Session[] = [];
 
+  /**
+   * Build the search index from sessions
+   */
   buildIndex(sessions: Session[]): void {
-    this.sessions = sessions;
+    if (!sessions || sessions.length === 0) {
+      console.warn('SearchService: No sessions provided to buildIndex');
+      this.searchIndex = { fuse: null, sessions: [] };
+      return;
+    }
+
+  //buildIndex(sessions: Session[]): void {
+  //  this.sessions = sessions;
     const options: Fuse.IFuseOptions<Session> = {
       keys: [
         { name: 'title', weight: 0.4 },
         { name: 'speaker', weight: 0.3 },
         { name: 'description', weight: 0.2 },
         { name: 'category', weight: 0.1 },
-        { name: 'room', weight: 0.1 },
+        { name: 'location', weight: 0.1 },
+        { name: 'track', weight: 0.1 },
       ],
       threshold: 0.4,
       includeScore: true,
       minMatchCharLength: 2,
     };
+    this.searchIndex = {
+      fuse: new Fuse(sessions, options),
+      sessions,
+    };
     this.fuse = new Fuse(sessions, options);
   }
 
-  search(query: string, filters?: SearchFilters, limit: number = 10): SearchResult[] {
-    if (!this.fuse || !query.trim()) {
+  /**
+   * Search for sessions
+   */
+  search(
+    query: string,
+    filters?: SearchFilters,
+    limit: number = 10
+  ): SearchResult[] {
+    // Guard: Check if index is built
+    if (!this.searchIndex.fuse || !query.trim()) {
+    //if (!this.fuse || !query.trim()) {
       return [];
     }
     const results = this.fuse
@@ -79,6 +107,27 @@ class SearchService {
       }
       return true;
     });
+  //};
+
+    try {
+      const results = this.searchIndex.fuse.search(query, { limit });
+      // Map Fuse results to SearchResult format
+      return results.map((result) => ({
+        session: result.item,
+        score: result.score || 0,
+        matches: result.matches || [],
+      }));
+    } catch (error) {
+      console.error('SearchService: Error during search', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get all sessions
+   */
+  getAllSessions(): Session[] {
+    return this.searchIndex.sessions;
   }
 
   getCategories(): string[] {
@@ -93,11 +142,14 @@ class SearchService {
     return [...new Set(this.sessions.map((s) => s.track).filter(Boolean))];
   }
 
-  clear(): void {
-    this.fuse = null;
-    this.sessions = [];
+  /**
+   * Clear the index
+   */
+  clearIndex(): void {
+    this.searchIndex = { fuse: null, sessions: [] };
   }
 }
 
 export const searchService = new SearchService();
+export type { SearchResult, SearchFilters };
 
