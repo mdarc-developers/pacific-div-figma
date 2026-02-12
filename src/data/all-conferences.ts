@@ -30,7 +30,7 @@ export const allConferences: Conference[] = [
     startDate: '2026-02-13',
     endDate: '2026-02-15',
     timezone: 'America/New_York',
-    primaryColor: '#ffffff',
+    primaryColor: '#000000',
     secondaryColor: '#f97316',
     conferenceWebsite: 'https://www.hamcation.com',
     venuePhone: '407-385-3247',
@@ -41,7 +41,7 @@ export const allConferences: Conference[] = [
     parkingWebsite: '',
     icalUrl: '',
     contactEmail: '',
-    logoUrl: ''
+    logoUrl: '/hamcation-2026-logo.png'
   },
   {
     id: 'hamvention-2026',
