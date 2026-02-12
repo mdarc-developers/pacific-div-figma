@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react';
 import { useState } from 'react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
@@ -14,12 +15,14 @@ interface ScheduleViewProps {
   bookmarkedSessions?: string[];
   conference: Conference;
   onToggleBookmark?: (sessionId: string) => void;
+  highlightSessionId?: string; // NEW
 }
 
 interface CalendarProps {
   events: EventInput[];
   startDate: string;
 }
+
 const Calendar = ({ events, startDate }: CalendarProps) => {
   return (
     <div className="calendar">
@@ -48,8 +51,7 @@ const Calendar = ({ events, startDate }: CalendarProps) => {
   );
 };
 
-
-export function ScheduleView({ sessions, bookmarkedSessions = [], conference, onToggleBookmark }: ScheduleViewProps) {
+export function ScheduleView({ sessions, bookmarkedSessions = [], conference, onToggleBookmark, highlightSessionId }: ScheduleViewProps) {
   const [selectedDay, setSelectedDay] = useState<string>('all');
 
   // Group sessions by date
@@ -93,11 +95,30 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
 
   //const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+// Update renderSession function to include highlight styling
   const renderSession = (session: Session) => {
-    const isBookmarked = bookmarkedSessions.includes(session.id);
+  const isBookmarked = bookmarkedSessions.includes(session.id);
+  const isHighlighted = (highlightSessionId && (highlightSessionId === session.id));
+  const sessionRef = useRef<HTMLDivElement>(null);
 
-    return (
-      <Card key={session.id} className="mb-4">
+  useEffect(() => {
+    if (isHighlighted && sessionRef.current) {
+      sessionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isHighlighted]);
+
+  return (
+    <div
+      ref={sessionRef}
+      id={`session-${session.id}`}
+      key={session.id}
+      className={`mb-4 transition-all ${
+        isHighlighted
+          ? 'ring-2 ring-blue-500 shadow-lg scale-105'
+          : ''
+      }`}
+    >
+      <Card className={isHighlighted ? 'border-blue-500 border-2' : ''}>
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex-1">
@@ -115,7 +136,9 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
                 className="ml-2"
               >
                 <Bookmark
-                  className={`h-5 w-5 ${isBookmarked ? 'fill-current text-blue-600' : ''}`}
+                  className={`h-5 w-5 ${
+                    isBookmarked ? 'fill-current text-blue-600' : ''
+                  }`}
                 />
               </Button>
             )}
@@ -128,7 +151,17 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Clock className="h-4 w-4" />
-              <span>{formatSessionTime(session.startTime, conference.timezoneNumeric)} - {formatSessionTime(session.endTime, conference.timezoneNumeric)}</span>
+              <span>
+                {formatSessionTime(
+                  session.startTime,
+                  conference.timezoneNumeric
+                )}{' '}
+                -{' '}
+                {formatSessionTime(
+                  session.endTime,
+                  conference.timezoneNumeric
+                )}
+              </span>
             </div>
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <MapPin className="h-4 w-4" />
@@ -141,6 +174,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
           </div>
         </CardContent>
       </Card>
+    </div>
     );
   };
 
@@ -190,3 +224,4 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
     </div>
   );
 }
+
