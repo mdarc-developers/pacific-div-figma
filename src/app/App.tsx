@@ -20,6 +20,7 @@ import { SignUpPage } from '@/app/pages/SignUpPage';
 import { SearchPage } from '@/app/pages/SearchPage';
 //import { pacificonData } from '@/data/pacificon-sample';
 //import { pacificonData, sampleSessions, sampleMaps } from '@/data/pacificon-sample';
+import { sampleSessions } from '@/data/pacificon-2026';
 //import { useConference } from '@/app/contexts/ConferenceContext';
 //import { allConferences } from '@/data/all-conferences';
 //import { Conference } from '@/types/conference';
@@ -47,7 +48,7 @@ export default function App() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <ConferenceHeader />
 
-        <SearchBar />
+        <SearchBar sessions={sampleSessions} />
         <Navigation />
 
         <Routes>
