@@ -17,6 +17,7 @@ import { AlertsPage } from '@/app/pages/AlertsPage';
 import { ProfilePage } from '@/app/pages/ProfilePage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { SignUpPage } from '@/app/pages/SignUpPage';
+import { SearchPage } from '@/app/pages/SearchPage';
 //import { pacificonData } from '@/data/pacificon-sample';
 //import { pacificonData, sampleSessions, sampleMaps } from '@/data/pacificon-sample';
 //import { useConference } from '@/app/contexts/ConferenceContext';
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>
 

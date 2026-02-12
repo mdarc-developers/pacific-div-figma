@@ -4,7 +4,6 @@ import { searchService, SearchResult, SearchFilters } from '@/services/searchSer
 import { Session } from '@/types/conference';
 import { Button } from '@/app/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { clearTimeout, setTimeout } from 'node:timers';
 
 interface SearchBarProps {
   sessions: Session[];
@@ -34,7 +33,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     searchService.buildIndex(sessions);
   }, [sessions]);
 
-  const debounceTimerRef = useRef<NodeJS.Timeout>(500);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSearch = useCallback(
     (searchQuery: string) => {
@@ -138,6 +137,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       <div className="relative flex items-center">
         <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
         <input
+          id='searchBarInput'
           ref={inputRef}
           type="text"
           value={query}
@@ -192,7 +192,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       )}
       {isOpen && !isLoading && query && results.length === 0 && (
         <div className="absolute top-full left-0 right-0 z-50 mt-2 border border-border rounded-md bg-popover shadow-md p-4 text-center text-sm text-muted-foreground">
-          No sessions found for "{query}"
+          No sessions found for &quot;{query}&quot;
         </div>
       )}
     </div>
