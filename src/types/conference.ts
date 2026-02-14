@@ -16,6 +16,7 @@ export interface Conference {
   timezoneNumeric: string;
   parkingWebsite: string;
   icalUrl: string;
+  googlecalUrl: string;
   contactEmail: string;
   logoUrl: string;
   mapSessionsUrl: string;

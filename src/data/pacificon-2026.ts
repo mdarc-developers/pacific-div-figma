@@ -1,92 +1,359 @@
 import { Session, MapImage, Room, Exhibitor, Booth } from '@/types/conference';
 
 export const exhibitorBooths: Booth[] = [
+  // origHeightNum: 1702,
+  // origWidthNum: 1280,
+  // ... (your exhibitorBooths data) ...
+  // x is normal, y from bottom so 1702 - y
+  // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+  // down 70 in bishop ranch column, 51 wide
   {
-    id:1,
-    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    id: 1, // 875, 505 - 927, 526 done via gimp - so top left is [1185, 875], bot right is [1176,927]
+    //coords: [[775, 505], [827, 505], [827, 526], [775, 526]],
+    //coords: [[1196, 876], [1196, 927], [1126, 927], [1126, 526]],
+    coords: [[1126, 875], [1196, 875], [1196, 926], [1126, 926]],
     locationZone: 'bishop-ranch',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:2,
-    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    id: 2,
+    coords: [[1056, 875], [1126, 875], [1126, 926], [1056, 926]],
     locationZone: 'bishop-ranch',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:3,
-    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    id: 3,
+    coords: [[986, 875], [1056, 875], [1056, 926], [986, 926]],
     locationZone: 'bishop-ranch',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:4,
-    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    id: 4,
+    coords: [[915, 875], [985, 875], [985, 926], [915, 926]],
     locationZone: 'bishop-ranch',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:5,
-    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    id: 5,
+    coords: [[842, 875], [915, 875], [915, 926], [842, 926]],
     locationZone: 'bishop-ranch',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:42,
+    id: 6,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[1126, 926], [1196, 926], [1196, 977], [1126, 977]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 7,
+    coords: [[1056, 926], [1126, 926], [1126, 977], [1056, 977]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 8,
+    coords: [[986, 926], [1056, 926], [1056, 977], [986, 977]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 9,
+    coords: [[915, 926], [985, 926], [985, 977], [915, 977]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 10,
+    coords: [[842, 926], [915, 926], [915, 977], [842, 977]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    id: 11,// 1041, 506 top left gimp so 1702-506= 1196, 1041 vs 1196,875 so 166 pixels to right
+    coords: [[1126, 1041], [1196, 1041], [1196, 1092], [1126, 1092]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 12,
+    coords: [[1056, 1041], [1126, 1041], [1126, 1092], [1056, 1092]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 13,
+    coords: [[986, 1041], [1056, 1041], [1056, 1092], [986, 1092]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 14,
+    coords: [[915, 1041], [985, 1041], [985, 1092], [915, 1092]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 15,
+    coords: [[842, 1041], [915, 1041], [915, 1092], [842, 1092]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 16,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[1126, 1093], [1196, 1093], [1196, 1145], [1126, 1145]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 17,
+    coords: [[1056, 1093], [1126, 1093], [1126, 1145], [1056, 1145]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 18,
+    coords: [[986, 1093], [1056, 1093], [1056, 1145], [986, 1145]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 19,
+    coords: [[915, 1093], [985, 1093], [985, 1145], [915, 1145]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 20,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[842, 1093], [915, 1093], [915, 1145], [842, 1145]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 21,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[723, 853], [774, 853], [774, 923], [723, 923]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 22,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[723, 924], [774, 924], [774, 994], [723, 994]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 23,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[723, 995], [774, 995], [774, 1065], [723, 1065]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 24,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[723, 1066], [774, 1066], [774, 1136], [723, 1136]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 25,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[723, 1137], [774, 1137], [774, 1208], [723, 1208]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 26,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[775, 1209], [847, 1209], [847, 1259], [775, 1259]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 27,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[847, 1209], [916, 1209], [916, 1258], [847, 1258]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 28,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[991, 1206], [1062, 1206], [1062, 1256], [991, 1256]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 29,
+    // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    coords: [[1163, 1207], [1233, 1207], [1233, 1258], [1163, 1258]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 31,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:43,
+    id: 32,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:44,
+    id: 33,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:45,
+    id: 34,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:46,
+    id: 35,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:47,
+    id: 36,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:48,
+    id: 37,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:49,
+    id: 38,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'bishop-ranch-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:65,
+    id: 39,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 40,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 41,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 42,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 43,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 44,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 45,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 46,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 47,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 48,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 49,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 50,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 51,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 52,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 53,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 54,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 55,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id: 65,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'contra-costa-hallway',
     conferenceId: 'pacificon-2026',
   },
   {
-    id:119,
+    id: 119,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'contra-costa',
     conferenceId: 'pacificon-2026',
@@ -94,15 +361,6 @@ export const exhibitorBooths: Booth[] = [
 ];
 
 export const sampleExhibitors: Exhibitor[] = [
-  {
-    id: 'exhibitor-arrl',
-    conferenceId: 'pacificon-2026',
-    name: 'ARRL',
-    description: 'American Radio Relay League',
-    location: [4,5],
-    type: 'vendor',
-    url: 'https://www.arrl.org',
-  },
   {
     id: 'exhibitor-flexradio',
     conferenceId: 'pacificon-2026',
@@ -113,11 +371,29 @@ export const sampleExhibitors: Exhibitor[] = [
     url: 'https://www.flexradio.com',
   },
   {
+    id: 'exhibitor-arrl',
+    conferenceId: 'pacificon-2026',
+    name: 'ARRL',
+    description: 'American Radio Relay League',
+    location: [4, 5],
+    type: 'vendor',
+    url: 'https://www.arrl.org',
+  },
+  {
+    id: 'exhibitor-elecraft',
+    conferenceId: 'pacificon-2026',
+    name: 'Elecraft',
+    description: 'full-featured transceivers and accessories',
+    location: [22, 23, 24, 25],
+    type: 'vendor',
+    url: 'https://www.elecraft.com',
+  },
+  {
     id: 'exhibitor-wiredco',
     conferenceId: 'pacificon-2026',
     name: 'Wired Communications',
     description: 'Cables, Connectors, LEDs and Adapters',
-    location: [42, 43, 44, 45, 46, 47, 48, 49],
+    location: [32, 33, 34, 35, 36, 37, 38, 39],
     type: 'vendor',
     url: 'https://www.wiredco.com',
   },

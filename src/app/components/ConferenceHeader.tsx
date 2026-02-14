@@ -109,6 +109,35 @@ export function ConferenceHeader() {
   const headerTextColor = contrastingColor(activeConference.primaryColor);
   const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
 
+  const icalUrlDisplay = (iurl: string) => {
+    if (iurl === '')
+      return '';
+    else
+      return <a
+        href={iurl}
+        download
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 hover:underline"
+        style={{ color: headerLinkColor }}
+      >
+        &nbsp;iCal<ExternalLink className="h-4 w-4" />
+      </a>;
+  };
+  const googlecalUrlDisplay = (gurl: string) => {
+    if (gurl === '')
+      return '';
+    else
+      return <a
+        href={gurl}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <img
+          src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
+          alt="Google Calendar"
+        />
+      </a>;
+  };
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -306,25 +335,10 @@ export function ConferenceHeader() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
                 <span>{formatDateRange(activeConference.startDate, activeConference.endDate)}
-                  &nbsp;<a
-                    href={activeConference.icalUrl}
-                    download
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 hover:underline"
-                    style={{ color: headerLinkColor }}
-                  >
-                    &nbsp;iCal<ExternalLink className="h-4 w-4" />
-                  </a>
-                  &nbsp;&nbsp;&nbsp;<a
-                    href="https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <img
-                      src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
-                      alt="Google Calendar"
-                    />
-                  </a>
+                  &nbsp;
+                  {icalUrlDisplay(activeConference.icalUrl)}
+                  &nbsp;&nbsp;&nbsp;
+                  {googlecalUrlDisplay(activeConference.googlecalUrl)}
                 </span>
               </div>
 
@@ -373,4 +387,5 @@ export function ConferenceHeader() {
       ))}
     </div> // container
   ); // return
-} // export function
+} // export function ConferenceHeader
+

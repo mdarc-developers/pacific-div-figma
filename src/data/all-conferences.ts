@@ -19,6 +19,7 @@ export const allConferences: Conference[] = [
     timezoneNumeric: '-0700', // DST, PDT ends early Nov
     parkingWebsite: '',
     icalUrl: '',
+    googlecalUrl: '',
     contactEmail: '',
     logoUrl: '/hamcation-2026-logo.png',
     mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
@@ -42,6 +43,7 @@ export const allConferences: Conference[] = [
     timezoneNumeric: '-0700', // DST, PDT ends early Nov
     parkingWebsite: '',
     icalUrl: '',
+    googlecalUrl: '',
     contactEmail: '',
     logoUrl: '',
     mapSessionsUrl: '', // for Room[]
@@ -65,6 +67,7 @@ export const allConferences: Conference[] = [
     timezoneNumeric: '-0700', // DST, PDT ends early Nov
     parkingWebsite: '',
     icalUrl: '',
+    googlecalUrl: '',
     contactEmail: '',
     logoUrl: '',
     mapSessionsUrl: '', // for Room[]
@@ -88,6 +91,7 @@ export const allConferences: Conference[] = [
     timezoneNumeric: '-0700', // DST, PDT ends early Nov
     parkingWebsite: 'https://www.pacificon.org/resources/parking',
     icalUrl: '/pacificon-2026.ics',
+    googlecalUrl: 'https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org',
     contactEmail: 'webmaster@pacificon.org',
     logoUrl: '/2026-pacificon-logo-208-110.jpg',
     mapSessionsUrl: '/pacificon-forums-2025.jpg', // for Room[]

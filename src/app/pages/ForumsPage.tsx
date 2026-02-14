@@ -40,10 +40,10 @@ export function ForumsPage() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-  const mapRef = useRef<HTMLDivElement>(null);
-  const leafletRef = useRef<L.Map | null>(null);
   const forumRooms = ROOM_DATA[activeConference.id] || [];
   const sampleMaps = MAP_DATA[activeConference.id] || [];
+  const mapRef = useRef<HTMLDivElement>(null);
+  const leafletRef = useRef<L.Map | null>(null);
 
   function origAspect(h?: number, w?: number) {
     if (!h)
@@ -53,9 +53,6 @@ export function ForumsPage() {
     return h / w;
   };
 
-  // REMOVE THIS line, as it's outside the component/hooks and causes issues:
-  // window.addEventListener('resize', function () { leafletRef.invalidateSize(); }); 
-
   const handleToggleBookmark = (sessionId: string) => {
     setBookmarkedSessions(prev =>
       prev.includes(sessionId)
@@ -63,10 +60,6 @@ export function ForumsPage() {
         : [...prev, sessionId]
     );
   };
-
-  //function wToH(fcalcW: number) {
-  //  return Math.round(fcalcW * forumMap.origAspect);
-  //};
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -116,7 +109,10 @@ export function ForumsPage() {
       doubleClickZoom: false,
       touchZoom: false,
       boxZoom: false,
-      keyboard: false
+      keyboard: false,
+      dragging: false,
+      tapHold: false,
+      bounceAtZoomLimits: true,
     });
 
     // ... (rest of your forumMap initialization code) ...
