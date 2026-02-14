@@ -18,8 +18,8 @@ export interface Conference {
   icalUrl: string;
   contactEmail: string;
   logoUrl: string;
-  mapSessionsUrl?: string;
-  mapExhibitorsUrl?: string;
+  mapSessionsUrl: string;
+  mapExhibitorsUrl: string[];
 }
 
 export interface Booth {
@@ -35,7 +35,6 @@ export interface Exhibitor {
   name: string;
   description: string;
   location: number[];
-  locationZone: string;
   type: string;
   url: string;
 }

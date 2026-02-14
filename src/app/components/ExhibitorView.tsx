@@ -5,8 +5,8 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Bookmark, MapPin } from 'lucide-react';
-import { Exhibitor, Conference } from '@/types/conference';
-import { EventInput } from "@fullcalendar/core";
+import { Exhibitor } from '@/types/conference';
+//import { EventInput } from "@fullcalendar/core";
 import { useConference } from '@/app/contexts/ConferenceContext';
 
 interface ExhibitorViewProps {
@@ -36,11 +36,10 @@ function ExhibitorCard({ exhibitor, isBookmarked, isHighlighted, onToggleBookmar
     <div
       ref={exhibitorRef}
       id={`${exhibitor.id}`}
-      className={`mb-4 transition-all ${
-        isHighlighted
-          ? 'ring-2 ring-blue-500 shadow-lg scale-105'
-          : ''
-      }`}
+      className={`mb-4 transition-all ${isHighlighted
+        ? 'ring-2 ring-blue-500 shadow-lg scale-105'
+        : ''
+        }`}
     >
       <Card className={`transition-all ${isHighlighted ? 'ring-2 ring-blue-500 shadow-lg scale-105' : ''}`}>
         <CardHeader>
@@ -51,7 +50,6 @@ function ExhibitorCard({ exhibitor, isBookmarked, isHighlighted, onToggleBookmar
               </a>
               <div className="flex flex-wrap gap-2 mb-2">
                 <Badge variant="secondary">{exhibitor.type}</Badge>
-                {exhibitor.track && <Badge variant="outline">{exhibitor.track}</Badge>}
               </div>
             </div>
             {onToggleBookmark && (
@@ -62,9 +60,8 @@ function ExhibitorCard({ exhibitor, isBookmarked, isHighlighted, onToggleBookmar
                 className="ml-2"
               >
                 <Bookmark
-                  className={`h-5 w-5 ${
-                    isBookmarked ? 'fill-current text-blue-600' : ''
-                  }`}
+                  className={`h-5 w-5 ${isBookmarked ? 'fill-current text-blue-600' : ''
+                    }`}
                 />
               </Button>
             )}
@@ -87,23 +84,30 @@ function ExhibitorCard({ exhibitor, isBookmarked, isHighlighted, onToggleBookmar
   );
 }
 
+interface ExhibitorModule {
+  sampleExhibitors?: Exhibitor[];
+  [key: string]: unknown;
+}
+
 // Import all session data files at once using Vite's glob import
 const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
 
 // Process the modules into a lookup object
 const EXHIBITOR_DATA: Record<string, Exhibitor[]> = {};
-Object.entries(conferenceModules).forEach(([path, module]: [string, any]) => {
+Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
-  if (module.sampleExhibitors) {
-    EXHIBITOR_DATA[conferenceId] = module.sampleExhibitors;
+  const typedModule = module as ExhibitorModule;
+  if (typedModule.sampleExhibitors) {
+    EXHIBITOR_DATA[conferenceId] = typedModule.sampleExhibitors;
   }
 });
 
 export function ExhibitorView({
-    bookmarkedExhibitors = [],
-    onToggleBookmark,
-    highlightExhibitorId }: ExhibitorViewProps) {
+  bookmarkedExhibitors = [],
+  onToggleBookmark,
+  highlightExhibitorId }: ExhibitorViewProps) {
   const [selectedType, setSelectedType] = useState<string>('all');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const exhibitors = EXHIBITOR_DATA[activeConference.id] || [];
 
@@ -130,7 +134,7 @@ export function ExhibitorView({
           <TabsTrigger value="all">All Types</TabsTrigger>
           {typeKeys.map(type => (
             <TabsTrigger key={type} value={type}>
-            {type}
+              {type}
             </TabsTrigger>
           ))}
         </TabsList>

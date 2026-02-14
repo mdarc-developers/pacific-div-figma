@@ -3,7 +3,6 @@ import { ScheduleView } from '@/app/components/ScheduleView';
 
 export function SchedulePage() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
   const handleToggleBookmark = (sessionId: string) => {
     setBookmarkedSessions(prev =>

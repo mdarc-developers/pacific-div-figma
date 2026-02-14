@@ -43,7 +43,9 @@ export const allConferences: Conference[] = [
     parkingWebsite: '',
     icalUrl: '',
     contactEmail: '',
-    logoUrl: ''
+    logoUrl: '',
+    mapSessionsUrl: '', // for Room[]
+    mapExhibitorsUrl: [''], // for Booth[]
   },
   {
     id: 'huntsville-hamfest-2026',
@@ -64,7 +66,9 @@ export const allConferences: Conference[] = [
     parkingWebsite: '',
     icalUrl: '',
     contactEmail: '',
-    logoUrl: ''
+    logoUrl: '',
+    mapSessionsUrl: '', // for Room[]
+    mapExhibitorsUrl: [''], // for Booth[]
   },
   {
     id: 'pacificon-2026',

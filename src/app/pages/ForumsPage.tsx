@@ -5,26 +5,34 @@ import 'leaflet/dist/leaflet.css';
 import { useConference } from '@/app/contexts/ConferenceContext';
 import { MapImage, Room } from '@/types/conference';
 
+interface MapsModule {
+  sampleMaps?: MapImage[];
+  [key: string]: unknown;
+}
+
+interface RoomModule {
+  forumRooms?: Room[];
+  [key: string]: unknown;
+}
+
 // Import all session data files at once using Vite's glob import
 // This imports all files matching the pattern eagerly (at build time)
 const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
 
 // Process the modules into a lookup object
-const SESSION_DATA: Record<string, MapImage[]> = {};
-const ROOM_DATA: Record<string, MapImage[]> = {};
 const MAP_DATA: Record<string, MapImage[]> = {};
-Object.entries(conferenceModules).forEach(([path, module]: [string, any]) => {
+const ROOM_DATA: Record<string, Room[]> = {};
+Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
-  if (module.sampleSessions) {
-    SESSION_DATA[conferenceId] = module.sampleSessions;
+  const typedMapModule = module as MapsModule;
+  const typedRoomModule = module as RoomModule;
+  if (typedMapModule.sampleMaps) {
+    MAP_DATA[conferenceId] = typedMapModule.sampleMaps;
   }
-  if (module.forumRooms) {
-    ROOM_DATA[conferenceId] = module.forumRooms;
-  }
-  if (module.sampleMaps) {
-    MAP_DATA[conferenceId] = module.sampleMaps;
+  if (typedRoomModule.forumRooms) {
+    ROOM_DATA[conferenceId] = typedRoomModule.forumRooms;
   }
 });
 
@@ -34,7 +42,6 @@ export function ForumsPage() {
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
-  const sampleSessions = SESSION_DATA[activeConference.id] || [];
   const forumRooms = ROOM_DATA[activeConference.id] || [];
   const sampleMaps = MAP_DATA[activeConference.id] || [];
 
@@ -178,7 +185,7 @@ export function ForumsPage() {
         - Height is set dynamically by the ResizeObserver above.
       */}
       <div className="w-full" ref={mapRef} ></div>
-      <ScheduleView sessions={sampleSessions}
+      <ScheduleView
         bookmarkedSessions={bookmarkedSessions}
         onToggleBookmark={handleToggleBookmark}
       />
