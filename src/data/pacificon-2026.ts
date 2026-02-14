@@ -339,7 +339,7 @@ export const sampleMaps: MapImage[] = [
     name: 'Hotel',
     url: '/pacificon-hotel-2025.jpg',
     //floor: '1',
-    order: 1
+    order: 1,
   },
   {
     id: 'map-2',
@@ -348,27 +348,29 @@ export const sampleMaps: MapImage[] = [
     url: '/pacificon-exhibitors-2025.png',
     //floor: '2',
     order: 2,
+    origHeightNum: 1702,
+    origWidthNum: 1280,
   },
   {
     id: 'map-3',
     conferenceId: 'pacificon-2026',
     name: 'Hamfest Parking',
     url: '/hamfest-parking-map-20260101.jpg',
-    order: 3
+    order: 3,
   },
   {
     id: 'map-4',
     conferenceId: 'pacificon-2026',
     name: 'Hamfest Layout',
     url: '/hamfest-layout-2026.png',
-    order: 4
+    order: 4,
   },
   {
     id: 'map-5',
     conferenceId: 'pacificon-2026',
     name: 'Hamcation Site',
     url: '/hamcation-map-2026.png',
-    order: 5
+    order: 5,
   },
   {
     id: 'map-6',
@@ -378,7 +380,7 @@ export const sampleMaps: MapImage[] = [
     //floor: '2',
     order: 6,
     origHeightNum: 256,
-    origWidthNum: 582
+    origWidthNum: 582,
   },
 ];
 

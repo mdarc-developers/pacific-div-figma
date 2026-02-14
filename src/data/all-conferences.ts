@@ -21,7 +21,7 @@ export const allConferences: Conference[] = [
     icalUrl: '',
     contactEmail: '',
     logoUrl: '/hamcation-2026-logo.png',
-    mapSessionsUrl: '', // for Room[]
+    mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
     mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
   },
   {

@@ -142,22 +142,22 @@ export const forumRooms: Room[] = [
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
   {
     name: 'Tent 1',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]],
+    coords: [[5, 58], [47, 7], [65, 24], [25, 75]],
     color: '#10B981',
   },
   {
     name: 'Tent 2',
-    coords: [[55, 310], [215, 310], [215, 413], [55, 413]],
+    coords: [[25, 75], [65, 24], [80, 37], [40, 90]],
     color: '#3B82F6',
   },
   {
     name: 'Tent 3',
-    coords: [[169, 414], [215, 414], [215, 487], [169, 487]],
+    coords: [[80, 37], [40, 90], [53, 103], [93, 50]],
     color: '#F59E0B',
   },
   {
     name: 'Restrooms',
-    coords: [[28, 518], [34, 518], [34, 581], [28, 581]],
+    coords: [[53, 103], [70, 82], [85,94], [67, 114]],
     color: '#005CF6',
   },
 ];
@@ -166,7 +166,7 @@ export const sampleSessions: Session[] = [
   {
     id: 'session-1',
     conferenceId: 'hamcation-2026',
-    title: 'Flroida AUXCOMM ESF2 Stakeholder Forum',
+    title: 'Florida AUXCOMM ESF2 Stakeholder Forum',
     description: 'Hear from Floridas Statewide Interoperability Coordinator (SWIC) and from Floridas ESF2 team on the year in review for Floridas AUXCOMM program, ICT Communications updates, exercise and training opportunities and presentation of Flroidas annual AUXCOMM Service Award',
     speaker: ['Roger Lord (FDEM SWIC)', 'David Byrun (FL AUXCOMM)'],
     location: 'Pavillion Tent 1',
@@ -252,32 +252,47 @@ export const sampleSessions: Session[] = [
 // Mock map images - in production these would be bundled images
 export const sampleMaps: MapImage[] = [
   {
-    id: 'map-5',
-    conferenceId: 'hamcation-2026',
-    name: 'Outline Map',
-    url: '/hamcation-map-2026.png',
-    order: 5
-  },
-  {
     id: 'map-1',
     conferenceId: 'hamcation-2026',
-    name: 'Fairground Map',
+    name: 'Fairground',
     url: '/hamcation-2026-fairgrounds.png',
-    order: 1
+    order: 1,
+    origHeightNum: 647,
+    origWidthNum: 1200,
   },
   {
     id: 'map-2',
     conferenceId: 'hamcation-2026',
-    name: 'North Hall',
-    url: '/hamcation-2026-north.png',
-    order: 2
+    name: 'East and West Halls',
+    url: '/hamcation-2026-eastwest.png',
+    order: 2,
+    origHeightNum: 425,
+    origWidthNum: 1199,
   },
   {
     id: 'map-3',
     conferenceId: 'hamcation-2026',
-    name: 'East and West Halls',
-    url: '/hamcation-2026-eastwest.png',
-    order: 3
+    name: 'North Hall',
+    url: '/hamcation-2026-north.png',
+    order: 3,
+    origHeightNum: 550,
+    origWidthNum: 1199,
+  },
+  {
+    id: 'map-4',
+    conferenceId: 'hamcation-2026',
+    name: 'Pavilion',
+    url: '/hamcation-2026-pavilion.png',
+    order: 4,
+    origHeightNum: 105,
+    origWidthNum: 127,
+  },
+  {
+    id: 'map-5',
+    conferenceId: 'hamcation-2026',
+    name: 'Outline',
+    url: '/hamcation-map-2026.png',
+    order: 5,
   },
 ];
 
