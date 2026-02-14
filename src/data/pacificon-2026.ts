@@ -1,25 +1,145 @@
-import { Session, MapImage, Room } from '@/types/conference';
+import { Session, MapImage, Room, Exhibitor, Booth } from '@/types/conference';
 
-//export const pacificonData: Conference = {
-//  id: 'pacificon-2026',
-//  name: 'Pacificon 2025',
-//  venue: 'San Ramon Marriott',
-//  startDate: '2026-10-16', // Third Friday of October 2026
-//  endDate: '2026-10-18',
-//  timezone: 'America/Los_Angeles',
-//  primaryColor: '#ff4e00', // international orange
-//  secondaryColor: '#3b82f6', // blue-500
-//  location: '2600 Bishop Drive, San Ramon, CA 94583',
-//  conferenceWebsite: 'https://www.pacificon.org',
-//  venuePhone: '925-867-9200',
-//  venueGPS: '37.7629,-121.9674',
-//  venueGridSquare: 'CM97as',
-//  venueWebsite: 'https://www.marriott.com/en-us/hotels/oaksr-san-ramon-marriott/overview/',
-//  timezoneNumeric: '-0700', // DST, PDT ends early Nov
-//  parkingWebsite: 'https://www.pacificon.org/resources/parking',
-//  icalUrl: '/pacificon-2026.ics',
-//  contactEmail: 'webmaster@pacificon.org'
-//};
+export const exhibitorBooths: Booth[] = [
+  {
+    id:1,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:2,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:3,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:4,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:5,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:42,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:43,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:44,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:45,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:46,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:47,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:48,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:49,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'bishop-ranch-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:65,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'contra-costa-hallway',
+    conferenceId: 'pacificon-2026',
+  },
+  {
+    id:119,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'contra-costa',
+    conferenceId: 'pacificon-2026',
+  },
+];
+
+export const sampleExhibitors: Exhibitor[] = [
+  {
+    id: 'exhibitor-arrl',
+    conferenceId: 'pacificon-2026',
+    name: 'ARRL',
+    description: 'American Radio Relay League',
+    location: [4,5],
+    type: 'vendor',
+    url: 'https://www.arrl.org',
+  },
+  {
+    id: 'exhibitor-flexradio',
+    conferenceId: 'pacificon-2026',
+    name: 'Flex Radio',
+    description: 'software defined radios',
+    location: [1, 2, 3],
+    type: 'vendor',
+    url: 'https://www.flexradio.com',
+  },
+  {
+    id: 'exhibitor-wiredco',
+    conferenceId: 'pacificon-2026',
+    name: 'Wired Communications',
+    description: 'Cables, Connectors, LEDs and Adapters',
+    location: [42, 43, 44, 45, 46, 47, 48, 49],
+    type: 'vendor',
+    url: 'https://www.wiredco.com',
+  },
+  {
+    id: 'exhibitor-qslbureau',
+    conferenceId: 'pacificon-2026',
+    name: 'QSL Bureau',
+    description: 'ARRL Sixth District Incoming QSL Bureau',
+    location: [65],
+    type: 'nonprofit',
+    url: 'https://www.qslbureau.org',
+  },
+  {
+    id: 'exhibitor-mdarcbooth',
+    conferenceId: 'pacificon-2026',
+    name: 'mdarc.org',
+    description: 'Mt Diablo Amateur Radio Club',
+    location: [119],
+    type: 'nonprofit',
+    url: 'https://www.mdarc.org',
+  },
+];
 
 // Define your room polygons here
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
@@ -69,6 +189,11 @@ export const forumRooms: Room[] = [
     coords: [[58, 518], [134, 518], [134, 581], [58, 581]], // Far Right Bottom
     color: '#8B5CF6',
   },
+  {
+    name: 'Restrooms',
+    coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
+    color: '#005CF6',
+  },
 ];
 
 export const sampleSessions: Session[] = [
@@ -77,7 +202,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Introduction to HF Digital Modes',
     description: 'Learn about popular digital modes including FT8, PSK31, and RTTY. This session covers equipment requirements, software setup, and operating techniques.',
-    speaker: 'John Smith, K6JS',
+    speaker: ['John Smith, K6JS'],
     location: 'Main Ballroom',
     startTime: '2026-10-16T09:00:00',
     endTime: '2026-10-16T10:30:00',
@@ -89,7 +214,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Emergency Communications: ARES and RACES',
     description: 'Overview of emergency communication organizations and how to get involved in public service.',
-    speaker: 'Sarah Johnson, KI6SJ',
+    speaker: ['Sarah Johnson, KI6SJ'],
     location: 'Room 101',
     startTime: '2026-10-16T09:00:00',
     endTime: '2026-10-16T10:00:00',
@@ -101,7 +226,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Antenna Theory and Design',
     description: 'Deep dive into antenna fundamentals, including impedance matching, SWR, and practical antenna designs for limited space.',
-    speaker: 'Michael Chen, W6MC',
+    speaker: ['Michael Chen, W6MC'],
     location: 'Main Ballroom',
     startTime: '2026-10-16T11:00:00',
     endTime: '2026-10-16T12:30:00',
@@ -113,7 +238,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Working DX: Tips and Techniques',
     description: 'Learn strategies for making successful DX contacts, understanding propagation, and using spotting networks.',
-    speaker: 'Robert Davis, N6RD',
+    speaker: ['Robert Davis, N6RD'],
     location: 'Room 102',
     startTime: '2026-10-16T11:00:00',
     endTime: '2026-10-16T12:00:00',
@@ -125,7 +250,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Software Defined Radio (SDR) Fundamentals',
     description: 'Introduction to SDR technology, popular SDR devices, and software applications for amateur radio.',
-    speaker: 'Lisa Anderson, KF6LA',
+    speaker: ['Lisa Anderson, KF6LA'],
     location: 'Main Ballroom',
     startTime: '2026-10-16T14:00:00',
     endTime: '2026-10-16T15:30:00',
@@ -137,7 +262,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'VHF/UHF Contesting',
     description: 'Strategies for VHF/UHF contests, equipment recommendations, and rover operations.',
-    speaker: 'David Wilson, K6DW',
+    speaker: ['David Wilson, K6DW'],
     location: 'Room 101',
     startTime: '2026-10-16T14:00:00',
     endTime: '2026-10-16T15:00:00',
@@ -149,7 +274,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Getting Started with Satellite Operations',
     description: 'Learn how to work amateur radio satellites, including equipment requirements, tracking software, and operating procedures.',
-    speaker: 'Emily Martinez, KJ6EM',
+    speaker: ['Emily Martinez, KJ6EM'],
     location: 'Room 102',
     startTime: '2026-10-16T14:00:00',
     endTime: '2026-10-16T15:00:00',
@@ -161,7 +286,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Youth Forum: Getting Young People Excited About Ham Radio',
     description: 'Discussion panel on programs and activities that attract youth to amateur radio.',
-    speaker: 'Panel Discussion',
+    speaker: ['Panel Discussion'],
     location: 'Main Ballroom',
     startTime: '2026-10-16T16:00:00',
     endTime: '2026-10-16T17:00:00',
@@ -173,7 +298,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'ARRL Update and New Initiatives',
     description: 'Update from ARRL Pacific Division leadership on current programs and future plans.',
-    speaker: 'ARRL Officials',
+    speaker: ['ARRL Officials'],
     location: 'Main Ballroom',
     startTime: '2026-10-17T09:00:00',
     endTime: '2026-10-17T10:00:00',
@@ -185,7 +310,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Building Your Own Station',
     description: 'Tips for setting up a home station, from selecting equipment to installation and grounding.',
-    speaker: 'Tom Harris, W6TH',
+    speaker: ['Tom Harris, W6TH'],
     location: 'Room 101',
     startTime: '2026-10-17T09:00:00',
     endTime: '2026-10-17T10:30:00',
@@ -197,7 +322,7 @@ export const sampleSessions: Session[] = [
     conferenceId: 'pacificon-2026',
     title: 'Building Your Own Station II',
     description: 'Tips for setting up a home station, from selecting equipment to installation and grounding.',
-    speaker: 'Tom Harris, W6TH',
+    speaker: ['Tom Harris, W6TH'],
     location: 'Room 101',
     startTime: '2026-10-18T09:00:00',
     endTime: '2026-10-18T10:30:00',

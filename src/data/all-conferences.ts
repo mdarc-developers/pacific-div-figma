@@ -2,27 +2,6 @@ import { Conference } from '@/types/conference';
 
 export const allConferences: Conference[] = [
   {
-    id: 'pacificon-2026',
-    name: 'Pacificon 2026',
-    venue: 'San Ramon Marriott',
-    startDate: '2026-10-16', // Third Friday of October 2026
-    endDate: '2026-10-18',
-    timezone: 'America/Los_Angeles',
-    primaryColor: '#056bd1', // our blue
-    secondaryColor: '#3b82f6', // blue-500
-    location: '2600 Bishop Drive, San Ramon, CA 94583', // changed
-    conferenceWebsite: 'https://www.pacificon.org', // changed
-    venuePhone: '925-867-9200',
-    venueGPS: '37.7629,-121.9674',
-    venueGridSquare: 'CM97as',
-    venueWebsite: 'https://www.marriott.com/en-us/hotels/oaksr-san-ramon-marriott/overview/',
-    timezoneNumeric: '-0700', // DST, PDT ends early Nov
-    parkingWebsite: 'https://www.pacificon.org/resources/parking',
-    icalUrl: '/pacificon-2026.ics',
-    contactEmail: 'webmaster@pacificon.org',
-    logoUrl: '/2026-pacificon-logo-208-110.jpg'
-  },
-  {
     id: 'hamcation-2026',
     name: 'Hamcation 2026',
     location: '4603 W Colonial Drive, Orlando, FL 32808',
@@ -41,7 +20,9 @@ export const allConferences: Conference[] = [
     parkingWebsite: '',
     icalUrl: '',
     contactEmail: '',
-    logoUrl: '/hamcation-2026-logo.png'
+    logoUrl: '/hamcation-2026-logo.png',
+    mapSessionsUrl: '', // for Room[]
+    mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
   },
   {
     id: 'hamvention-2026',
@@ -84,6 +65,29 @@ export const allConferences: Conference[] = [
     icalUrl: '',
     contactEmail: '',
     logoUrl: ''
-  }
+  },
+  {
+    id: 'pacificon-2026',
+    name: 'Pacificon 2026',
+    venue: 'San Ramon Marriott',
+    startDate: '2026-10-16', // Third Friday of October 2026
+    endDate: '2026-10-18',
+    timezone: 'America/Los_Angeles',
+    primaryColor: '#3d71a3', // our blue
+    secondaryColor: '#3b82f6', // blue-500
+    location: '2600 Bishop Drive, San Ramon, CA 94583', // changed
+    conferenceWebsite: 'https://www.pacificon.org', // changed
+    venuePhone: '925-867-9200',
+    venueGPS: '37.7629,-121.9674',
+    venueGridSquare: 'CM97as',
+    venueWebsite: 'https://www.marriott.com/en-us/hotels/oaksr-san-ramon-marriott/overview/',
+    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+    parkingWebsite: 'https://www.pacificon.org/resources/parking',
+    icalUrl: '/pacificon-2026.ics',
+    contactEmail: 'webmaster@pacificon.org',
+    logoUrl: '/2026-pacificon-logo-208-110.jpg',
+    mapSessionsUrl: '/pacificon-forums-2025.jpg', // for Room[]
+    mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[]
+  },
 ];
 

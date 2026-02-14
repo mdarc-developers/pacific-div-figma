@@ -9,14 +9,7 @@ import { Session, Conference } from '@/types/conference';
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventInput } from "@fullcalendar/core";
-
-interface ScheduleViewProps {
-  sessions: Session[];
-  bookmarkedSessions?: string[];
-  conference: Conference;
-  onToggleBookmark?: (sessionId: string) => void;
-  highlightSessionId?: string; // NEW
-}
+import { useConference } from '@/app/contexts/ConferenceContext';
 
 interface CalendarProps {
   events: EventInput[];
@@ -51,7 +44,33 @@ const Calendar = ({ events, startDate }: CalendarProps) => {
   );
 };
 
-export function ScheduleView({ sessions, bookmarkedSessions = [], conference, onToggleBookmark, highlightSessionId }: ScheduleViewProps) {
+// Import all session data files at once using Vite's glob import
+// This imports all files matching the pattern eagerly (at build time)
+const sessionModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+
+// Process the modules into a lookup object
+const SESSION_DATA: Record<string, Session[]> = {};
+Object.entries(sessionModules).forEach(([path, module]: [string, any]) => {
+  // Extract the conference ID from the file path
+  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
+  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  if (module.sampleSessions) {
+    SESSION_DATA[conferenceId] = module.sampleSessions;
+  }
+});
+
+interface ScheduleViewProps {
+  bookmarkedSessions?: string[];
+  onToggleBookmark?: (sessionId: string) => void;
+  highlightSessionId?: string; // NEW
+}
+
+export function ScheduleView({
+    bookmarkedSessions = [],
+    onToggleBookmark,
+    highlightSessionId }: ScheduleViewProps) {
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const sessions = SESSION_DATA[activeConference.id] || [];
   const [selectedDay, setSelectedDay] = useState<string>('all');
 
   // Group sessions by date
@@ -71,7 +90,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
   const dateKeys = Object.keys(groupedSessions).sort();
   function formatSessionTime(timeString: string, tzString: string) {
     const timeOptions: Intl.DateTimeFormatOptions = {
-      timeZone: conference.timezone,
+      timeZone: activeConference.timezone,
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
@@ -83,7 +102,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
 
   function formatSessionDate(dateString: string, tzString: string) {
     const dateOptions: Intl.DateTimeFormatOptions = {
-      timeZone: conference.timezone,
+      timeZone: activeConference.timezone,
       weekday: 'long',
       month: 'long',
       day: 'numeric'
@@ -154,12 +173,12 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
               <span>
                 {formatSessionTime(
                   session.startTime,
-                  conference.timezoneNumeric
+                  activeConference.timezoneNumeric
                 )}{' '}
                 -{' '}
                 {formatSessionTime(
                   session.endTime,
-                  conference.timezoneNumeric
+                  activeConference.timezoneNumeric
                 )}
               </span>
             </div>
@@ -181,8 +200,8 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
   const calendarEvents: EventInput[] = sessions.map(session => ({
     id: session.id,
     title: session.title,
-    start: session.startTime + conference.timezoneNumeric,
-    end: session.endTime + conference.timezoneNumeric,
+    start: session.startTime + activeConference.timezoneNumeric,
+    end: session.endTime + activeConference.timezoneNumeric,
     extendedProps: {
       speaker: session.speaker,
       location: session.location
@@ -196,7 +215,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
           <TabsTrigger value="all">All Days</TabsTrigger>
           {dateKeys.map(date => (
             <TabsTrigger key={date} value={date}>
-              {formatSessionDate(date, conference.timezoneNumeric)}
+              {formatSessionDate(date, activeConference.timezoneNumeric)}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -204,7 +223,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
         <TabsContent value="all">
           {dateKeys.map(date => (
             <div key={date} className="mb-8">
-              <h3 className="text-xl font-semibold mb-4">{formatSessionDate(date, conference.timezoneNumeric)}</h3>
+              <h3 className="text-xl font-semibold mb-4">{formatSessionDate(date, activeConference.timezoneNumeric)}</h3>
               {groupedSessions[date]
                 .sort((a, b) => a.startTime.localeCompare(b.startTime))
                 .map(renderSession)}
@@ -220,7 +239,7 @@ export function ScheduleView({ sessions, bookmarkedSessions = [], conference, on
           </TabsContent>
         ))}
       </Tabs>
-      <Calendar events={calendarEvents} startDate={conference.startDate} />
+      <Calendar events={calendarEvents} startDate={activeConference.startDate} />
     </div>
   );
 }

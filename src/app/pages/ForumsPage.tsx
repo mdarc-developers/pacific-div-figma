@@ -1,24 +1,32 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScheduleView } from '@/app/components/ScheduleView';
-import { sampleSessions, forumRooms, sampleMaps } from '@/data/pacificon-2026';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useConference } from '@/app/contexts/ConferenceContext';
-//import { Conference, MapImage, Room } from '@/types/conference';
-import { MapImage } from '@/types/conference';
+import { MapImage, Room } from '@/types/conference';
 
-//const forumMap = {
-//  order: '2',
-//  id: 'map-2',
-//  //conferenceId: 'pacificon-2026',
-//  name: 'Forums',
-//  url: '/pacificon-forums-2025.jpg',
-//  //origHeight: '256px',
-//  origHeightNum: 256,
-//  //origWidth: '582px',
-//  origWidthNum: 582,
-//  //origAspect: (256 / 582),
-//};
+// Import all session data files at once using Vite's glob import
+// This imports all files matching the pattern eagerly (at build time)
+const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+
+// Process the modules into a lookup object
+const SESSION_DATA: Record<string, MapImage[]> = {};
+const ROOM_DATA: Record<string, MapImage[]> = {};
+const MAP_DATA: Record<string, MapImage[]> = {};
+Object.entries(conferenceModules).forEach(([path, module]: [string, any]) => {
+  // Extract the conference ID from the file path
+  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
+  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  if (module.sampleSessions) {
+    SESSION_DATA[conferenceId] = module.sampleSessions;
+  }
+  if (module.forumRooms) {
+    ROOM_DATA[conferenceId] = module.forumRooms;
+  }
+  if (module.sampleMaps) {
+    MAP_DATA[conferenceId] = module.sampleMaps;
+  }
+});
 
 export function ForumsPage() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
@@ -26,17 +34,9 @@ export function ForumsPage() {
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
-  //let forumMap: MapImage = sampleMaps[5];
-  const forumMap: MapImage = sampleMaps.find(m => m.origHeightNum !== undefined) || // assume origWidthNum as well
-  {
-    id: 'map-0',
-    conferenceId: 'pacificon-2026',
-    name: 'noForumMapFound',
-    url: '/pacificon-forums-2025.jpg',
-    order: 6,
-    origHeightNum: 256,
-    origWidthNum: 582
-  };
+  const sampleSessions = SESSION_DATA[activeConference.id] || [];
+  const forumRooms = ROOM_DATA[activeConference.id] || [];
+  const sampleMaps = MAP_DATA[activeConference.id] || [];
 
   function origAspect(h?: number, w?: number) {
     if (!h)
@@ -157,6 +157,18 @@ export function ForumsPage() {
     };
   }, []); // Empty dependency array ensures this runs once when mounted
 
+  //const forumMap: MapImage = sampleMaps.find(m => m.origHeightNum !== undefined) || // assume origWidthNum as well
+  const forumMap: MapImage = sampleMaps.find(m => m.url === activeConference.mapSessionsUrl) || // assume origWidthNum as well
+  {
+    id: 'map-0',
+    conferenceId: 'pacificon-2026',
+    name: 'noForumMapFound',
+    url: '/pacificon-forums-2025.jpg',
+    order: 6,
+    origHeightNum: 256,
+    origWidthNum: 582
+  };
+
   return (
     <div className="block">
       {/* 
@@ -168,7 +180,6 @@ export function ForumsPage() {
       <div className="w-full" ref={mapRef} ></div>
       <ScheduleView sessions={sampleSessions}
         bookmarkedSessions={bookmarkedSessions}
-        conference={activeConference}
         onToggleBookmark={handleToggleBookmark}
       />
     </div>

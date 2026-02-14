@@ -1,0 +1,283 @@
+import { Session, MapImage, Room, Exhibitor, Booth } from '@/types/conference';
+
+export const exhibitorBooths: Booth[] = [
+  {
+    id:1,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'EastWest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:2,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:3,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:4,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:5,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:6,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:110,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:111,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:112,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:113,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:114,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:115,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:121,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:122,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'eastwest',
+    conferenceId: 'hamcation-2026',
+  },
+  {
+    id:190,
+    coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
+    locationZone: 'north',
+    conferenceId: 'hamcation-2026',
+  },
+];
+
+export const sampleExhibitors: Exhibitor[] = [
+  {
+    id: 'exhibitor-arrl',
+    conferenceId: 'hamcation-2026',
+    name: 'ARRL',
+    description: 'American Radio Relay League',
+    location: [110, 111, 112, 113, 114, 115, 121, 122],
+    type: 'vendor',
+    url: 'https://www.arrl.org',
+  },
+  {
+    id: 'exhibitor-unitrend',
+    conferenceId: 'hamcation-2026',
+    name: 'Uni-Trend Technology US Inc',
+    description: 'worlds most renowned test and measurement solutions providers',
+    location: [1, 2, 3],
+    type: 'vendor',
+    url: 'https://www.uni-trendus.com',
+  },
+  {
+    id: 'exhibitor-platinum',
+    conferenceId: 'hamcation-2026',
+    name: 'Platinum Coast Amateur Radio Society',
+    description: 'Cables, Connectors, LEDs and Adapters',
+    location: [4],
+    type: 'vendor',
+    url: 'https://www.pcards.org',
+  },
+  {
+    id: 'exhibitor-w5yi',
+    conferenceId: 'hamcation-2026',
+    name: 'W5YI Licensing Services Inc',
+    description: 'licensing',
+    location: [5, 6],
+    type: 'nonprofit',
+    url: 'https://www.w5yi-vec.org',
+  },
+];
+
+// Define your room polygons here
+// Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+// NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
+// The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
+// your actual image. Their original x values (630–715) exceeded the image width of 582.
+export const forumRooms: Room[] = [
+  // ... (your forumRooms data) ...
+  // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+  {
+    name: 'Tent 1',
+    coords: [[1, 3], [57, 3], [57, 90], [1, 90]],
+    color: '#10B981',
+  },
+  {
+    name: 'Tent 2',
+    coords: [[55, 310], [215, 310], [215, 413], [55, 413]],
+    color: '#3B82F6',
+  },
+  {
+    name: 'Tent 3',
+    coords: [[169, 414], [215, 414], [215, 487], [169, 487]],
+    color: '#F59E0B',
+  },
+  {
+    name: 'Restrooms',
+    coords: [[28, 518], [34, 518], [34, 581], [28, 581]],
+    color: '#005CF6',
+  },
+];
+
+export const sampleSessions: Session[] = [
+  {
+    id: 'session-1',
+    conferenceId: 'hamcation-2026',
+    title: 'Flroida AUXCOMM ESF2 Stakeholder Forum',
+    description: 'Hear from Floridas Statewide Interoperability Coordinator (SWIC) and from Floridas ESF2 team on the year in review for Floridas AUXCOMM program, ICT Communications updates, exercise and training opportunities and presentation of Flroidas annual AUXCOMM Service Award',
+    speaker: ['Roger Lord (FDEM SWIC)', 'David Byrun (FL AUXCOMM)'],
+    location: 'Pavillion Tent 1',
+    startTime: '2026-02-13T09:15:00',
+    endTime: '2026-02-13T10:15:00',
+    category: 'EmComm',
+    track: 'EmComm'
+  },
+  {
+    id: 'session-2',
+    conferenceId: 'hamcation-2026',
+    title: 'Getting Started in QRP',
+    description: 'Steve has been a ham for more than five decades...',
+    speaker: ['Steve Hudson, AA4BW'],
+    location: 'Pavillion Tent 3',
+    startTime: '2026-02-13T09:15:00',
+    endTime: '2026-02-13T10:15:00',
+    category: 'Operating',
+    track: 'QRP'
+  },
+  {
+    id: 'session-3',
+    conferenceId: 'hamcation-2026',
+    title: 'High Performance HF multi-band Antenna and Lightning Protection System',
+    description: 'Gary from trueladderline.com, will discuss the high efficiency HF multi-band antenna model and methods of lightning protection for it.',
+    speaker: ['Gary Baker, K7EMF'],
+    location: 'Pavillion Tent 2',
+    startTime: '2026-02-13T09:15:00',
+    endTime: '2026-02-13T10:15:00',
+    category: 'Technical',
+    track: 'Station'
+  },
+  {
+    id: 'session-4',
+    conferenceId: 'hamcation-2026',
+    title: 'D-STAR',
+    description: 'Join D-STAR enthusiasts for whats new and how to get the most from your D-STAR equipment. Well discuss how easy it is to get on the air, connect with others around the world, the easiest programming of your radio, how to update your radio with the current list of repeaters and get your hotspot connection for D-STAR.F',
+    speaker: 'John Davis, WB4QDX',
+    location: 'Pavilion Tent 2',
+    startTime: '2026-02-13T10:30:00',
+    endTime: '2026-02-13T11:30:00',
+    category: 'Operating',
+    track: 'Digital'
+  },
+  {
+    id: 'session-5',
+    conferenceId: 'hamcation-2026',
+    title: 'DX Marathon',
+    description: 'Join the Chase: Why the DX Marathon Should Be Your Next Ham Radio Challenge',
+    speaker: ['Mark Wohlschlegel, WC3W'],
+    location: 'Pavilion Tent 3',
+    startTime: '2026-02-13T10:30:00',
+    endTime: '2026-02-13T11:30:00',
+    category: 'Contesting',
+    track: 'DX'
+  },
+  {
+    id: 'session-6',
+    conferenceId: 'hamcation-2026',
+    title: 'Elecraft K4 Update with Q&A',
+    description: 'Eric Swartz, WA6HHQ, Elecraft Co-Founder, will discuss: K4 Transceiver, K4 Software Eleases and Updates, K$/0 TRemote System, Q&A on all Elecraft products',
+    speaker: ['Eric Swartz, WA6HHQ'],
+    location: 'Pavilion Tent 2',
+    startTime: '2026-02-13T10:30:00',
+    endTime: '2026-02-13T11:30:00',
+    category: 'Equipment',
+    track: 'Product'
+  },
+  {
+    id: 'session-7',
+    conferenceId: 'hamcation-2026',
+    title: 'DX Contesting from V26B in Antigua',
+    description: 'The presentation will introduce the fun and challenges of HF contesting...',
+    speaker: ['Ray Conrad, NM2O'],
+    location: 'Pavilion Tent 3',
+    startTime: '2026-02-13T11:45:00',
+    endTime: '2026-02-13T12:45:00',
+    category: 'Contesting',
+    track: 'DX',
+  },
+];
+
+// Mock map images - in production these would be bundled images
+export const sampleMaps: MapImage[] = [
+  {
+    id: 'map-5',
+    conferenceId: 'hamcation-2026',
+    name: 'Outline Map',
+    url: '/hamcation-map-2026.png',
+    order: 5
+  },
+  {
+    id: 'map-1',
+    conferenceId: 'hamcation-2026',
+    name: 'Fairground Map',
+    url: '/hamcation-2026-fairgrounds.png',
+    order: 1
+  },
+  {
+    id: 'map-2',
+    conferenceId: 'hamcation-2026',
+    name: 'North Hall',
+    url: '/hamcation-2026-north.png',
+    order: 2
+  },
+  {
+    id: 'map-3',
+    conferenceId: 'hamcation-2026',
+    name: 'East and West Halls',
+    url: '/hamcation-2026-eastwest.png',
+    order: 3
+  },
+];
+

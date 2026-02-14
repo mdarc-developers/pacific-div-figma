@@ -18,6 +18,26 @@ export interface Conference {
   icalUrl: string;
   contactEmail: string;
   logoUrl: string;
+  mapSessionsUrl?: string;
+  mapExhibitorsUrl?: string;
+}
+
+export interface Booth {
+  id: number;
+  coords: [number, number][];
+  locationZone: string;
+  conferenceId?: string;
+};
+
+export interface Exhibitor {
+  id: string;
+  conferenceId: string;
+  name: string;
+  description: string;
+  location: number[];
+  locationZone: string;
+  type: string;
+  url: string;
 }
 
 export interface Session {
@@ -25,7 +45,7 @@ export interface Session {
   conferenceId: string;
   title: string;
   description: string;
-  speaker: string;
+  speaker: string[];
   location: string;
   startTime: string; // stored in local date and time for the conference timezone
   endTime: string; // stored in local date and time for the conference timezone
@@ -92,6 +112,4 @@ export interface Room {
   name: string;
   coords: [number, number][];
   color: string;
-  origHeightNum?: number;
-  origWidthNum?: number;
 };

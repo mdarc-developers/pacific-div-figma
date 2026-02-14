@@ -4,13 +4,28 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 import { Map as MapIcon } from 'lucide-react';
+import { useConference } from '@/app/contexts/ConferenceContext';
 
-interface MapsViewProps {
-  maps: MapImage[];
-  conference: Conference;
-}
+// Import all session data files at once using Vite's glob import
+// This imports all files matching the pattern eagerly (at build time)
+const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
 
-export function MapsView({ maps }: MapsViewProps) {
+// Process the modules into a lookup object
+const MAP_DATA: Record<string, MapImage[]> = {};
+Object.entries(conferenceModules).forEach(([path, module]: [string, any]) => {
+  // Extract the conference ID from the file path
+  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
+  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  if (module.sampleMaps) {
+    MAP_DATA[conferenceId] = module.sampleMaps;
+  }
+});
+
+export function MapsView() {
+  //import (`@/data/${activeConference.id}`).then(({ sampleMaps: maps } ) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const maps = MAP_DATA[activeConference.id] || [];
   const [selectedMap, setSelectedMap] = useState<string>(maps[0]?.id || '');
 
   if (maps.length === 0) {

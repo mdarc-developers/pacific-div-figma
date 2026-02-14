@@ -4,18 +4,11 @@ import { useAuth } from '../contexts/AuthContext';
 //import { Conference } from '@/types/conference';
 import { User } from "lucide-react";
 
-//interface SignUpPageProps {
-//bookmarkedSessions?: string[];
-//conference: Conference;
-//onToggleBookmark?: (sessionId: string) => void;
-//}
-
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
   return 'An unexpected error occurred';
 };
 
-//export function SignUpPage({ bookmarkedSessions = [], onToggleBookmark }: SignUpPageProps) {
 export function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -2,19 +2,20 @@ import { useState } from 'react';
 import { ProfileView } from '@/app/components/ProfileView';
 //import { User } from "lucide-react";
 import { useAuth } from '@/app/contexts/AuthContext';
-//import { useConference } from '@/app/contexts/ConferenceContext';
 //import { Conference } from '@/types/conference';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { Toaster, toast } from "sonner";
+import { useConference } from '@/app/contexts/ConferenceContext';
 
 interface LoginPageProps {
   bookmarkedSessions?: string[];
-  //conference: Conference;
   onToggleBookmark?: (sessionId: string) => void;
 }
 
 export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
@@ -201,23 +202,3 @@ export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
   );
 }
 
-
-//  return (
-//    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
-//      <User className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-//      <h3 className="text-xl font-semibold mb-2">Account Features</h3>
-//      <p className="text-gray-600 dark:text-gray-400 mb-4">
-//        <a
-//          href="/logout"
-//          className="gap-2 text-blue-600 dark:text-blue-400 hover:underline"
-//        >Sign Out</a>
-//      </p>
-//      <ul className="text-left max-w-md mx-auto space-y-2 text-gray-700 dark:text-gray-300">
-//        <li>• Bookmark favorite sessions</li>
-//        <li>• Receive prize winner notifications</li>
-//        <li>• Send messages to other attendees</li>
-//        <li>• Dark mode preferences</li>
-//        <li>• SMS & email notifications</li>
-//      </ul>
-//    </div>
-//  );

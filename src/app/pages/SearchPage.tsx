@@ -1,25 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScheduleView } from '@/app/components/ScheduleView';
-import { sampleSessions } from '@/data/pacificon-2026';
-//import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 import { useConference } from '@/app/contexts/ConferenceContext';
 import { useSearchParams } from 'react-router-dom';
 
+// Import all session data files at once using Vite's glob import
+// This imports all files matching the pattern eagerly (at build time)
+const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+
+// Process the modules into a lookup object
+const SESSION_DATA: Record<string, MapImage[]> = {};
+Object.entries(conferenceModules).forEach(([path, module]: [string, any]) => {
+  // Extract the conference ID from the file path
+  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
+  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  if (module.sampleSessions) {
+    SESSION_DATA[conferenceId] = module.sampleSessions;
+  }
+});
 
 export function SearchPage() {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-//  const map = {
-//    order: '2',
-//    id: 'map-2',
-//    conferenceId: 'pacificon-2026',
-//    name: 'Forums',
-//    url: '/pacificon-forums-2025.jpg',
-//  }
   const [searchParams] = useSearchParams();
   const highlightSessionId = searchParams.get('highlight');
   const scrollToRef = useRef<HTMLDivElement>(null);
+  const sampleSessions = SESSION_DATA[activeConference.id] || [];
 
   // Scroll to highlighted session when it changes
   useEffect(() => {
@@ -48,7 +54,6 @@ export function SearchPage() {
     <div ref={scrollToRef}>
       <ScheduleView sessions={sampleSessions}
         bookmarkedSessions={bookmarkedSessions}
-        conference={activeConference}
         onToggleBookmark={handleToggleBookmark}
         highlightSessionId={highlightSessionId || undefined}
       />

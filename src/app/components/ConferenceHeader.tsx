@@ -12,18 +12,9 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
-//import { allConferences } from '@/data/all-conferences';
 import { useConference } from '@/app/contexts/ConferenceContext';
 import { NavLink } from 'react-router-dom';
 
-//const conferences = uc.allConferences;
-//const activeConference = allConferences[0];
-
-//interface ConferenceHeaderProps {
-//conference: Conference;
-//onToggleHeaderCollapsed?: (setHeaderCollapsed: boolean) => void;
-//onSelectConference?: (conference: Conference) => void;
-//}
 
 //import { forwardRef } from 'react';
 //
@@ -109,7 +100,6 @@ function hexToRGBArray(hex: string) {
   return rgb;
 }
 
-//export function ConferenceHeader({ conference, onToggleHeaderCollapsed }: ConferenceHeaderProps) {
 export function ConferenceHeader() {
 
   const [isSelectOpen, setIsSelectOpen] = useState(false);

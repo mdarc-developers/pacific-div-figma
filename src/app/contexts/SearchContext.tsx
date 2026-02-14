@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState } from 'react';
 interface SearchContextType {
   highlightSessionId: string | null;
   setHighlightSessionId: (sessionId: string | null) => void;
+  highlightExhibitorId: string | null;
+  setHighlightExhibitorId: (sessionId: string | null) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -17,9 +19,10 @@ export const useSearch = () => {
 
 export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const [highlightSessionId, setHighlightSessionId] = useState<string | null>(null);
+  const [highlightExhibitorId, setHighlightExhibitorId] = useState<string | null>(null);
 
   return (
-    <SearchContext.Provider value={{ highlightSessionId, setHighlightSessionId }}>
+    <SearchContext.Provider value={{ highlightSessionId, setHighlightSessionId, highlightExhibitorId, setHighlightExhibitorId }}>
       {children}
     </SearchContext.Provider>
   );

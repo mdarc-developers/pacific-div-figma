@@ -1,13 +1,28 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { searchService, SearchResult, SearchFilters } from '@/services/searchService';
-import { Session } from '@/types/conference';
+import { Session, Conference } from '@/types/conference';
 import { Button } from '@/app/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-//import { sampleSessions } from '@/data/pacificon-2026';
+import { useConference } from '@/app/contexts/ConferenceContext';
+
+// Import all session data files at once using Vite's glob import
+// This imports all files matching the pattern eagerly (at build time)
+const sessionModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+
+// Process the modules into a lookup object
+const SESSION_DATA: Record<string, Session[]> = {};
+Object.entries(sessionModules).forEach(([path, module]: [string, any]) => {
+  // Extract the conference ID from the file path
+  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
+  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  if (module.sampleSessions) {
+    SESSION_DATA[conferenceId] = module.sampleSessions;
+  }
+});
 
 interface SearchBarProps {
-  sessions: Session[];
+  activeConference: Conference;
   onSelectSession?: (session: Session) => void;
   onSearch?: (results: SearchResult[]) => void;
   placeholderProp?: string;
@@ -15,7 +30,6 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
-  sessions,
   onSelectSession,
   onSearch,
   placeholderProp = 'Search forums...',
@@ -30,11 +44,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { activeConference, allConferencesList, setActiveConference } = useConference();
+
+  const indexSessions = SESSION_DATA[activeConference.id] || [];
 
   // Initialize search index on mount
   useEffect(() => {
-    searchService.buildIndex(sessions);
-  }, [sessions]);
+    searchService.buildIndex(indexSessions);
+  }, [indexSessions]);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
