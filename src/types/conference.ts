@@ -69,7 +69,10 @@ export interface Prize {
   conferenceId: string;
   name: string;
   description: string;
-  category: string;
+  imageUrl: string;
+  category?: string;
+  winner: string;
+  donor: string;
 }
 
 export interface PrizeWinner {
@@ -78,8 +81,10 @@ export interface PrizeWinner {
   winnerCallsign?: string;
   winnerEmail?: string;
   winnerName: string;
+  drawing?: string;
   notifiedAt?: string;
   claimedAt?: string;
+  winningTicket: string;
 }
 
 export interface UserProfile {

@@ -61,7 +61,7 @@ export function ExhibitorsPage() {
 
   for (const ex of sampleExhibitors) {
     for (const boo in ex.location) {
-      console.log(ex.location[boo].toString() + " " + ex.name);
+      //console.log(ex.location[boo].toString() + " " + ex.name);
       boothToName.set(ex.location[boo], ex.name);
     }
   };
@@ -116,7 +116,7 @@ export function ExhibitorsPage() {
     // Click handler for finding coordinates while building room polygons
     leafletMap.on('click', (e) => {
       const { lat, lng } = e.latlng;
-      console.log(`Clicked: [${lat.toFixed(1)}, ${lng.toFixed(1)}]`);
+      //console.log(`Clicked: [${lat.toFixed(1)}, ${lng.toFixed(1)}]`);
     });
 
     const bounds: L.LatLngBoundsExpression = [

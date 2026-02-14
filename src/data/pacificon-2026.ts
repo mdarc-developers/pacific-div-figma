@@ -1,4 +1,62 @@
-import { Session, MapImage, Room, Exhibitor, Booth } from '@/types/conference';
+import { Session, MapImage, Room, Exhibitor, Booth, Prize } from '@/types/conference';
+
+export const samplePrizes: Prize[] = [
+  {
+    id:'p1',
+    conferenceId:'pacificon-2026',
+    name: 'Yaesu FT-65R Handheld',
+    description: 'Dual-band 5W handheld',
+    imageUrl: '/assets/prizes/p1.jpg',
+    donor: 'Yaesu',
+    winner: 'winner1',
+  },
+  {
+    id:'p2',
+    conferenceId:'pacificon-2026',
+    name: 'Antenna Tuner',
+    description: 'For HF bands, LDG Z-100 Plus',
+    imageUrl: '/assets/prizes/p2.jpg',
+    donor: 'Pacificon Committee',
+    winner: 'winner2',
+  },
+  {
+    id:'p3',
+    conferenceId:'pacificon-2026',
+    name: 'ARRL Handbook',
+    description: 'Latest Technician study manual',
+    imageUrl: '/assets/prizes/p3.jpg',
+    donor: 'ARRL',
+    winner: 'winner3',
+  },
+];
+
+export const samplePrizeWinners: PrizeWinner[] = [
+  {
+    id: 'winner1',
+    prizeId: 'p1',
+    winnerCallsign: 'K6AL', 
+    winnerName: 'Alice Cooper',
+    winningTicket: '1001',
+  },
+//  winnerEmail?: string;
+//  notifiedAt?: string;
+//  claimedAt?: string;
+//  drawing?: string;
+//}
+  {
+    id: 'winner2',
+    prizeId: 'p2',
+    winningTicket: '2042',
+  },
+  {
+    id: 'winner3',
+    prizeId: 'p3',
+    winningTicket: '3155',
+    winnerCallsign: 'W6CW', 
+    winnerName: 'Carol Williams',
+  },
+
+];
 
 export const exhibitorBooths: Booth[] = [
   // origHeightNum: 1702,
@@ -417,6 +475,88 @@ export const sampleExhibitors: Exhibitor[] = [
   },
 ];
 
+export const mapRooms: [string, Room[]] = [
+  '/pacificon-hotel-2025.jpg', [
+  //origHeightNum: 1201,
+  //origWidthNum: 983,
+  {
+    name: 'Registration',
+    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+    color: '#10B981',
+  },
+  {
+    name: 'Prize Booth',
+    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+    color: '#10B981',
+  },
+  {
+    name: 'W1AW/6',
+    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+    color: '#10B981',
+  },
+  {
+    name: 'Expo',
+    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+    color: '#10B981',
+  },
+  {
+    name: 'Salon 2',
+    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+    color: '#10B981',
+  },
+  {
+    name: 'Salon E',
+    coords: [[55, 310], [215, 310], [215, 413], [55, 413]], // Center-Right Large
+    color: '#3B82F6',
+  },
+  {
+    name: 'Salon H',
+    coords: [[169, 414], [215, 414], [215, 487], [169, 487]], // Top Right Stack
+    color: '#F59E0B',
+  },
+  {
+    name: 'Salon G',
+    coords: [[109, 414], [168, 414], [168, 487], [109, 487]], // Mid Right Stack
+    color: '#F59E0B',
+  },
+  {
+    name: 'Grand Ballroom, E, F, G & H Combined',
+    coords: [[57, 311], [214, 311], [214, 488], [57, 488]],
+    color: '#F59E0B',
+  },
+  {
+    name: 'Salon F',
+    coords: [[55, 414], [108, 414], [108, 485], [55, 485]], // Bottom Right Stack
+    color: '#F59E0B',
+  },
+  {
+    name: 'Pleasanton',
+    coords: [[193, 518], [255, 518], [255, 581], [193, 581]], // Far Right Top
+    color: '#8B5CF6',
+  },
+  {
+    name: 'Danville',
+    coords: [[135, 518], [192, 518], [192, 581], [135, 581]], // Far Right Mid
+    color: '#8B5CF6',
+  },
+  {
+    name: 'San Ramon Boardroom',
+    coords: [[58, 518], [134, 518], [134, 581], [58, 581]], // Far Right Bottom
+    color: '#8B5CF6',
+  },
+  {
+    name: 'Restrooms-Bishop-Hallway',
+    coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
+    color: '#005CF6',
+  },
+  {
+    name: 'Restrooms-Bar',
+    coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
+    color: '#005CF6',
+  },
+  ],
+];
+
 // Define your room polygons here
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
@@ -443,6 +583,11 @@ export const forumRooms: Room[] = [
   {
     name: 'Salon G',
     coords: [[109, 414], [168, 414], [168, 487], [109, 487]], // Mid Right Stack
+    color: '#F59E0B',
+  },
+  {
+    name: 'Grand Ballroom, E, F, G & H Combined',
+    coords: [[57, 311], [214, 311], [214, 488], [57, 488]],
     color: '#F59E0B',
   },
   {
@@ -605,6 +750,18 @@ export const sampleSessions: Session[] = [
     category: 'Technical',
     track: 'Station Building'
   },
+  {
+    id: 'session-12',
+    conferenceId: 'pacificon-2026',
+    title: 'Gettings Started with Ham Radio',
+    description: 'An introduction to amateur radio for new license holders. Topics include choosing equipment, first contacts and local clubs.',
+    speaker: ['Gordon West, WB6NOA'],
+    location: 'Grand Ballroom',
+    startTime: '2026-10-16T09:00:00',
+    endTime: '2026-10-16T10:00:00',
+    category: 'Getting Started',
+    track: ''
+  },
 ];
 
 // Mock map images - in production these would be bundled images
@@ -616,6 +773,8 @@ export const sampleMaps: MapImage[] = [
     url: '/pacificon-hotel-2025.jpg',
     //floor: '1',
     order: 1,
+    origHeightNum: 1201,
+    origWidthNum: 983,
   },
   {
     id: 'map-2',
@@ -627,27 +786,27 @@ export const sampleMaps: MapImage[] = [
     origHeightNum: 1702,
     origWidthNum: 1280,
   },
-  {
-    id: 'map-3',
-    conferenceId: 'pacificon-2026',
-    name: 'Hamfest Parking',
-    url: '/hamfest-parking-map-20260101.jpg',
-    order: 3,
-  },
-  {
-    id: 'map-4',
-    conferenceId: 'pacificon-2026',
-    name: 'Hamfest Layout',
-    url: '/hamfest-layout-2026.png',
-    order: 4,
-  },
-  {
-    id: 'map-5',
-    conferenceId: 'pacificon-2026',
-    name: 'Hamcation Site',
-    url: '/hamcation-map-2026.png',
-    order: 5,
-  },
+  //{
+  //  id: 'map-3',
+  //  conferenceId: 'pacificon-2026',
+  //  name: 'Hamfest Parking',
+  //  url: '/hamfest-parking-map-20260101.jpg',
+  //  order: 3,
+  //},
+  //{
+  //  id: 'map-4',
+  //  conferenceId: 'pacificon-2026',
+  //  name: 'Hamfest Layout',
+  //  url: '/hamfest-layout-2026.png',
+  //  order: 4,
+  //},
+  //{
+  //  id: 'map-5',
+  //  conferenceId: 'pacificon-2026',
+  //  name: 'Hamcation Site',
+  //  url: '/hamcation-map-2026.png',
+  //  order: 5,
+  //},
   {
     id: 'map-6',
     conferenceId: 'pacificon-2026',
