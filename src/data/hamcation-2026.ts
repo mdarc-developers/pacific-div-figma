@@ -5,98 +5,82 @@ export const exhibitorBooths: Booth[] = [
     id: 1,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 2,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 3,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 4,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 5,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 6,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 110,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 111,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 112,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 113,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 114,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 115,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 121,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 122,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'eastwest',
-    conferenceId: 'hamcation-2026',
   },
   {
     id: 190,
     coords: [[1, 2], [3, 4], [5, 6], [7, 8]],
     locationZone: 'north',
-    conferenceId: 'hamcation-2026',
   },
 ];
 
 export const sampleExhibitors: Exhibitor[] = [
   {
     id: 'exhibitor-arrl',
-    conferenceId: 'hamcation-2026',
     name: 'ARRL',
     description: 'American Radio Relay League',
     location: [110, 111, 112, 113, 114, 115, 121, 122],
@@ -105,7 +89,6 @@ export const sampleExhibitors: Exhibitor[] = [
   },
   {
     id: 'exhibitor-unitrend',
-    conferenceId: 'hamcation-2026',
     name: 'Uni-Trend Technology US Inc',
     description: 'worlds most renowned test and measurement solutions providers',
     location: [1, 2, 3],
@@ -114,7 +97,6 @@ export const sampleExhibitors: Exhibitor[] = [
   },
   {
     id: 'exhibitor-platinum',
-    conferenceId: 'hamcation-2026',
     name: 'Platinum Coast Amateur Radio Society',
     description: 'Cables, Connectors, LEDs and Adapters',
     location: [4],
@@ -123,7 +105,6 @@ export const sampleExhibitors: Exhibitor[] = [
   },
   {
     id: 'exhibitor-w5yi',
-    conferenceId: 'hamcation-2026',
     name: 'W5YI Licensing Services Inc',
     description: 'licensing',
     location: [5, 6],
@@ -169,7 +150,6 @@ export const forumRooms: Room[] = [
 export const sampleSessions: Session[] = [
   {
     id: 'session-1',
-    conferenceId: 'hamcation-2026',
     title: 'Florida AUXCOMM ESF2 Stakeholder Forum',
     description: 'Hear from Floridas Statewide Interoperability Coordinator (SWIC) and from Floridas ESF2 team on the year in review for Floridas AUXCOMM program, ICT Communications updates, exercise and training opportunities and presentation of Flroidas annual AUXCOMM Service Award',
     speaker: ['Roger Lord (FDEM SWIC)', 'David Byrun (FL AUXCOMM)'],
@@ -181,7 +161,6 @@ export const sampleSessions: Session[] = [
   },
   {
     id: 'session-2',
-    conferenceId: 'hamcation-2026',
     title: 'Getting Started in QRP',
     description: 'Steve has been a ham for more than five decades...',
     speaker: ['Steve Hudson, AA4BW'],
@@ -193,7 +172,6 @@ export const sampleSessions: Session[] = [
   },
   {
     id: 'session-3',
-    conferenceId: 'hamcation-2026',
     title: 'High Performance HF multi-band Antenna and Lightning Protection System',
     description: 'Gary from trueladderline.com, will discuss the high efficiency HF multi-band antenna model and methods of lightning protection for it.',
     speaker: ['Gary Baker, K7EMF'],
@@ -205,7 +183,6 @@ export const sampleSessions: Session[] = [
   },
   {
     id: 'session-4',
-    conferenceId: 'hamcation-2026',
     title: 'D-STAR',
     description: 'Join D-STAR enthusiasts for whats new and how to get the most from your D-STAR equipment. Well discuss how easy it is to get on the air, connect with others around the world, the easiest programming of your radio, how to update your radio with the current list of repeaters and get your hotspot connection for D-STAR.F',
     speaker: ['John Davis, WB4QDX'],
@@ -217,7 +194,6 @@ export const sampleSessions: Session[] = [
   },
   {
     id: 'session-5',
-    conferenceId: 'hamcation-2026',
     title: 'DX Marathon',
     description: 'Join the Chase: Why the DX Marathon Should Be Your Next Ham Radio Challenge',
     speaker: ['Mark Wohlschlegel, WC3W'],
@@ -229,7 +205,6 @@ export const sampleSessions: Session[] = [
   },
   {
     id: 'session-6',
-    conferenceId: 'hamcation-2026',
     title: 'Elecraft K4 Update with Q&A',
     description: 'Eric Swartz, WA6HHQ, Elecraft Co-Founder, will discuss: K4 Transceiver, K4 Software Eleases and Updates, K$/0 TRemote System, Q&A on all Elecraft products',
     speaker: ['Eric Swartz, WA6HHQ'],
@@ -241,7 +216,6 @@ export const sampleSessions: Session[] = [
   },
   {
     id: 'session-7',
-    conferenceId: 'hamcation-2026',
     title: 'DX Contesting from V26B in Antigua',
     description: 'The presentation will introduce the fun and challenges of HF contesting...',
     speaker: ['Ray Conrad, NM2O'],
@@ -253,11 +227,10 @@ export const sampleSessions: Session[] = [
   },
 ];
 
-// Mock map images - in production these would be bundled images
+// map images - in production these may be bundled images
 export const sampleMaps: MapImage[] = [
   {
     id: 'map-1',
-    conferenceId: 'hamcation-2026',
     name: 'Fairground',
     url: '/hamcation-2026-fairgrounds.png',
     order: 1,
@@ -266,7 +239,6 @@ export const sampleMaps: MapImage[] = [
   },
   {
     id: 'map-2',
-    conferenceId: 'hamcation-2026',
     name: 'East and West Halls',
     url: '/hamcation-2026-eastwest.png',
     order: 2,
@@ -275,7 +247,6 @@ export const sampleMaps: MapImage[] = [
   },
   {
     id: 'map-3',
-    conferenceId: 'hamcation-2026',
     name: 'North Hall',
     url: '/hamcation-2026-north.png',
     order: 3,
@@ -284,7 +255,6 @@ export const sampleMaps: MapImage[] = [
   },
   {
     id: 'map-4',
-    conferenceId: 'hamcation-2026',
     name: 'Pavilion',
     url: '/hamcation-2026-pavilion.png',
     order: 4,
@@ -293,7 +263,6 @@ export const sampleMaps: MapImage[] = [
   },
   {
     id: 'map-5',
-    conferenceId: 'hamcation-2026',
     name: 'Outline',
     url: '/hamcation-map-2026.png',
     order: 5,

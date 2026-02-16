@@ -23,26 +23,40 @@ export interface Conference {
   mapExhibitorsUrl: string[];
 }
 
+export interface MapImage {
+  id: string;
+  name: string;
+  url: string;
+  floor?: string;
+  order: number;
+  origWidthNum?: number;
+  origHeightNum?: number;
+}
+
 export interface Booth {
   id: number;
   coords: [number, number][];
   locationZone: string;
-  conferenceId?: string;
 };
 
 export interface Exhibitor {
   id: string;
-  conferenceId: string;
   name: string;
   description: string;
+  boothName: string;
   location: number[];
   type: string;
   url: string;
 }
 
+export interface Room {
+  name: string;
+  coords: [number, number][];
+  color: string;
+};
+
 export interface Session {
   id: string;
-  conferenceId: string;
   title: string;
   description: string;
   speaker: string[];
@@ -53,20 +67,8 @@ export interface Session {
   track?: string;
 }
 
-export interface MapImage {
-  id: string;
-  conferenceId: string;
-  name: string;
-  url: string;
-  floor?: string;
-  order: number;
-  origWidthNum?: number;
-  origHeightNum?: number;
-}
-
 export interface Prize {
   id: string;
-  conferenceId: string;
   name: string;
   description: string;
   imageUrl: string;
@@ -101,7 +103,6 @@ export interface UserProfile {
 
 export interface Message {
   id: string;
-  conferenceId: string;
   from: string; // user id or callsign
   to?: string; // optional for public messages
   isPublic: boolean;
@@ -113,8 +114,3 @@ export interface Message {
   adminRole: string;
 }
 
-export interface Room {
-  name: string;
-  coords: [number, number][];
-  color: string;
-};

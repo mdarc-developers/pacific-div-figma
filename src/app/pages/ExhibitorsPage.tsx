@@ -62,7 +62,7 @@ export function ExhibitorsPage() {
   for (const ex of sampleExhibitors) {
     for (const boo in ex.location) {
       //console.log(ex.location[boo].toString() + " " + ex.name);
-      boothToName.set(ex.location[boo], ex.name);
+      boothToName.set(ex.location[boo], ex);
     }
   };
   //const foundMap = sampleMaps.find(m => m.url === element)
@@ -116,7 +116,7 @@ export function ExhibitorsPage() {
     // Click handler for finding coordinates while building room polygons
     leafletMap.on('click', (e) => {
       const { lat, lng } = e.latlng;
-      //console.log(`Clicked: [${lat.toFixed(1)}, ${lng.toFixed(1)}]`);
+      console.log(`Clicked: [${lat.toFixed(1)}, ${lng.toFixed(1)}]`);
     });
 
     const bounds: L.LatLngBoundsExpression = [
@@ -146,7 +146,7 @@ export function ExhibitorsPage() {
       found = boothToName.get(exhibitorBooth.id);
       if (found) {
         //console.log(exhibitorBooth.id.toString() + " " + found);
-        polygon.bindPopup(exhibitorBooth.id.toString() + "<br/>" + found);
+        polygon.bindPopup(found.boothName + "<br/>" + found.name);
       } else {
         //console.log(exhibitorBooth.id.toString());
         polygon.bindPopup(exhibitorBooth.id.toString());
@@ -207,22 +207,38 @@ export function ExhibitorsPage() {
     );
   };
 
-  const displayMaps = (x: number) => {
-    if (x === 1 && exhibitorsMap) {
-      //  <ImageWithFallback
-      //    src={exhibitorsMap.url}
-      //    alt={exhibitorsMap.name}
-      //    className="w-full h-auto max-w-full"
-      //  />
-      return (
-        <>
-          <div className="w-full" ref={mapRef} ></div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
-            {exhibitorsMap.name}
-          </p>
-        </>
-      );
-    } else if (x > 1 && multipleExhibitorMaps.length > 0) {
+  const displayMaps = (numMaps: number) => {
+    if (numMaps === 1 && exhibitorsMap ) {
+      const endsWithPdf = exhibitorsMap.url.endsWith(".pdf");
+      if (endsWithPdf) {
+        return (
+          <>
+            <div className="w-full" >
+              <iframe src={exhibitorsMap.url} width="100%" style="border: none;">
+                Your browser does not support iframes. <a href={exhibitorsMap.url}>Download the PDF</a> instead.
+              </iframe>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
+              {exhibitorsMap.name}
+            </p>
+          </>
+        );
+      } else {
+        //  <ImageWithFallback
+        //    src={exhibitorsMap.url}
+        //    alt={exhibitorsMap.name}
+        //    className="w-full h-auto max-w-full"
+        //  />
+        return (
+          <>
+            <div className="w-full" ref={mapRef} ></div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
+              {exhibitorsMap.name}
+            </p>
+          </>
+        );
+      }
+    } else if (numMaps > 1 && multipleExhibitorMaps.length > 0) {
       return (
         <>
           {multipleExhibitorMaps.map((img) => (
@@ -239,7 +255,7 @@ export function ExhibitorsPage() {
           ))}
         </>
       );
-    } else if (x > 1 && multipleExhibitorMaps.length === 0) {
+    } else if (numMaps > 1 && multipleExhibitorMaps.length === 0) {
       return (
         <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
           No exhibitor maps available
