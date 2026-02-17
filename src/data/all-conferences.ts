@@ -1,30 +1,30 @@
 import { Conference } from '@/types/conference';
 
 export const allConferences: Conference[] = [
-  {
-    id: 'hamcation-2026',
-    name: 'Hamcation 2026',
-    location: '4603 W Colonial Drive, Orlando, FL 32808',
-    venue: 'Central Florida Fairgrounds',
-    startDate: '2026-02-13',
-    endDate: '2026-02-15',
-    timezone: 'America/New_York',
-    primaryColor: '#000000',
-    secondaryColor: '#f97316',
-    conferenceWebsite: 'https://www.hamcation.com',
-    venuePhone: '407-385-3247',
-    venueGPS: '28.5556,-81.4402',
-    venueGridSquare: 'EL98gn',
-    venueWebsite: 'https://www.centralfloridafair.com/',
-    timezoneNumeric: '-0700', // DST, PDT ends early Nov
-    parkingWebsite: '',
-    icalUrl: '',
-    googlecalUrl: '',
-    contactEmail: '',
-    logoUrl: '/hamcation-2026-logo.png',
-    mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
-    mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
-  },
+//  {
+//    id: 'hamcation-2026',
+//    name: 'Hamcation 2026',
+//    location: '4603 W Colonial Drive, Orlando, FL 32808',
+//    venue: 'Central Florida Fairgrounds',
+//    startDate: '2026-02-13',
+//    endDate: '2026-02-15',
+//    timezone: 'America/New_York',
+//    primaryColor: '#000000',
+//    secondaryColor: '#f97316',
+//    conferenceWebsite: 'https://www.hamcation.com',
+//    venuePhone: '407-385-3247',
+//    venueGPS: '28.5556,-81.4402',
+//    venueGridSquare: 'EL98gn',
+//    venueWebsite: 'https://www.centralfloridafair.com/',
+//    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+//    parkingWebsite: '',
+//    icalUrl: '',
+//    googlecalUrl: '',
+//    contactEmail: '',
+//    logoUrl: '/hamcation-2026-logo.png',
+//    mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
+//    mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
+//  },
   {
     id: 'hamvention-2026',
     name: 'Hamvention 2026',
@@ -96,6 +96,30 @@ export const allConferences: Conference[] = [
     logoUrl: '/2026-pacificon-logo-208-110.jpg',
     mapSessionsUrl: '/pacificon-forums-2025.jpg', // for Room[]
     mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[]
+  },
+  {
+    id: 'hamcation-2027',
+    name: 'Hamcation 2027',
+    location: '4603 W Colonial Drive, Orlando, FL 32808',
+    venue: 'Central Florida Fairgrounds',
+    startDate: '2026-02-13',
+    endDate: '2026-02-15',
+    timezone: 'America/New_York',
+    primaryColor: '#000000',
+    secondaryColor: '#f97316',
+    conferenceWebsite: 'https://www.hamcation.com',
+    venuePhone: '407-385-3247',
+    venueGPS: '28.5556,-81.4402',
+    venueGridSquare: 'EL98gn',
+    venueWebsite: 'https://www.centralfloridafair.com/',
+    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+    parkingWebsite: '',
+    icalUrl: '',
+    googlecalUrl: '',
+    contactEmail: '',
+    logoUrl: '/hamcation-2026-logo.png',
+    mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
+    mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
   },
 ];
 

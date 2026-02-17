@@ -1,0 +1,14 @@
+DefaultDescriptionFile: fit/DescriptionDefault.txt
+#DescriptionFileName: Description
+ImportCommentsTogether: true
+TagKeyValue: true
+NewFieldAsTag: true
+NewFieldLowerCase: true
+#GithubPersonalAccessToken: 
+#FitSite: https://www.github.com/mdarc-developers/pacific-div-figma
+CloseStatusTag: true
+ClosePreventDelete: true
+IdAbbreviate: true
+#ProgramVersion: pdfi
+#IdAutomatic: true
+

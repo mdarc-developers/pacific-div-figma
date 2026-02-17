@@ -47,6 +47,7 @@ export interface Exhibitor {
   location: number[];
   type: string;
   url: string;
+  color: string;
 }
 
 export interface Room {
@@ -80,13 +81,13 @@ export interface Prize {
 export interface PrizeWinner {
   id: string;
   prizeId: string;
+  winningTicket: string;
   winnerCallsign?: string;
   winnerEmail?: string;
-  winnerName: string;
+  winnerName?: string;
   drawing?: string;
   notifiedAt?: string;
   claimedAt?: string;
-  winningTicket: string;
 }
 
 export interface UserProfile {
