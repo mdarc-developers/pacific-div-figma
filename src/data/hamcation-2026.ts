@@ -1,4 +1,73 @@
-import { Session, MapImage, Room, Exhibitor, Booth } from '@/types/conference';
+import { Session, MapImage, Room, Exhibitor, Booth, Prize, PrizeWinner } from '@/types/conference';
+
+export const samplePrizes: Prize[] = [
+  {
+    id: 'p1',
+    name: 'Yaesu FT-65R Handheld',
+    description: 'Dual-band 5W handheld',
+    imageUrl: '/assets/prizes/p1.jpg',
+    donor: 'Yaesu',
+    winner: 'winner1',
+    category: 'Prize',
+  },
+  {
+    id: 'p2',
+    name: 'Antenna Tuner',
+    description: 'For HF bands, LDG Z-100 Plus',
+    imageUrl: '/assets/prizes/p2.jpg',
+    donor: 'Pacificon Committee',
+    winner: 'winner2',
+    category: 'Prize',
+  },
+  {
+    id: 'p3',
+    name: 'ARRL Handbook',
+    description: 'Latest Technician study manual',
+    imageUrl: '/assets/prizes/p3.jpg',
+    donor: 'ARRL',
+    winner: 'winner3',
+    category: 'Prize',
+  },
+];
+
+export const samplePrizeWinners: PrizeWinner[] = [
+  {
+    id: 'winner1',
+    prizeId: ['p1'],
+    winningTicket: '1001',
+    winnerCallsign: 'K6AL',
+    winnerName: 'Alice Cooper',
+  },
+  //  winnerEmail?: string;
+  //  notifiedAt?: string;
+  //  claimedAt?: string;
+  //  drawing?: string;
+  //}
+  {
+    id: 'winner2',
+    prizeId: ['p2'],
+    winningTicket: '2042',
+  },
+  {
+    id: 'winner3',
+    prizeId: ['p3'],
+    winningTicket: '3155',
+    winnerCallsign: 'W6CW',
+    winnerName: 'Carol Williams',
+  },
+
+];
+
+export const mapBooths: [string, Booth[]] = [
+  '/pacificon-exhibitors-2025.jpg', [
+    {
+      id: 1,
+      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+      locationZone: 'b',
+    },
+  ],
+
+];
 
 export const exhibitorBooths: Booth[] = [
   {
@@ -80,26 +149,32 @@ export const exhibitorBooths: Booth[] = [
 
 export const sampleExhibitors: Exhibitor[] = [
   {
-    id: 'exhibitor-arrl',
+    id: 'arrl',
     name: 'ARRL',
     description: 'American Radio Relay League',
-    location: [110, 111, 112, 113, 114, 115, 121, 122],
-    type: 'vendor',
+    boothName: '4  5',
+    location: [4, 5],
+    type: 'vendor-booth',
+    color: '#77cff4',
     url: 'https://www.arrl.org',
   },
   {
     id: 'exhibitor-unitrend',
     name: 'Uni-Trend Technology US Inc',
     description: 'worlds most renowned test and measurement solutions providers',
+    boothName: "1  2  3",
     location: [1, 2, 3],
-    type: 'vendor',
+    type: 'vendor-booth',
+    color: '#77cff4',
     url: 'https://www.uni-trendus.com',
   },
   {
     id: 'exhibitor-platinum',
     name: 'Platinum Coast Amateur Radio Society',
     description: 'Cables, Connectors, LEDs and Adapters',
+    boothName: '4',
     location: [4],
+    color: '#77cff4',
     type: 'vendor',
     url: 'https://www.pcards.org',
   },
@@ -107,8 +182,10 @@ export const sampleExhibitors: Exhibitor[] = [
     id: 'exhibitor-w5yi',
     name: 'W5YI Licensing Services Inc',
     description: 'licensing',
+    boothName: '5  6',
     location: [5, 6],
     type: 'nonprofit',
+    color: '#77cff4',
     url: 'https://www.w5yi-vec.org',
   },
 ];

@@ -1,56 +1,69 @@
-import { Session, MapImage, Room, Exhibitor, Booth, Prize } from '@/types/conference';
+import { Session, MapImage, Room, Exhibitor, Booth, Prize, PrizeWinner } from '@/types/conference';
 
 export const samplePrizes: Prize[] = [
   {
-    id:'p1',
+    id: 'p1',
     name: 'Yaesu FT-65R Handheld',
     description: 'Dual-band 5W handheld',
     imageUrl: '/assets/prizes/p1.jpg',
     donor: 'Yaesu',
     winner: 'winner1',
+    category: 'Prize'
   },
   {
-    id:'p2',
+    id: 'p2',
     name: 'Antenna Tuner',
     description: 'For HF bands, LDG Z-100 Plus',
     imageUrl: '/assets/prizes/p2.jpg',
     donor: 'Pacificon Committee',
     winner: 'winner2',
+    category: 'Raffle'
   },
   {
-    id:'p3',
+    id: 'p3',
     name: 'ARRL Handbook',
     description: 'Latest Technician study manual',
     imageUrl: '/assets/prizes/p3.jpg',
     donor: 'ARRL',
     winner: 'winner3',
+    category: 'ARRL Drawing'
+  },
+  {
+    id: 'p4',
+    name: '2M/440 L5 Elk Antenna',
+    description: 'Whether you are operating portable or permanent, you will find the convenience of a dual-band Log Periodic antenna to be an incredibly convenient and powerful tool in your communication operations. Having both 2 Meter and 70 cm Bands in a compact, two foot long package, without having to bother with a duplexer is just a real lifesaver to most operating environments. From bouncing signals off of satellites, to working simplex two or three counties aways – you cannot go wrong with the Elk 2M/440L5! All Elk 2M/440L5 models come with a handle for handheld operation, making this antenna perfectly set up for satellite, DFing, EmComm, and very portable operation.  The feed on all Elk Antennas is from the front of the antenna.  The end where you connect the feedline is where you point the antenna. By the way, this is an excellent antenna for GMRS and MURS operation!',
+    imageUrl: '/assets/prizes/p4.png',
+    donor: 'Elk Antennas',
+    category: 'T-Hunting'
   },
 ];
 
 export const samplePrizeWinners: PrizeWinner[] = [
   {
     id: 'winner1',
-    prizeId: 'p1',
-    winnerCallsign: 'K6AL', 
+    prizeId: ['p1'],
+    winnerCallsign: 'K6AL',
     winnerName: 'Alice Cooper',
     winningTicket: '1001',
+    claimedAt: "true",
   },
-//  winnerEmail?: string;
-//  notifiedAt?: string;
-//  claimedAt?: string;
-//  drawing?: string;
-//}
+  //  winnerEmail?: string;
+  //  notifiedAt?: string;
+  //  claimedAt?: string;
+  //  drawing?: string;
+  //}
   {
     id: 'winner2',
-    prizeId: 'p2',
+    prizeId: ['p2'],
     winningTicket: '2042',
   },
   {
     id: 'winner3',
-    prizeId: 'p3',
+    prizeId: ['p3'],
     winningTicket: '3155',
-    winnerCallsign: 'W6CW', 
+    winnerCallsign: 'W6CW',
     winnerName: 'Carol Williams',
+    notifiedAt: "true",
   },
 
 ];
@@ -703,92 +716,94 @@ export const sampleExhibitors: Exhibitor[] = [
 
 export const mapBooths: [string, Booth[]] = [
   '/pacificon-exhibitors-2025.jpg', [
-  {
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-  },
+    {
+      id: 1,
+      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+      locationZone: 'b',
+    },
   ],
 
 ];
 
 export const mapRooms: [string, Room[]] = [
   '/pacificon-hotel-2025.jpg', [
-  //origHeightNum: 1201,
-  //origWidthNum: 983,
-  {
-    name: 'Registration',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-    color: '#10B981',
-  },
-  {
-    name: 'Prize Booth',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-    color: '#10B981',
-  },
-  {
-    name: 'W1AW/6',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-    color: '#10B981',
-  },
-  {
-    name: 'Expo',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-    color: '#10B981',
-  },
-  {
-    name: 'Salon 2',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-    color: '#10B981',
-  },
-  {
-    name: 'Salon E',
-    coords: [[55, 310], [215, 310], [215, 413], [55, 413]], // Center-Right Large
-    color: '#3B82F6',
-  },
-  {
-    name: 'Salon H',
-    coords: [[169, 414], [215, 414], [215, 487], [169, 487]], // Top Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Salon G',
-    coords: [[109, 414], [168, 414], [168, 487], [109, 487]], // Mid Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Grand Ballroom, E, F, G & H Combined',
-    coords: [[57, 311], [214, 311], [214, 488], [57, 488]],
-    color: '#F59E0B',
-  },
-  {
-    name: 'Salon F',
-    coords: [[55, 414], [108, 414], [108, 485], [55, 485]], // Bottom Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Pleasanton',
-    coords: [[193, 518], [255, 518], [255, 581], [193, 581]], // Far Right Top
-    color: '#8B5CF6',
-  },
-  {
-    name: 'Danville',
-    coords: [[135, 518], [192, 518], [192, 581], [135, 581]], // Far Right Mid
-    color: '#8B5CF6',
-  },
-  {
-    name: 'San Ramon Boardroom',
-    coords: [[58, 518], [134, 518], [134, 581], [58, 581]], // Far Right Bottom
-    color: '#8B5CF6',
-  },
-  {
-    name: 'Restrooms-Bishop-Hallway',
-    coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
-    color: '#005CF6',
-  },
-  {
-    name: 'Restrooms-Bar',
-    coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
-    color: '#005CF6',
-  },
+    //origHeightNum: 1201,
+    //origWidthNum: 983,
+    {
+      name: 'Registration',
+      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+      color: '#10B981',
+    },
+    {
+      name: 'Prize Booth',
+      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+      color: '#10B981',
+    },
+    {
+      name: 'W1AW/6',
+      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+      color: '#10B981',
+    },
+    {
+      name: 'Expo',
+      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+      color: '#10B981',
+    },
+    {
+      name: 'Salon 2',
+      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+      color: '#10B981',
+    },
+    {
+      name: 'Salon E',
+      coords: [[55, 310], [215, 310], [215, 413], [55, 413]], // Center-Right Large
+      color: '#3B82F6',
+    },
+    {
+      name: 'Salon H',
+      coords: [[169, 414], [215, 414], [215, 487], [169, 487]], // Top Right Stack
+      color: '#F59E0B',
+    },
+    {
+      name: 'Salon G',
+      coords: [[109, 414], [168, 414], [168, 487], [109, 487]], // Mid Right Stack
+      color: '#F59E0B',
+    },
+    {
+      name: 'Grand Ballroom, E, F, G & H Combined',
+      coords: [[57, 311], [214, 311], [214, 488], [57, 488]],
+      color: '#F59E0B',
+    },
+    {
+      name: 'Salon F',
+      coords: [[55, 414], [108, 414], [108, 485], [55, 485]], // Bottom Right Stack
+      color: '#F59E0B',
+    },
+    {
+      name: 'Pleasanton',
+      coords: [[193, 518], [255, 518], [255, 581], [193, 581]], // Far Right Top
+      color: '#8B5CF6',
+    },
+    {
+      name: 'Danville',
+      coords: [[135, 518], [192, 518], [192, 581], [135, 581]], // Far Right Mid
+      color: '#8B5CF6',
+    },
+    {
+      name: 'San Ramon Boardroom',
+      coords: [[58, 518], [134, 518], [134, 581], [58, 581]], // Far Right Bottom
+      color: '#8B5CF6',
+    },
+    {
+      name: 'Restrooms-Bishop-Hallway',
+      coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
+      color: '#005CF6',
+    },
+    {
+      name: 'Restrooms-Bar',
+      coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
+      color: '#005CF6',
+    },
   ],
 
 ];

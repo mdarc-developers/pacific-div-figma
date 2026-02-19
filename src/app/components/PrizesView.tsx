@@ -1,90 +1,57 @@
 import { useRef, useEffect, useState } from 'react';
-import { Badge } from '@/app/components/ui/badge';
-import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { Clock, MapPin, Mic } from 'lucide-react';
-import { Session, Conference } from '@/types/conference';
-import FullCalendar from "@fullcalendar/react";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import { EventInput } from "@fullcalendar/core";
+import { Award, HandHelping, Info, Trophy } from 'lucide-react';
+import { Prize, PrizeWinner } from '@/types/conference';
 import { useConference } from '@/app/contexts/ConferenceContext';
 
-function formatSessionTime(timeString: string, tzString: string, activeConference: Conference) {
-  const timeOptions: Intl.DateTimeFormatOptions = {
-    timeZone: activeConference.timezone,
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  };
-  const dateObj = new Date(timeString + tzString);
-  const timeFormatter = new Intl.DateTimeFormat('en-US', timeOptions);
-  return timeFormatter.format(dateObj);
-}
-
-interface SessionCardProps {
+interface PrizeCardProps {
+  prize: Prize;
+  prizeWinner: string;
   isHighlighted: boolean;
-  activeConference: Conference;
 }
 
-function SessionCard({ session, isHighlighted, activeConference }: SessionCardProps) {
-  const sessionRef = useRef<HTMLDivElement>(null);
+function PrizeCard({ prize, prizeWinner, isHighlighted }: PrizeCardProps) {
+  const prizeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isHighlighted && sessionRef.current) {
-      sessionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (isHighlighted && prizeRef.current) {
+      prizeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [isHighlighted]);
 
   return (
     <div
-      ref={sessionRef}
-      id={`session-${session.id}`}
-      className={`mb-4 transition-all ${isHighlighted
+      ref={prizeRef}
+      id={`prize-${prize.id}`}
+      className={`mb-4 transition-all w-full ${isHighlighted
         ? 'ring-2 ring-blue-500 shadow-lg scale-105'
         : ''
         }`}
     >
-      <Card className={`transition-all ${isHighlighted ? 'ring-2 ring-blue-500 shadow-lg scale-105' : ''}`}>
+      <Card className={`transition-all w-full  ${isHighlighted ? 'ring-2 ring-blue-500 shadow-lg scale-105' : ''}`}>
         <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex-1">
-              <CardTitle className="text-lg mb-2">{session.title}</CardTitle>
-              <div className="flex flex-wrap gap-2 mb-2">
-                <Badge variant="secondary">{session.category}</Badge>
-                {session.track && <Badge variant="outline">{session.track}</Badge>}
-              </div>
-            </div>
+          <div className="flex space-y-2 gap-2 justify-between items-start">
+            <Trophy className="h-4 w-4" />
+            <CardTitle className="text-lg mb-2 w-full">{prize.name}</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-            {session.description}
+          <img className="float-right" alt="prize image" src={prize.imageUrl} width="200px" height="200px" />
+          <p className="text-sm space-y-2 flex gap-2 text-gray-600 dark:text-gray-400 mb-3">
+            <Info className="h-4 w-4" />
+            {prize.description}
           </p>
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-              <Clock className="h-4 w-4" />
+              <HandHelping className="h-4 w-4" />
+              <span>{prize.donor}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+              <Award className="h-4 w-4" />
               <span>
-                {formatSessionTime(
-                  session.startTime,
-                  activeConference.timezoneNumeric,
-                  activeConference
-                )}{' '}
-                -{' '}
-                {formatSessionTime(
-                  session.endTime,
-                  activeConference.timezoneNumeric,
-                  activeConference
-                )}
+                {prizeWinner}
               </span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-              <MapPin className="h-4 w-4" />
-              <span>{session.location}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-              <Mic className="h-4 w-4" />
-              <span>{session.speaker}</span>
             </div>
           </div>
         </CardContent>
@@ -93,21 +60,31 @@ function SessionCard({ session, isHighlighted, activeConference }: SessionCardPr
   );
 }
 
-interface SessionModule {
-  sampleSessions?: Session[];
+interface PrizeModule {
+  samplePrizes?: Prize[];
   [key: string]: unknown;
 }
 
-// Import all session data files at once using Vite's glob import
-const sessionModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+interface PrizeWinnerModule {
+  samplePrizeWinners?: PrizeWinner[];
+  [key: string]: unknown;
+}
+
+// Import all prize data files at once using Vite's glob import
+const prizeModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
 
 // Process the modules into a lookup object
-const SESSION_DATA: Record<string, Session[]> = {};
-Object.entries(sessionModules).forEach(([path, module]) => {
+const PRIZE_DATA: Record<string, Prize[]> = {};
+const PRIZE_WINNER_DATA: Record<string, PrizeWinner[]> = {};
+Object.entries(prizeModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
-  const typedModule = module as SessionModule;
-  if (typedModule.sampleSessions) {
-    SESSION_DATA[conferenceId] = typedModule.sampleSessions;
+  const typedModule = module as PrizeModule;
+  if (typedModule.samplePrizes) {
+    PRIZE_DATA[conferenceId] = typedModule.samplePrizes;
+  }
+  const typedWinnerModule = module as PrizeWinnerModule;
+  if (typedWinnerModule.samplePrizeWinners) {
+    PRIZE_WINNER_DATA[conferenceId] = typedWinnerModule.samplePrizeWinners;
   }
 });
 
@@ -119,94 +96,101 @@ export function PrizesView({
   highlightPrizeId }: PrizesViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-  const sessions = SESSION_DATA[activeConference.id] || [];
-  const [selectedDay, setSelectedDay] = useState<string>('all');
+  const prizes = PRIZE_DATA[activeConference.id] || [];
+  const prizeWinners = PRIZE_WINNER_DATA[activeConference.id] || [];
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Group sessions by date
-  const groupSessionsByDate = (sessions: Session[]) => {
-    const grouped: Record<string, Session[]> = {};
-    sessions.forEach(session => {
-      const date = session.startTime.split('T')[0];
-      if (!grouped[date]) {
-        grouped[date] = [];
+  // Group prizes by category
+  const groupPrizesByCategory = (prizes: Prize[]) => {
+    const grouped: Record<string, Prize[]> = {};
+    prizes.forEach(loopprize => {
+      const category = loopprize.category ? loopprize.category : 'Prize';
+      if (!grouped[category]) {
+        grouped[category] = [];
       }
-      grouped[date].push(session);
+      grouped[category].push(loopprize);
     });
     return grouped;
   };
 
-  const groupedSessions = groupSessionsByDate(sessions);
-  const dateKeys = Object.keys(groupedSessions).sort();
+  const groupedPrizes = groupPrizesByCategory(prizes);
+  const categoryKeys = Object.keys(groupedPrizes).sort();
 
+  //function formatPrizeDate(dateString: string, tzString: string) {
+  //  const dateOptions: Intl.DateTimeFormatOptions = {
+  //    timeZone: activeConference.timezone,
+  //    weekday: 'long',
+  //    month: 'long',
+  //    day: 'numeric'
+  //  };
+  //  const dateObj = new Date(dateString + "T11:00:00" + tzString);
+  //  const timeFormatter = new Intl.DateTimeFormat('en-US', dateOptions);
+  //  return timeFormatter.format(dateObj);
+  //}
 
-  function formatSessionDate(dateString: string, tzString: string) {
-    const dateOptions: Intl.DateTimeFormatOptions = {
-      timeZone: activeConference.timezone,
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric'
-    };
-    const dateObj = new Date(dateString + "T11:00:00" + tzString);
-    const timeFormatter = new Intl.DateTimeFormat('en-US', dateOptions);
-    return timeFormatter.format(dateObj);
-  }
+  // Helper to format time
+  //const formatTime = (timeString: string) =>
+  //  formatPrizeTime(timeString, activeConference.timezoneNumeric, activeConference);
 
-  // Helper to format time for SessionCard
-  const formatTime = (timeString: string) =>
-    formatSessionTime(timeString, activeConference.timezoneNumeric, activeConference);
-
-  const calendarEvents: EventInput[] = sessions.map(session => ({
-    id: session.id,
-    title: session.title,
-    start: session.startTime + activeConference.timezoneNumeric,
-    end: session.endTime + activeConference.timezoneNumeric,
-    extendedProps: {
-      speaker: session.speaker,
-      location: session.location
+  const pwin = (pw?: string) => {
+    if (pw) {
+      const pwId = prizeWinners.find(element => element.id === pw);
+      if (pwId) {
+        if (pwId.claimedAt)
+          return pwId.winningTicket + " <claimed>";
+        else {
+          if (pwId.notifiedAt)
+            return pwId.winningTicket + " [notified]";
+          else
+            return pwId.winningTicket + " not claimed";
+        }
+      }
     }
-  }));
+    return "";
+  }
 
   return (
     <div className="w-full">
-      <Tabs value={selectedDay} onValueChange={setSelectedDay} className="w-full">
+      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
         <TabsList className="w-full mb-6 flex-wrap h-auto">
-          <TabsTrigger value="all">All Days</TabsTrigger>
-          {dateKeys.map(date => (
-            <TabsTrigger key={date} value={date}>
-              {formatSessionDate(date, activeConference.timezoneNumeric)}
+          <TabsTrigger value="all">All Prizes</TabsTrigger>
+          {categoryKeys.map(category => (
+            <TabsTrigger key={category} value={category}>
+              {category}
             </TabsTrigger>
           ))}
         </TabsList>
 
         <TabsContent value="all">
-          {dateKeys.map(date => (
-            <div key={date} className="mb-8">
+          {categoryKeys.map(category => (
+            <div key={category} className="mb-8">
               <h3 className="text-xl font-semibold mb-4">
-                {formatSessionDate(date, activeConference.timezoneNumeric)}
+                {category}
               </h3>
-              {groupedSessions[date]
-                .sort((a, b) => a.startTime.localeCompare(b.startTime))
-                .map(session => (
-                  <SessionCard
-                    key={session.id}
-                    session={session}
-                    activeConference={activeConference}
+              {groupedPrizes[category]
+                .sort((a, b) => a.category.localeCompare(b.category))
+                .map(prize => (
+                  <PrizeCard
+                    key={prize.id}
+                    prize={prize}
+                    prizeWinner={pwin(prize.winner)}
+                    isHighlighted={highlightPrizeId === prize.id}
                   />
                 ))}
             </div>
           ))}
         </TabsContent>
 
-        {dateKeys.map(date => (
-          <TabsContent key={date} value={date}>
-            {groupedSessions[date]
-              .sort((a, b) => a.startTime.localeCompare(b.startTime))
-              .map(session => (
-                <SessionCard
-                  key={session.id}
-                  session={session}
-                  isHighlighted={highlightPrizeId === session.id}
-                  activeConference={activeConference}
+        {categoryKeys.map(category => (
+          <TabsContent key={category} value={category}>
+            {groupedPrizes[category]
+              .sort((a, b) => a.category.localeCompare(b.category))
+              .map(prize => (
+                <PrizeCard
+                  key={prize.id}
+                  prize={prize}
+                  prizeWinner={pwin(prize.winner)}
+                  isHighlighted={highlightPrizeId === prize.id}
                 />
               ))}
           </TabsContent>

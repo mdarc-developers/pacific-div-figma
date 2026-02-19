@@ -8,6 +8,7 @@ export const samplePrizes: Prize[] = [
     imageUrl: '/assets/prizes/p1.jpg',
     donor: 'Yaesu',
     winner: 'winner1',
+    category: 'Prize'
   },
   {
     id: 'p2',
@@ -16,6 +17,7 @@ export const samplePrizes: Prize[] = [
     imageUrl: '/assets/prizes/p2.jpg',
     donor: 'Pacificon Committee',
     winner: 'winner2',
+    category: 'Raffle'
   },
   {
     id: 'p3',
@@ -24,13 +26,22 @@ export const samplePrizes: Prize[] = [
     imageUrl: '/assets/prizes/p3.jpg',
     donor: 'ARRL',
     winner: 'winner3',
+    category: 'ARRL Drawing'
+  },
+  {
+    id: 'p4',
+    name: '2M/440 L5 Elk Antenna',
+    description: 'Whether you are operating portable or permanent, you will find the convenience of a dual-band Log Periodic antenna to be an incredibly convenient and powerful tool in your communication operations. Having both 2 Meter and 70 cm Bands in a compact, two foot long package, without having to bother with a duplexer is just a real lifesaver to most operating environments. From bouncing signals off of satellites, to working simplex two or three counties aways – you cannot go wrong with the Elk 2M/440L5! All Elk 2M/440L5 models come with a handle for handheld operation, making this antenna perfectly set up for satellite, DFing, EmComm, and very portable operation.  The feed on all Elk Antennas is from the front of the antenna.  The end where you connect the feedline is where you point the antenna. By the way, this is an excellent antenna for GMRS and MURS operation!',
+    imageUrl: '/assets/prizes/p4.png',
+    donor: 'Elk Antennas',
+    category: 'T-Hunting'
   },
 ];
 
 export const samplePrizeWinners: PrizeWinner[] = [
   {
     id: 'winner1',
-    prizeId: 'p1',
+    prizeId: ['p1'],
     winnerCallsign: 'K6AL',
     winnerName: 'Alice Cooper',
     winningTicket: '1001',
@@ -42,12 +53,12 @@ export const samplePrizeWinners: PrizeWinner[] = [
   //}
   {
     id: 'winner2',
-    prizeId: 'p2',
+    prizeId: ['p2'],
     winningTicket: '2042',
   },
   {
     id: 'winner3',
-    prizeId: 'p3',
+    prizeId: ['p3'],
     winningTicket: '3155',
     winnerCallsign: 'W6CW',
     winnerName: 'Carol Williams',

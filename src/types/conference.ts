@@ -73,14 +73,14 @@ export interface Prize {
   name: string;
   description: string;
   imageUrl: string;
-  category?: string;
-  winner: string;
+  category: string;
   donor: string;
+  winner?: string;
 }
 
 export interface PrizeWinner {
   id: string;
-  prizeId: string;
+  prizeId: string[];
   winningTicket: string;
   winnerCallsign?: string;
   winnerEmail?: string;
