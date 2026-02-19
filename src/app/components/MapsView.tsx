@@ -44,6 +44,26 @@ export function MapsView() {
 
   const sortedMaps = [...maps].sort((a, b) => a.order - b.order);
 
+  function displayImage (url: string, name: string) {
+    if (url.endsWith("pdf") ) {
+      return(
+        <iframe
+          src={url}
+          alt={name}
+          className="w-full h-auto max-w-full"
+        />
+      );
+    } else {
+      return(
+        <ImageWithFallback
+          src={url}
+          alt={name}
+          className="w-full h-auto max-w-full"
+        />
+      );
+    }
+  }
+
   return (
     <div className="w-full">
       <Tabs value={selectedMap} onValueChange={setSelectedMap} className="w-full">
@@ -61,11 +81,7 @@ export function MapsView() {
             <Card>
               <CardContent className="p-4">
                 <div className="w-full overflow-auto">
-                  <ImageWithFallback
-                    src={map.url}
-                    alt={map.name}
-                    className="w-full h-auto max-w-full"
-                  />
+                  {displayImage(map.url, map.name)}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
                   {map.name}
