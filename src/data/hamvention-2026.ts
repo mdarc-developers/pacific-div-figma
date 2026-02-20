@@ -1522,7 +1522,7 @@ export const mapBooths: [string, Booth[]] = [
 
 //// will soon convert from forumRooms
 //export const mapRooms: [string, Room[]] = [
-//  '/public/assets/maps/hamvention-forums-2026-2.png', [
+//  '/assets/maps/hamvention-forums-2026-2.png', [
     //origHeightNum: 710,
     //origWidthNum: 953,
 
@@ -1713,7 +1713,7 @@ export const sampleMaps: MapImage[] = [
   {
     id: 'map-3',
     name: 'Forums',
-    url: '/public/assets/maps/hamvention-forums-2026-2.png', // for Booth[]
+    url: '/assets/maps/hamvention-forums-2026-2.png', // for Booth[]
     //floor: '2',
     order: 3,
     origHeightNum: 710,
