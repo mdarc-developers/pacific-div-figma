@@ -47,7 +47,7 @@ export const allConferences: Conference[] = [
     contactEmail: '',
     logoUrl: '',
     mapSessionsUrl: '', // for Room[]
-    mapExhibitorsUrl: ['/assets/maps/2026-hamvention-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
   },
   {
     id: 'huntsville-hamfest-2026',

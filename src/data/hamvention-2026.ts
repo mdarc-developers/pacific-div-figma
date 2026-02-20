@@ -1008,7 +1008,7 @@ export const sampleMaps: MapImage[] = [
   {
     id: 'map-2',
     name: 'Exhibitors',
-    url: '/assets/maps/2026-hamvention-Booths-Exhibits-Overview-v20.pdf', // for Booth[]
+    url: '/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf', // for Booth[]
     //floor: '2',
     order: 2,
     origHeightNum: 1702,
@@ -1066,7 +1066,6 @@ export const sampleAttendees: UserProfile[] = [
   {
     uid: '4',
     email: 'test4@test.com',
-    callsign: 'K6DL',
     displayName: 'David Lee',
     displayProfile: 'Something about me', 
     darkMode: false,

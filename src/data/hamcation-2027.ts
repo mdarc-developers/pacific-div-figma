@@ -384,7 +384,6 @@ export const sampleAttendees: UserProfile[] = [
   {
     uid: '4',
     email: 'test4@test.com',
-    callsign: 'K6DL',
     displayName: 'David Lee',
     displayProfile: 'Something about me', 
     darkMode: false,
