@@ -214,7 +214,7 @@ export function ExhibitorsPage() {
         return (
           <>
             <div className="w-full" >
-              <iframe src={exhibitorsMap.url} width="100%" style="border: none;">
+              <iframe src={exhibitorsMap.url} className="w-full">
                 Your browser does not support iframes. <a href={exhibitorsMap.url}>Download the PDF</a> instead.
               </iframe>
             </div>

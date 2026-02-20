@@ -8,12 +8,12 @@ import { getAuth, sendEmailVerification, sendPasswordResetEmail } from "firebase
 import { Toaster, toast } from "sonner";
 import { useConference } from '@/app/contexts/ConferenceContext';
 
-interface LoginPageProps {
+interface ProfilePageProps {
   bookmarkedSessions?: string[];
   onToggleBookmark?: (sessionId: string) => void;
 }
 
-export function ProfilePage({ bookmarkedSessions = [] }: LoginPageProps) {
+export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const { user, logout } = useAuth();

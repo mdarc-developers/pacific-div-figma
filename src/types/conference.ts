@@ -95,6 +95,7 @@ export interface UserProfile {
   email: string;
   callsign?: string;
   displayName?: string;
+  displayProfile?: string;
   darkMode: boolean;
   bookmarkedSessions: string[];
   notificationsEnabled: boolean;

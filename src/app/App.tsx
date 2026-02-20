@@ -11,6 +11,7 @@ import { ConferenceHeader } from '@/app/components/ConferenceHeader';
 import { ConferenceFooter } from '@/app/components/ConferenceFooter';
 import { MapsPage } from '@/app/pages/MapsPage';
 import { PrizesPage } from '@/app/pages/PrizesPage';
+import { AttendeesPage } from '@/app/pages/AttendeesPage';
 import { ExhibitorsPage } from '@/app/pages/ExhibitorsPage';
 import { SchedulePage } from '@/app/pages/SchedulePage';
 import { ForumsPage } from '@/app/pages/ForumsPage';
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/schedule" replace />} />
           <Route path="/maps" element={<MapsPage />} />
           <Route path="/prizes" element={<PrizesPage />} />
+          <Route path="/Attendees" element={<AttendeesPage />} />
           <Route path="/exhibitors" element={<ExhibitorsPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
           <Route path="/forums" element={<ForumsPage />} />

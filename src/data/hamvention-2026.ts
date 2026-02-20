@@ -1,4 +1,4 @@
-import { Session, MapImage, Room, Exhibitor, Booth, Prize, PrizeWinner } from '@/types/conference';
+import { Session, MapImage, Room, Exhibitor, Booth, Prize, PrizeWinner, UserProfile } from '@/types/conference';
 
 export const samplePrizes: Prize[] = [
   {
@@ -1008,9 +1008,104 @@ export const sampleMaps: MapImage[] = [
   {
     id: 'map-2',
     name: 'Exhibitors',
-    url: '/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf', // for Booth[]
+    url: '/assets/maps/2026-hamvention-Booths-Exhibits-Overview-v20.pdf', // for Booth[]
     //floor: '2',
     order: 2,
+    origHeightNum: 1702,
+    origWidthNum: 1280,
+  },
+];
+
+//export interface UserProfile {
+//  uid: string;
+//  email: string;
+//  callsign?: string;
+//  displayName?: string;
+//  displayProfile?: string;
+//  darkMode: boolean;
+//  bookmarkedSessions: string[];
+//  notificationsEnabled: boolean;
+//  smsNotifications: boolean;
+//  phoneNumber?: string;
+//}
+
+export const sampleAttendees: UserProfile[] = [
+  {
+    uid: '1',
+    email: 'test1test.com',
+    callsign: 'K6AL',
+    displayName: 'Alice Cooper',
+    displayProfile: 'Something about me', 
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
+  },
+  {
+    uid: '2',
+    email: 'test2@test.com',
+    callsign: 'N6YZ',
+    displayName: 'Bob Johnson',
+    displayProfile: 'Something about me', 
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
+  },
+  {
+    uid: '3',
+    email: 'test3@test.com',
+    callsign: 'W6CW',
+    displayName: 'Carol Williams',
+    displayProfile: 'Something about me', 
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
+  },
+  {
+    uid: '4',
+    email: 'test4@test.com',
+    callsign: 'K6DL',
+    displayName: 'David Lee',
+    displayProfile: 'Something about me', 
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
+  },
+  {
+    uid: '5',
+    email: 'test5@test.com',
+    callsign: 'K6ABC',
+    displayName: 'Jane Smith',
+    displayProfile: 'Something about me', 
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
+  },
+  {
+    uid: '6',
+    email: 'test6@test.com',
+    callsign: 'WB6NOA',
+    displayName: 'Gordon West',
+    displayProfile: 'Something about me', 
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
+  },
+  {
+    uid: '7',
+    email: 'test7@test.com',
+    callsign: 'AA6PP',
+    displayName: 'Dr. Antonis Papatsaras',
+    displayProfile: 'Something about me', 
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
   },
 ];
 
