@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamvention Data Extractor</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        #fileInput {
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+        #output {
+            background: #f5f5f5;
+            padding: 15px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            font-size: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .stats {
+            background: #e8f4f8;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hamvention Data Extractor</h1>
+    <div>
+        <input type="file" id="fileInput" accept=".html,.htm">
+        <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+    <div id="stats" class="stats"></div>
+    <div id="output"></div>
+
+    <script>
+        let extractedData = '';
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const htmlContent = event.target.result;
+                processHTML(htmlContent);
+            };
+            reader.readAsText(file);
+        });
+
+        function expandBoothNumbers(boothString) {
+            const booths = [];
+            const parts = boothString.split(/,\s*/);
+            
+            parts.forEach(part => {
+                part = part.trim();
+                if (part.includes('-')) {
+                    // Handle ranges like "2001-2004"
+                    const [start, end] = part.split('-').map(s => s.trim());
+                    const startNum = parseInt(start);
+                    const endNum = parseInt(end);
+                    
+                    for (let i = startNum; i <= endNum; i++) {
+                        booths.push(i.toString());
+                    }
+                } else if (part) {
+                    booths.push(part);
+                }
+            });
+            
+            return booths;
+        }
+
+        function cleanText(text) {
+            return text.replace(/\s+/g, ' ').trim();
+        }
+
+        function escapeString(str) {
+            return str.replace(/\\/g, '\\\\')
+                      .replace(/"/g, '\\"')
+                      .replace(/\n/g, '\\n')
+                      .replace(/\r/g, '\\r');
+        }
+
+        function createId(name) {
+            return name.toLowerCase()
+                       .replace(/[^a-z0-9\s-]/g, '')
+                       .replace(/\s+/g, '-')
+                       .replace(/-+/g, '-')
+                       .trim();
+        }
+
+        function processHTML(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Find the timestamp
+            const timestampCell = doc.querySelector('.hamventionTitle1');
+            const timestamp = timestampCell ? cleanText(timestampCell.textContent) : '(updated date unknown)';
+            
+            // Find all table rows
+            const rows = doc.querySelectorAll('table.ledModelTableFrame tr');
+            const exhibitors = [];
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 4) return;
+                
+                const vendorCompany = cleanText(cells[0].textContent);
+                const boothNumber = cleanText(cells[1].textContent);
+                const status = cleanText(cells[2].textContent);
+                const vendorName = cleanText(cells[3].textContent);
+                
+                // Skip header rows and special rows
+                if (vendorCompany.includes('Vendor') || 
+                    vendorCompany.includes('Booths Available') ||
+                    vendorCompany.includes('Unique Commercial') ||
+                    vendorCompany.includes('Exhibitors Paid') ||
+                    vendorCompany.includes('Paid Booths') ||
+                    !boothNumber || 
+                    boothNumber === '') {
+                    return;
+                }
+                
+                const type = status.toLowerCase().includes('confirmed') 
+                    ? 'exhibitor-confirmed' 
+                    : 'exhibitor-reserved';
+                
+                const locations = expandBoothNumbers(boothNumber);
+                
+                // Check if this is a detailed entry with description
+                const nextRow = row.nextElementSibling;
+                let description = timestamp;
+                
+                if (nextRow) {
+                    const descCell = nextRow.querySelector('.hamventionBoothInfo, .hamventionBoothInfoGMI');
+                    if (descCell) {
+                        const descText = cleanText(descCell.textContent);
+                        if (descText && descText.length > 0) {
+                            description = descText + ' ' + timestamp;
+                        }
+                    }
+                }
+                
+                const id = createId(vendorCompany);
+                
+                exhibitors.push({
+                    id,
+                    name: vendorCompany,
+                    location: locations,
+                    type,
+                    description: escapeString(description),
+                    vendorName: vendorName || undefined
+                });
+            });
+            
+            // Generate TypeScript output
+            let output = '// Extracted exhibitor data for Hamvention 2026\n\n';
+            output += 'export const sampleExhibitors: Exhibitor[] = [\n';
+            
+            exhibitors.forEach((exhibitor, index) => {
+                output += '  {\n';
+                output += `    id: "${exhibitor.id}",\n`;
+                output += `    name: "${escapeString(exhibitor.name)}",\n`;
+                if (exhibitor.vendorName) {
+                    output += `    description: "${exhibitor.description}, contact ${escapeString(exhibitor.vendorName)}",\n`;
+                } else {
+                    output += `    description: "${exhibitor.description}",\n`;
+                }
+                output += `    location: [${exhibitor.location.map(l => `${l}`).join(', ')}],\n`;
+                output += `    boothName: "${exhibitor.location.map(l => `${l}`).join(', ')}",\n`;
+                output += `    type: "${exhibitor.type}",\n`;
+                output += `    url: "",\n`;
+                output += '  },\n';
+            });
+            
+            output += '];\n';
+            
+            extractedData = output;
+            document.getElementById('output').textContent = output;
+            
+            // Display statistics
+            const confirmed = exhibitors.filter(e => e.type === 'exhibitor-confirmed').length;
+            const reserved = exhibitors.filter(e => e.type === 'exhibitor-reserved').length;
+            const totalBooths = exhibitors.reduce((sum, e) => sum + e.location.length, 0);
+            
+            document.getElementById('stats').innerHTML = `
+                <strong>Extraction Summary:</strong><br>
+                Total Exhibitors: ${exhibitors.length}<br>
+                Confirmed: ${confirmed}<br>
+                Reserved: ${reserved}<br>
+                Total Booth Spaces: ${totalBooths}<br>
+                Timestamp: ${timestamp}
+            `;
+        }
+
+        function copyToClipboard() {
+            if (!extractedData) {
+                alert('Please load an HTML file first!');
+                return;
+            }
+            
+            navigator.clipboard.writeText(extractedData).then(() => {
+                alert('Data copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>

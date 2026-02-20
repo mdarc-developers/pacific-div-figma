@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booth Coordinate Capture Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+        }
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            border: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .controls input {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        .controls button {
+            padding: 8px 16px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #616161;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        .output {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .output h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .output pre {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.waiting {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .status.ready {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .point-indicator {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        }
+        .point-label {
+            position: absolute;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            transform: translate(-50%, -150%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Booth Coordinate Capture Tool</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li><strong>Load the image</strong> using the file selector below</li>
+                <li><strong>Enter booth name</strong> (e.g., "1", "2", "NP-1") in the input field</li>
+                <li><strong>Click 2 corners</strong> of the booth: top-left, then bottom-right</li>
+                <li>The tool will automatically calculate all 4 corners and output coordinates in the format: <code>[[y1, x1], [y2, x2], [y3, x3], [y4, x4]]</code></li>
+                <li>Y-coordinates are measured from the <strong>bottom</strong> of the image</li>
+                <li>Click "Clear Last Point" to undo, or "Reset Booth" to start over</li>
+                <li>Copy the generated code from the output section</li>
+            </ol>
+        </div>
+
+        <div class="controls">
+            <input type="file" id="imageUpload" accept="image/*" style="margin-bottom: 10px;" />
+        </div>
+
+        <div class="controls">
+            <input type="text" id="boothName" placeholder="Enter booth name (e.g., 1, 2, NP-1)" />
+            <button class="btn-secondary" onclick="clearLastPoint()">Clear Last Point</button>
+            <button class="btn-danger" onclick="resetBooth()">Reset Booth</button>
+            <button class="btn-primary" onclick="copyOutput()">Copy Output</button>
+        </div>
+
+        <div class="status waiting" id="status">
+            Waiting for booth name and first click...
+        </div>
+
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="output">
+            <h3>Generated Coordinates:</h3>
+            <pre id="output">// Coordinates will appear here after clicking 2 points...</pre>
+        </div>
+
+        <div class="output">
+            <h3>All Booths (Cumulative):</h3>
+            <pre id="allBooths">// All booth coordinates will accumulate here...</pre>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const output = document.getElementById('output');
+        const allBoothsOutput = document.getElementById('allBooths');
+        const status = document.getElementById('status');
+        const boothNameInput = document.getElementById('boothName');
+        const imageUpload = document.getElementById('imageUpload');
+        
+        let img = new Image();
+        let points = [];
+        let imageHeight = 0;
+        let allBooths = [];
+        let imageLoaded = false;
+        
+        // Handle file upload
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    img.onload = function() {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        imageHeight = img.height;
+                        imageLoaded = true;
+                        drawImage();
+                        updateStatus();
+                        status.textContent = 'Image loaded! Enter booth name and start clicking.';
+                        status.className = 'status ready';
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function drawImage() {
+            if (!imageLoaded) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            
+            // Draw existing points
+            points.forEach((point, index) => {
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Draw label
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(point.x - 15, point.y - 25, 30, 20);
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                const label = index === 0 ? 'TL' : 'BR';
+                ctx.fillText(label, point.x, point.y - 10);
+            });
+            
+            // Draw rectangle when we have 2 points
+            if (points.length === 2) {
+                const topLeft = points[0];
+                const bottomRight = points[1];
+                
+                ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(
+                    topLeft.x,
+                    topLeft.y,
+                    bottomRight.x - topLeft.x,
+                    bottomRight.y - topLeft.y
+                );
+                
+                // Draw semi-transparent fill
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
+                ctx.fillRect(
+                    topLeft.x,
+                    topLeft.y,
+                    bottomRight.x - topLeft.x,
+                    bottomRight.y - topLeft.y
+                );
+            }
+        }
+        
+        canvas.addEventListener('click', function(e) {
+            if (!imageLoaded) {
+                alert('Please load an image first!');
+                return;
+            }
+            
+            if (!boothNameInput.value.trim()) {
+                alert('Please enter a booth name first!');
+                return;
+            }
+            
+            const rect = canvas.getBoundingClientRect();
+            // Calculate click position relative to displayed canvas
+            const displayX = e.clientX - rect.left;
+            const displayY = e.clientY - rect.top;
+            
+            // Scale to actual image coordinates
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = Math.round(displayX * scaleX);
+            const y = Math.round(displayY * scaleY);
+            
+            if (points.length < 2) {
+                points.push({x, y});
+                drawImage();
+                updateStatus();
+                
+                if (points.length === 2) {
+                    generateOutput();
+                }
+            }
+        });
+        
+        function clearLastPoint() {
+            if (points.length > 0) {
+                points.pop();
+                drawImage();
+                updateStatus();
+                if (points.length < 2) {
+                    output.textContent = '// Coordinates will appear here after clicking 2 points...';
+                }
+            }
+        }
+        
+        function resetBooth() {
+            points = [];
+            drawImage();
+            updateStatus();
+            output.textContent = '// Coordinates will appear here after clicking 2 points...';
+        }
+        
+        function updateStatus() {
+            if (!imageLoaded) {
+                status.textContent = 'Please load an image to begin';
+                status.className = 'status waiting';
+                return;
+            }
+            
+            const boothName = boothNameInput.value.trim();
+            if (!boothName) {
+                status.textContent = 'Please enter a booth name first!';
+                status.className = 'status waiting';
+            } else if (points.length === 0) {
+                status.textContent = `Ready to capture booth "${boothName}" - Click top-left corner`;
+                status.className = 'status ready';
+            } else if (points.length === 1) {
+                status.textContent = `Booth "${boothName}" - Point 1/2 captured. Click bottom-right corner`;
+                status.className = 'status ready';
+            } else {
+                status.textContent = `Booth "${boothName}" complete! Enter new booth name and click to start next booth.`;
+                status.className = 'status ready';
+            }
+        }
+        
+        boothNameInput.addEventListener('input', updateStatus);
+        
+        function generateOutput() {
+            const boothName = boothNameInput.value.trim() || 'unknown';
+            
+            // Get the two clicked points (top-left and bottom-right)
+            const topLeft = points[0];
+            const bottomRight = points[1];
+            
+            // Calculate all 4 corners in the required order:
+            // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+            const fourCorners = [
+                {x: topLeft.x, y: bottomRight.y},                // bottom-left
+                topLeft,                                          // top-left
+                {x: bottomRight.x, y: topLeft.y},                // top-right
+                bottomRight                                       // bottom-right
+            ];
+            
+            // Convert coordinates: y from bottom, and swap to [y, x] format
+            const coords = fourCorners.map(p => {
+                const yFromBottom = imageHeight - p.y;
+                return [yFromBottom, p.x];
+            });
+            
+            const coordString = coords.map(c => `[${c[0]}, ${c[1]}]`).join(', ');
+            const outputText = `\n  {\n    id: ${boothName},\n    coords: [${coordString}],\n    locationZone: \'lobby\',\n  },\n\n`;
+            
+            output.textContent = outputText;
+            
+            // Add to cumulative output
+            allBooths.push(outputText);
+            allBoothsOutput.textContent = allBooths.join('\n\n');
+            
+            // Auto-reset for next booth
+            setTimeout(() => {
+                points = [];
+                drawImage();
+                boothNameInput.value = '';
+                updateStatus();
+            }, 500);
+        }
+        
+        function copyOutput() {
+            const text = allBoothsOutput.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('All booth coordinates copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+        
+        // Initialize status
+        updateStatus();
+    </script>
+</body>
+</html>

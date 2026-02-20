@@ -46,7 +46,7 @@ export const allConferences: Conference[] = [
     googlecalUrl: '',
     contactEmail: '',
     logoUrl: '',
-    mapSessionsUrl: '', // for Room[]
+    mapSessionsUrl: '/public/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
   },
   {
