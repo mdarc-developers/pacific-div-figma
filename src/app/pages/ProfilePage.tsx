@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { ProfileView } from '@/app/components/ProfileView';
 //import { User } from "lucide-react";
 import { useAuth } from '@/app/contexts/AuthContext';
-//import { Conference } from '@/types/conference';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import { useConference } from '@/app/contexts/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { Toaster, toast } from "sonner";
-import { useConference } from '@/app/contexts/ConferenceContext';
 
 interface ProfilePageProps {
   bookmarkedSessions?: string[];
@@ -17,6 +17,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const { user, logout } = useAuth();
+  const {theme, resolvedTheme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
 
