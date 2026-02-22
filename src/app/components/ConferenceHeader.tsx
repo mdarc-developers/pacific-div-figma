@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Conference } from '@/types/conference';
-import { Bell, ChevronDown, Calendar, ExternalLink, MapPin, User } from 'lucide-react';
+import { Bell, ChevronDown, Calendar, ExternalLink, MapPin, MonitorCog, Moon, Sun, User } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -230,32 +230,8 @@ export function ConferenceHeader() {
                   <img src={activeConference.logoUrl} alt="Conference Logo"></img>
                 </a>
               ) : ""}
-              <div className="ml-auto flex items-center gap-2">
-                {/* NEW: 3-way theme toggle */}
-                <ToggleGroup
-                  type="single"
-                  value={theme}
-                  onValueChange={(value) => {
-                    // Radix returns "" when deselecting; ignore that.
-                    if (!value) return;
-                    setTheme(value as Theme);
-                  }}
-                  variant="outline"
-                  size="sm"
-                  aria-label="Theme"
-                  className="bg-white/30 dark:bg-black/20 backdrop-blur-sm"
-                >
-                  <ToggleGroupItem value="light" aria-label="Light theme">
-                    Light
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="system" aria-label="System theme">
-                    System
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="dark" aria-label="Dark theme">
-                    Dark
-                  </ToggleGroupItem>
-                </ToggleGroup>
-
+              <div className="ml-auto flex flex-col items-end gap-2">
+                {/* Conference Selector (top) */}
                 <Dialog open={isSelectOpen} onOpenChange={setIsSelectOpen}>
                   <DialogTrigger asChild>
                     <Button
@@ -350,6 +326,31 @@ export function ConferenceHeader() {
                     </div>
                   </DialogContent>
                 </Dialog>
+                {/* NEW: 3-way theme toggle */}
+                <ToggleGroup
+                  type="single"
+                  value={theme}
+                  onValueChange={(value) => {
+                    // Radix returns "" when deselecting; ignore that.
+                    if (!value) return;
+                    setTheme(value as Theme);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  aria-label="Theme"
+                  className="bg-white/30 dark:bg-black/20 backdrop-blur-sm"
+                >
+                  <ToggleGroupItem value="light" aria-label="Light theme" title="Light theme">
+                    <Sun className="h-4 w-4" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="system" aria-label="System theme" title="System Theme">
+                    <MonitorCog className="h-4 w-4" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="dark" aria-label="Dark theme" title="Dark theme">
+                    <Moon className="h-4 w-4" />
+                  </ToggleGroupItem>
+                </ToggleGroup>
+
               </div>
             </div>
 
