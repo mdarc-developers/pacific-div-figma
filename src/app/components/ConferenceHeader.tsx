@@ -14,7 +14,8 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { useConference } from '@/app/contexts/ConferenceContext';
 import { NavLink } from 'react-router-dom';
-
+import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
+import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 
 //import { forwardRef } from 'react';
 //
@@ -101,10 +102,10 @@ function hexToRGBArray(hex: string) {
 }
 
 export function ConferenceHeader() {
-
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { theme, setTheme } = useTheme();
 
   const headerTextColor = contrastingColor(activeConference.primaryColor);
   const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
@@ -229,7 +230,31 @@ export function ConferenceHeader() {
                   <img src={activeConference.logoUrl} alt="Conference Logo"></img>
                 </a>
               ) : ""}
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center gap-2">
+                {/* NEW: 3-way theme toggle */}
+                <ToggleGroup
+                  type="single"
+                  value={theme}
+                  onValueChange={(value) => {
+                    // Radix returns "" when deselecting; ignore that.
+                    if (!value) return;
+                    setTheme(value as Theme);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  aria-label="Theme"
+                  className="bg-white/30 dark:bg-black/20 backdrop-blur-sm"
+                >
+                  <ToggleGroupItem value="light" aria-label="Light theme">
+                    Light
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="system" aria-label="System theme">
+                    System
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="dark" aria-label="Dark theme">
+                    Dark
+                  </ToggleGroupItem>
+                </ToggleGroup>
 
                 <Dialog open={isSelectOpen} onOpenChange={setIsSelectOpen}>
                   <DialogTrigger asChild>
