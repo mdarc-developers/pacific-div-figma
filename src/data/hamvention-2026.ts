@@ -68,7 +68,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 ];
 
-export const sampleExhibitors: Exhibitor[] = [
+export const mapExhibitors: Exhibitor[] = [
 //export interface Exhibitor {
 //  id: string;                    ? auto assign ? use name
 //  name: string;                  good

@@ -17,7 +17,7 @@ interface BoothModule {
 }
 
 interface ExhibitorModule {
-  sampleExhibitors?: Exhibitor[];
+  mapExhibitors?: Exhibitor[];
   [key: string]: unknown;
 }
 
@@ -42,8 +42,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   if (typedBoothModule.mapBooths) {
     BOOTH_DATA[conferenceId] = typedBoothModule.mapBooths;
   }
-  if (typedExhibitorModule.sampleExhibitors) {
-    EXHIBITOR_DATA[conferenceId] = typedExhibitorModule.sampleExhibitors;
+  if (typedExhibitorModule.mapExhibitors) {
+    EXHIBITOR_DATA[conferenceId] = typedExhibitorModule.mapExhibitors;
   }
 });
 
@@ -54,13 +54,13 @@ export function ExhibitorsPage() {
   const sampleMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id];
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
-  const sampleExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
+  const mapExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
   const numEmaps = activeConference.mapExhibitorsUrl.length || 0;
   const boothToName = new Map();
 
-  for (const ex of sampleExhibitors) {
+  for (const ex of mapExhibitors) {
     for (const boo in ex.location) {
       //console.log(ex.location[boo].toString() + " " + ex.name);
       boothToName.set(ex.location[boo], ex);

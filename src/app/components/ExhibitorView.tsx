@@ -85,7 +85,7 @@ function ExhibitorCard({ exhibitor, isBookmarked, isHighlighted, onToggleBookmar
 }
 
 interface ExhibitorModule {
-  sampleExhibitors?: Exhibitor[];
+  mapExhibitors?: Exhibitor[];
   [key: string]: unknown;
 }
 
@@ -97,8 +97,8 @@ const EXHIBITOR_DATA: Record<string, Exhibitor[]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as ExhibitorModule;
-  if (typedModule.sampleExhibitors) {
-    EXHIBITOR_DATA[conferenceId] = typedModule.sampleExhibitors;
+  if (typedModule.mapExhibitors) {
+    EXHIBITOR_DATA[conferenceId] = typedModule.mapExhibitors;
   }
 });
 
