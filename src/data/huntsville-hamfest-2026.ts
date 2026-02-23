@@ -58,19 +58,6 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 ];
 
-export const exhibitorBooths: Booth[] = [
-  // origHeightNum: 1702,
-  // origWidthNum: 1280,
-  // ... (your exhibitorBooths data) ...
-  // using y, x not x, y   also,
-  // x is normal, y from bottom so 1702 - y
-
-  // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-
-  // down 70 in bishop ranch column, 51 wide
-
-];
-
 export const sampleExhibitors: Exhibitor[] = [
   {
     id: 'flexradio',
