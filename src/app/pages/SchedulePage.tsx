@@ -1,16 +1,10 @@
-import { useState } from 'react';
 import { ScheduleView } from '@/app/components/ScheduleView';
+import { useConference } from '@/app/contexts/ConferenceContext';
+import { useBookmarks } from '@/app/hooks/useBookmarks';
 
 export function SchedulePage() {
-  const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
-
-  const handleToggleBookmark = (sessionId: string) => {
-    setBookmarkedSessions(prev =>
-      prev.includes(sessionId)
-        ? prev.filter(id => id !== sessionId)
-        : [...prev, sessionId]
-    );
-  };
+  const { activeConference } = useConference();
+  const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
 
   return (
     <div>
