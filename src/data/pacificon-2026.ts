@@ -1333,8 +1333,8 @@ export const sampleSessions: Session[] = [
     location: 'Main Ballroom',
     startTime: '2026-10-16T09:00:00',
     endTime: '2026-10-16T10:30:00',
-    category: 'Technical',
-    track: 'Digital Modes'
+    category: 'Forum',
+    track: 'Technical/Digital'
   },
   {
     id: 'session-2',
@@ -1344,8 +1344,8 @@ export const sampleSessions: Session[] = [
     location: 'Room 101',
     startTime: '2026-10-16T09:00:00',
     endTime: '2026-10-16T10:00:00',
-    category: 'Public Service',
-    track: 'EmComm'
+    category: 'Forum',
+    track: 'Public_Service/EmComm'
   },
   {
     id: 'session-3',
@@ -1355,8 +1355,8 @@ export const sampleSessions: Session[] = [
     location: 'Main Ballroom',
     startTime: '2026-10-16T11:00:00',
     endTime: '2026-10-16T12:30:00',
-    category: 'Technical',
-    track: 'Antennas'
+    category: 'Forum',
+    track: 'Technical/Antennas'
   },
   {
     id: 'session-4',
@@ -1366,8 +1366,8 @@ export const sampleSessions: Session[] = [
     location: 'Room 102',
     startTime: '2026-10-16T11:00:00',
     endTime: '2026-10-16T12:00:00',
-    category: 'Operating',
-    track: 'DX'
+    category: 'Forum',
+    track: 'Operating/DX'
   },
   {
     id: 'session-5',
@@ -1377,8 +1377,8 @@ export const sampleSessions: Session[] = [
     location: 'Main Ballroom',
     startTime: '2026-10-16T14:00:00',
     endTime: '2026-10-16T15:30:00',
-    category: 'Technical',
-    track: 'Digital'
+    category: 'Forum',
+    track: 'Technical/Digital'
   },
   {
     id: 'session-6',
@@ -1388,8 +1388,8 @@ export const sampleSessions: Session[] = [
     location: 'Room 101',
     startTime: '2026-10-16T14:00:00',
     endTime: '2026-10-16T15:00:00',
-    category: 'Operating',
-    track: 'Contesting'
+    category: 'Forum',
+    track: 'Operating/Contesting'
   },
   {
     id: 'session-7',
@@ -1399,8 +1399,8 @@ export const sampleSessions: Session[] = [
     location: 'Room 102',
     startTime: '2026-10-16T14:00:00',
     endTime: '2026-10-16T15:00:00',
-    category: 'Operating',
-    track: 'Satellite'
+    category: 'Forum',
+    track: 'Operating/Satellite'
   },
   {
     id: 'session-8',
@@ -1410,7 +1410,7 @@ export const sampleSessions: Session[] = [
     location: 'Main Ballroom',
     startTime: '2026-10-16T16:00:00',
     endTime: '2026-10-16T17:00:00',
-    category: 'General',
+    category: 'Forum',
     track: 'Youth'
   },
   {
@@ -1421,7 +1421,7 @@ export const sampleSessions: Session[] = [
     location: 'Main Ballroom',
     startTime: '2026-10-17T09:00:00',
     endTime: '2026-10-17T10:00:00',
-    category: 'General',
+    category: 'Forum',
     track: 'ARRL'
   },
   {
@@ -1432,8 +1432,8 @@ export const sampleSessions: Session[] = [
     location: 'Room 101',
     startTime: '2026-10-17T09:00:00',
     endTime: '2026-10-17T10:30:00',
-    category: 'Technical',
-    track: 'Station Building'
+    category: 'Forum',
+    track: 'Technical/Station Building'
   },
   {
     id: 'session-11',
@@ -1443,8 +1443,8 @@ export const sampleSessions: Session[] = [
     location: 'Room 101',
     startTime: '2026-10-18T09:00:00',
     endTime: '2026-10-18T10:30:00',
-    category: 'Technical',
-    track: 'Station Building'
+    category: 'Forum',
+    track: 'Technical/Station Building'
   },
   {
     id: 'session-12',
@@ -1454,8 +1454,8 @@ export const sampleSessions: Session[] = [
     location: 'Grand Ballroom',
     startTime: '2026-10-16T09:00:00',
     endTime: '2026-10-16T10:00:00',
-    category: 'Getting Started',
-    track: ''
+    category: 'Forum',
+    track: 'Getting Started'
   },
 ];
 
@@ -1513,7 +1513,7 @@ export const sampleAttendees: UserProfile[] = [
     email: 'test1test.com',
     callsign: 'K6AL',
     displayName: 'Alice Cooper',
-    displayProfile: 'Something about me', 
+    displayProfile: 'Something about me',
     darkMode: false,
     bookmarkedSessions: [],
     notificationsEnabled: false,
@@ -1524,7 +1524,7 @@ export const sampleAttendees: UserProfile[] = [
     email: 'test2@test.com',
     callsign: 'N6YZ',
     displayName: 'Bob Johnson',
-    displayProfile: 'Something about me', 
+    displayProfile: 'Something about me',
     darkMode: false,
     bookmarkedSessions: [],
     notificationsEnabled: false,
@@ -1535,7 +1535,7 @@ export const sampleAttendees: UserProfile[] = [
     email: 'test3@test.com',
     callsign: 'W6CW',
     displayName: 'Carol Williams',
-    displayProfile: 'Something about me', 
+    displayProfile: 'Something about me',
     darkMode: false,
     bookmarkedSessions: [],
     notificationsEnabled: false,
@@ -1545,7 +1545,7 @@ export const sampleAttendees: UserProfile[] = [
     uid: '4',
     email: 'test4@test.com',
     displayName: 'David Lee',
-    displayProfile: 'Something about me', 
+    displayProfile: 'Something about me',
     darkMode: false,
     bookmarkedSessions: [],
     notificationsEnabled: false,
@@ -1556,7 +1556,7 @@ export const sampleAttendees: UserProfile[] = [
     email: 'test5@test.com',
     callsign: 'K6ABC',
     displayName: 'Jane Smith',
-    displayProfile: 'Something about me', 
+    displayProfile: 'Something about me',
     darkMode: false,
     bookmarkedSessions: [],
     notificationsEnabled: false,
@@ -1567,7 +1567,7 @@ export const sampleAttendees: UserProfile[] = [
     email: 'test6@test.com',
     callsign: 'WB6NOA',
     displayName: 'Gordon West',
-    displayProfile: 'Something about me', 
+    displayProfile: 'Something about me',
     darkMode: false,
     bookmarkedSessions: [],
     notificationsEnabled: false,
@@ -1578,7 +1578,7 @@ export const sampleAttendees: UserProfile[] = [
     email: 'test7@test.com',
     callsign: 'AA6PP',
     displayName: 'Dr. Antonis Papatsaras',
-    displayProfile: 'Something about me', 
+    displayProfile: 'Something about me',
     darkMode: false,
     bookmarkedSessions: [],
     notificationsEnabled: false,
