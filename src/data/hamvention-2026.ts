@@ -15,7 +15,7 @@ export const samplePrizes: Prize[] = [
     name: 'Antenna Tuner',
     description: 'For HF bands, LDG Z-100 Plus',
     imageUrl: '/assets/prizes/p2.jpg',
-    donor: 'Pacificon Committee',
+    donor: 'Hamvention Committee',
     winner: 'winner2',
     category: 'Raffle'
   },
@@ -1490,12 +1490,7 @@ export const sampleExhibitors: Exhibitor[] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  '/pacificon-exhibitors-2025.jpg', [
-    {
-      id: 1,
-      coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-      locationZone: 'b',
-    },
+  '', [
   ],
 
 ];
