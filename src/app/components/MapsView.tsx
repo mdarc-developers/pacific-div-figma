@@ -8,7 +8,7 @@ import { useConference } from '@/app/contexts/ConferenceContext';
 
 // Type for the imported conference module
 interface ConferenceModule {
-  sampleMaps?: MapImage[];
+  conferenceMaps?: MapImage[];
   [key: string]: unknown;
 }
 
@@ -23,8 +23,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as ConferenceModule;
-  if (typedModule.sampleMaps) {
-    MAP_DATA[conferenceId] = typedModule.sampleMaps;
+  if (typedModule.conferenceMaps) {
+    MAP_DATA[conferenceId] = typedModule.conferenceMaps;
   }
 });
 

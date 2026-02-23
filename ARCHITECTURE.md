@@ -209,7 +209,7 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
 
 ### 7.1 Maps (`/maps`)
 
-- `MapsPage` imports `sampleMaps` directly and passes them to `MapsView`.
+- `MapsPage` loads `conferenceMaps` from each conference data file (via Vite glob import) and passes them to `MapsView`.
 - `MapsView` renders a **Radix Tabs** component. Each tab shows one `<ImageWithFallback>` inside a `<Card>`.
 - Maps are sorted by their `order` field.
 - `ImageWithFallback` catches `onError` and replaces the broken image with a base64-encoded inline SVG placeholder, preserving the original URL as a `data-original-url` attribute for debugging.

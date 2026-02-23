@@ -228,7 +228,7 @@ export const sampleSessions: Session[] = [
 ];
 
 // map images - in production these may be bundled images
-export const sampleMaps: MapImage[] = [
+export const conferenceMaps: MapImage[] = [
   {
     id: 'map-1',
     name: 'Fairground',

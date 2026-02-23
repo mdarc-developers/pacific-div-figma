@@ -2049,11 +2049,9 @@ export const sampleSessions: Session[] = [
 ];
 
 // map images - in production these may be bundled images
-// TODO: change name to ConferenceMaps, a top level simple array, FROM sampleMaps. configured, no data entry UI. MapImage[]
-//       perhaps use an atrribute to take functionality away from all-conferences.ts
 //           mapSessionsUrl: '/pacificon-forums-2025.jpg', // for Room[] and Session[] - category types Forum and Event
 //           mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[]
-export const sampleMaps: MapImage[] = [
+export const conferenceMaps: MapImage[] = [
   {
     id: 'map-1',
     name: 'Hotel',

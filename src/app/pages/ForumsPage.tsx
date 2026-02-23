@@ -8,7 +8,7 @@ import { MapImage, Room } from '@/types/conference';
 import { useBookmarks } from '@/app/hooks/useBookmarks';
 
 interface MapsModule {
-  sampleMaps?: MapImage[];
+  conferenceMaps?: MapImage[];
   [key: string]: unknown;
 }
 
@@ -30,8 +30,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedMapModule = module as MapsModule;
   const typedRoomModule = module as RoomModule;
-  if (typedMapModule.sampleMaps) {
-    MAP_DATA[conferenceId] = typedMapModule.sampleMaps;
+  if (typedMapModule.conferenceMaps) {
+    MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
   }
   if (typedRoomModule.forumRooms) {
     ROOM_DATA[conferenceId] = typedRoomModule.forumRooms;
@@ -44,7 +44,7 @@ export function ForumsPage() {
   const { highlightForumRoomName } = useSearch();
   const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
   const forumRooms = ROOM_DATA[activeConference.id] || [];
-  const sampleMaps = MAP_DATA[activeConference.id] || [];
+  const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
   const polygonRefs = useRef<Map<string, L.Polygon>>(new Map());
@@ -172,8 +172,8 @@ export function ForumsPage() {
     });
   }, [highlightForumRoomName]);
 
-  //const forumMap: MapImage = sampleMaps.find(m => m.origHeightNum !== undefined) || // assume origWidthNum as well
-  const forumMap: MapImage = sampleMaps.find(m => m.url === activeConference.mapSessionsUrl) || // assume origWidthNum as well
+  //const forumMap: MapImage = conferenceMaps.find(m => m.origHeightNum !== undefined) || // assume origWidthNum as well
+  const forumMap: MapImage = conferenceMaps.find(m => m.url === activeConference.mapSessionsUrl) || // assume origWidthNum as well
   {
     id: 'map-0',
     conferenceId: 'pacificon-2026',

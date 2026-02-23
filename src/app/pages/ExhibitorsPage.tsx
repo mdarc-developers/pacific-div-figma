@@ -7,7 +7,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface MapsModule {
-  sampleMaps?: MapImage[];
+  conferenceMaps?: MapImage[];
   [key: string]: unknown;
 }
 
@@ -36,8 +36,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   const typedMapModule = module as MapsModule;
   const typedBoothModule = module as BoothModule;
   const typedExhibitorModule = module as ExhibitorModule;
-  if (typedMapModule.sampleMaps) {
-    MAP_DATA[conferenceId] = typedMapModule.sampleMaps;
+  if (typedMapModule.conferenceMaps) {
+    MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
   }
   if (typedBoothModule.mapBooths) {
     BOOTH_DATA[conferenceId] = typedBoothModule.mapBooths;
@@ -51,7 +51,7 @@ export function ExhibitorsPage() {
   const [bookmarkedExhibitors, setBookmarkedExhibitors] = useState<string[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-  const sampleMaps = MAP_DATA[activeConference.id] || [];
+  const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id];
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
   const mapExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
@@ -66,12 +66,12 @@ export function ExhibitorsPage() {
       boothToName.set(ex.location[boo], ex);
     }
   };
-  //const foundMap = sampleMaps.find(m => m.url === element)
+  //const foundMap = conferenceMaps.find(m => m.url === element)
   //if ( foundMap ) { multipleExhibitorMaps.push(foundMap);
 
   const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(() => {
     if (activeConference.mapExhibitorsUrl.length === 1) {
-      return sampleMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+      return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
         order: 1,
         id: 'map-0',
         name: 'No Exhibitors Map Found',
@@ -84,7 +84,7 @@ export function ExhibitorsPage() {
   });
   const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
     if (activeConference.mapExhibitorsUrl.length > 1) {
-      return sampleMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+      return conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
     }
     return [];
   });
@@ -112,7 +112,7 @@ export function ExhibitorsPage() {
   useEffect(() => {
     if (numEmaps === 1) {
       setExhibitorsMap(
-        sampleMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+        conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
           order: 1,
           id: 'map-0',
           name: 'No Exhibitors Map Found',
@@ -123,7 +123,7 @@ export function ExhibitorsPage() {
       );
       setMultipleExhibitorMaps([]);
     } else if (numEmaps > 1) {
-      const maps = sampleMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+      const maps = conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
       if (maps.length === 0) {
         console.warn('No matching maps found for URLs:', activeConference.mapExhibitorsUrl);
       }
