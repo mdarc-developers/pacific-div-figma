@@ -1707,8 +1707,8 @@ export const sampleMaps: MapImage[] = [
     url: '/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf', // for Booth[]
     //floor: '2',
     order: 2,
-    origHeightNum: 1702,
-    origWidthNum: 1280,
+    origHeightNum: 745,
+    origWidthNum: 961,
   },
   {
     id: 'map-3',
