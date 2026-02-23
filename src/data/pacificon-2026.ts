@@ -1,5 +1,7 @@
 import { Session, MapImage, Room, Exhibitor, Booth, Prize, PrizeWinner, UserProfile } from '@/types/conference';
 
+// TODO: PRIZES see current static data for proof of concept, needs wiring & data entry. Prize[]
+//           rename from sample
 export const samplePrizes: Prize[] = [
   {
     id: 'p1',
@@ -38,6 +40,9 @@ export const samplePrizes: Prize[] = [
   },
 ];
 
+// TODO: PRIZES see current static data for proof of concept, needs wiring & data entry. PrizeWinner[]
+//           these should map PRIZES to ATTENDEES aka UserProfile
+//           rename from sample
 export const samplePrizeWinners: PrizeWinner[] = [
   {
     id: 'winner1',
@@ -66,6 +71,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 ];
 
+// TODO: move to mapBooths FROM exhibitorBooths, needs wiring. uses tools for data entry. Booth[]
 export const exhibitorBooths: Booth[] = [
   // origHeightNum: 1702,
   // origWidthNum: 1280,
@@ -537,6 +543,8 @@ export const exhibitorBooths: Booth[] = [
 
 ];
 
+// TODO: move to mapExhibitors FROM sampleExhibitors, needs wiring & data entry. Exhibitor[]
+//    '/pacificon-exhibitors-2025.png', [] // for Booth[] and Exhibitor[]
 export const sampleExhibitors: Exhibitor[] = [
   {
     id: 'flexradio',
@@ -1170,6 +1178,7 @@ export const sampleExhibitors: Exhibitor[] = [
   },
 ];
 
+//TODO: move from exhibitorBooths to mapBooths, needs wiring. uses tools for data entry
 export const mapBooths: [string, Booth[]] = [
   '/pacificon-exhibitors-2025.jpg', [
     {
@@ -1181,6 +1190,595 @@ export const mapBooths: [string, Booth[]] = [
 
 ];
 
+
+// Extracted event schedule from Pacificon
+// TODO: move from sampleSessions to mapSessions, needs wiring & data entry
+export const mapSessions: [string, Session[]] = [
+  '/pacificon-forums-2025.jpg', [
+    {
+      id: "friday-registrationwill-call-open",
+      title: "Registration/Will Call Open",
+      description: "",
+      speaker: [],
+      location: "Mt. Diablo/Lobby",
+      startTime: "2025-10-10T07:00:00",
+      endTime: "2025-10-10T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-antenna-seminar",
+      title: "Antenna Seminar",
+      description: "",
+      speaker: [],
+      location: "Salon E",
+      startTime: "2025-10-10T09:00:00",
+      endTime: "2025-10-10T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-cash-sales-lunch",
+      title: "Cash Sales Lunch",
+      description: "",
+      speaker: [],
+      location: "Contra Costa Patio",
+      startTime: "2025-10-10T11:30:00",
+      endTime: "2025-10-10T13:30:00",
+      category: "Events",
+    },
+    {
+      id: "friday-special-event-station-setup",
+      title: "Special Event Station",
+      description: "Hosted by Palo Alto Am. Radio Assoc. (PAARA)",
+      speaker: [],
+      location: "Bishop Ranch Patio",
+      startTime: "2025-10-10T12:00:00",
+      endTime: "2025-10-10T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-vendor-setup",
+      title: "Vendor Setup",
+      description: "closed to public",
+      speaker: [],
+      location: "Salon 1 Salon A-D",
+      startTime: "2025-10-10T09:00:00",
+      endTime: "2025-10-10T15:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-prize-booth",
+      title: "Prize Booth",
+      description: "",
+      speaker: [],
+      location: "Hotel Lobby",
+      startTime: "2025-10-10T15:00:00",
+      endTime: "2025-10-10T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-arrl-booth",
+      title: "ARRL Booth",
+      description: "",
+      speaker: [],
+      location: "Salons A-D",
+      startTime: "2025-10-10T15:00:00",
+      endTime: "2025-10-10T18:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-vendor-exhibit-halls-open-to-attendees",
+      title: "Vendor Exhibit Halls Open to Attendees",
+      description: "",
+      speaker: [],
+      location: "Salon 1 Salon A-D",
+      startTime: "2025-10-10T15:00:00",
+      endTime: "2025-10-10T18:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-qrp-no-host-dinner",
+      title: "QRP No-host Dinner",
+      description: "",
+      speaker: [],
+      location: "Meet in Hotel Lobby, then to Panera",
+      startTime: "2025-10-10T16:00:00",
+      endTime: "2025-10-10T18:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-mt-diablo-amateur-radio-club-meeting",
+      title: "Mt. Diablo Amateur Radio Club Meeting",
+      description: "Open to All; Please Join Us",
+      speaker: [],
+      location: "Salon E",
+      startTime: "2025-10-10T19:00:00",
+      endTime: "2025-10-10T21:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-qrp-open-house",
+      title: "QRP Open House",
+      description: "",
+      speaker: [],
+      location: "Pleasanton/Danville",
+      startTime: "2025-10-10T19:00:00",
+      endTime: "2025-10-10T22:00:00",
+      category: "Events",
+    },
+    {
+      id: "friday-prize-drawing",
+      title: "Prize Drawing",
+      description: "approximate time",
+      speaker: [],
+      location: "Salon E",
+      startTime: "2025-10-10T20:30:00",
+      endTime: "2025-10-10T21:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-registrationwill-call-open",
+      title: "Registration/Will Call Open",
+      description: "",
+      speaker: [],
+      location: "Mt. Diablo/Lobby",
+      startTime: "2025-10-11T06:00:00",
+      endTime: "2025-10-11T16:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-cash-sales-breakfast",
+      title: "Cash Sales Breakfast",
+      description: "",
+      speaker: [],
+      location: "Contra Costa Patio",
+      startTime: "2025-10-11T07:00:00",
+      endTime: "2025-10-11T09:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-breakfast-with-gordo",
+      title: "Breakfast With Gordo",
+      description: "",
+      speaker: [],
+      location: "Salon E",
+      startTime: "2025-10-11T07:00:00",
+      endTime: "2025-10-11T07:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-ham-instructor-academy",
+      title: "Ham Instructor Academy",
+      description: "",
+      speaker: ["Gordon West"],
+      location: "Salon E",
+      startTime: "2025-10-11T08:00:00",
+      endTime: "2025-10-11T08:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-ham-license-testing",
+      title: "Ham License Testing",
+      description: "",
+      speaker: [],
+      location: "Trivalley 2",
+      startTime: "2025-10-11T08:00:00",
+      endTime: "2025-10-11T13:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-outside-displays",
+      title: "Outside Displays",
+      description: "",
+      speaker: [],
+      location: "Parking Lot",
+      startTime: "2025-10-11T08:00:00",
+      endTime: "2025-10-11T15:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-technician-one-day-license-class",
+      title: "Technician One Day License Class",
+      description: "Exam follows",
+      speaker: [],
+      location: "Tri-Valley 1",
+      startTime: "2025-10-11T08:00:00",
+      endTime: "2025-10-11T16:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-scouting-activities-merit-badges",
+      title: "Scouting Activities. Merit Badges",
+      description: "",
+      speaker: [],
+      location: "Salon F; San Ramon Boardroom",
+      startTime: "2025-10-11T08:00:00",
+      endTime: "2025-10-11T16:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-forums",
+      title: "FORUMS",
+      description: "",
+      speaker: [],
+      location: "See Forums Schedule",
+      startTime: "2025-10-11T08:00:00",
+      endTime: "2025-10-11T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-electronic-kit-building",
+      title: "Electronic Kit Building",
+      description: "for youth & adults",
+      speaker: [],
+      location: "Bishop Ranch Hallway Foyer",
+      startTime: "2025-10-11T09:00:00",
+      endTime: "2025-10-11T15:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-prize-booth",
+      title: "Prize Booth",
+      description: "",
+      speaker: [],
+      location: "Hotel Lobby",
+      startTime: "2025-10-11T09:00:00",
+      endTime: "2025-10-11T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-arrl-booth",
+      title: "ARRL Booth",
+      description: "",
+      speaker: [],
+      location: "Salons A-D",
+      startTime: "2025-10-11T09:00:00",
+      endTime: "2025-10-11T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-vendor-exhibit-halls-open",
+      title: "Vendor Exhibit Halls Open",
+      description: "",
+      speaker: [],
+      location: "Salon 1 Salon A-D",
+      startTime: "2025-10-11T09:00:00",
+      endTime: "2025-10-11T17:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-elecraft-k4-updates-along-with-qa",
+      title: "Elecraft K4 Updates Along With Q&A",
+      description: "",
+      speaker: ["Eric Swartz, WA6HHQ"],
+      location: "Salon E",
+      startTime: "2025-10-11T10:00:00",
+      endTime: "2025-10-11T10:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-prize-drawing",
+      title: "Prize Drawing",
+      description: "",
+      speaker: [],
+      location: "Prize Booth",
+      startTime: "2025-10-11T11:00:00",
+      endTime: "2025-10-11T11:15:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-remote-operation-of-your-radio-station",
+      title: "Remote Operation of Your Radio Station",
+      description: "",
+      speaker: ["Mark Aaker, K6UFO"],
+      location: "Salon E",
+      startTime: "2025-10-11T11:00:00",
+      endTime: "2025-10-11T11:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-t-hunting",
+      title: "T-Hunting",
+      description: "",
+      speaker: [],
+      location: "FOXHUNT Canopy",
+      startTime: "2025-10-11T11:00:00",
+      endTime: "2025-10-11T13:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-cash-sales-lunch",
+      title: "Cash Sales Lunch",
+      description: "",
+      speaker: [],
+      location: "Contra Costa Patio",
+      startTime: "2025-10-11T11:30:00",
+      endTime: "2025-10-11T13:30:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-private-summits-on-the-air-lunch",
+      title: "Private Summits-on-the Air Lunch",
+      description: "",
+      speaker: [],
+      location: "Rear Patio (behind restaurant)",
+      startTime: "2025-10-11T12:00:00",
+      endTime: "2025-10-11T13:30:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-special-event-station",
+      title: "Special Event Station",
+      description: "Hosted by Palo Alto Am. Radio Assoc. (PAARA)",
+      speaker: [],
+      location: "Bishop Ranch Patio",
+      startTime: "2025-10-11T12:00:00",
+      endTime: "",
+      category: "Events",
+    },
+    {
+      id: "saturday-prize-drawing",
+      title: "Prize Drawing",
+      description: "",
+      speaker: [],
+      location: "Prize Booth",
+      startTime: "2025-10-11T13:00:00",
+      endTime: "2025-10-11T13:15:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-multimode-digital-voice-modem",
+      title: "Multimode Digital Voice Modem",
+      description: "",
+      speaker: ["Jim Mclaughlin, KI6ZUM"],
+      location: "Salon E",
+      startTime: "2025-10-11T13:00:00",
+      endTime: "2025-10-11T13:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-ylrl-forum",
+      title: "YLRL Forum",
+      description: "",
+      speaker: ["Deborah Johnson, WB6LVC"],
+      location: "Salon E",
+      startTime: "2025-10-11T14:00:00",
+      endTime: "2025-10-11T14:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-ylrl-forum-cont",
+      title: "YLRL Forum (cont.)",
+      description: "",
+      speaker: ["Deborah Johnson, WB6LVC"],
+      location: "Salon E",
+      startTime: "2025-10-11T15:00:00",
+      endTime: "2025-10-11T15:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-qrp-stations-operating",
+      title: "QRP Stations Operating",
+      description: "",
+      speaker: [],
+      location: "Hotel Front Lawn",
+      startTime: "2025-10-11T14:00:00",
+      endTime: "2025-10-11T16:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-ham-radio-101201",
+      title: "Ham Radio 101/201",
+      description: "",
+      speaker: ["Jim Aspinwall, NO1PC"],
+      location: "Salon 2",
+      startTime: "2025-10-11T13:00:00",
+      endTime: "2025-10-11T16:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-prize-drawing",
+      title: "Prize Drawing",
+      description: "",
+      speaker: [],
+      location: "Prize Booth",
+      startTime: "2025-10-11T16:00:00",
+      endTime: "2025-10-11T16:15:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-more-technological-innovation-in-amateur",
+      title: "MORE Technological Innovation in Amateur Radio",
+      description: "",
+      speaker: ["Steve Stroh, N8GNJ"],
+      location: "Salon E",
+      startTime: "2025-10-11T16:00:00",
+      endTime: "2025-10-11T16:50:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-ham-license-testing",
+      title: "Ham License Testing",
+      description: "",
+      speaker: [],
+      location: "Tri-Valley 1",
+      startTime: "2025-10-11T16:00:00",
+      endTime: "2025-10-11T18:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-banquet-dinner",
+      title: "Banquet Dinner",
+      description: "",
+      speaker: [],
+      location: "Salon E",
+      startTime: "2025-10-11T19:00:00",
+      endTime: "2025-10-11T22:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-qrp-open-house",
+      title: "QRP Open House",
+      description: "",
+      speaker: [],
+      location: "Pleasanton/Danville",
+      startTime: "2025-10-11T19:00:00",
+      endTime: "2025-10-11T22:00:00",
+      category: "Events",
+    },
+    {
+      id: "saturday-wouff-hong-initiation-ceremony",
+      title: "Wouff-Hong Initiation Ceremony",
+      description: "",
+      speaker: [],
+      location: "Salon 2",
+      startTime: "2025-10-11T23:35:00",
+      endTime: "2025-10-12T01:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-swap-meet",
+      title: "Swap Meet",
+      description: "Hosted by Livermore Am. Radio Klub (LARK)",
+      speaker: [],
+      location: "Parking Lot-Rear",
+      startTime: "2025-10-12T06:00:00",
+      endTime: "2025-10-12T12:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-registrationwill-call-open",
+      title: "Registration/Will Call Open",
+      description: "",
+      speaker: [],
+      location: "Mt. Diablo/Lobby",
+      startTime: "2025-10-12T07:30:00",
+      endTime: "2025-10-12T11:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-forums",
+      title: "FORUMS",
+      description: "",
+      speaker: [],
+      location: "See Forums Schedule",
+      startTime: "2025-10-12T08:00:00",
+      endTime: "2025-10-12T11:50:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-electronic-kit-building",
+      title: "Electronic Kit Building",
+      description: "for youth & adults",
+      speaker: [],
+      location: "Bishop Ranch Hallway Foyer",
+      startTime: "2025-10-12T09:00:00",
+      endTime: "2025-10-12T11:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-ham-license-testing",
+      title: "Ham License Testing",
+      description: "",
+      speaker: [],
+      location: "Tri-Valley 2",
+      startTime: "2025-10-12T09:00:00",
+      endTime: "2025-10-12T12:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-prize-booth",
+      title: "Prize Booth",
+      description: "",
+      speaker: [],
+      location: "Hotel Lobby",
+      startTime: "2025-10-12T09:00:00",
+      endTime: "2025-10-12T12:15:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-arrl-booth",
+      title: "ARRL Booth",
+      description: "",
+      speaker: [],
+      location: "Salons A-D",
+      startTime: "2025-10-12T09:00:00",
+      endTime: "2025-10-12T13:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-vendor-exhibit-halls-open",
+      title: "Vendor Exhibit Halls Open",
+      description: "",
+      speaker: [],
+      location: "Salon 1 Salon A-D",
+      startTime: "2025-10-12T09:00:00",
+      endTime: "2025-10-12T13:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-prize-drawing",
+      title: "Prize Drawing",
+      description: "",
+      speaker: [],
+      location: "Prize Booth",
+      startTime: "2025-10-12T10:00:00",
+      endTime: "2025-10-12T10:15:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-t-hunting",
+      title: "T-Hunting",
+      description: "",
+      speaker: [],
+      location: "FOXHUNT Canopy",
+      startTime: "2025-10-12T11:00:00",
+      endTime: "2025-10-12T13:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-cash-sales-lunch",
+      title: "Cash Sales Lunch",
+      description: "",
+      speaker: [],
+      location: "Contra Costa Patio",
+      startTime: "2025-10-12T11:30:00",
+      endTime: "2025-10-12T13:30:00",
+      category: "Events",
+    },
+    {
+      id: "special-event-station",
+      title: "Special Event Station",
+      description: "Hosted by Palo Alto Am. Radio Assoc. (PAARA)",
+      speaker: [],
+      location: "Bishop Ranch Patio",
+      startTime: "2025-10-12T12:00:00",
+      endTime: "2025-10-13T11:59:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-arrl-forum",
+      title: "ARRL Forum",
+      description: "",
+      speaker: [],
+      location: "Salon E",
+      startTime: "2025-10-12T13:00:00",
+      endTime: "2025-10-12T15:00:00",
+      category: "Events",
+    },
+    {
+      id: "sunday-final-and-grand-prize-drawings",
+      title: "Final and Grand Prize Drawings",
+      description: "Final and Grand Prize Drawings",
+      speaker: [],
+      location: "Salon E",
+      startTime: "2025-10-12T14:00:00",
+      endTime: "2025-10-12T15:00:00",
+      category: "Events",
+    },
+  ]
+];
+
+// TODO: move from forumRooms to mapRooms, needs wiring. uses tools for data entry.
 export const mapRooms: [string, Room[]] = [
   '/pacificon-hotel-2025.jpg', [
     //origHeightNum: 1201,
@@ -1269,6 +1867,8 @@ export const mapRooms: [string, Room[]] = [
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
+//
+// TODO: move to mapRooms FROM forumRooms, needs wiring. uses tools for data entry. Room[]
 export const forumRooms: Room[] = [
   // ... (your forumRooms data) ...
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
@@ -1324,6 +1924,7 @@ export const forumRooms: Room[] = [
   },
 ];
 
+// TODO: move to mapSession FROM sampleSessions, needs wiring & data entry. Session[]
 export const sampleSessions: Session[] = [
   {
     id: 'session-1',
@@ -1460,6 +2061,10 @@ export const sampleSessions: Session[] = [
 ];
 
 // map images - in production these may be bundled images
+// TODO: change name to ConferenceMaps, a top level simple array, FROM sampleMaps. configured, no data entry UI. MapImage[]
+//       perhaps use an atrribute to take functionality away from all-conferences.ts
+//           mapSessionsUrl: '/pacificon-forums-2025.jpg', // for Room[] and Session[] - category types Forum and Event
+//           mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[]
 export const sampleMaps: MapImage[] = [
   {
     id: 'map-1',
@@ -1507,6 +2112,8 @@ export const sampleMaps: MapImage[] = [
   },
 ];
 
+// TODO: ATTENDEES see current static data for proof of concept, needs wiring & privacy and opt-in. UserProfile[]
+//           rename from sample
 export const sampleAttendees: UserProfile[] = [
   {
     uid: '1',
