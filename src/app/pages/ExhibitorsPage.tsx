@@ -12,7 +12,7 @@ interface MapsModule {
 }
 
 interface BoothModule {
-  exhibitorBooths?: Booth[];
+  mapBooths?: [string, Booth[]];
   [key: string]: unknown;
 }
 
@@ -27,7 +27,7 @@ const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true
 
 // Process the modules into a lookup object
 const MAP_DATA: Record<string, MapImage[]> = {};
-const BOOTH_DATA: Record<string, Booth[]> = {};
+const BOOTH_DATA: Record<string, [string, Booth[]]> = {};
 const EXHIBITOR_DATA: Record<string, Exhibitor[]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
@@ -39,8 +39,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   if (typedMapModule.sampleMaps) {
     MAP_DATA[conferenceId] = typedMapModule.sampleMaps;
   }
-  if (typedBoothModule.exhibitorBooths) {
-    BOOTH_DATA[conferenceId] = typedBoothModule.exhibitorBooths;
+  if (typedBoothModule.mapBooths) {
+    BOOTH_DATA[conferenceId] = typedBoothModule.mapBooths;
   }
   if (typedExhibitorModule.sampleExhibitors) {
     EXHIBITOR_DATA[conferenceId] = typedExhibitorModule.sampleExhibitors;
@@ -52,7 +52,8 @@ export function ExhibitorsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const sampleMaps = MAP_DATA[activeConference.id] || [];
-  const exhibitorBooths = BOOTH_DATA[activeConference.id] || [];
+  const boothEntry = BOOTH_DATA[activeConference.id];
+  const exhibitorBooths = boothEntry ? boothEntry[1] : [];
   const sampleExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
