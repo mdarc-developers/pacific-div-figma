@@ -3,7 +3,7 @@ import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { Bookmark, Clock, MapPin, Mic } from 'lucide-react';
+import { Bookmark, Clock, MapPin, Mic, Zap } from 'lucide-react';
 import { Session, Conference } from '@/types/conference';
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -165,6 +165,15 @@ interface ScheduleViewProps {
   highlightSessionId?: string;
 }
 
+// Returns true if the session is currently happening or starts within the next 2 hours
+function isNowOrNext(session: Session, tzString: string): boolean {
+  const now = Date.now();
+  const start = new Date(session.startTime + tzString).getTime();
+  const end = new Date(session.endTime + tzString).getTime();
+  const twoHoursMs = 2 * 60 * 60 * 1000;
+  return end > now && start <= now + twoHoursMs;
+}
+
 export function ScheduleView({
   bookmarkedSessions = [],
   onToggleBookmark,
@@ -173,6 +182,20 @@ export function ScheduleView({
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const sessions = SESSION_DATA[activeConference.id] || [];
   const [selectedDay, setSelectedDay] = useState<string>('all');
+  const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
+  const [showNowAndNext, setShowNowAndNext] = useState(false);
+
+  // Apply active filters to a list of sessions
+  const applyFilters = (list: Session[]): Session[] => {
+    let filtered = list;
+    if (showBookmarkedOnly) {
+      filtered = filtered.filter(s => bookmarkedSessions.includes(s.id));
+    }
+    if (showNowAndNext) {
+      filtered = filtered.filter(s => isNowOrNext(s, activeConference.timezoneNumeric));
+    }
+    return filtered;
+  };
 
   // Group sessions by date
   const groupSessionsByDate = (sessions: Session[]) => {
@@ -220,6 +243,28 @@ export function ScheduleView({
 
   return (
     <div className="w-full">
+      {/* Filter toolbar */}
+      <div className="flex gap-2 mb-4">
+        <Button
+          variant={showBookmarkedOnly ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setShowBookmarkedOnly(v => !v)}
+          className="flex items-center gap-1"
+        >
+          <Bookmark className={`h-4 w-4 ${showBookmarkedOnly ? 'fill-current' : ''}`} />
+          Bookmarked
+        </Button>
+        <Button
+          variant={showNowAndNext ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setShowNowAndNext(v => !v)}
+          className="flex items-center gap-1"
+        >
+          <Zap className="h-4 w-4" />
+          Now &amp; Next
+        </Button>
+      </div>
+
       <Tabs value={selectedDay} onValueChange={setSelectedDay} className="w-full">
         <TabsList className="w-full mb-6 flex-wrap h-auto">
           <TabsTrigger value="all">All Days</TabsTrigger>
@@ -231,14 +276,17 @@ export function ScheduleView({
         </TabsList>
 
         <TabsContent value="all">
-          {dateKeys.map(date => (
-            <div key={date} className="mb-8">
-              <h3 className="text-xl font-semibold mb-4">
-                {formatSessionDate(date, activeConference.timezoneNumeric)}
-              </h3>
-              {groupedSessions[date]
-                .sort((a, b) => a.startTime.localeCompare(b.startTime))
-                .map(session => (
+          {dateKeys.map(date => {
+            const filtered = applyFilters(groupedSessions[date]).sort((a, b) =>
+              a.startTime.localeCompare(b.startTime)
+            );
+            if (filtered.length === 0) return null;
+            return (
+              <div key={date} className="mb-8">
+                <h3 className="text-xl font-semibold mb-4">
+                  {formatSessionDate(date, activeConference.timezoneNumeric)}
+                </h3>
+                {filtered.map(session => (
                   <SessionCard
                     key={session.id}
                     session={session}
@@ -249,27 +297,37 @@ export function ScheduleView({
                     activeConference={activeConference}
                   />
                 ))}
-            </div>
-          ))}
+              </div>
+            );
+          })}
+          {dateKeys.every(date => applyFilters(groupedSessions[date]).length === 0) && (
+            <p className="text-center text-gray-500 py-8">No sessions match the active filters.</p>
+          )}
         </TabsContent>
 
-        {dateKeys.map(date => (
-          <TabsContent key={date} value={date}>
-            {groupedSessions[date]
-              .sort((a, b) => a.startTime.localeCompare(b.startTime))
-              .map(session => (
-                <SessionCard
-                  key={session.id}
-                  session={session}
-                  isBookmarked={bookmarkedSessions.includes(session.id)}
-                  isHighlighted={highlightSessionId === session.id}
-                  onToggleBookmark={onToggleBookmark}
-                  formatTime={formatTime}
-                  activeConference={activeConference}
-                />
-              ))}
-          </TabsContent>
-        ))}
+        {dateKeys.map(date => {
+          const filtered = applyFilters(groupedSessions[date]).sort((a, b) =>
+            a.startTime.localeCompare(b.startTime)
+          );
+          return (
+            <TabsContent key={date} value={date}>
+              {filtered.length > 0
+                ? filtered.map(session => (
+                    <SessionCard
+                      key={session.id}
+                      session={session}
+                      isBookmarked={bookmarkedSessions.includes(session.id)}
+                      isHighlighted={highlightSessionId === session.id}
+                      onToggleBookmark={onToggleBookmark}
+                      formatTime={formatTime}
+                      activeConference={activeConference}
+                    />
+                  ))
+                : <p className="text-center text-gray-500 py-8">No sessions match the active filters.</p>
+              }
+            </TabsContent>
+          );
+        })}
       </Tabs>
       <Calendar events={calendarEvents} startDate={activeConference.startDate} />
     </div>
