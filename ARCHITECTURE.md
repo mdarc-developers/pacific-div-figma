@@ -30,19 +30,19 @@ The app is purpose-built for amateur radio (ham radio) ARRL Division conferences
 | Icons               | lucide-react 0.487                                               | Used throughout for nav, cards, header                                                                                                |
 | Calendar            | FullCalendar 6.x                                                 | 3-day and 1-day time-grid views in ScheduleView (`@fullcalendar/react` + `timeGridPlugin`)                                            |
 | Router              | react-router-dom 7.x                                             | Client-side routing; `BrowserRouter` at root uses React Router, getting ready for mobile apps                                         |
-| Backend / Auth      | Firebase 12.x                                                    | Auth (email+password, Google OAuth), Firestore (data layer), Storage (planned)                                                |
+| Backend / Auth      | Firebase 12.x                                                    | Auth (email+password, Google OAuth), Firestore (data layer), Storage (planned)                                                        |
 | Toast notifications | Sonner 2.x                                                       | Used in ProfilePage for email-verification / password-reset feedback                                                                  |
 | Lint                | ESLint 9 (flat config) + typescript-eslint + eslint-plugin-react | Runs inside Vite via `@nabla/vite-plugin-eslint`                                                                                      |
 | Hosting & CI        | Firebase Hosting + GitHub Actions                                | Two workflows: deploy-on-merge-to-main (live), deploy-on-PR (preview channel)                                                         |
 
 ### Notable dependencies _installed but not currently used_
 
-* `next-themes` for dark and light
-* Most of the Radix primitives beyond `tabs`, `accordion`, and `tooltip`. These have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
-* `react-slick` for carousel
-* `react-responsive-masonry` for zooming
-* `recharts` charting for react
-* `react-hook-form` forms and validation library 
+- `next-themes` for dark and light
+- Most of the Radix primitives beyond `tabs`, `accordion`, `toggle`, `toggle-group`, and `tooltip` have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
+- `react-slick` for carousel
+- `react-responsive-masonry` for zooming
+- `recharts` charting for react
+- `react-hook-form` forms and validation library
 
 ---
 
@@ -74,6 +74,7 @@ pacific-div-figma-main/
 │   │   │   └── ui/                    # shadcn-style Radix wrappers (tabs, card, badge, button, …)
 │   │   ├── contexts/
 │   │   │   ├── AuthContext.tsx        # React Context + Provider for Firebase Auth state
+│   │   │   ├── ThemeContext.tsx       # Theme Context + Provider for light/system/dark theme
 │   │   │   └── ConferenceContext.tsx  # Conference selection
 │   │   └── pages/                     # Route-level containers; own state, delegate to Views
 │   │       ├── MapsPage.tsx           # renamed Venue
@@ -86,7 +87,11 @@ pacific-div-figma-main/
 │   │       └── SignUpPage.tsx         # Email/password + Google sign-up; client-side validation
 │   ├── data/
 │   │   ├── all-conferences.ts         # multi-conference
-│   │   └── pacificon-sample.ts        # Hard-coded seed: pacificonData, sampleSessions, sampleMaps
+│   │   ├── hamcation-2026.ts          # Feb Orlando, FL Hamcation data
+│   │   ├── hamvention-2026.ts         # May Dayton, OH Hamvention data
+│   │   ├── huntsville-hamfest-2026.ts # Aug Huntsville, AL Hamfest data
+│   │   ├── pacificon-2026.ts          # Oct San Ramon, CA Pacificon data
+│   │   └── hamcation-2027.ts          # Feb Orlando, FL Hamcation data
 │   ├── lib/
 │   │   └── firebase.ts                # initializeApp; exports auth, db, storage singletons
 │   ├── types/
@@ -116,11 +121,14 @@ pacific-div-figma-main/
   <BrowserRouter>
     <App>
       <ConferenceHeader />             # Always visible; collapsible
-        <ConferenceSelecer />          # coming soon
+        <ConferenceSelector />         # coming soon
       <Navigation />                   # Always visible; 4-tab grid
+      <SearchPage>                     # search forums with <SearchBar>, should be SearchBarView?
       <Routes>
         /          → redirect → /maps
         /maps      → <MapsPage>        # Venue, <MapsView>
+        /prizes    → <PrizesPage>      # Prizes, <PrizesView>
+        /attendees → <AttendeesPage>   # fellow Attendees, <AttendeesView>
         /schedule  → <SchedulePage>    # <ScheduleView> + <Calendar>
         /forums    → <ForumsPage>      # image + <ScheduleView> for now
         /exhibitors→ <ExhibitorsPage>  # image, needs ExhibitorsView
@@ -129,12 +137,7 @@ pacific-div-figma-main/
             /login     → <LoginPage>
             /signup    → <SignUpPage>
         *          → redirect → /404.html
-      </Routes>
       <ConferenceFooter />             - Always visible
-    </App>
-  </BrowserRouter>
-</ConferenceProvider>
-</AuthProvider>
 ```
 
 **Key routing decisions:**
@@ -160,7 +163,10 @@ A single talk/event. `startTime` / `endTime` are ISO-style local strings (`"2026
 
 ### MapImage
 
-A venue map. `order` controls tab sequence. `url` points to a `/public/` asset. `floor` is optional.
+Venue, forum and exhibitor maps.
+`order` controls tab sequence.
+`url` points to a `/public/` asset.
+`floor` is optional.
 
 ### Prize / PrizeWinner
 
@@ -271,7 +277,7 @@ The codebase contains significant scaffolding for features that are **typed, doc
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
 | **iOS and Android installable and web UIs** | web UI first. plan to use React Native expo.dev tool                                                   | implement using expo.dev                                                                                                               |
 | **Firestore data layer**                    | `db` exported from `firebase.ts`; collections + security rules fully documented in `FIREBASE_SETUP.md` | Replace hard-coded imports of `pacificon-sample.ts` with Firestore listeners. Each page currently pulls from the sample file directly. |
-| **Multi-conference selector**               | `Conference` interface has an `id` key; all child types carry `conferenceId`                           | Add a conference-picker component; swap the single `pacificonData` constant for a fetched/selected conference.                         |
+| **Multi-conference selector**               | `Conference` interface has an `id` key; all child types carry `conferenceId`                           | Added a conference-picker component; uses swapped `<conference>.ts` for selected conference.                                           |
 | **Prize notifications**                     | `AlertsPage` stub; `Prize` + `PrizeWinner` types; Firestore rules for `prizes` / `prizeWinners`        | Build a prize-card list; add Firestore real-time listener on `prizeWinners` filtered by current user email/callsign.                   |
 | **Bookmark persistence**                    | `SchedulePage` owns in-memory `bookmarkedSessions[]`; `UserProfile.bookmarkedSessions` field exists    | Persist to Firestore `users/{uid}` on toggle; load on mount.                                                                           |
 | **Dark mode toggle**                        | `ProfilePage` renders `<none yet>`; `.dark` theme vars fully defined; `next-themes` installed          | Wire `next-themes`'s `useTheme` hook into a toggle on the Profile page.                                                                |
@@ -279,8 +285,8 @@ The codebase contains significant scaffolding for features that are **typed, doc
 | **Messaging / forum board**                 | `Message` interface fully typed; Firestore rules written                                               | Build a message-board page; use Firestore real-time queries filtered by `isPublic` or current user.                                    |
 | **Admin interfaces**                        | `FIREBASE_SETUP.md` §8 outlines roles                                                                  | Add `isAdmin` / `adminRole` to user doc; create guarded admin pages for sessions, prizes, winners.                                     |
 | **Offline support**                         | Footer mentions "Offline capable planned"                                                              | Enable Firestore offline persistence; optionally add a Service Worker for asset caching.                                               |
-| **CSV data import/export**                  | `FIREBASE_SETUP.md` §7 describes the pattern                                                           | Cloud Function to parse CSV from Storage into Firestore; admin export endpoint.                                                        |
-| **Callsigns**                               | Verification mentioned in FIREBASE_SETUP.md                                                            | Planned, optional qrz.com API lookup on profile save.                                                                                           |
+| **CSV data import/export**                  | `FIREBASE_SETUP.md` §7 describes the pattern                                                           | Cloud Function with papaparse CSV from Storage into Firestore; admin export endpoint.                                                  |
+| **Callsigns**                               | Verification mentioned in FIREBASE_SETUP.md                                                            | Planned, optional qrz.com API lookup on profile save.                                                                                  |
 
 ---
 
@@ -329,7 +335,7 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 
 7. **`ProtectedRoute` exists but is unused.** It is a ready-made HOC for guarding routes. Wire it in when features (e.g., messaging) require authentication.
 
-8. **Commented-out code is intentional scaffolding.** Blocks of commented code (in `App.tsx`, `ConferenceHeader.tsx`, `ProfilePage.tsx`, etc.) represent prior iterations or planned wiring. Read them for context before removing.
+8. **Commented-out code is intentional scaffolding.** Blocks of commented code (in `App.tsx`, `ConferenceHeader.tsx`, `ProfilePage.tsx`, etc.) represent prior iterations or planned wiring. Do not remove them.
 
 ## 13. How the sync works from /src/lib/firebase.ts
 
@@ -347,4 +353,3 @@ Firebase config values must be provided as environment variables prefixed `VITE_
    pushes the result back into state automatically.
 
 5. Firestore security rule suggestion: only each user can read/write their own doc
-
