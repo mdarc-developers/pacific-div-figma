@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
@@ -9,6 +10,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventInput } from "@fullcalendar/core";
 import { useConference } from '@/app/contexts/ConferenceContext';
+import { useSearch } from '@/app/contexts/SearchContext';
 
 interface CalendarProps {
   events: EventInput[];
@@ -60,9 +62,10 @@ interface SessionCardProps {
   onToggleBookmark?: (sessionId: string) => void;
   formatTime: (timeString: string) => string;
   activeConference: Conference;
+  onRoomClick?: (roomName: string) => void;
 }
 
-function SessionCard({ session, isBookmarked, isHighlighted, onToggleBookmark, activeConference }: SessionCardProps) {
+function SessionCard({ session, isBookmarked, isHighlighted, onToggleBookmark, activeConference, onRoomClick }: SessionCardProps) {
   const sessionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -128,7 +131,17 @@ function SessionCard({ session, isBookmarked, isHighlighted, onToggleBookmark, a
             </div>
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <MapPin className="h-4 w-4" />
-              <span>{session.location}</span>
+              {onRoomClick ? (
+                <button
+                  type="button"
+                  className="underline decoration-dotted hover:text-blue-600 cursor-pointer"
+                  onClick={() => onRoomClick(session.location)}
+                >
+                  {session.location}
+                </button>
+              ) : (
+                <span>{session.location}</span>
+              )}
             </div>
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Mic className="h-4 w-4" />
@@ -180,10 +193,20 @@ export function ScheduleView({
   highlightSessionId }: ScheduleViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { setHighlightForumRoomName } = useSearch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const sessions = SESSION_DATA[activeConference.id] || [];
   const [selectedDay, setSelectedDay] = useState<string>('all');
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [showNowAndNext, setShowNowAndNext] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<string>('all');
+
+  // Collect unique room names from all sessions, sorted alphabetically
+  const rooms = useMemo(
+    () => [...new Set(sessions.map(s => s.location))].sort(),
+    [sessions]
+  );
 
   // Apply active filters to a list of sessions
   const applyFilters = (list: Session[]): Session[] => {
@@ -193,6 +216,9 @@ export function ScheduleView({
     }
     if (showNowAndNext) {
       filtered = filtered.filter(s => isNowOrNext(s, activeConference.timezoneNumeric));
+    }
+    if (selectedRoom !== 'all') {
+      filtered = filtered.filter(s => s.location === selectedRoom);
     }
     return filtered;
   };
@@ -241,10 +267,18 @@ export function ScheduleView({
     }
   }));
 
+  // Navigate to the Forums map and highlight the clicked room
+  const handleRoomClick = (roomName: string) => {
+    setHighlightForumRoomName(roomName);
+    if (location.pathname !== '/forums') {
+      navigate('/forums');
+    }
+  };
+
   return (
     <div className="w-full">
       {/* Filter toolbar */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-2">
         <Button
           variant={showBookmarkedOnly ? 'default' : 'outline'}
           size="sm"
@@ -263,6 +297,31 @@ export function ScheduleView({
           <Zap className="h-4 w-4" />
           Now &amp; Next
         </Button>
+      </div>
+
+      {/* Room filter row */}
+      <div className="flex gap-2 mb-4 flex-wrap">
+        <Button
+          variant={selectedRoom === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSelectedRoom('all')}
+          className="flex items-center gap-1"
+        >
+          <MapPin className="h-4 w-4" />
+          All Rooms
+        </Button>
+        {rooms.map(room => (
+          <Button
+            key={room}
+            variant={selectedRoom === room ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setSelectedRoom(selectedRoom === room ? 'all' : room)}
+            className="flex items-center gap-1"
+          >
+            <MapPin className="h-4 w-4" />
+            {room}
+          </Button>
+        ))}
       </div>
 
       <Tabs value={selectedDay} onValueChange={setSelectedDay} className="w-full">
@@ -295,6 +354,7 @@ export function ScheduleView({
                     onToggleBookmark={onToggleBookmark}
                     formatTime={formatTime}
                     activeConference={activeConference}
+                    onRoomClick={handleRoomClick}
                   />
                 ))}
               </div>
@@ -321,6 +381,7 @@ export function ScheduleView({
                       onToggleBookmark={onToggleBookmark}
                       formatTime={formatTime}
                       activeConference={activeConference}
+                      onRoomClick={handleRoomClick}
                     />
                   ))
                 : <p className="text-center text-gray-500 py-8">No sessions match the active filters.</p>

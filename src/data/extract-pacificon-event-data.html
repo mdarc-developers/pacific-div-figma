@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacificon Event Schedule Extractor</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+      #fileInput {
+        padding: 6px;
+      }
+      label {
+        font-weight: bold;
+      }
+      input[type="text"] {
+        padding: 6px 10px;
+        font-family: monospace;
+        width: 300px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 8px 18px;
+        cursor: pointer;
+      }
+      #output {
+        background: #f5f5f5;
+        padding: 15px;
+        border: 1px solid #ddd;
+        white-space: pre-wrap;
+        font-size: 12px;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+      .stats {
+        background: #e8f4f8;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-left: 4px solid #0066cc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pacificon Event Schedule Extractor</h1>
+    <p>
+      Load a Pacificon event schedule CSV to generate TypeScript
+      <code>mapSessions</code> data.
+    </p>
+    <div id="controls">
+      <input type="file" id="fileInput" title="fileInput" accept=".csv" />
+      <label
+        >Map image path:
+        <input type="text" id="mapImage" value="/pacificon-hotel-2025.jpg"
+      /></label>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+    <div id="stats" class="stats">No file loaded yet.</div>
+    <div id="output"></div>
+
+    <script>
+      let extractedData = "";
+
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            processCSV(event.target.result);
+          };
+          reader.readAsText(file);
+        });
+      document
+        .getElementById("mapImage")
+        .addEventListener("input", function () {
+          // Re-render if data already loaded
+          if (extractedData)
+            document
+              .getElementById("fileInput")
+              .dispatchEvent(new Event("change"));
+        });
+
+      // ── CSV parser ──
+      function parseCSV(text) {
+        const rows = [];
+        let row = [],
+          field = "",
+          inQuotes = false;
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i],
+            next = text[i + 1];
+          if (inQuotes) {
+            if (ch === '"' && next === '"') {
+              field += '"';
+              i++;
+            } else if (ch === '"') {
+              inQuotes = false;
+            } else {
+              field += ch;
+            }
+          } else {
+            if (ch === '"') {
+              inQuotes = true;
+            } else if (ch === ",") {
+              row.push(field);
+              field = "";
+            } else if (ch === "\r" && next === "\n") {
+              row.push(field);
+              field = "";
+              rows.push(row);
+              row = [];
+              i++;
+            } else if (ch === "\n") {
+              row.push(field);
+              field = "";
+              rows.push(row);
+              row = [];
+            } else {
+              field += ch;
+            }
+          }
+        }
+        if (field || row.length > 0) {
+          row.push(field);
+          rows.push(row);
+        }
+        return rows;
+      }
+
+      function clean(str) {
+        return (str || "").replace(/\s+/g, " ").trim();
+      }
+      function escStr(str) {
+        return (str || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"')
+          .replace(/\r/g, "")
+          .replace(/\n/g, " ");
+      }
+
+      function createId(dayWord, title) {
+        return (dayWord + "-" + title)
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .substring(0, 50)
+          .replace(/-$/, "");
+      }
+
+      // ── Date/time parsing ──
+      function registerDay(header) {
+        const m = header.match(/(\w+)\s+(\d+),\s+(\d{4})/i);
+        if (!m) return null;
+        const months = {
+          january: "01",
+          february: "02",
+          march: "03",
+          april: "04",
+          may: "05",
+          june: "06",
+          july: "07",
+          august: "08",
+          september: "09",
+          october: "10",
+          november: "11",
+          december: "12",
+        };
+        const mon = months[m[1].toLowerCase()];
+        return mon ? `${m[3]}-${mon}-${m[2].padStart(2, "0")}` : null;
+      }
+
+      function parseSingleTime(str) {
+        str = str.trim().replace(/~/g, "").toLowerCase();
+        if (str === "noon") return { h: 12, m: 0 };
+        const m = str.match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/);
+        if (!m) return null;
+        let h = parseInt(m[1]),
+          min = parseInt(m[2]);
+        if (m[3] === "am" && h === 12) h = 0;
+        else if (m[3] === "pm" && h !== 12) h += 12;
+        return { h, m: min };
+      }
+
+      function toLocalDT(dateStr, t, bumpDay) {
+        if (!dateStr || !t) return "";
+        const d = new Date(dateStr + "T00:00:00");
+        if (bumpDay) d.setDate(d.getDate() + 1);
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${d.getFullYear()}-${mm}-${dd}T${String(t.h).padStart(2, "0")}:${String(t.m).padStart(2, "0")}:00`;
+      }
+
+      function parseTimeRange(rawTime, dateStr) {
+        rawTime = rawTime.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
+        if (/fri.*sun/i.test(rawTime))
+          return {
+            startTime: dateStr ? dateStr + "T12:00:00" : "",
+            endTime: "",
+          };
+
+        const parts = rawTime.split(/\s+(?:to|-)\s+/i);
+        if (parts.length < 2) return { startTime: "", endTime: "" };
+        const s = parseSingleTime(parts[0]);
+        const e = parseSingleTime(parts[1]);
+        if (!s) return { startTime: "", endTime: "" };
+        const crossesMidnight = e && e.h * 60 + e.m < s.h * 60 + s.m && e.h < 6;
+        return {
+          startTime: toLocalDT(dateStr, s, false),
+          endTime: e ? toLocalDT(dateStr, e, crossesMidnight) : "",
+        };
+      }
+
+      // ── Speaker/title extraction ──
+      function splitTitleAndSpeaker(rawTitle) {
+        const lines = rawTitle
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (lines.length === 1) return { title: lines[0], speaker: [] };
+        const rest = lines.slice(1).join("; ");
+        return { title: lines[0], speaker: extractSpeakersFromNote(rest) };
+      }
+
+      function extractSpeakersFromNote(note) {
+        if (!note) return [];
+        if (/hosted by/i.test(note)) return [];
+        if (/^\(/.test(note)) return [];
+        if (/^see /i.test(note)) return [];
+        const byMatch = note.match(/^by\s+(.+)$/i);
+        if (byMatch) return [byMatch[1].trim()];
+        if (/^[A-Z][a-z]/.test(note)) return [note.trim()];
+        return [];
+      }
+
+      // Strip trailing open-paren from descriptions like "Hosted by Foo (PAARA" -> "Hosted by Foo (PAARA)"
+      // Actually the sample shows them stripped of the closing paren — keep as-is but fix unclosed parens
+      function cleanDescription(str) {
+        str = str.trim();
+        // Remove wrapping parens like "(closed to public)" -> "closed to public"
+        if (str.startsWith("(") && str.endsWith(")"))
+          str = str.slice(1, -1).trim();
+        // Strip trailing open paren that got cut off
+        str = str.replace(/\($/, "").trim();
+        // Strip "Hosted by ... (ORG" -> keep it (matches sample)
+        return str;
+      }
+
+      // ── Day word for IDs ──
+      function dayWord(header) {
+        const m = header.match(/^(FRIDAY|SATURDAY|SUNDAY)/i);
+        return m ? m[1].toLowerCase() : "event";
+      }
+
+      // ── Main processor ──
+      function processCSV(csvText) {
+        const rows = parseCSV(csvText);
+        const sessions = [];
+        let currentDay = "";
+        let currentDate = "";
+        let currentDayWord = "";
+
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          while (row.length < 4) row.push("");
+          const col1 = clean(row[1]);
+          const col2 = clean(row[2]);
+          const col3 = clean(row[3]);
+
+          // Day header
+          if (/^(FRIDAY|SATURDAY|SUNDAY)/i.test(col1) && !col2) {
+            currentDay = col1;
+            currentDate = registerDay(col1) || currentDate;
+            currentDayWord = dayWord(col1);
+            continue;
+          }
+          if (!col1 && !col2 && !col3) continue;
+
+          if (col1 && col2) {
+            const rawTitleCell = row[2];
+            let { title, speaker: embeddedSpeakers } =
+              splitTitleAndSpeaker(rawTitleCell);
+            title = clean(title);
+
+            // Location: join newlines with space (not semicolon) to match sample
+            const location = clean(col3.replace(/\n/g, " "));
+
+            // Peek at note row
+            let note = "";
+            let noteSpeakers = [];
+            if (i + 1 < rows.length) {
+              const next = rows[i + 1];
+              while (next.length < 4) next.push("");
+              const nc1 = clean(next[1]),
+                nc2 = clean(next[2]);
+              if (!nc1 && nc2) {
+                note = nc2;
+                noteSpeakers = extractSpeakersFromNote(note);
+                i++;
+              }
+            }
+
+            const speakers = embeddedSpeakers.length
+              ? embeddedSpeakers
+              : noteSpeakers;
+
+            // Description: note text that isn't a speaker line
+            let description = "";
+            if (noteSpeakers.length === 0 && note) {
+              description = cleanDescription(note);
+            }
+            // "Hosted by" lines go to description
+            if (/hosted by/i.test(note)) {
+              description = cleanDescription(note);
+            }
+
+            // Special handling for "End of ..." rows — treat as an event with estimated time
+            let startTime = "",
+              endTime = "";
+            if (/^end of mdarc meeting/i.test(col1)) {
+              startTime = toLocalDT(currentDate, { h: 20, m: 30 }, false);
+              endTime = toLocalDT(currentDate, { h: 21, m: 0 }, false);
+              description = "approximate time";
+            } else if (/^end of arrl forum/i.test(col1)) {
+              // Appears after the 1:00pm ARRL Forum entry; estimate ~2:00pm
+              startTime = toLocalDT(currentDate, { h: 14, m: 0 }, false);
+              endTime = toLocalDT(currentDate, { h: 15, m: 0 }, false);
+              description = cleanDescription(title === col2 ? "" : note);
+              // title is already col2 which is "Final Prize Drawings and Grand Prize Drawing"
+              title = "Final and Grand Prize Drawings";
+              description = description || "Final and Grand Prize Drawings";
+            } else {
+              ({ startTime, endTime } = parseTimeRange(col1, currentDate));
+            }
+
+            // Friday "Vendor Exhibit Halls Open" gets "to Attendees" suffix to match sample
+            if (
+              /vendor exhibit halls open/i.test(title) &&
+              currentDayWord === "friday"
+            ) {
+              title = "Vendor Exhibit Halls Open to Attendees";
+            }
+
+            sessions.push({
+              id: createId(currentDayWord, title),
+              title,
+              description,
+              speaker: speakers,
+              location,
+              startTime,
+              endTime,
+              category: "Events",
+            });
+          }
+        }
+
+        // ── Generate TypeScript ──
+        const mapImg =
+          document.getElementById("mapImage").value.trim() ||
+          "/pacificon-hotel.jpg";
+
+        let output = "// Extracted event schedule for Pacificon\n";
+        output += "//\n";
+        output += "//export interface Session {\n";
+        output += "//  id: string;\n";
+        output += "//  title: string;\n";
+        output += "//  description: string;\n";
+        output += "//  speaker: string[];\n";
+        output += "//  location: string;\n";
+        output +=
+          "//  startTime: string; // local date-time for conference timezone\n";
+        output +=
+          "//  endTime: string;   // local date-time for conference timezone\n";
+        output += "//  category: string;\n";
+        output += "//  track?: string;\n";
+        output += "//}\n\n";
+        output += `export const mapSessions: [string, Session[]] = [\n`;
+        output += `  '${escStr(mapImg)}', [\n`;
+
+        sessions.forEach((s) => {
+          const speakersStr = s.speaker
+            .map((sp) => `"${escStr(sp)}"`)
+            .join(", ");
+          output += "  {\n";
+          output += `    id: "${escStr(s.id)}",\n`;
+          output += `    title: "${escStr(s.title)}",\n`;
+          output += `    description: "${escStr(s.description)}",\n`;
+          output += `    speaker: [${speakersStr}],\n`;
+          output += `    location: "${escStr(s.location)}",\n`;
+          output += `    startTime: "${s.startTime}",\n`;
+          output += `    endTime: "${s.endTime}",\n`;
+          output += `    category: "Events",\n`;
+          output += "  },\n";
+        });
+
+        output += "]\n];\n";
+
+        extractedData = output;
+        document.getElementById("output").textContent = output;
+
+        const dates = [
+          ...new Set(
+            sessions.map((s) => s.startTime.substring(0, 10)).filter(Boolean),
+          ),
+        ];
+        const withSpeakers = sessions.filter(
+          (s) => s.speaker.length > 0,
+        ).length;
+
+        document.getElementById("stats").innerHTML = `
+          <strong>Extraction Summary:</strong><br>
+          Total Sessions: ${sessions.length}<br>
+          Dates: ${dates.join(", ")}<br>
+          Sessions with Speaker: ${withSpeakers}
+        `;
+      }
+
+      function copyToClipboard() {
+        if (!extractedData) {
+          alert("Please load a CSV file first!");
+          return;
+        }
+        navigator.clipboard
+          .writeText(extractedData)
+          .then(() => alert("Data copied to clipboard!"))
+          .catch((err) => alert("Failed to copy: " + err));
+      }
+    </script>
+  </body>
+</html>
