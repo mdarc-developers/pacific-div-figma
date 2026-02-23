@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { SearchBar } from '@/app/components/SearchBar';
 import { Navigation } from '@/app/components/Navigation';
+import { FirebaseThemeSync } from '@/app/components/FirebaseThemeSync';
 //import { useState } from 'react';
 //import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 //import { Calendar, Map, User, Bell } from 'lucide-react';
@@ -51,6 +52,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <FirebaseThemeSync />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <ConferenceHeader />
 

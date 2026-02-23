@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { ProfileView } from '@/app/components/ProfileView';
-//import { User } from "lucide-react";
 import { useAuth } from '@/app/contexts/AuthContext';
-//import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme, type Theme } from '@/app/contexts/ThemeContext';
 import { useConference } from '@/app/contexts/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { Toaster, toast } from "sonner";
+import { MonitorCog, Moon, Sun } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/app/components/ui/toggle-group';
+
+function isTheme(value: string): value is Theme {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
 
 interface ProfilePageProps {
   bookmarkedSessions?: string[];
@@ -17,7 +22,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const { user, logout } = useAuth();
-  //const {theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
 
@@ -157,7 +162,24 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
           Dark mode:</label>
-          <p>&lt;none yet&gt;</p>
+          <ToggleGroup
+            type="single"
+            value={theme}
+            onValueChange={(value) => { if (!value || !isTheme(value)) return; setTheme(value); }}
+            variant="outline"
+            size="sm"
+            aria-label="Theme"
+          >
+            <ToggleGroupItem value="light" aria-label="Light theme" title="Light theme">
+              <Sun className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="system" aria-label="System theme" title="System theme">
+              <MonitorCog className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="dark" aria-label="Dark theme" title="Dark theme">
+              <Moon className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
 
         <div className="profile-field">
