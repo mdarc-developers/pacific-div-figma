@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
@@ -184,6 +184,13 @@ export function ScheduleView({
   const [selectedDay, setSelectedDay] = useState<string>('all');
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [showNowAndNext, setShowNowAndNext] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<string>('all');
+
+  // Collect unique room names from all sessions, sorted alphabetically
+  const rooms = useMemo(
+    () => [...new Set(sessions.map(s => s.location))].sort(),
+    [sessions]
+  );
 
   // Apply active filters to a list of sessions
   const applyFilters = (list: Session[]): Session[] => {
@@ -193,6 +200,9 @@ export function ScheduleView({
     }
     if (showNowAndNext) {
       filtered = filtered.filter(s => isNowOrNext(s, activeConference.timezoneNumeric));
+    }
+    if (selectedRoom !== 'all') {
+      filtered = filtered.filter(s => s.location === selectedRoom);
     }
     return filtered;
   };
@@ -244,7 +254,7 @@ export function ScheduleView({
   return (
     <div className="w-full">
       {/* Filter toolbar */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-2">
         <Button
           variant={showBookmarkedOnly ? 'default' : 'outline'}
           size="sm"
@@ -263,6 +273,31 @@ export function ScheduleView({
           <Zap className="h-4 w-4" />
           Now &amp; Next
         </Button>
+      </div>
+
+      {/* Room filter row */}
+      <div className="flex gap-2 mb-4 flex-wrap">
+        <Button
+          variant={selectedRoom === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSelectedRoom('all')}
+          className="flex items-center gap-1"
+        >
+          <MapPin className="h-4 w-4" />
+          All Rooms
+        </Button>
+        {rooms.map(room => (
+          <Button
+            key={room}
+            variant={selectedRoom === room ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setSelectedRoom(selectedRoom === room ? 'all' : room)}
+            className="flex items-center gap-1"
+          >
+            <MapPin className="h-4 w-4" />
+            {room}
+          </Button>
+        ))}
       </div>
 
       <Tabs value={selectedDay} onValueChange={setSelectedDay} className="w-full">
