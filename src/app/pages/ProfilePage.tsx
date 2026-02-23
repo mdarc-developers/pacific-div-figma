@@ -6,7 +6,7 @@ import { useConference } from '@/app/contexts/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { Toaster, toast } from "sonner";
-import { MonitorCog, Moon, Sun } from 'lucide-react';
+import { MonitorCog, Moon, Sun, User } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/app/components/ui/toggle-group';
 
 function isTheme(value: string): value is Theme {
@@ -82,7 +82,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   return (
     <div className="max-w-md">
       <><Toaster /></>
-      <h1 className="text-3xl font-bold mb-8">Profile</h1>
+      <h1 className="text-3xl font-bold mb-8"><User className="h-4 w-4" />Profile</h1>
 
       <div className="space-y-6 profile-info">
 
@@ -96,63 +96,63 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">User ID:</label>
           {user.uid}
-              <button type="button" onClick={handlePasswordReset}
-                className="text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                &lt;reset password&gt;
-              </button>
-          
+          <button type="button" onClick={handlePasswordReset}
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            &lt;reset password&gt;
+          </button>
+
         </div>
 
         {user.photoURL && (
           <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture:</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture:</label>
             <img src={user.photoURL} alt="Profile" className="profile-picture" />
           </div>
         )}
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Last Sign In:</label>
+            Last Sign In:</label>
           <p>{user.metadata.lastSignInTime}</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Account Created:</label>
+            Account Created:</label>
           <p>{user.metadata.creationTime}</p>
         </div>
 
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Email:</label>
+            Email:</label>
           <p>{user.email}</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Email Verified:</label>
+            Email Verified:</label>
           <p>{user.emailVerified ? 'Yes' :
             //<form onSubmit={handleEmailVerification}>
-              <button type="button" onClick={handleEmailVerification}
-                className="text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                &lt;send verification now&gt;
-              </button>
+            <button type="button" onClick={handleEmailVerification}
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              &lt;send verification now&gt;
+            </button>
             //</form>
           }</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Email alert toggle:</label>
+            Email alert toggle:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Bookmarks:</label>
+            Bookmarks:</label>
           {bookmarkedSessions.length > 0 ?
             <p>{bookmarkedSessions}</p> :
             <p>&lt;none yet&gt;</p>
@@ -161,7 +161,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Dark mode:</label>
+            Dark mode:</label>
           <ToggleGroup
             type="single"
             value={theme}
@@ -184,37 +184,37 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Prizes won:</label>
+            Prizes won:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          SMS Number:</label>
+            SMS Number:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          SMS alert toggle:</label>
+            SMS alert toggle:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Messages:</label>
+            Messages:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
         <div className="profile-field">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-          Messages toggle:</label>
+            Messages toggle:</label>
           <p>&lt;none yet&gt;</p>
         </div>
 
       </div>
 
-      <button onClick={handleLogout} className="logout-button border border-2 border-solid shadow-md">
+      <button onClick={handleLogout} className="logout-button border-2 border-solid shadow-md">
         Log Out
       </button>
 

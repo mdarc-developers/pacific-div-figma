@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { searchService, SearchResult } from '@/services/searchService';
-import { Session, Conference } from '@/types/conference';
+import { Session } from '@/types/conference';
 import { Button } from '@/app/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useConference } from '@/app/contexts/ConferenceContext';
@@ -28,7 +28,6 @@ Object.entries(sessionModules).forEach(([path, module]) => {
 });
 
 interface SearchBarProps {
-  activeConference: Conference;
   onSelectSession?: (session: Session) => void;
   onSearch?: (results: SearchResult[]) => void;
   placeholderProp?: string;
@@ -213,8 +212,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 onClick={() => handleSelectResult(result.session)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={`w-full px-4 py-3 text-left border-b border-gray-200 dark:border-gray-700 last:border-b-0 transition-colors ${index === selectedIndex
-                    ? 'bg-blue-50 dark:bg-gray-700 text-gray-900 dark:text-white'
-                    : 'hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
+                  ? 'bg-blue-50 dark:bg-gray-700 text-gray-900 dark:text-white'
+                  : 'hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
                   }`}
               >
                 <div className="flex flex-col gap-1">

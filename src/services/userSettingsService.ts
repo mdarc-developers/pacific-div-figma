@@ -5,8 +5,8 @@ import { type Theme } from '@/app/contexts/ThemeContext';
 export async function getUserTheme(uid: string): Promise<Theme | null> {
   const snap = await getDoc(doc(db, 'userSettings', uid));
   if (!snap.exists()) return null;
-  const t = snap.data()?.theme;
-  if (t === 'light' || t === 'dark' || t === 'system') return t;
+  const sdTheme = snap.data()?.theme;
+  if (sdTheme === 'light' || sdTheme === 'dark' || sdTheme === 'system') return sdTheme;
   return null;
 }
 
