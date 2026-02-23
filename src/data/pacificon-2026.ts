@@ -72,9 +72,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 
-// TODO: move to mapExhibitors FROM sampleExhibitors, needs wiring & data entry. Exhibitor[]
-//    '/pacificon-exhibitors-2025.png', [] // for Booth[] and Exhibitor[]
-export const sampleExhibitors: Exhibitor[] = [
+export const mapExhibitors: Exhibitor[] = [
   {
     id: 'flexradio',
     name: 'Flex Radio',

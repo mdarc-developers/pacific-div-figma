@@ -70,7 +70,7 @@ export const mapBooths: [string, Booth[]] = [
 ];
 
 
-export const sampleExhibitors: Exhibitor[] = [
+export const mapExhibitors: Exhibitor[] = [
   {
     id: 'arrl',
     name: 'ARRL',

@@ -58,7 +58,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 ];
 
-export const sampleExhibitors: Exhibitor[] = [
+export const mapExhibitors: Exhibitor[] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
