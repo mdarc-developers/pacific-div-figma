@@ -1180,7 +1180,7 @@ export const mapBooths: [string, Booth[]] = [
 
 
 // Extracted event schedule from Pacificon
-// TODO: move from sampleSessions to mapSessions, needs wiring & data entry
+// ScheduleView uses mapSessions[1] (Session[]) when present, falling back to sampleSessions
 export const mapSessions: [string, Session[]] = [
   '/pacificon-forums-2025.jpg', [
     {
@@ -1912,7 +1912,7 @@ export const forumRooms: Room[] = [
   },
 ];
 
-// TODO: move to mapSession FROM sampleSessions, needs wiring & data entry. Session[]
+// sampleSessions kept as fallback; mapSessions above is used by ScheduleView when present
 export const sampleSessions: Session[] = [
   {
     id: 'session-1',
