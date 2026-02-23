@@ -171,13 +171,13 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
             aria-label="Theme"
           >
             <ToggleGroupItem value="light" aria-label="Light theme" title="Light theme">
-              <Sun className="h-4 w-4" />
+              <Sun className="h-4 w-4" /> Light
             </ToggleGroupItem>
             <ToggleGroupItem value="system" aria-label="System theme" title="System theme">
-              <MonitorCog className="h-4 w-4" />
+              <MonitorCog className="h-4 w-4" /> System
             </ToggleGroupItem>
             <ToggleGroupItem value="dark" aria-label="Dark theme" title="Dark theme">
-              <Moon className="h-4 w-4" />
+              <Moon className="h-4 w-4" /> Dark
             </ToggleGroupItem>
           </ToggleGroup>
         </div>

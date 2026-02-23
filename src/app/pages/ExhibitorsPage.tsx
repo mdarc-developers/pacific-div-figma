@@ -68,11 +68,28 @@ export function ExhibitorsPage() {
   //const foundMap = sampleMaps.find(m => m.url === element)
   //if ( foundMap ) { multipleExhibitorMaps.push(foundMap);
 
-  let exhibitorsMap: MapImage | undefined; // singleton
-  let multipleExhibitorMaps: MapImage[] = [];
+  const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(() => {
+    if (activeConference.mapExhibitorsUrl.length === 1) {
+      return sampleMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+        order: 1,
+        id: 'map-0',
+        name: 'No Exhibitors Map Found',
+        url: '/pacificon-exhibitors-2025.png',
+        origHeightNum: 256,
+        origWidthNum: 582
+      };
+    }
+    return undefined;
+  });
+  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
+    if (activeConference.mapExhibitorsUrl.length > 1) {
+      return sampleMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+    }
+    return [];
+  });
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !exhibitorsMap) return;
 
     const setHeight = () => {
       if (!mapRef.current) return;
@@ -89,11 +106,34 @@ export function ExhibitorsPage() {
     setHeight(); // Set correct height on first mount
 
     return () => resizObs.disconnect();
-  }, []); // Empty dependency array ensures this runs once when mounted
+  }, [exhibitorsMap]);
+
+  useEffect(() => {
+    if (numEmaps === 1) {
+      setExhibitorsMap(
+        sampleMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+          order: 1,
+          id: 'map-0',
+          name: 'No Exhibitors Map Found',
+          url: '/pacificon-exhibitors-2025.png',
+          origHeightNum: 256,
+          origWidthNum: 582
+        }
+      );
+      setMultipleExhibitorMaps([]);
+    } else if (numEmaps > 1) {
+      const maps = sampleMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+      if (maps.length === 0) {
+        console.warn('No matching maps found for URLs:', activeConference.mapExhibitorsUrl);
+      }
+      setMultipleExhibitorMaps(maps);
+      setExhibitorsMap(undefined);
+    }
+  }, [activeConference]);
 
   // Leaflet exhibitorsMap initialisation — runs once on mount
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !exhibitorsMap) return;
 
     // Initialize exhibitorsMap instance
     const leafletMap = L.map(mapRef.current, {
@@ -134,7 +174,7 @@ export function ExhibitorsPage() {
     // Small delay ensures container has rendered with correct dimensions before fit
     setTimeout(() => leafletMap.invalidateSize(), 100);
 
-    let found = 0;
+    let found: Exhibitor | undefined;
     exhibitorBooths.forEach(exhibitorBooth => {
       const polygon = L.polygon(exhibitorBooth.coords as [number, number][], {
         color: '#fff',
@@ -163,33 +203,7 @@ export function ExhibitorsPage() {
       leafletMap.remove();
       leafletRef.current = null;
     };
-  }, []); // Empty dependency array ensures this runs once when mounted
-
-  if (numEmaps === 1) {
-    exhibitorsMap = sampleMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) ||
-    {
-      order: 1,
-      id: 'map-0',
-      conferenceId: activeConference.id || 'unknown',
-      name: 'No Exhibitors Map Found',
-      url: '/pacificon-exhibitors-2025.png',
-      origHeightNum: 256,
-      origWidthNum: 582
-    };
-  } else if (numEmaps > 1) {
-    //for (const element of activeConference.mapExhibitorsUrl) {
-    //const foundMap = sampleMaps.find(m => m.url === element)
-    //if ( foundMap ) { multipleExhibitorMaps.push(foundMap);
-    // Filter approach is cleaner and handles edge cases better
-    multipleExhibitorMaps = sampleMaps.filter(m =>
-      activeConference.mapExhibitorsUrl.includes(m.url)
-    );
-
-    // Fallback if no matches found
-    if (multipleExhibitorMaps.length === 0) {
-      console.warn('No matching maps found for URLs:', activeConference.mapExhibitorsUrl);
-    }
-  }
+  }, [exhibitorsMap]);
 
   function origAspect(h?: number, w?: number) {
     if (!h)
@@ -208,13 +222,13 @@ export function ExhibitorsPage() {
   };
 
   const displayMaps = (numMaps: number) => {
-    if (numMaps === 1 && exhibitorsMap ) {
+    if (numMaps === 1 && exhibitorsMap) {
       const endsWithPdf = exhibitorsMap.url.endsWith(".pdf");
       if (endsWithPdf) {
         return (
           <>
             <div className="w-full" >
-              <iframe src={exhibitorsMap.url} className="w-full">
+              <iframe title="Exhibitors Map" src={exhibitorsMap.url} className="w-full">
                 Your browser does not support iframes. <a href={exhibitorsMap.url}>Download the PDF</a> instead.
               </iframe>
             </div>
