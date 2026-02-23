@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { ScheduleView } from '@/app/components/ScheduleView';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useConference } from '@/app/contexts/ConferenceContext';
 import { MapImage, Room } from '@/types/conference';
+import { useBookmarks } from '@/app/hooks/useBookmarks';
 
 interface MapsModule {
   sampleMaps?: MapImage[];
@@ -37,9 +38,9 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 });
 
 export function ForumsPage() {
-  const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
   const forumRooms = ROOM_DATA[activeConference.id] || [];
   const sampleMaps = MAP_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
@@ -51,14 +52,6 @@ export function ForumsPage() {
     else if (!w)
       throw new Error("forumMap missing origWidthNum");
     return h / w;
-  };
-
-  const handleToggleBookmark = (sessionId: string) => {
-    setBookmarkedSessions(prev =>
-      prev.includes(sessionId)
-        ? prev.filter(id => id !== sessionId)
-        : [...prev, sessionId]
-    );
   };
 
   useEffect(() => {
