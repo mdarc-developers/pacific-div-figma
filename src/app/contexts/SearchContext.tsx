@@ -5,6 +5,8 @@ interface SearchContextType {
   setHighlightSessionId: (sessionId: string | null) => void;
   highlightExhibitorId: string | null;
   setHighlightExhibitorId: (sessionId: string | null) => void;
+  highlightForumRoomName: string | null;
+  setHighlightForumRoomName: (roomName: string | null) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -20,9 +22,10 @@ export const useSearch = () => {
 export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const [highlightSessionId, setHighlightSessionId] = useState<string | null>(null);
   const [highlightExhibitorId, setHighlightExhibitorId] = useState<string | null>(null);
+  const [highlightForumRoomName, setHighlightForumRoomName] = useState<string | null>(null);
 
   return (
-    <SearchContext.Provider value={{ highlightSessionId, setHighlightSessionId, highlightExhibitorId, setHighlightExhibitorId }}>
+    <SearchContext.Provider value={{ highlightSessionId, setHighlightSessionId, highlightExhibitorId, setHighlightExhibitorId, highlightForumRoomName, setHighlightForumRoomName }}>
       {children}
     </SearchContext.Provider>
   );

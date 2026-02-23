@@ -3,6 +3,7 @@ import { ScheduleView } from '@/app/components/ScheduleView';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useConference } from '@/app/contexts/ConferenceContext';
+import { useSearch } from '@/app/contexts/SearchContext';
 import { MapImage, Room } from '@/types/conference';
 import { useBookmarks } from '@/app/hooks/useBookmarks';
 
@@ -40,11 +41,13 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 export function ForumsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { highlightForumRoomName } = useSearch();
   const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
   const forumRooms = ROOM_DATA[activeConference.id] || [];
   const sampleMaps = MAP_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
+  const polygonRefs = useRef<Map<string, L.Polygon>>(new Map());
 
   function origAspect(h?: number, w?: number) {
     if (!h)
@@ -139,6 +142,7 @@ export function ForumsPage() {
         weight: 2,
       }).addTo(leafletMap);
       polygon.bindPopup(forumRoom.name);
+      polygonRefs.current.set(forumRoom.name, polygon);
       // Your mouseover/mouseout functions with arrow syntax to fix 'this' typing:
       polygon.on('mouseover', () => polygon.setStyle({ fillOpacity: 0.6 }));
       polygon.on('mouseout', () => polygon.setStyle({ fillOpacity: 0.3 }));
@@ -150,8 +154,23 @@ export function ForumsPage() {
     return () => {
       leafletMap.remove();
       leafletRef.current = null;
+      polygonRefs.current.clear();
     };
   }, []); // Empty dependency array ensures this runs once when mounted
+
+  // Highlight and zoom to the room when highlightForumRoomName changes
+  useEffect(() => {
+    if (polygonRefs.current.size === 0) return;
+    polygonRefs.current.forEach((polygon, name) => {
+      if (name === highlightForumRoomName) {
+        polygon.setStyle({ fillOpacity: 0.7, weight: 4 });
+        polygon.openPopup();
+        leafletRef.current?.fitBounds(polygon.getBounds(), { padding: [20, 20] });
+      } else {
+        polygon.setStyle({ fillOpacity: 0.3, weight: 2 });
+      }
+    });
+  }, [highlightForumRoomName]);
 
   //const forumMap: MapImage = sampleMaps.find(m => m.origHeightNum !== undefined) || // assume origWidthNum as well
   const forumMap: MapImage = sampleMaps.find(m => m.url === activeConference.mapSessionsUrl) || // assume origWidthNum as well
