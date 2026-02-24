@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useConference } from '@/app/contexts/ConferenceContext';
 
 interface SessionModule {
-  sampleSessions?: Session[];
+  mapSessions?: Session[];
   [key: string]: unknown;
 }
 
@@ -22,8 +22,8 @@ Object.entries(sessionModules).forEach(([path, module]) => {
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as SessionModule;
-  if (typedModule.sampleSessions) {
-    SESSION_DATA[conferenceId] = typedModule.sampleSessions;
+  if (typedModule.mapSessions) {
+    SESSION_DATA[conferenceId] = typedModule.mapSessions;
   }
 });
 

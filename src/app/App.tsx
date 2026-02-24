@@ -21,35 +21,8 @@ import { ProfilePage } from '@/app/pages/ProfilePage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { SignUpPage } from '@/app/pages/SignUpPage';
 import { SearchPage } from '@/app/pages/SearchPage';
-//import { pacificonData } from '@/data/pacificon-sample';
-//import { pacificonData, sampleSessions, sampleMaps } from '@/data/pacificon-sample';
-//import { sampleSessions } from '@/data/hamcation-2026';
-//import { useConference } from '@/app/contexts/ConferenceContext';
-//import { allConferences } from '@/data/all-conferences';
-//import { Conference } from '@/types/conference';
-
-//var x = 'someplace`';
-//import (x).then((a) => {
-//{ sampleSessions } from '@/data/hamcation-2026';
-//}
-
-//activeConference: Conference | null;
-//allConferences: Conference[] | null;
 
 export default function App() {
-  //const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
-  //const [activeTab, setActiveTab] = useState('maps');
-
-  //const handleToggleBookmark = (sessionId: string) => {
-  //  setBookmarkedSessions(prev =>
-  //    prev.includes(sessionId)
-  //      ? prev.filter(id => id !== sessionId)
-  //      : [...prev, sessionId]
-  //  );
-  //};
-
-  //const { activeConference, allConferencesList, setActiveConference } = useConference();
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <FirebaseThemeSync />
