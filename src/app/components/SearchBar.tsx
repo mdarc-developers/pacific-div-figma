@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useConference } from '@/app/contexts/ConferenceContext';
 
 interface SessionModule {
-  mapSessions?: Session[];
+  mapSessions?: [string, Session[]];
   [key: string]: unknown;
 }
 
@@ -56,8 +56,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   // Initialize search index on mount
   useEffect(() => {
-    searchService.buildIndex(indexSessions);
-  }, [indexSessions]);
+    searchService.buildIndex(indexSessions[1]);
+  }, [indexSessions[1]]);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

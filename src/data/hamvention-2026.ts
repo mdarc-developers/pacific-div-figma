@@ -1496,48 +1496,35 @@ export const mapBooths: [string, Booth[]] = [
   ],
 ];
 
-//// will soon convert from forumRooms
-//export const mapRooms: [string, Room[]] = [
-//  '/assets/maps/hamvention-forums-2026-2.png', [
-    //origHeightNum: 710,
-    //origWidthNum: 953,
-
 // Define your room polygons here
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-// NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
-// The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
-// your actual image. Their original x values (630–715) exceeded the image width of 582.
-export const forumRooms: Room[] = [
-  // ... (your forumRooms data) ...
-  // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-
-//export interface Room {
-//  name: string;
-//  coords: [number, number][];
-//  color: string;
-//};
-  {
-    name: 'Forum 1',
-    coords: [[151, 8], [282, 8], [282, 119], [151, 119]],
-    color: '#10B981',
-  },
-  {
-    name: 'Forum 2',
-    coords: [[14, 10], [144, 10], [144, 121], [14, 121]],
-    color: '#3B82F6',
-  },
-  {
-    name: 'Forum 3',
-    coords: [[159, 336], [254, 336], [254, 433], [159, 433]],
-    color: '#8B5CF6',
-  },
-  {
-    name: 'Forum 4',
-    coords: [[630, 845], [697, 845], [697, 949], [630, 949]],
-    color: '#005CF6',
-  },
-
-  //],
+// NOTE: All x values must be <= origWidthNum (953) and y values <= origHeightNum (710)
+// Forum 4 coords below are PLACEHOLDERS — update to match actual image.
+export const mapRooms: [string, Room[]] = [
+  '/assets/maps/hamvention-forums-2026-2.png', [
+    //origHeightNum: 710,
+    //origWidthNum: 953,
+    {
+      name: 'Forum 1',
+      coords: [[151, 8], [282, 8], [282, 119], [151, 119]],
+      color: '#10B981',
+    },
+    {
+      name: 'Forum 2',
+      coords: [[14, 10], [144, 10], [144, 121], [14, 121]],
+      color: '#3B82F6',
+    },
+    {
+      name: 'Forum 3',
+      coords: [[159, 336], [254, 336], [254, 433], [159, 433]],
+      color: '#8B5CF6',
+    },
+    {
+      name: 'Forum 4',
+      coords: [[630, 845], [697, 845], [697, 949], [630, 949]],
+      color: '#005CF6',
+    },
+  ],
 ];
 
 export const sampleSessions: Session[] = [

@@ -72,7 +72,8 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 
-export const mapExhibitors: Exhibitor[] = [
+export const mapExhibitors: [string, Exhibitor[]] = [
+  "/pacificon-exhibitors-2025.png", [
   {
     id: 'flexradio',
     name: 'Flex Radio',
@@ -703,6 +704,7 @@ export const mapExhibitors: Exhibitor[] = [
     color: '#ffffff',
     url: '',
   },
+],
 ];
 
 export const mapBooths: [string, Booth[]] = [
@@ -1195,7 +1197,7 @@ export const mapBooths: [string, Booth[]] = [
 // Extracted forums schedule from pacificon.org
 // Extracted event schedule from pacificon.org
 export const mapSessions: [string, Session[]] = [
-  '/pacificon-hotel-2025.jpg', [
+  '/pacificon-forums-2025.jpg', [
     {
       id: "friday-registrationwill-call-open",
       title: "Registration/Will Call Open",
@@ -1240,18 +1242,6 @@ export const mapSessions: [string, Session[]] = [
       url: "https://www.pacificon.org/events/special-event-station",
       category: "Events",
       track: [ "W1AW/6", "SCV" ],
-    },
-    {
-      id: "sunday-arrl-forum",
-      title: "ARRL Forum",
-      description: "",
-      speaker: [],
-      location: "Bishop Ranch Ballroom Salon E,F,G,H",
-      startTime: "2026-10-18T13:00:00",
-      endTime: "2026-10-18T15:00:00",
-      url: "https://www.pacificon.org/events/special-event-station",
-      category: "Events",
-      track: [ "ARRL" ],
     },
     {
       id: "friday-vendor-setup",
@@ -1392,7 +1382,7 @@ export const mapSessions: [string, Session[]] = [
       track: [ "Education"],
     },
     {
-      id: "saturday-ham-license-testing",
+      id: "saturday-ham-license-testing-event-0800",
       title: "Ham License Testing",
       description: "",
       speaker: [],
@@ -1497,7 +1487,7 @@ export const mapSessions: [string, Session[]] = [
       category: "Events",
     },
     {
-      id: "saturday-elecraft-k4-updates-along-with-qa",
+      id: "saturday-elecraft-k4-updates-along-with-qa-event",
       title: "Elecraft K4 Updates Along With Q&A",
       description: "",
       speaker: ["Eric Swartz, WA6HHQ"],
@@ -1507,19 +1497,7 @@ export const mapSessions: [string, Session[]] = [
       category: "Events",
     },
     {
-      id: "saturday-prize-drawing",
-      title: "Prize Drawing",
-      description: "",
-      speaker: [],
-      location: "Prize Booth",
-      startTime: "2026-10-17T11:00:00",
-      endTime: "2026-10-17T11:15:00",
-      url: "https://www.pacificon.org/events/prizes",
-      category: "Events",
-      track: [ "Prizes"],
-    },
-    {
-      id: "saturday-remote-operation-of-your-radio-station",
+      id: "saturday-remote-operation-of-your-radio-station-event",
       title: "Remote Operation of Your Radio Station",
       description: "",
       speaker: ["Mark Aaker, K6UFO"],
@@ -1570,27 +1548,16 @@ export const mapSessions: [string, Session[]] = [
       track: [ "W1AW/6", "SCV" ],
     },
     {
-      id: "sunday-arrl-forum",
+      id: "sunday-arrl-forum-event",
       title: "ARRL Forum",
       description: "",
-      speaker: [],
+      speaker: ["John Litz, NZ6Q"],
       location: "Bishop Ranch Ballroom Salon E,F,G,H",
       startTime: "2026-10-18T13:00:00",
       endTime: "2026-10-18T15:00:00",
       url: "https://www.arrl.org",
       category: "Events",
-      track: ["ARRL"],
-    },
-    {
-      id: "saturday-prize-drawing",
-      title: "Prize Drawing",
-      description: "",
-      speaker: [],
-      location: "Prize Booth",
-      startTime: "2026-10-17T13:00:00",
-      endTime: "2026-10-17T13:15:00",
-      url: "https://www.pacificon.org/events/prizes",
-      category: "Events",
+      track: [ "ARRL", "Pacific-Division", "EB", "SF", "SCV", "SV", "SJV", "NV" , "PAC" ],
     },
     {
       id: "saturday-multimode-digital-voice-modem",
@@ -1647,7 +1614,7 @@ export const mapSessions: [string, Session[]] = [
       category: "Events",
     },
     {
-      id: "saturday-prize-drawing",
+      id: "saturday-prize-drawing-event-1600",
       title: "Prize Drawing",
       description: "",
       speaker: [],
@@ -1659,24 +1626,52 @@ export const mapSessions: [string, Session[]] = [
       track: [ "Prizes"],
     },
     {
-      id: "saturday-more-technological-innovation-in-amateur",
+      id: "saturday-prize-drawing-event-1300",
+      title: "Prize Drawing",
+      description: "",
+      speaker: [],
+      location: "Prize Booth",
+      startTime: "2026-10-17T13:00:00",
+      endTime: "2026-10-17T13:15:00",
+      url: "https://www.pacificon.org/events/prizes",
+      category: "Events",
+      track: [ "Prizes"],
+    },
+    {
+      id: "saturday-prize-drawing-event-1100",
+      title: "Prize Drawing",
+      description: "",
+      speaker: [],
+      location: "Prize Booth",
+      startTime: "2026-10-17T11:00:00",
+      endTime: "2026-10-17T11:15:00",
+      url: "https://www.pacificon.org/events/prizes",
+      category: "Events",
+      track: [ "Prizes"],
+    },
+    {
+      id: "saturday-more-tech-innovation-in-amateur-radio-event",
       title: "MORE Technological Innovation in Amateur Radio",
       description: "",
       speaker: ["Steve Stroh, N8GNJ"],
       location: "Salon E",
       startTime: "2026-10-17T16:00:00",
       endTime: "2026-10-17T16:50:00",
+      url: "https://www.zeroretries.org",
       category: "Events",
+      track: ["Digital"],
     },
     {
-      id: "saturday-ham-license-testing",
+      id: "saturday-ham-license-testing-event-1600",
       title: "Ham License Testing",
       description: "",
       speaker: [],
       location: "Tri-Valley 1",
       startTime: "2026-10-17T16:00:00",
       endTime: "2026-10-17T18:00:00",
+      url: "https://www.pacificon.org/education/license-testing",
       category: "Events",
+      track: [ "Education"],
     },
     {
       id: "saturday-banquet-dinner",
@@ -1839,17 +1834,6 @@ export const mapSessions: [string, Session[]] = [
       track: [ "W1AW/6", "SCV" ],
     },
     {
-      id: "sunday-arrl-forum",
-      title: "ARRL Forum",
-      description: "",
-      speaker: [],
-      location: "Bishop Ranch Ballroom Salon E,F,G,H",
-      startTime: "2026-10-18T13:00:00",
-      endTime: "2026-10-18T15:00:00",
-      category: "Events",
-      track: [ "ARRL"],
-    },
-    {
       id: "sunday-final-and-grand-prize-drawings",
       title: "Final and Grand Prize Drawings",
       description: "Final and Grand Prize Drawings",
@@ -1993,7 +1977,7 @@ export const mapSessions: [string, Session[]] = [
     track: [ "Scouting"],
   },
   {
-    id: "saturday-elecraft-k4-updates-along-with-qa",
+    id: "saturday-elecraft-k4-updates-along-with-qa-forum",
     title: "Elecraft K4 updates along with Q&A",
     description: "",
     speaker: ["Eric Swartz, WA6HHQ"],
@@ -2039,7 +2023,7 @@ export const mapSessions: [string, Session[]] = [
     track: [ "?OTA"],
   },
   {
-    id: "saturday-remote-operation-of-your-radio-station",
+    id: "saturday-remote-operation-of-your-radio-station-forum",
     title: "Remote Operation of your Radio Station",
     description: "",
     speaker: ["Mark Aaker, K6UFO"],
@@ -2235,7 +2219,7 @@ export const mapSessions: [string, Session[]] = [
     track: ["Technician", "General", "Education"],
   },
   {
-    id: "saturday-more-technological-innovation-in-amateur",
+    id: "saturday-more-tech-innovation-in-amateur-radio-forum",
     title: "MORE Technological Innovation in Amateur Radio",
     description: "",
     speaker: ["Steve Stroh, N8GNJ"],
@@ -2340,7 +2324,7 @@ export const mapSessions: [string, Session[]] = [
     track: [ "Public_Service", "APRS" ],
   },
   {
-    id: "sunday-arrl-forum",
+    id: "sunday-arrl-forum-forum",
     title: "ARRL Forum",
     description: "ARRL Pacific Division Director",
     speaker: ["John Litz, NZ6Q"],
@@ -2354,8 +2338,7 @@ export const mapSessions: [string, Session[]] = [
   ]
 ];
 
-// TODO: move from forumRooms to mapRooms, needs wiring. uses tools for data entry.
-export const mapRooms: [string, Room[]] = [
+export const mapHotelRooms: [string, Room[]] = [
   '/pacificon-hotel-2025.jpg', [
     //origHeightNum: 1201,
     //origWidthNum: 983,
@@ -2435,18 +2418,15 @@ export const mapRooms: [string, Room[]] = [
       color: '#005CF6',
     },
   ],
-
 ];
 
-// Define your room polygons here
+// Forum room polygons for the forums floor plan
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
-//
-// TODO: move to mapRooms FROM forumRooms, needs wiring. uses tools for data entry. Room[]
-export const forumRooms: Room[] = [
-  // ... (your forumRooms data) ...
+export const mapRooms: [string, Room[]] = [
+  '/pacificon-forums-2025.jpg', [
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
   {
     name: 'Salon 2',
@@ -2498,6 +2478,7 @@ export const forumRooms: Room[] = [
     coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
     color: '#005CF6',
   },
+  ],
 ];
 
 // map images - in production these may be bundled images

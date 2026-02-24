@@ -155,7 +155,7 @@ function SessionCard({ session, isBookmarked, isHighlighted, onToggleBookmark, a
 }
 
 interface SessionModule {
-  mapSessions?: Session[];
+  mapSessions?: [string, Session[]];
   [key: string]: unknown;
 }
 
@@ -168,7 +168,7 @@ Object.entries(sessionModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as SessionModule;
   if (typedModule.mapSessions) {
-    SESSION_DATA[conferenceId] = typedModule.mapSessions;
+    SESSION_DATA[conferenceId] = typedModule.mapSessions[1];
   }
 });
 

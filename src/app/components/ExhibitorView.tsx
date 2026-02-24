@@ -85,7 +85,7 @@ function ExhibitorCard({ exhibitor, isBookmarked, isHighlighted, onToggleBookmar
 }
 
 interface ExhibitorModule {
-  mapExhibitors?: Exhibitor[];
+  mapExhibitors?: [string, Exhibitor[]];
   [key: string]: unknown;
 }
 
@@ -112,7 +112,7 @@ export function ExhibitorView({
   const exhibitors = EXHIBITOR_DATA[activeConference.id] || [];
 
   // Group exhibitors by type
-  const groupExhibitorsByType = (exhibitors: Exhibitor[]) => {
+  const groupExhibitorsByType = ([id, exhibitors]: [string, Exhibitor[]]) => {
     const grouped: Record<string, Exhibitor[]> = {};
     exhibitors.forEach(exhibitor => {
       const type = exhibitor.type;
