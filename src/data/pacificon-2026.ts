@@ -2471,7 +2471,7 @@ export const mapRooms: [string, Room[]] = [
     coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
     color: '#005CF6',
   },
-  ],
+],
 ];
 
 // map images - in production these may be bundled images

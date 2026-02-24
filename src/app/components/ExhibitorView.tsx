@@ -109,10 +109,10 @@ export function ExhibitorView({
   const [selectedType, setSelectedType] = useState<string>('all');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-  const exhibitors = EXHIBITOR_DATA[activeConference.id] || [];
+  const exhibitors = EXHIBITOR_DATA[activeConference.id][1] || [];
 
   // Group exhibitors by type
-  const groupExhibitorsByType = ([id, exhibitors]: [string, Exhibitor[]]) => {
+  const groupExhibitorsByType = (exhibitors: Exhibitor[]) => {
     const grouped: Record<string, Exhibitor[]> = {};
     exhibitors.forEach(exhibitor => {
       const type = exhibitor.type;
