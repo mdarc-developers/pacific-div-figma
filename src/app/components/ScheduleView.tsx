@@ -156,6 +156,7 @@ function SessionCard({ session, isBookmarked, isHighlighted, onToggleBookmark, a
 
 interface SessionModule {
   mapSessions?: [string, Session[]];
+  sampleSessions?: Session[];
   [key: string]: unknown;
 }
 
@@ -163,12 +164,15 @@ interface SessionModule {
 const sessionModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
 
 // Process the modules into a lookup object
+// Prefer mapSessions (curated, real data) over sampleSessions (placeholder data)
 const SESSION_DATA: Record<string, Session[]> = {};
 Object.entries(sessionModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as SessionModule;
   if (typedModule.mapSessions) {
-    SESSION_DATA[conferenceId] = typedModule.mapSessions;
+    SESSION_DATA[conferenceId] = typedModule.mapSessions[1];
+  } else if (typedModule.sampleSessions) {
+    SESSION_DATA[conferenceId] = typedModule.sampleSessions;
   }
 });
 
@@ -204,8 +208,8 @@ export function ScheduleView({
 
   // Collect unique "room" names from all sessions, sorted alphabetically
   const rooms = useMemo(
-    () => [...new Set(sessions[1].map(s => s.location))].sort(),
-    [sessions[1]]
+    () => [...new Set(sessions.map(s => s.location))].sort(),
+    [sessions]
   );
 
   // Apply active filters to a list of sessions
@@ -236,7 +240,7 @@ export function ScheduleView({
     return grouped;
   };
 
-  const groupedSessions = groupSessionsByDate(sessions[1]);
+  const groupedSessions = groupSessionsByDate(sessions);
   const dateKeys = Object.keys(groupedSessions).sort();
 
 
@@ -256,7 +260,7 @@ export function ScheduleView({
   const formatTime = (timeString: string) =>
     formatSessionTime(timeString, activeConference.timezoneNumeric, activeConference);
 
-  const calendarEvents: EventInput[] = sessions[1].map(session => ({
+  const calendarEvents: EventInput[] = sessions.map(session => ({
     id: session.id,
     title: session.title,
     start: session.startTime + activeConference.timezoneNumeric,
