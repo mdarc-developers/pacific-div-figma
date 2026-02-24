@@ -168,7 +168,7 @@ Object.entries(sessionModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as SessionModule;
   if (typedModule.mapSessions) {
-    SESSION_DATA[conferenceId] = typedModule.mapSessions[1];
+    SESSION_DATA[conferenceId] = typedModule.mapSessions;
   }
 });
 
@@ -204,8 +204,8 @@ export function ScheduleView({
 
   // Collect unique "room" names from all sessions, sorted alphabetically
   const rooms = useMemo(
-    () => [...new Set(sessions.map(s => s.location))].sort(),
-    [sessions]
+    () => [...new Set(sessions[1].map(s => s.location))].sort(),
+    [sessions[1]]
   );
 
   // Apply active filters to a list of sessions
@@ -236,7 +236,7 @@ export function ScheduleView({
     return grouped;
   };
 
-  const groupedSessions = groupSessionsByDate(sessions);
+  const groupedSessions = groupSessionsByDate(sessions[1]);
   const dateKeys = Object.keys(groupedSessions).sort();
 
 
@@ -256,7 +256,7 @@ export function ScheduleView({
   const formatTime = (timeString: string) =>
     formatSessionTime(timeString, activeConference.timezoneNumeric, activeConference);
 
-  const calendarEvents: EventInput[] = sessions.map(session => ({
+  const calendarEvents: EventInput[] = sessions[1].map(session => ({
     id: session.id,
     title: session.title,
     start: session.startTime + activeConference.timezoneNumeric,
