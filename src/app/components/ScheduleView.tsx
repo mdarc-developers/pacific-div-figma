@@ -155,7 +155,7 @@ function SessionCard({ session, isBookmarked, isHighlighted, onToggleBookmark, a
 }
 
 interface SessionModule {
-  mapSessions?: Session[];
+  mapSessions?: [string, Session[]];
   [key: string]: unknown;
 }
 
