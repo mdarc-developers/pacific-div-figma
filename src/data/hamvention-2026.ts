@@ -68,7 +68,8 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 ];
 
-export const mapExhibitors: Exhibitor[] = [
+export const mapExhibitors: [string, Exhibitor[]] = [
+    "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf", [
 //export interface Exhibitor {
 //  id: string;                    ? auto assign ? use name
 //  name: string;                  good
@@ -1487,12 +1488,12 @@ export const mapExhibitors: Exhibitor[] = [
     type: "exhibitor-reserved",
     url: "",
   },
+],
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  '', [
+    "/assets/maps/hamvention-forums-2026-2.png", [
   ],
-
 ];
 
 //// will soon convert from forumRooms
