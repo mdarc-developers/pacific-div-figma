@@ -1192,8 +1192,8 @@ export const mapBooths: [string, Booth[]] = [
 //  track?: string[];
 //}
 
-// Extracted event schedule from Pacificon
-// TODO: move from sampleSessions to mapSessions, needs wiring & data entry
+// Extracted forums schedule from pacificon.org
+// Extracted event schedule from pacificon.org
 export const mapSessions: [string, Session[]] = [
   '/pacificon-hotel-2025.jpg', [
     {
@@ -2498,10 +2498,6 @@ export const forumRooms: Room[] = [
     coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
     color: '#005CF6',
   },
-];
-
-// TODO: move to mapSessions FROM sampleSessions, needs wiring & data entry. Session[]
-export const sampleSessions: Session[] = [
 ];
 
 // map images - in production these may be bundled images
