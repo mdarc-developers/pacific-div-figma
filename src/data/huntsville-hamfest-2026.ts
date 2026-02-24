@@ -58,11 +58,13 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 ];
 
-export const mapExhibitors: Exhibitor[] = [
+export const mapExhibitors: [string, Exhibitor[]] = [
+  "/hamfest-layout-2026.png", [
+  ],
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  '', [
+  "/hamfest-layout-2026.png", [
   ],
 ];
 

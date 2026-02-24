@@ -65,7 +65,8 @@ export interface Session {
   startTime: string; // stored in local date and time for the conference timezone
   endTime: string; // stored in local date and time for the conference timezone
   category: string;
-  track?: string;
+  url?: string;
+  track?: string[];
 }
 
 export interface Prize {

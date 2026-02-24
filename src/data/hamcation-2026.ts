@@ -64,7 +64,8 @@ export const mapBooths: [string, Booth[]] = [
 
 ];
 
-export const mapExhibitors: Exhibitor[] = [
+export const mapExhibitors: [string, Exhibitor[]] = [
+  '/hamcation-2026-north.png', [
   {
     id: 'arrl',
     name: 'ARRL',
@@ -105,6 +106,7 @@ export const mapExhibitors: Exhibitor[] = [
     color: '#77cff4',
     url: 'https://www.w5yi-vec.org',
   },
+],
 ];
 
 // Define your room polygons here
@@ -141,7 +143,8 @@ export const forumRooms: Room[] = [
   },
 ];
 
-export const sampleSessions: Session[] = [
+export const mapSessions: [ string, Session[]] = [
+  "/hamcation-2026-pavilion.png", [
   {
     id: 'session-1',
     title: 'Florida AUXCOMM ESF2 Stakeholder Forum',
@@ -150,7 +153,7 @@ export const sampleSessions: Session[] = [
     location: 'Pavillion Tent 1',
     startTime: '2026-02-13T09:15:00',
     endTime: '2026-02-13T10:15:00',
-    category: 'EmComm',
+    category: 'Forums`',
     track: 'EmComm'
   },
   {
@@ -161,7 +164,7 @@ export const sampleSessions: Session[] = [
     location: 'Pavillion Tent 3',
     startTime: '2026-02-13T09:15:00',
     endTime: '2026-02-13T10:15:00',
-    category: 'Operating',
+    category: 'Forums`',
     track: 'QRP'
   },
   {
@@ -172,7 +175,7 @@ export const sampleSessions: Session[] = [
     location: 'Pavillion Tent 2',
     startTime: '2026-02-13T09:15:00',
     endTime: '2026-02-13T10:15:00',
-    category: 'Technical',
+    category: 'Forums`',
     track: 'Station'
   },
   {
@@ -183,7 +186,7 @@ export const sampleSessions: Session[] = [
     location: 'Pavilion Tent 2',
     startTime: '2026-02-13T10:30:00',
     endTime: '2026-02-13T11:30:00',
-    category: 'Operating',
+    category: 'Forums`',
     track: 'Digital'
   },
   {
@@ -194,7 +197,7 @@ export const sampleSessions: Session[] = [
     location: 'Pavilion Tent 3',
     startTime: '2026-02-13T10:30:00',
     endTime: '2026-02-13T11:30:00',
-    category: 'Contesting',
+    category: 'Forums`',
     track: 'DX'
   },
   {
@@ -205,7 +208,7 @@ export const sampleSessions: Session[] = [
     location: 'Pavilion Tent 2',
     startTime: '2026-02-13T10:30:00',
     endTime: '2026-02-13T11:30:00',
-    category: 'Equipment',
+    category: 'Forums`',
     track: 'Product'
   },
   {
@@ -216,9 +219,10 @@ export const sampleSessions: Session[] = [
     location: 'Pavilion Tent 3',
     startTime: '2026-02-13T11:45:00',
     endTime: '2026-02-13T12:45:00',
-    category: 'Contesting',
+    category: 'Forums`',
     track: 'DX',
   },
+],
 ];
 
 // map images - in production these may be bundled images
