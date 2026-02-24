@@ -1197,7 +1197,7 @@ export const mapBooths: [string, Booth[]] = [
 // Extracted forums schedule from pacificon.org
 // Extracted event schedule from pacificon.org
 export const mapSessions: [string, Session[]] = [
-  '/pacificon-hotel-2025.jpg', [
+  '/pacificon-forums-2025.jpg', [
     {
       id: "friday-registrationwill-call-open",
       title: "Registration/Will Call Open",
@@ -2438,69 +2438,69 @@ export const mapRooms: [string, Room[]] = [
   ],
 ];
 
-// Define your room polygons here
-// Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-// NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
-// The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
-// your actual image. Their original x values (630–715) exceeded the image width of 582.
-//
-// TODO: move to mapRooms FROM forumRooms, needs wiring. uses tools for data entry. Room[]
-export const mapRooms: [string, Room[]] = [
-  "/pacificon-hotel-2025.jpg", [
-  // ... (your forumRooms data) ...
-  // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-  {
-    name: 'Salon 2',
-    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
-    color: '#10B981',
-  },
-  {
-    name: 'Salon E',
-    coords: [[55, 310], [215, 310], [215, 413], [55, 413]], // Center-Right Large
-    color: '#3B82F6',
-  },
-  {
-    name: 'Salon H',
-    coords: [[169, 414], [215, 414], [215, 487], [169, 487]], // Top Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Salon G',
-    coords: [[109, 414], [168, 414], [168, 487], [109, 487]], // Mid Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Grand Ballroom, E, F, G & H Combined',
-    coords: [[57, 311], [214, 311], [214, 488], [57, 488]],
-    color: '#F59E0B',
-  },
-  {
-    name: 'Salon F',
-    coords: [[55, 414], [108, 414], [108, 485], [55, 485]], // Bottom Right Stack
-    color: '#F59E0B',
-  },
-  {
-    name: 'Pleasanton',
-    coords: [[193, 518], [255, 518], [255, 581], [193, 581]], // Far Right Top
-    color: '#8B5CF6',
-  },
-  {
-    name: 'Danville',
-    coords: [[135, 518], [192, 518], [192, 581], [135, 581]], // Far Right Mid
-    color: '#8B5CF6',
-  },
-  {
-    name: 'San Ramon Boardroom',
-    coords: [[58, 518], [134, 518], [134, 581], [58, 581]], // Far Right Bottom
-    color: '#8B5CF6',
-  },
-  {
-    name: 'Restrooms',
-    coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
-    color: '#005CF6',
-  },
-],
-];
+//// Define your room polygons here
+//// Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+//// NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
+//// The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
+//// your actual image. Their original x values (630–715) exceeded the image width of 582.
+////
+//// TODO: move to mapRooms FROM forumRooms, needs wiring. uses tools for data entry. Room[]
+//export const mapRooms: [string, Room[]] = [
+//  '/pacificon-forums-2025.jpg', [
+//  // ... (your forumRooms data) ...
+//  // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+//  {
+//    name: 'Salon 2',
+//    coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
+//    color: '#10B981',
+//  },
+//  {
+//    name: 'Salon E',
+//    coords: [[55, 310], [215, 310], [215, 413], [55, 413]], // Center-Right Large
+//    color: '#3B82F6',
+//  },
+//  {
+//    name: 'Salon H',
+//    coords: [[169, 414], [215, 414], [215, 487], [169, 487]], // Top Right Stack
+//    color: '#F59E0B',
+//  },
+//  {
+//    name: 'Salon G',
+//    coords: [[109, 414], [168, 414], [168, 487], [109, 487]], // Mid Right Stack
+//    color: '#F59E0B',
+//  },
+//  {
+//    name: 'Grand Ballroom, E, F, G & H Combined',
+//    coords: [[57, 311], [214, 311], [214, 488], [57, 488]],
+//    color: '#F59E0B',
+//  },
+//  {
+//    name: 'Salon F',
+//    coords: [[55, 414], [108, 414], [108, 485], [55, 485]], // Bottom Right Stack
+//    color: '#F59E0B',
+//  },
+//  {
+//    name: 'Pleasanton',
+//    coords: [[193, 518], [255, 518], [255, 581], [193, 581]], // Far Right Top
+//    color: '#8B5CF6',
+//  },
+//  {
+//    name: 'Danville',
+//    coords: [[135, 518], [192, 518], [192, 581], [135, 581]], // Far Right Mid
+//    color: '#8B5CF6',
+//  },
+//  {
+//    name: 'San Ramon Boardroom',
+//    coords: [[58, 518], [134, 518], [134, 581], [58, 581]], // Far Right Bottom
+//    color: '#8B5CF6',
+//  },
+//  {
+//    name: 'Restrooms',
+//    coords: [[8, 488], [34, 488], [34, 531], [8, 531]],
+//    color: '#005CF6',
+//  },
+//],
+//];
 
 // map images - in production these may be bundled images
 // TODO: change name to ConferenceMaps, a top level simple array, FROM sampleMaps. configured, no data entry UI. MapImage[]

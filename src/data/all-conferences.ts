@@ -94,7 +94,7 @@ export const allConferences: Conference[] = [
     googlecalUrl: 'https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org',
     contactEmail: 'webmaster@pacificon.org',
     logoUrl: '/2026-pacificon-logo-208-110.jpg',
-    mapSessionsUrl: '/pacificon-forums-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
+    mapSessionsUrl: '/pacificon-hotel-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
     mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
   },
   {
