@@ -85,7 +85,7 @@ function ExhibitorCard({ exhibitor, isBookmarked, isHighlighted, onToggleBookmar
 }
 
 interface ExhibitorModule {
-  mapExhibitors?: Exhibitor[];
+  mapExhibitors?: [string, Exhibitor[]];
   [key: string]: unknown;
 }
 
@@ -109,7 +109,7 @@ export function ExhibitorView({
   const [selectedType, setSelectedType] = useState<string>('all');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-  const exhibitors = EXHIBITOR_DATA[activeConference.id] || [];
+  const exhibitors = EXHIBITOR_DATA[activeConference.id][1] || [];
 
   // Group exhibitors by type
   const groupExhibitorsByType = (exhibitors: Exhibitor[]) => {

@@ -59,7 +59,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  '/pacificon-exhibitors-2025.jpg', [
+    "/hamcation-2026-pavilion.png", [
     {
       id: 1,
       coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
@@ -70,7 +70,8 @@ export const mapBooths: [string, Booth[]] = [
 ];
 
 
-export const mapExhibitors: Exhibitor[] = [
+export const mapExhibitors: [string, Exhibitor[]] = [
+  "/hamcation-2026-pavilion.png", [
   {
     id: 'arrl',
     name: 'ARRL',
@@ -111,6 +112,7 @@ export const mapExhibitors: Exhibitor[] = [
     color: '#77cff4',
     url: 'https://www.w5yi-vec.org',
   },
+],
 ];
 
 // Define your room polygons here
@@ -147,7 +149,8 @@ export const forumRooms: Room[] = [
   },
 ];
 
-export const sampleSessions: Session[] = [
+export const mapSessions: [string, Session[]] = [
+  '/hamcation-2026-pavilion.png', [
   {
     id: 'session-1',
     title: 'Florida AUXCOMM ESF2 Stakeholder Forum',
@@ -225,6 +228,7 @@ export const sampleSessions: Session[] = [
     category: 'Contesting',
     track: 'DX',
   },
+],
 ];
 
 // map images - in production these may be bundled images

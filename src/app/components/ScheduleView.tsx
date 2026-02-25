@@ -155,6 +155,7 @@ function SessionCard({ session, isBookmarked, isHighlighted, onToggleBookmark, a
 }
 
 interface SessionModule {
+  mapSessions?: [string, Session[]];
   sampleSessions?: Session[];
   [key: string]: unknown;
 }
@@ -163,11 +164,14 @@ interface SessionModule {
 const sessionModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
 
 // Process the modules into a lookup object
+// Prefer mapSessions (curated, real data) over sampleSessions (placeholder data)
 const SESSION_DATA: Record<string, Session[]> = {};
 Object.entries(sessionModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as SessionModule;
-  if (typedModule.sampleSessions) {
+  if (typedModule.mapSessions) {
+    SESSION_DATA[conferenceId] = typedModule.mapSessions[1];
+  } else if (typedModule.sampleSessions) {
     SESSION_DATA[conferenceId] = typedModule.sampleSessions;
   }
 });
@@ -202,7 +206,7 @@ export function ScheduleView({
   const [showNowAndNext, setShowNowAndNext] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string>('all');
 
-  // Collect unique room names from all sessions, sorted alphabetically
+  // Collect unique "room" names from all sessions, sorted alphabetically
   const rooms = useMemo(
     () => [...new Set(sessions.map(s => s.location))].sort(),
     [sessions]
@@ -263,7 +267,10 @@ export function ScheduleView({
     end: session.endTime + activeConference.timezoneNumeric,
     extendedProps: {
       speaker: session.speaker,
-      location: session.location
+      location: session.location,
+      category: session.category,
+      url: session.url,
+      track: session.track
     }
   }));
 

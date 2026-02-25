@@ -13,7 +13,7 @@ interface MapsModule {
 }
 
 interface RoomModule {
-  forumRooms?: Room[];
+  mapRooms?: [string, Room[]];
   [key: string]: unknown;
 }
 
@@ -23,7 +23,7 @@ const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true
 
 // Process the modules into a lookup object
 const MAP_DATA: Record<string, MapImage[]> = {};
-const ROOM_DATA: Record<string, Room[]> = {};
+const ROOM_DATA: Record<string, [string, Room[]]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
@@ -33,8 +33,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   if (typedMapModule.conferenceMaps) {
     MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
   }
-  if (typedRoomModule.forumRooms) {
-    ROOM_DATA[conferenceId] = typedRoomModule.forumRooms;
+  if (typedRoomModule.mapRooms) {
+    ROOM_DATA[conferenceId] = typedRoomModule.mapRooms;
   }
 });
 
@@ -43,8 +43,9 @@ export function ForumsPage() {
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const { highlightForumRoomName } = useSearch();
   const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
-  const forumRooms = ROOM_DATA[activeConference.id] || [];
+  const forumRooms = ROOM_DATA[activeConference.id]?.[1] || [];
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
+  const forumMapUrl = activeConference.mapSessionsUrl || ROOM_DATA[activeConference.id]?.[0];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
   const polygonRefs = useRef<Map<string, L.Polygon>>(new Map());
@@ -172,9 +173,9 @@ export function ForumsPage() {
     });
   }, [highlightForumRoomName]);
 
-  //const forumMap: MapImage = conferenceMaps.find(m => m.origHeightNum !== undefined) || // assume origWidthNum as well
-  const forumMap: MapImage = conferenceMaps.find(m => m.url === activeConference.mapSessionsUrl) || // assume origWidthNum as well
-  {
+  const forumMap: MapImage = conferenceMaps.find(m => m.url === forumMapUrl ) || {
+    // when using origHeightNum assume origWidthNum is set as well
+    // this is a backup default image
     id: 'map-0',
     conferenceId: 'pacificon-2026',
     name: 'noForumMapFound',
