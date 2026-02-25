@@ -17,7 +17,7 @@ interface BoothModule {
 }
 
 interface ExhibitorModule {
-  mapExhibitors?: Exhibitor[];
+  mapExhibitors?: [string, Exhibitor[]];
   [key: string]: unknown;
 }
 
@@ -28,7 +28,7 @@ const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true
 // Process the modules into a lookup object
 const MAP_DATA: Record<string, MapImage[]> = {};
 const BOOTH_DATA: Record<string, [string, Booth[]]> = {};
-const EXHIBITOR_DATA: Record<string, Exhibitor[]> = {};
+const EXHIBITOR_DATA: Record<string, [string, Exhibitor[]]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
@@ -54,7 +54,8 @@ export function ExhibitorsPage() {
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id];
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
-  const mapExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
+  const exhibitorEntry = EXHIBITOR_DATA[activeConference.id];
+  const mapExhibitors = exhibitorEntry ? exhibitorEntry[1] : [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
