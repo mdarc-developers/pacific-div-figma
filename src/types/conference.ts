@@ -19,8 +19,8 @@ export interface Conference {
   googlecalUrl: string;
   contactEmail: string;
   logoUrl: string;
-  mapSessionsUrl: string;
-  mapExhibitorsUrl: string[];
+  //mapSessionsUrl: string;
+  //mapExhibitorsUrl: string[];
 }
 
 export interface MapImage {

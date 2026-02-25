@@ -45,7 +45,7 @@ export function ForumsPage() {
   const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
   const forumRooms = ROOM_DATA[activeConference.id]?.[1] || [];
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
-  const forumMapUrl = activeConference.mapSessionsUrl || ROOM_DATA[activeConference.id]?.[0];
+  const forumMapUrl = ROOM_DATA[activeConference.id]?.[0];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
   const polygonRefs = useRef<Map<string, L.Polygon>>(new Map());
