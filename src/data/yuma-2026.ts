@@ -951,17 +951,17 @@ export const mapRooms: [string, Room[]] = [
   // ... (your forumRooms data) ...
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
-      name: "Fine Arts",
+      name: "Seminar Room 1 (Fine Arts Building)",
       coords: [[375, 734], [400, 734], [400, 747], [375, 747]],
       color: "#E63946", //Red
     },
     {
-      name: "4_H",
+      name: "Seminar Room 2 (4H Building)",
       coords: [[436, 725], [451, 725], [451, 757], [436, 757]],
       color: "#457B9D", // steel blue
     },
     {
-      name: "Theater",
+      name: "Hospitality (Old Theater Building)",
       coords: [[288, 700], [360, 700], [360, 748], [288, 748]],
       color: "#F4A261", // Orange
     },
