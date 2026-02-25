@@ -10,7 +10,9 @@ export default defineConfig({
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
-    eslint(),
+    // Skip the ESLint plugin during test runs — its file-system watchers keep
+    // the Vitest process alive after tests complete (37 dangling FILEHANDLE).
+    ...( process.env.VITEST ? [] : [eslint()] ),
   ],
   resolve: {
     alias: {
