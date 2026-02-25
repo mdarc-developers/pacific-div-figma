@@ -1494,7 +1494,8 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/assets/maps/hamvention-forums-2026-2.png",
+  "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
+  //"/assets/maps/hamvention-forums-2026-2.png",
     // must match mapExhibitors URL
   [
   ],
