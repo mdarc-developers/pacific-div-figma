@@ -203,7 +203,7 @@ export function ScheduleView({
   const [selectedRoom, setSelectedRoom] = useState<string>('all');
 
   // Collect unique "room" names from all sessions, sorted alphabetically
-  const rooms = useMemo(
+  const collectedRooms = useMemo(
     () => [...new Set(sessions.map(s => s.location))].sort(),
     [sessions]
   );
@@ -313,7 +313,7 @@ export function ScheduleView({
           <MapPin className="h-4 w-4" />
           All Rooms
         </Button>
-        {rooms.map(room => (
+        {collectedRooms.map(room => (
           <Button
             key={room}
             variant={selectedRoom === room ? 'default' : 'outline'}
