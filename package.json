@@ -8,7 +8,8 @@
     "dev": "vite",
     "deploy": "firebase deploy",
     "lint": "npx eslint src/**/*.{ts,tsx,js,jsx}",
-    "test": "vitest run"
+    "test": "vitest run",
+    "testverbose": "vitest run --reporter=verbose"
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.0",

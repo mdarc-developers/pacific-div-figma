@@ -59,7 +59,9 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-    "/hamcation-2026-pavilion.png", [
+  "/hamcation-2026-pavilion.png",
+    // must match mapExhibitors URL
+  [
     {
       id: 1,
       coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left
@@ -71,7 +73,9 @@ export const mapBooths: [string, Booth[]] = [
 
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/hamcation-2026-pavilion.png", [
+  "/hamcation-2026-pavilion.png",
+    // must match mapBooths URL
+  [
   {
     id: 'arrl',
     name: 'ARRL',
@@ -120,7 +124,10 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
-export const forumRooms: Room[] = [
+export const mapRooms: [string, Room[]] = [
+  "/hamcation-2026-pavilion.png",
+    // must match mapSessions URL
+  [
   // ... (your forumRooms data) ...
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
   {
@@ -147,10 +154,13 @@ export const forumRooms: Room[] = [
     coords: [[424, 820], [573, 656], [680, 752], [536, 912]],
     color: '#005CF6',
   },
+],
 ];
 
 export const mapSessions: [string, Session[]] = [
-  '/hamcation-2026-pavilion.png', [
+  '/hamcation-2026-pavilion.png',
+    // must match mapRooms URL
+  [
   {
     id: 'session-1',
     title: 'Florida AUXCOMM ESF2 Stakeholder Forum',

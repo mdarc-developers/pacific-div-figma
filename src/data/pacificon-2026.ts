@@ -73,7 +73,9 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/pacificon-exhibitors-2025.png", [
+  "/pacificon-exhibitors-2025.png",
+  // must match mapBooths URL
+  [
   {
     id: 'flexradio',
     name: 'Flex Radio',
@@ -708,9 +710,11 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  '/pacificon-exhibitors-2025.png', [
+  '/pacificon-exhibitors-2025.png',
+  // must match mapExhibitors URL
   // origHeightNum: 1702,
   // origWidthNum: 1280,
+  [
   // ... (your exhibitorBooths data) ...
   // using y, x not x, y   also,
   // x is normal, y from bottom so 1702 - y
@@ -1197,7 +1201,9 @@ export const mapBooths: [string, Booth[]] = [
 // Extracted forums schedule from pacificon.org
 // Extracted event schedule from pacificon.org
 export const mapSessions: [string, Session[]] = [
-  '/pacificon-forums-2025.jpg', [
+  '/pacificon-hotel-2025.jpg',
+  // must match mapRooms URL
+  [
     {
       id: "friday-registrationwill-call-open",
       title: "Registration/Will Call Open",
@@ -2332,9 +2338,11 @@ export const mapSessions: [string, Session[]] = [
 ];
 
 export const mapRooms: [string, Room[]] = [
-  '/pacificon-hotel-2025.jpg', [
+  '/pacificon-hotel-2025.jpg',
+    // must match mapSessions URL
     //origHeightNum: 1201,
     //origWidthNum: 983,
+  [
     {
       name: 'Registration',
       coords: [[1, 3], [57, 3], [57, 90], [1, 90]], // Bottom Left

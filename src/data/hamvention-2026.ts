@@ -69,7 +69,9 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-    "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf", [
+  "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
+    // must match mapBooths URL
+  [
 //export interface Exhibitor {
 //  id: string;                    ? auto assign ? use name
 //  name: string;                  good
@@ -1492,7 +1494,9 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-    "/assets/maps/hamvention-forums-2026-2.png", [
+  "/assets/maps/hamvention-forums-2026-2.png",
+    // must match mapExhibitors URL
+  [
   ],
 ];
 
@@ -1501,9 +1505,11 @@ export const mapBooths: [string, Booth[]] = [
 // NOTE: All x values must be <= origWidthNum (953) and y values <= origHeightNum (710)
 // Forum 4 coords below are PLACEHOLDERS — update to match actual image.
 export const mapRooms: [string, Room[]] = [
-  '/assets/maps/hamvention-forums-2026-2.png', [
+  '/assets/maps/hamvention-forums-2026-2.png',
+    // must match mapSessions URL
     //origHeightNum: 710,
     //origWidthNum: 953,
+  [
     {
       name: 'Forum 1',
       coords: [[151, 8], [282, 8], [282, 119], [151, 119]],
@@ -1528,8 +1534,10 @@ export const mapRooms: [string, Room[]] = [
 ];
 
 export const mapSessions: [string, Session[]] = [
-  "", [
-],
+  '/assets/maps/hamvention-forums-2026-2.png',
+    // must match mapRooms URL
+  [
+  ],
 ];
 
 // map images - in production these may be bundled images

@@ -60,16 +60,14 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 export const mapExhibitors: [string, Exhibitor[]] = [
   "/hamfest-layout-2026.png", [
+    // must match mapBooths URL
   ],
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/hamfest-layout-2026.png", [
-  ],
-];
-
-export const mapRooms: [string, Room[]] = [
-  '', [
+  "/hamfest-layout-2026.png",
+    // must match mapExhibitors URL
+  [
   ],
 ];
 
@@ -78,12 +76,20 @@ export const mapRooms: [string, Room[]] = [
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
-export const forumRooms: Room[] = [
+export const mapRooms: [string, Room[]] = [
+  "/hamfest-layout-2026.png",
+    // must match mapSessions URL
   // ... (your forumRooms data) ...
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+  [
+  ],
 ];
 
-export const sampleSessions: Session[] = [
+export const mapSessions: [string, Session[]] = [
+  "/hamfest-layout-2026.png",
+    // must match mapRooms URL
+  [
+  ],
 ];
 
 // map images - in production these may be bundled images
