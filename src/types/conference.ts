@@ -47,7 +47,7 @@ export interface Exhibitor {
   location: number[];
   type: string;
   url: string;
-  color: string;
+  color?: string;
 }
 
 export interface Room {

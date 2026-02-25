@@ -1,6 +1,40 @@
 import { describe, it, expect } from 'vitest';
 import { conferenceMaps, mapRooms } from './pacificon-2026';
 import { MapImage, Room } from '@/types/conference';
+//import { Booth, Session, Exhibitor, MapImage, Room } from '@/types/conference';
+
+//interface MapsModule {
+//  conferenceMaps?: MapImage[];
+//  [key: string]: unknown;
+//}
+//
+//interface RoomModule {
+//  mapRooms?: [string, Room[]];
+//  [key: string]: unknown;
+//}
+//
+//interface SessionModule {
+//  mapSessions?: [string, Session[]];
+//  [key: string]: unknown;
+//}
+//
+//interface BoothModule {
+//  mapBooths?: [string, Booth[]];
+//  [key: string]: unknown;
+//}
+//
+//interface ExhibitorModule {
+//  mapExhibitors?: Exhibitor[];
+//  [key: string]: unknown;
+//}
+//
+//const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+//Object.entries(conferenceModules).forEach(([path, module]) => {
+//  // Extract the conference ID from the file path
+//  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
+//  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+//});
+
 
 describe('pacificon-2026 conferenceMaps export', () => {
   it('exports a non-empty MapImage array', () => {
