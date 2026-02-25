@@ -26,6 +26,30 @@ export const allConferences: Conference[] = [
 //    mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
 //  },
   {
+    id: 'yuma-2026',
+    name: 'Yuma Hamfest 2026',
+    location: '2520 E 32nd St, Yuma, AZ 85365',
+    venue: 'Yuma County Fairgrounds',
+    startDate: '2026-02-27',
+    endDate: '2026-02-18',
+    timezone: 'America/Phoenix',
+    primaryColor: '#dc2626',
+    secondaryColor: '#ef4444',
+    conferenceWebsite: 'https://www.yumahamfest.com',
+    venuePhone: '(928) 726-4420',
+    venueGPS: '32.6707,-114.5943',
+    venueGridSquare: 'FJ29gk',
+    venueWebsite: 'https://greenecoexpocenter.com/',
+    timezoneNumeric: '-0700', // does not observe DST
+    parkingWebsite: '',
+    icalUrl: '',
+    googlecalUrl: '',
+    contactEmail: '',
+    logoUrl: '',
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+  },
+  {
     id: 'hamvention-2026',
     name: 'Hamvention 2026',
     location: '120 Fairground Road, Xenia, OH 45385',
