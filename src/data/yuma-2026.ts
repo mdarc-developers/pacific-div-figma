@@ -483,9 +483,8 @@ export const mapBooths: [string, Booth[]] = [
 
 // Define your room polygons here
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-// NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
-// The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
-// your actual image. Their original x values (630–715) exceeded the image width of 582.
+// NOTE: All y values are measured from the bottom, not from the top and y values <= origHeightNum (562)
+// NOTE: All x values are measured from the left and must be <= origWidthNum (998)
 export const mapRooms: [string, Room[]] = [
    '/assets/maps/yuma_map_2026-01-06_160549-1.png',
     // must match mapSessions URL

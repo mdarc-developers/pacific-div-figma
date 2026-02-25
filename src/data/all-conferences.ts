@@ -39,13 +39,13 @@ export const allConferences: Conference[] = [
     venuePhone: '(928) 726-4420',
     venueGPS: '32.6707,-114.5943',
     venueGridSquare: 'FJ29gk',
-    venueWebsite: 'https://greenecoexpocenter.com/',
+    venueWebsite: 'https://www.yumafair.com',
     timezoneNumeric: '-0700', // does not observe DST
     parkingWebsite: '',
     icalUrl: '',
     googlecalUrl: '',
     contactEmail: '',
-    logoUrl: '',
+    logoUrl: '/assets/images/yuma-buzzard.webp',
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
   },

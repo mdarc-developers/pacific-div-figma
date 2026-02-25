@@ -21,6 +21,7 @@ export interface Conference {
   logoUrl: string;
   //mapSessionsUrl: string;
   //mapExhibitorsUrl: string[];
+  votes?: number;
 }
 
 export interface MapImage {
@@ -45,9 +46,10 @@ export interface Exhibitor {
   description: string;
   boothName: string;
   location: number[];
-  type: string;
-  url: string;
+  type?: string;
+  url?: string;
   color?: string;
+  votes?: number;
 }
 
 export interface Room {
@@ -67,6 +69,7 @@ export interface Session {
   category: string;
   url?: string;
   track?: string[];
+  votes?: number;
 }
 
 export interface Prize {
@@ -77,6 +80,7 @@ export interface Prize {
   category: string;
   donor: string;
   winner?: string;
+  votes?: number;
 }
 
 export interface PrizeWinner {
@@ -89,6 +93,7 @@ export interface PrizeWinner {
   drawing?: string;
   notifiedAt?: string;
   claimedAt?: string;
+  votes?: number;
 }
 
 export interface UserProfile {
@@ -102,18 +107,19 @@ export interface UserProfile {
   notificationsEnabled: boolean;
   smsNotifications: boolean;
   phoneNumber?: string;
+  isAdmin?: boolean;
+  adminRole?: string;
+  votes?: number;
 }
 
 export interface Message {
   id: string;
+  createdAt: string;
   from: string; // user id or callsign
   to?: string; // optional for public messages
   isPublic: boolean;
   content: string;
   boardId?: string; // for public board messages
-  votes: number;
-  createdAt: string;
-  isAdmin: boolean;
-  adminRole: string;
+  votes?: number;
 }
 
