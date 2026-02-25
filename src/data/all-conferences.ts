@@ -46,8 +46,8 @@ export const allConferences: Conference[] = [
     googlecalUrl: '',
     contactEmail: '',
     logoUrl: '',
-    mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
-    mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
   },
   {
     id: 'huntsville-hamfest-2026',
@@ -70,8 +70,8 @@ export const allConferences: Conference[] = [
     googlecalUrl: '',
     contactEmail: '',
     logoUrl: '',
-    mapSessionsUrl: '', // for Room[]
-    mapExhibitorsUrl: ['/hamfest-layout-2026.png'], // for Booth[]
+    //mapSessionsUrl: '', // for Room[]
+    //mapExhibitorsUrl: ['/hamfest-layout-2026.png'], // for Booth[]
   },
   {
     id: 'pacificon-2026',
@@ -94,8 +94,8 @@ export const allConferences: Conference[] = [
     googlecalUrl: 'https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org',
     contactEmail: 'webmaster@pacificon.org',
     logoUrl: '/2026-pacificon-logo-208-110.jpg',
-    mapSessionsUrl: '/pacificon-hotel-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
-    mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
+    //mapSessionsUrl: '/pacificon-hotel-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
+    //mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
   },
   {
     id: 'hamcation-2027',
@@ -118,8 +118,8 @@ export const allConferences: Conference[] = [
     googlecalUrl: '',
     contactEmail: '',
     logoUrl: '/hamcation-2026-logo.png',
-    mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
-    mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
+    //mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
+    //mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
   },
 ];
 

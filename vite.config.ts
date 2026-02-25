@@ -10,7 +10,9 @@ export default defineConfig({
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
-    eslint(),
+    // Skip the ESLint plugin during test runs — its file-system watchers keep
+    // the Vitest process alive after tests complete (37 dangling FILEHANDLE).
+    ...( process.env.VITEST ? [] : [eslint()] ),
   ],
   resolve: {
     alias: {
@@ -20,5 +22,13 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1600,
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    css: false,
+    setupFiles: ['./src/test-setup.ts'],
+    // Exclude Playwright e2e specs — they use a different test runner
+    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
   },
 })

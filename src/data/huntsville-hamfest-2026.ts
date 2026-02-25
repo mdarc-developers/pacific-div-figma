@@ -60,16 +60,14 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 export const mapExhibitors: [string, Exhibitor[]] = [
   "/hamfest-layout-2026.png", [
+    // must match mapBooths URL
   ],
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/hamfest-layout-2026.png", [
-  ],
-];
-
-export const mapRooms: [string, Room[]] = [
-  '', [
+  "/hamfest-layout-2026.png",
+    // must match mapExhibitors URL
+  [
   ],
 ];
 
@@ -78,16 +76,54 @@ export const mapRooms: [string, Room[]] = [
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
-export const forumRooms: Room[] = [
+export const mapRooms: [string, Room[]] = [
+  "/hamfest-layout-2026.png",
+    // must match mapSessions URL
+  [
   // ... (your forumRooms data) ...
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+    {
+      name: "VBC Room 1",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#E63946", //Red
+    },
+    {
+      name: "VBC Room 2",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#2A9D8F", // Teal
+    },
+    {
+      name: "Embassy Redstone",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#E9C46A", // yellow
+    },
+    {
+      name: "Embassy BigSpringD",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#457B9D", // steel blue
+    },
+    {
+      name: "Embassy Madison",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#F4A261", // Orange
+    },
+    {
+      name: "Embassy 4",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#6A4C93", // Purple
+    },
+  ],
 ];
 
-export const sampleSessions: Session[] = [
+export const mapSessions: [string, Session[]] = [
+  "/hamfest-layout-2026.png",
+    // must match mapRooms URL
+  [
+  ],
 ];
 
 // map images - in production these may be bundled images
-export const sampleMaps: MapImage[] = [
+export const conferenceMaps: MapImage[] = [
   {
     id: 'map-2',
     name: 'Exhibitors',

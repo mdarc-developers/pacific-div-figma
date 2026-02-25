@@ -7,7 +7,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface MapsModule {
-  sampleMaps?: MapImage[];
+  conferenceMaps?: MapImage[];
   [key: string]: unknown;
 }
 
@@ -36,8 +36,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   const typedMapModule = module as MapsModule;
   const typedBoothModule = module as BoothModule;
   const typedExhibitorModule = module as ExhibitorModule;
-  if (typedMapModule.sampleMaps) {
-    MAP_DATA[conferenceId] = typedMapModule.sampleMaps;
+  if (typedMapModule.conferenceMaps) {
+    MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
   }
   if (typedBoothModule.mapBooths) {
     BOOTH_DATA[conferenceId] = typedBoothModule.mapBooths;
@@ -51,13 +51,18 @@ export function ExhibitorsPage() {
   const [bookmarkedExhibitors, setBookmarkedExhibitors] = useState<string[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-  const sampleMaps = MAP_DATA[activeConference.id] || [];
+  const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id];
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
   const mapExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
-  const numEmaps = activeConference.mapExhibitorsUrl.length || 0;
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const [pdfHeight, setPdfHeight] = useState<number>(0);
+  // Single-map assumption: always use one exhibitors map.
+  // TODO: restore multi-map detection (mapExhibitorsUrl array) when needed.
+  const numEmaps = 1;
+  // const numEmaps = activeConference.mapExhibitorsUrl.length || 0;
   const boothToName = new Map();
 
   for (const ex of mapExhibitors) {
@@ -66,28 +71,38 @@ export function ExhibitorsPage() {
       boothToName.set(ex.location[boo], ex);
     }
   };
-  //const foundMap = sampleMaps.find(m => m.url === element)
+  //const foundMap = conferenceMaps.find(m => m.url === element)
   //if ( foundMap ) { multipleExhibitorMaps.push(foundMap);
 
   const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(() => {
-    if (activeConference.mapExhibitorsUrl.length === 1) {
-      return sampleMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
-        order: 1,
-        id: 'map-0',
-        name: 'No Exhibitors Map Found',
-        url: '/pacificon-exhibitors-2025.png',
-        origHeightNum: 256,
-        origWidthNum: 582
-      };
-    }
-    return undefined;
+    // Single-map assumption: always pick the map whose URL matches mapBooths[0].
+    // TODO: restore `activeConference.mapExhibitorsUrl.length === 1` guard when multi-map is re-enabled.
+    const boothMapUrl = boothEntry?.[0];
+    return (boothMapUrl ? conferenceMaps.find(m => m.url === boothMapUrl) : undefined) || {
+      order: 1,
+      id: 'map-0',
+      name: 'No Exhibitors Map Found',
+      url: '/pacificon-exhibitors-2025.png',
+      origHeightNum: 256,
+      origWidthNum: 582
+    };
+    // Multi-map initialiser (disabled — single-map assumption):
+    // if (activeConference.mapExhibitorsUrl.length === 1) {
+    //   return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+    //     order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
+    //     url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
+    //   };
+    // }
+    // return undefined;
   });
-  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
-    if (activeConference.mapExhibitorsUrl.length > 1) {
-      return sampleMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
-    }
-    return [];
-  });
+  // Multi-map state (disabled — single-map assumption):
+  // const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
+  //   if (activeConference.mapExhibitorsUrl.length > 1) {
+  //     return conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+  //   }
+  //   return [];
+  // });
+  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>([]);
 
   useEffect(() => {
     if (!mapRef.current || !exhibitorsMap) return;
@@ -109,27 +124,55 @@ export function ExhibitorsPage() {
     return () => resizObs.disconnect();
   }, [exhibitorsMap]);
 
+  // Auto-height for PDF iframe: measures wrapper width and applies aspect-ratio height
   useEffect(() => {
-    if (numEmaps === 1) {
-      setExhibitorsMap(
-        sampleMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
-          order: 1,
-          id: 'map-0',
-          name: 'No Exhibitors Map Found',
-          url: '/pacificon-exhibitors-2025.png',
-          origHeightNum: 256,
-          origWidthNum: 582
-        }
-      );
-      setMultipleExhibitorMaps([]);
-    } else if (numEmaps > 1) {
-      const maps = sampleMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
-      if (maps.length === 0) {
-        console.warn('No matching maps found for URLs:', activeConference.mapExhibitorsUrl);
+    const el = pdfRef.current;
+    if (!el || !exhibitorsMap?.url.endsWith('.pdf')) return;
+    const updateHeight = () => {
+      const w = el.offsetWidth;
+      const h = exhibitorsMap.origHeightNum && exhibitorsMap.origWidthNum
+        ? Math.round(w * (exhibitorsMap.origHeightNum / exhibitorsMap.origWidthNum))
+        : Math.round(w * (11 / 8.5)); // A4/Letter fallback
+      setPdfHeight(h);
+    };
+    const obs = new ResizeObserver(updateHeight);
+    obs.observe(el);
+    updateHeight();
+    return () => obs.disconnect();
+  }, [exhibitorsMap]);
+
+  useEffect(() => {
+    // Single-map assumption: always refresh exhibitorsMap from mapBooths URL.
+    // TODO: restore numEmaps > 1 branch when multi-map is re-enabled.
+    const boothMapUrl = BOOTH_DATA[activeConference.id]?.[0];
+    setExhibitorsMap(
+      (boothMapUrl ? conferenceMaps.find(m => m.url === boothMapUrl) : undefined) || {
+        order: 1,
+        id: 'map-0',
+        name: 'No Exhibitors Map Found',
+        url: '/pacificon-exhibitors-2025.png',
+        origHeightNum: 256,
+        origWidthNum: 582
       }
-      setMultipleExhibitorMaps(maps);
-      setExhibitorsMap(undefined);
-    }
+    );
+    setMultipleExhibitorMaps([]);
+    // Multi-map branch (disabled — single-map assumption):
+    // if (numEmaps === 1) {
+    //   setExhibitorsMap(
+    //     conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+    //       order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
+    //       url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
+    //     }
+    //   );
+    //   setMultipleExhibitorMaps([]);
+    // } else if (numEmaps > 1) {
+    //   const maps = conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+    //   if (maps.length === 0) {
+    //     console.warn('No matching maps found for URLs:', activeConference.mapExhibitorsUrl);
+    //   }
+    //   setMultipleExhibitorMaps(maps);
+    //   setExhibitorsMap(undefined);
+    // }
   }, [activeConference]);
 
   // Leaflet exhibitorsMap initialisation — runs once on mount
@@ -228,8 +271,13 @@ export function ExhibitorsPage() {
       if (endsWithPdf) {
         return (
           <>
-            <div className="w-full" >
-              <iframe title="Exhibitors Map" src={exhibitorsMap.url} className="w-full">
+            <div className="w-full" ref={pdfRef}>
+              <iframe
+                title="Exhibitors Map"
+                src={exhibitorsMap.url}
+                className="w-full"
+                style={{ height: pdfHeight > 0 ? `${pdfHeight}px` : '100vh' }}
+              >
                 Your browser does not support iframes. <a href={exhibitorsMap.url}>Download the PDF</a> instead.
               </iframe>
             </div>
@@ -253,30 +301,26 @@ export function ExhibitorsPage() {
           </>
         );
       }
-    } else if (numMaps > 1 && multipleExhibitorMaps.length > 0) {
-      return (
-        <>
-          {multipleExhibitorMaps.map((img) => (
-            <div key={img.id}>
-              <ImageWithFallback
-                src={img.url}
-                alt={img.name}
-                className="w-full h-auto max-w-full"
-              />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
-                {img.name}
-              </p>
-            </div>
-          ))}
-        </>
-      );
-    } else if (numMaps > 1 && multipleExhibitorMaps.length === 0) {
-      return (
-        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-          No exhibitor maps available
-        </p>
-      );
     }
+    // Multi-map display (disabled — single-map assumption):
+    // } else if (numMaps > 1 && multipleExhibitorMaps.length > 0) {
+    //   return (
+    //     <>
+    //       {multipleExhibitorMaps.map((img) => (
+    //         <div key={img.id}>
+    //           <ImageWithFallback src={img.url} alt={img.name} className="w-full h-auto max-w-full" />
+    //           <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">{img.name}</p>
+    //         </div>
+    //       ))}
+    //     </>
+    //   );
+    // } else if (numMaps > 1 && multipleExhibitorMaps.length === 0) {
+    //   return (
+    //     <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+    //       No exhibitor maps available
+    //     </p>
+    //   );
+    // }
     return null;
   };
 
