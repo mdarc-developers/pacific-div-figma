@@ -114,7 +114,8 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
-export const forumRooms: Room[] = [
+export const mapRooms: [string, Room[]] = [
+  "", [
   // ... (your forumRooms data) ...
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
   {
@@ -141,6 +142,7 @@ export const forumRooms: Room[] = [
     coords: [[424, 820], [573, 656], [680, 752], [536, 912]],
     color: '#005CF6',
   },
+],
 ];
 
 export const mapSessions: [ string, Session[]] = [

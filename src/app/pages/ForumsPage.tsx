@@ -13,7 +13,7 @@ interface MapsModule {
 }
 
 interface RoomModule {
-  mapRooms1?: [string, Room[]];
+  mapRooms?: [string, Room[]];
   [key: string]: unknown;
 }
 
@@ -33,8 +33,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   if (typedMapModule.conferenceMaps) {
     MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
   }
-  if (typedRoomModule.mapRooms1) {
-    ROOM_DATA[conferenceId] = typedRoomModule.mapRooms1;
+  if (typedRoomModule.mapRooms) {
+    ROOM_DATA[conferenceId] = typedRoomModule.mapRooms;
   }
 });
 
@@ -43,9 +43,9 @@ export function ForumsPage() {
   const { activeConference, allConferencesList, setActiveConference } = useConference();
   const { highlightForumRoomName } = useSearch();
   const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
+  const forumMapUrl = ROOM_DATA[activeConference.id]?.[0];
   const forumRooms = ROOM_DATA[activeConference.id]?.[1] || [];
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
-  const forumMapUrl = ROOM_DATA[activeConference.id]?.[0];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
   const polygonRefs = useRef<Map<string, L.Polygon>>(new Map());

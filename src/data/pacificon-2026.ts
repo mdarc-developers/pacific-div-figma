@@ -2418,6 +2418,9 @@ export const mapRooms: [string, Room[]] = [
 // NOTE: All x values must be <= origWidthNum (582) and y values <= origHeightNum (256)
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
+
+// saved all the work to specify these rooms for forums, however the larger hotel map may be better for navigation.
+
 export const mapRooms1: [string, Room[]] = [
   '/pacificon-forums-2025.jpg', [
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
