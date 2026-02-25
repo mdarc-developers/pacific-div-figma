@@ -54,13 +54,13 @@ test.describe('Header', () => {
 
   test('shows the active conference name', async ({ page }) => {
     // The first conference in allConferences list is displayed in the header button
-    const conferenceButton = page.getByRole('button', { name: /hamvention|pacificon|huntsville|hamcation/i }).first();
+    const conferenceButton = page.getByRole('button', { name: /hamvention|pacificon|huntsville|hamcation|yuma/i }).first();
     await expect(conferenceButton).toBeVisible();
   });
 
   test('conference selector dialog opens and lists conferences', async ({ page }) => {
     // Click the selector button (truncated conference name + chevron)
-    const selectorButton = page.locator('button:has(svg)').filter({ hasText: /hamvention|pacificon|huntsville|hamcation/i }).first();
+    const selectorButton = page.locator('button:has(svg)').filter({ hasText: /hamvention|pacificon|huntsville|hamcation|yuma/i }).first();
     await selectorButton.click();
     // Dialog should appear
     await expect(page.getByRole('dialog')).toBeVisible();
