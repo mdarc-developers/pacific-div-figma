@@ -59,13 +59,17 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  '', [
+  '/hamcation-2026-north.png',
+  // must match mapExhibitors URL
+  [
   ],
 
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  '/hamcation-2026-north.png', [
+  '/hamcation-2026-north.png',
+  // must match mapBooths URL
+  [
     {
       id: 'arrl',
       name: 'ARRL',
@@ -115,7 +119,9 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
 export const mapRooms: [string, Room[]] = [
-  "", [
+  "/hamcation-2026-pavilion.png",
+  // must match mapSessions URL
+  [
     // ... (your forumRooms data) ...
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
@@ -146,7 +152,9 @@ export const mapRooms: [string, Room[]] = [
 ];
 
 export const mapSessions: [string, Session[]] = [
-  "/hamcation-2026-pavilion.png", [
+  "/hamcation-2026-pavilion.png",
+  // must match mapRooms URL
+  [
     {
       id: 'session-1',
       title: 'Florida AUXCOMM ESF2 Stakeholder Forum',
