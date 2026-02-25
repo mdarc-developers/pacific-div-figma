@@ -79,9 +79,39 @@ export const mapBooths: [string, Booth[]] = [
 export const mapRooms: [string, Room[]] = [
   "/hamfest-layout-2026.png",
     // must match mapSessions URL
+  [
   // ... (your forumRooms data) ...
   // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-  [
+    {
+      name: "VBC Room 1",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#E63946", //Red
+    },
+    {
+      name: "VBC Room 2",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#2A9D8F", // Teal
+    },
+    {
+      name: "Embassy Redstone",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#E9C46A", // yellow
+    },
+    {
+      name: "Embassy BigSpringD",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#457B9D", // steel blue
+    },
+    {
+      name: "Embassy Madison",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#F4A261", // Orange
+    },
+    {
+      name: "Embassy 4",
+      coords: [[1,2], [3,4], [5,6], [7,8]],
+      color: "#6A4C93", // Purple
+    },
   ],
 ];
 
