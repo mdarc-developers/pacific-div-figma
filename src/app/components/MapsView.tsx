@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MapImage } from '@/types/conference';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
@@ -28,6 +28,46 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   }
 });
 
+/**
+ * Renders a PDF inside an <iframe> whose height is automatically derived from
+ * the map's original pixel dimensions.  A ResizeObserver watches the wrapper
+ * div so the height stays correct on any viewport resize.
+ */
+function PdfIframe({ map }: { map: MapImage }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number>(0);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+
+    const updateHeight = () => {
+      if (!wrapperRef.current) return;
+      const w = wrapperRef.current.offsetWidth;
+      const h = map.origHeightNum && map.origWidthNum
+        ? Math.round(w * (map.origHeightNum / map.origWidthNum))
+        : Math.round(w * (11 / 8.5)); // A4/Letter fallback
+      setHeight(h);
+    };
+
+    const obs = new ResizeObserver(updateHeight);
+    obs.observe(el);
+    updateHeight();
+    return () => obs.disconnect();
+  }, [map.origHeightNum, map.origWidthNum]);
+
+  return (
+    <div ref={wrapperRef} className="w-full">
+      <iframe
+        title={map.name}
+        src={map.url}
+        className="w-full"
+        style={{ height: height > 0 ? `${height}px` : '100vh' }}
+      />
+    </div>
+  );
+}
+
 export function MapsView() {
   const { activeConference } = useConference();
   const maps = MAP_DATA[activeConference.id] || [];
@@ -44,20 +84,14 @@ export function MapsView() {
 
   const sortedMaps = [...maps].sort((a, b) => a.order - b.order);
 
-  function displayImage (url: string, name: string) {
-    if (url.endsWith("pdf") ) {
-      return(
-        <iframe
-          src={url}
-          alt={name}
-          className="w-full h-auto max-w-full"
-        />
-      );
+  function displayImage (map: MapImage) {
+    if (map.url.endsWith("pdf") ) {
+      return <PdfIframe map={map} />;
     } else {
       return(
         <ImageWithFallback
-          src={url}
-          alt={name}
+          src={map.url}
+          alt={map.name}
           className="w-full h-auto max-w-full"
         />
       );
@@ -81,7 +115,7 @@ export function MapsView() {
             <Card>
               <CardContent className="p-4">
                 <div className="w-full overflow-auto">
-                  {displayImage(map.url, map.name)}
+                  {displayImage(map)}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
                   {map.name}
