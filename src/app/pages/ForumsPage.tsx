@@ -13,7 +13,7 @@ interface MapsModule {
 }
 
 interface RoomModule {
-  mapRooms?: [string, Room[]];
+  mapRooms1?: [string, Room[]];
   [key: string]: unknown;
 }
 
@@ -33,8 +33,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   if (typedMapModule.conferenceMaps) {
     MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
   }
-  if (typedRoomModule.mapRooms) {
-    ROOM_DATA[conferenceId] = typedRoomModule.mapRooms;
+  if (typedRoomModule.mapRooms1) {
+    ROOM_DATA[conferenceId] = typedRoomModule.mapRooms1;
   }
 });
 
