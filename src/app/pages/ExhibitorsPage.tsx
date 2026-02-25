@@ -57,7 +57,10 @@ export function ExhibitorsPage() {
   const mapExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
-  const numEmaps = activeConference.mapExhibitorsUrl.length || 0;
+  // Single-map assumption: always use one exhibitors map.
+  // TODO: restore multi-map detection (mapExhibitorsUrl array) when needed.
+  const numEmaps = 1;
+  // const numEmaps = activeConference.mapExhibitorsUrl.length || 0;
   const boothToName = new Map();
 
   for (const ex of mapExhibitors) {
@@ -70,24 +73,34 @@ export function ExhibitorsPage() {
   //if ( foundMap ) { multipleExhibitorMaps.push(foundMap);
 
   const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(() => {
-    if (activeConference.mapExhibitorsUrl.length === 1) {
-      return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
-        order: 1,
-        id: 'map-0',
-        name: 'No Exhibitors Map Found',
-        url: '/pacificon-exhibitors-2025.png',
-        origHeightNum: 256,
-        origWidthNum: 582
-      };
-    }
-    return undefined;
+    // Single-map assumption: always pick the map whose URL matches mapBooths[0].
+    // TODO: restore `activeConference.mapExhibitorsUrl.length === 1` guard when multi-map is re-enabled.
+    const boothMapUrl = boothEntry?.[0];
+    return (boothMapUrl ? conferenceMaps.find(m => m.url === boothMapUrl) : undefined) || {
+      order: 1,
+      id: 'map-0',
+      name: 'No Exhibitors Map Found',
+      url: '/pacificon-exhibitors-2025.png',
+      origHeightNum: 256,
+      origWidthNum: 582
+    };
+    // Multi-map initialiser (disabled — single-map assumption):
+    // if (activeConference.mapExhibitorsUrl.length === 1) {
+    //   return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+    //     order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
+    //     url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
+    //   };
+    // }
+    // return undefined;
   });
-  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
-    if (activeConference.mapExhibitorsUrl.length > 1) {
-      return conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
-    }
-    return [];
-  });
+  // Multi-map state (disabled — single-map assumption):
+  // const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
+  //   if (activeConference.mapExhibitorsUrl.length > 1) {
+  //     return conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+  //   }
+  //   return [];
+  // });
+  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>([]);
 
   useEffect(() => {
     if (!mapRef.current || !exhibitorsMap) return;
@@ -110,26 +123,37 @@ export function ExhibitorsPage() {
   }, [exhibitorsMap]);
 
   useEffect(() => {
-    if (numEmaps === 1) {
-      setExhibitorsMap(
-        conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
-          order: 1,
-          id: 'map-0',
-          name: 'No Exhibitors Map Found',
-          url: '/pacificon-exhibitors-2025.png',
-          origHeightNum: 256,
-          origWidthNum: 582
-        }
-      );
-      setMultipleExhibitorMaps([]);
-    } else if (numEmaps > 1) {
-      const maps = conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
-      if (maps.length === 0) {
-        console.warn('No matching maps found for URLs:', activeConference.mapExhibitorsUrl);
+    // Single-map assumption: always refresh exhibitorsMap from mapBooths URL.
+    // TODO: restore numEmaps > 1 branch when multi-map is re-enabled.
+    const boothMapUrl = BOOTH_DATA[activeConference.id]?.[0];
+    setExhibitorsMap(
+      (boothMapUrl ? conferenceMaps.find(m => m.url === boothMapUrl) : undefined) || {
+        order: 1,
+        id: 'map-0',
+        name: 'No Exhibitors Map Found',
+        url: '/pacificon-exhibitors-2025.png',
+        origHeightNum: 256,
+        origWidthNum: 582
       }
-      setMultipleExhibitorMaps(maps);
-      setExhibitorsMap(undefined);
-    }
+    );
+    setMultipleExhibitorMaps([]);
+    // Multi-map branch (disabled — single-map assumption):
+    // if (numEmaps === 1) {
+    //   setExhibitorsMap(
+    //     conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+    //       order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
+    //       url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
+    //     }
+    //   );
+    //   setMultipleExhibitorMaps([]);
+    // } else if (numEmaps > 1) {
+    //   const maps = conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
+    //   if (maps.length === 0) {
+    //     console.warn('No matching maps found for URLs:', activeConference.mapExhibitorsUrl);
+    //   }
+    //   setMultipleExhibitorMaps(maps);
+    //   setExhibitorsMap(undefined);
+    // }
   }, [activeConference]);
 
   // Leaflet exhibitorsMap initialisation — runs once on mount
@@ -253,30 +277,26 @@ export function ExhibitorsPage() {
           </>
         );
       }
-    } else if (numMaps > 1 && multipleExhibitorMaps.length > 0) {
-      return (
-        <>
-          {multipleExhibitorMaps.map((img) => (
-            <div key={img.id}>
-              <ImageWithFallback
-                src={img.url}
-                alt={img.name}
-                className="w-full h-auto max-w-full"
-              />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
-                {img.name}
-              </p>
-            </div>
-          ))}
-        </>
-      );
-    } else if (numMaps > 1 && multipleExhibitorMaps.length === 0) {
-      return (
-        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-          No exhibitor maps available
-        </p>
-      );
     }
+    // Multi-map display (disabled — single-map assumption):
+    // } else if (numMaps > 1 && multipleExhibitorMaps.length > 0) {
+    //   return (
+    //     <>
+    //       {multipleExhibitorMaps.map((img) => (
+    //         <div key={img.id}>
+    //           <ImageWithFallback src={img.url} alt={img.name} className="w-full h-auto max-w-full" />
+    //           <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">{img.name}</p>
+    //         </div>
+    //       ))}
+    //     </>
+    //   );
+    // } else if (numMaps > 1 && multipleExhibitorMaps.length === 0) {
+    //   return (
+    //     <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+    //       No exhibitor maps available
+    //     </p>
+    //   );
+    // }
     return null;
   };
 
