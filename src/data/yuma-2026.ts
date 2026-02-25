@@ -59,14 +59,15 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/hamfest-layout-2026.png", [
-    // must match mapBooths URL
+  '/assets/maps/yuma-vendors-20260225.png',
+  // must match mapBooths URL
+  [
   ],
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/hamfest-layout-2026.png",
-    // must match mapExhibitors URL
+  '/assets/maps/yuma-vendors-20260225.png',
+  // must match mapExhibitors URL
   [
   ],
 ];
@@ -77,7 +78,7 @@ export const mapBooths: [string, Booth[]] = [
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
 export const mapRooms: [string, Room[]] = [
-  "/hamfest-layout-2026.png",
+   '/assets/maps/yuma_map_2026-01-06_160549-1.png',
     // must match mapSessions URL
   [
   // ... (your forumRooms data) ...
@@ -86,8 +87,8 @@ export const mapRooms: [string, Room[]] = [
 ];
 
 export const mapSessions: [string, Session[]] = [
-  "/hamfest-layout-2026.png",
-    // must match mapRooms URL
+   '/assets/maps/yuma_map_2026-01-06_160549-1.png',
+  // must match mapRooms URL
   [
   ],
 ];
@@ -109,8 +110,8 @@ export const conferenceMaps: MapImage[] = [
     url: '/assets/maps/yuma-vendors-20260225.png',
     //floor: '2',
     order: 2,
-    origHeightNum: 1166,
-    origWidthNum: 609,
+    origWidthNum: 1166,
+    origHeightNum: 609,
   },
 ];
 
