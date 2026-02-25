@@ -5,11 +5,15 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "build:test": "vite build --mode test",
     "dev": "vite",
+    "preview": "vite preview --port 5173 --host 127.0.0.1",
     "deploy": "firebase deploy",
     "lint": "npx eslint src/**/*.{ts,tsx,js,jsx}",
     "test": "vitest run",
-    "testverbose": "vitest run --reporter=verbose"
+    "testverbose": "vitest run --reporter=verbose",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.0",

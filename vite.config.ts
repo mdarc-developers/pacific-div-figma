@@ -28,5 +28,7 @@ export default defineConfig({
     globals: true,
     css: false,
     setupFiles: ['./src/test-setup.ts'],
+    // Exclude Playwright e2e specs — they use a different test runner
+    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
   },
 })

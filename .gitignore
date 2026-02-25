@@ -1,5 +1,8 @@
 node_modules
 dist
 .env
+.env.test
 .eslintcache
+playwright-report
+test-results
 
