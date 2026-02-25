@@ -477,7 +477,466 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 export const mapBooths: [string, Booth[]] = [
   '/assets/maps/yuma-vendors-20260225.png',
   // must match mapExhibitors URL
+  // Source: https://www.yumahamfest.com/vendorlayout.html (SVG extracted 2026-02-25)
+  // SVG viewBox 0 0 724.2 378.4  →  image 1166 × 609
+  // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+  // All y values measured from the bottom; all x values measured from the left.
   [
+    {
+      id: 1,
+      coords: [[533, 476], [591, 476], [591, 535], [533, 535]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 2,
+      coords: [[533, 418], [591, 418], [591, 476], [533, 476]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 3,
+      coords: [[533, 359], [591, 359], [591, 418], [533, 418]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 4,
+      coords: [[533, 301], [591, 301], [591, 360], [533, 360]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 5,
+      coords: [[533, 243], [591, 243], [591, 301], [533, 301]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 6,
+      coords: [[533, 184], [591, 184], [591, 243], [533, 243]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 7,
+      coords: [[533, 126], [591, 126], [591, 184], [533, 184]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 8,
+      coords: [[533, 67], [591, 67], [591, 126], [533, 126]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 9,
+      coords: [[418, 67], [475, 67], [475, 126], [418, 126]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 10,
+      coords: [[418, 126], [475, 126], [475, 184], [418, 184]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 11,
+      coords: [[418, 184], [475, 184], [475, 243], [418, 243]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 12,
+      coords: [[418, 243], [475, 243], [475, 301], [418, 301]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 13,
+      coords: [[418, 301], [475, 301], [475, 360], [418, 360]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 14,
+      coords: [[418, 359], [475, 359], [475, 418], [418, 418]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 15,
+      coords: [[418, 418], [475, 418], [475, 476], [418, 476]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 16,
+      coords: [[418, 476], [475, 476], [475, 535], [418, 535]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 17,
+      coords: [[361, 476], [418, 476], [418, 535], [361, 535]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 18,
+      coords: [[361, 418], [418, 418], [418, 476], [361, 476]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 19,
+      coords: [[361, 359], [418, 359], [418, 418], [361, 418]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 20,
+      coords: [[361, 301], [418, 301], [418, 360], [361, 360]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 21,
+      coords: [[361, 243], [418, 243], [418, 301], [361, 301]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 22,
+      coords: [[361, 184], [418, 184], [418, 243], [361, 243]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 23,
+      coords: [[361, 126], [418, 126], [418, 184], [361, 184]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 24,
+      coords: [[361, 67], [418, 67], [418, 126], [361, 126]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 25,
+      coords: [[244, 67], [301, 67], [301, 126], [244, 126]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 26,
+      coords: [[244, 126], [301, 126], [301, 184], [244, 184]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 27,
+      coords: [[244, 184], [301, 184], [301, 243], [244, 243]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 28,
+      coords: [[244, 243], [301, 243], [301, 301], [244, 301]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 29,
+      coords: [[244, 301], [301, 301], [301, 360], [244, 360]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 30,
+      coords: [[244, 359], [301, 359], [301, 418], [244, 418]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 31,
+      coords: [[244, 418], [301, 418], [301, 476], [244, 476]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 32,
+      coords: [[244, 476], [301, 476], [301, 535], [244, 535]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 33,
+      coords: [[186, 476], [244, 476], [244, 535], [186, 535]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 34,
+      coords: [[186, 418], [244, 418], [244, 476], [186, 476]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 35,
+      coords: [[186, 359], [244, 359], [244, 418], [186, 418]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 36,
+      coords: [[186, 301], [244, 301], [244, 360], [186, 360]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 37,
+      coords: [[186, 243], [244, 243], [244, 301], [186, 301]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 38,
+      coords: [[186, 184], [244, 184], [244, 243], [186, 243]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 39,
+      coords: [[186, 126], [244, 126], [244, 184], [186, 184]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 40,
+      coords: [[186, 67], [244, 67], [244, 126], [186, 126]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 41,
+      coords: [[69, 69], [127, 69], [127, 128], [69, 128]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 42,
+      coords: [[69, 244], [127, 244], [127, 303], [69, 303]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 43,
+      coords: [[69, 303], [127, 303], [127, 361], [69, 361]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 44,
+      coords: [[69, 478], [127, 478], [127, 536], [69, 536]],
+      locationZone: 'vendor-floor-left',
+    },
+    {
+      id: 45,
+      coords: [[533, 1039], [591, 1039], [591, 1097], [533, 1097]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 46,
+      coords: [[533, 981], [591, 981], [591, 1039], [533, 1039]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 47,
+      coords: [[533, 922], [591, 922], [591, 981], [533, 981]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 48,
+      coords: [[533, 864], [591, 864], [591, 922], [533, 922]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 49,
+      coords: [[533, 806], [591, 806], [591, 864], [533, 864]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 50,
+      coords: [[533, 747], [591, 747], [591, 806], [533, 806]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 51,
+      coords: [[533, 689], [591, 689], [591, 747], [533, 747]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 52,
+      coords: [[533, 630], [591, 630], [591, 689], [533, 689]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 53,
+      coords: [[418, 630], [475, 630], [475, 689], [418, 689]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 54,
+      coords: [[418, 689], [475, 689], [475, 747], [418, 747]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 55,
+      coords: [[418, 747], [475, 747], [475, 806], [418, 806]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 56,
+      coords: [[418, 806], [475, 806], [475, 864], [418, 864]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 57,
+      coords: [[418, 864], [475, 864], [475, 922], [418, 922]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 58,
+      coords: [[418, 922], [475, 922], [475, 981], [418, 981]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 59,
+      coords: [[418, 981], [475, 981], [475, 1039], [418, 1039]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 60,
+      coords: [[418, 1039], [475, 1039], [475, 1097], [418, 1097]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 61,
+      coords: [[361, 1039], [418, 1039], [418, 1097], [361, 1097]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 62,
+      coords: [[361, 981], [418, 981], [418, 1039], [361, 1039]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 63,
+      coords: [[361, 922], [418, 922], [418, 981], [361, 981]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 64,
+      coords: [[361, 864], [418, 864], [418, 922], [361, 922]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 65,
+      coords: [[361, 806], [418, 806], [418, 864], [361, 864]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 66,
+      coords: [[361, 747], [418, 747], [418, 806], [361, 806]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 67,
+      coords: [[361, 689], [418, 689], [418, 747], [361, 747]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 68,
+      coords: [[361, 630], [418, 630], [418, 689], [361, 689]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 69,
+      coords: [[244, 630], [301, 630], [301, 689], [244, 689]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 70,
+      coords: [[244, 689], [301, 689], [301, 747], [244, 747]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 71,
+      coords: [[244, 747], [301, 747], [301, 806], [244, 806]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 72,
+      coords: [[244, 806], [301, 806], [301, 864], [244, 864]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 73,
+      coords: [[244, 864], [301, 864], [301, 922], [244, 922]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 74,
+      coords: [[244, 922], [301, 922], [301, 981], [244, 981]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 75,
+      coords: [[244, 981], [301, 981], [301, 1039], [244, 1039]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 76,
+      coords: [[244, 1039], [301, 1039], [301, 1097], [244, 1097]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 77,
+      coords: [[186, 1039], [244, 1039], [244, 1097], [186, 1097]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 78,
+      coords: [[186, 981], [244, 981], [244, 1039], [186, 1039]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 79,
+      coords: [[186, 922], [244, 922], [244, 981], [186, 981]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 80,
+      coords: [[186, 864], [244, 864], [244, 922], [186, 922]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 81,
+      coords: [[186, 806], [244, 806], [244, 864], [186, 864]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 82,
+      coords: [[186, 747], [244, 747], [244, 806], [186, 806]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 83,
+      coords: [[186, 689], [244, 689], [244, 747], [186, 747]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 84,
+      coords: [[186, 630], [244, 630], [244, 689], [186, 689]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 85,
+      coords: [[69, 630], [127, 630], [127, 689], [69, 689]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 86,
+      coords: [[69, 689], [127, 689], [127, 747], [69, 747]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 87,
+      coords: [[69, 747], [127, 747], [127, 806], [69, 806]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 88,
+      coords: [[69, 864], [127, 864], [127, 922], [69, 922]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 89,
+      coords: [[69, 922], [127, 922], [127, 981], [69, 981]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 90,
+      coords: [[69, 981], [127, 981], [127, 1039], [69, 1039]],
+      locationZone: 'vendor-floor-right',
+    },
+    {
+      id: 91,
+      coords: [[69, 1039], [127, 1039], [127, 1097], [69, 1097]],
+      locationZone: 'vendor-floor-right',
+    },
   ],
 ];
 
