@@ -57,6 +57,8 @@ export function ExhibitorsPage() {
   const mapExhibitors = EXHIBITOR_DATA[activeConference.id] || [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const [pdfHeight, setPdfHeight] = useState<number>(0);
   // Single-map assumption: always use one exhibitors map.
   // TODO: restore multi-map detection (mapExhibitorsUrl array) when needed.
   const numEmaps = 1;
@@ -120,6 +122,23 @@ export function ExhibitorsPage() {
     setHeight(); // Set correct height on first mount
 
     return () => resizObs.disconnect();
+  }, [exhibitorsMap]);
+
+  // Auto-height for PDF iframe: measures wrapper width and applies aspect-ratio height
+  useEffect(() => {
+    const el = pdfRef.current;
+    if (!el || !exhibitorsMap?.url.endsWith('.pdf')) return;
+    const updateHeight = () => {
+      const w = el.offsetWidth;
+      const h = exhibitorsMap.origHeightNum && exhibitorsMap.origWidthNum
+        ? Math.round(w * (exhibitorsMap.origHeightNum / exhibitorsMap.origWidthNum))
+        : Math.round(w * (11 / 8.5)); // A4/Letter fallback
+      setPdfHeight(h);
+    };
+    const obs = new ResizeObserver(updateHeight);
+    obs.observe(el);
+    updateHeight();
+    return () => obs.disconnect();
   }, [exhibitorsMap]);
 
   useEffect(() => {
@@ -252,8 +271,13 @@ export function ExhibitorsPage() {
       if (endsWithPdf) {
         return (
           <>
-            <div className="w-full" >
-              <iframe title="Exhibitors Map" src={exhibitorsMap.url} className="w-full">
+            <div className="w-full" ref={pdfRef}>
+              <iframe
+                title="Exhibitors Map"
+                src={exhibitorsMap.url}
+                className="w-full"
+                style={{ height: pdfHeight > 0 ? `${pdfHeight}px` : '100vh' }}
+              >
                 Your browser does not support iframes. <a href={exhibitorsMap.url}>Download the PDF</a> instead.
               </iframe>
             </div>
