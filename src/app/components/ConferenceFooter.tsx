@@ -1,7 +1,5 @@
 import { useConference } from "@/app/contexts/ConferenceContext";
 
-const REPO_URL = "https://github.com/mdarc-developers/pacific-div-figma";
-
 export function ConferenceFooter() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
@@ -26,14 +24,9 @@ export function ConferenceFooter() {
         {shortSha && (
           <p className="mt-2">
             Build:{" "}
-            <a
-              href={`${REPO_URL}/commit/${sha}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-blue-600 dark:text-blue-400 hover:underline"
-            >
+            <span title={sha} className="font-mono cursor-default">
               {shortSha}
-            </a>
+            </span>
           </p>
         )}
       </footer>
