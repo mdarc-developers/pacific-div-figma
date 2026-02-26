@@ -68,8 +68,10 @@
         }
       })();
     </script>
-    <!-- A similar function may be needed for the recaptcha if we are not hitting any endoints to use validation. -->
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Le_IHgsAAAAAIPDhNI95r_mbfnWsECBMPkToG1s"></script>
+    <!-- reCAPTCHA Enterprise: deferred until server-side validation is implemented.
+         Load the script only from production — do NOT add it here unconditionally
+         because the site key is not authorized for localhost and will produce a
+         visible badge error that also breaks offline use. -->
   </head>
   <body>
     <div id="root"></div>
