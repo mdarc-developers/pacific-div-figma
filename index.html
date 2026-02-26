@@ -44,14 +44,14 @@
     </style>
     <!-- Firebase Hosting runtime auto-configuration.
          /__/firebase/init.json is a JSON endpoint served by Firebase Hosting that
-         contains the project config without requiring the compat CDN SDK.
+         contains the project config. The compat CDN SDK is not required.
          We read it synchronously before module scripts run so that firebase.ts
          can pick it up via window.__FIREBASE_DEFAULTS__.  An async fetch cannot
          be used here because separate <script type="module"> tags are evaluated
          concurrently — a top-level await in one does not block the others.
          The try/catch silently absorbs the expected 404 (or network error) during
-         local development, where firebase.ts falls back to VITE_FIREBASE_* env
-         vars instead. -->
+         local development and *offline use*, where firebase.ts falls back to
+         VITE_FIREBASE_* env vars instead. -->
     <script>
       (function () {
         try {
@@ -66,6 +66,8 @@
         }
       })();
     </script>
+    <!-- A similar function may be needed for the recaptcha if we are not hitting any endoints to use validation. -->
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Le_IHgsAAAAAIPDhNI95r_mbfnWsECBMPkToG1s"></script>
   </head>
   <body>
     <div id="root"></div>
