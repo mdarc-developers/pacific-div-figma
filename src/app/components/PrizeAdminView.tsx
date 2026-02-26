@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 import {
   Card,
   CardContent,
@@ -73,7 +74,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <label className="text-sm font-medium" htmlFor="p-name">Name *</label>
+            <Label htmlFor="p-name">Name *</Label>
             <Input
               id="p-name"
               value={form.name}
@@ -81,7 +82,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="p-desc">Description</label>
+            <Label htmlFor="p-desc">Description</Label>
             <Input
               id="p-desc"
               value={form.description}
@@ -89,7 +90,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="p-category">Category</label>
+            <Label htmlFor="p-category">Category</Label>
             <Input
               id="p-category"
               value={form.category}
@@ -97,7 +98,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="p-donor">Donor</label>
+            <Label htmlFor="p-donor">Donor</Label>
             <Input
               id="p-donor"
               value={form.donor}
@@ -105,7 +106,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="p-image">Image URL</label>
+            <Label htmlFor="p-image">Image URL</Label>
             <Input
               id="p-image"
               value={form.imageUrl}
@@ -113,7 +114,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="p-winner">Winner ID (optional)</label>
+            <Label htmlFor="p-winner">Winner ID (optional)</Label>
             <Input
               id="p-winner"
               value={form.winner ?? ""}
@@ -188,7 +189,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <label className="text-sm font-medium" htmlFor="w-ticket">Winning Ticket *</label>
+            <Label htmlFor="w-ticket">Winning Ticket *</Label>
             <Input
               id="w-ticket"
               value={form.winningTicket}
@@ -201,7 +202,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="w-prizes">Prize IDs (comma-separated)</label>
+            <Label htmlFor="w-prizes">Prize IDs (comma-separated)</Label>
             <Input
               id="w-prizes"
               value={form.prizeId.join(", ")}
@@ -217,7 +218,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="w-callsign">Callsign</label>
+            <Label htmlFor="w-callsign">Callsign</Label>
             <Input
               id="w-callsign"
               value={form.winnerCallsign ?? ""}
@@ -225,7 +226,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="w-name">Winner Name</label>
+            <Label htmlFor="w-name">Winner Name</Label>
             <Input
               id="w-name"
               value={form.winnerName ?? ""}
@@ -233,7 +234,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="w-email">Winner Email</label>
+            <Label htmlFor="w-email">Winner Email</Label>
             <Input
               id="w-email"
               type="email"
@@ -242,7 +243,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="w-drawing">Drawing Type</label>
+            <Label htmlFor="w-drawing">Drawing Type</Label>
             <Input
               id="w-drawing"
               value={form.drawing ?? ""}
@@ -250,7 +251,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="w-notified">Notified At</label>
+            <Label htmlFor="w-notified">Notified At</Label>
             <Input
               id="w-notified"
               value={form.notifiedAt ?? ""}
@@ -258,7 +259,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium" htmlFor="w-claimed">Claimed At</label>
+            <Label htmlFor="w-claimed">Claimed At</Label>
             <Input
               id="w-claimed"
               value={form.claimedAt ?? ""}
