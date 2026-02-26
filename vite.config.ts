@@ -1,8 +1,17 @@
 import { defineConfig } from "vite";
 import path from "path";
+import { execSync } from "child_process";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import eslint from "@nabla/vite-plugin-eslint";
+
+function getGitSha(): string {
+  try {
+    return execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
+  } catch {
+    return "";
+  }
+}
 
 export default defineConfig({
   plugins: [
@@ -14,6 +23,12 @@ export default defineConfig({
     // the Vitest process alive after tests complete (37 dangling FILEHANDLE).
     ...(process.env.VITEST ? [] : [eslint()]),
   ],
+  define: {
+    // Bake the current git commit SHA and build timestamp into the bundle at
+    // build time. Works for both local and CI builds without any extra env vars.
+    "import.meta.env.VITE_GIT_SHA": JSON.stringify(getGitSha()),
+    "import.meta.env.VITE_BUILD_DATE": JSON.stringify(new Date().toISOString()),
+  },
   resolve: {
     alias: {
       // Alias @ to the src directory
