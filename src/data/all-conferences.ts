@@ -38,7 +38,7 @@ export const allConferences: Conference[] = [
     conferenceWebsite: 'https://www.yumahamfest.com',
     venuePhone: '(928) 726-4420',
     venueGPS: '32.6707,-114.5943',
-    venueGridSquare: 'FJ29gk',
+    venueGridSquare: 'DM22qq',
     venueWebsite: 'https://www.yumafair.com',
     timezoneNumeric: '-0700', // does not observe DST
     parkingWebsite: 'https://www.yumahamfest.com/parking.html',
@@ -65,13 +65,35 @@ export const allConferences: Conference[] = [
     venueGridSquare: 'EM89aq',
     venueWebsite: 'https://greenecoexpocenter.com/',
     timezoneNumeric: '-0700', // DST, PDT ends early Nov
-    parkingWebsite: '',
+    parkingWebsite: 'https://hamvention.org/travel-parking/directions/',
     icalUrl: '',
     googlecalUrl: '',
     contactEmail: '',
-    logoUrl: '',
+    logoUrl: '/assets/images/hamvention_logo.png',
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+  },
+  {
+    id: 'seapac-2026',
+    name: 'Sea-Pac 2026',
+    location: '415 First Avenue, Seaside, OR 97138',
+    venue: 'Seaside Convention Center',
+    startDate: '2026-06-05',
+    endDate: '2026-06-07',
+    timezone: 'America/Los_Angeles',
+    primaryColor: '#87CEEB',
+    secondaryColor: '#253C61',
+    conferenceWebsite: 'https://www.seapac.org',
+    venuePhone: '(503) 738-8585',
+    venueGPS: '45.9940,-123.9280',
+    venueGridSquare: 'CN85ax',
+    venueWebsite: 'https://www.seasideconvention.com',
+    timezoneNumeric: '-0800', // observes DST
+    parkingWebsite: 'https://seapac.org/map.html',
+    icalUrl: '',
+    googlecalUrl: '',
+    contactEmail: 'info@seapac.org',
+    logoUrl: '/assets/images/seapac-logo.png',
   },
   {
     id: 'huntsville-hamfest-2026',
@@ -89,11 +111,11 @@ export const allConferences: Conference[] = [
     venueGridSquare: 'EM64qr',
     venueWebsite: 'http://www.vonbrauncenter.com/',
     timezoneNumeric: '-0700', // DST, PDT ends early Nov
-    parkingWebsite: '',
+    parkingWebsite: 'https://hamfest.org/directions',
     icalUrl: '',
     googlecalUrl: '',
     contactEmail: '',
-    logoUrl: '',
+    logoUrl: '/assets/images/huntsville-logo.png',
     //mapSessionsUrl: '', // for Room[]
     //mapExhibitorsUrl: ['/hamfest-layout-2026.png'], // for Booth[]
   },
