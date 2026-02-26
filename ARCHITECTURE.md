@@ -37,12 +37,12 @@ The app is purpose-built for amateur radio (ham radio) ARRL Division conferences
 
 ### Notable dependencies _installed but not currently used_
 
-* `next-themes` for dark and light
-* Most of the Radix primitives beyond `tabs`, `accordion`, `toggle`, `toggle-group`, and `tooltip` have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
-* `react-slick` for carousel
-* `react-responsive-masonry` for zooming
-* `recharts` charting for react
-* `react-hook-form` forms and validation library
+- `next-themes` for dark and light
+- Most of the Radix primitives beyond `tabs`, `accordion`, `toggle`, `toggle-group`, and `tooltip` have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
+- `react-slick` for carousel
+- `react-responsive-masonry` for zooming
+- `recharts` charting for react
+- `react-hook-form` forms and validation library
 
 ---
 

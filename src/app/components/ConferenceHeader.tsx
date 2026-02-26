@@ -1,6 +1,16 @@
-import { useState } from 'react';
-import { Conference } from '@/types/conference';
-import { Bell, ChevronDown, Calendar, ExternalLink, MapPin, MonitorCog, Moon, Sun, User } from 'lucide-react';
+import { useState } from "react";
+import { Conference } from "@/types/conference";
+import {
+  Bell,
+  ChevronDown,
+  Calendar,
+  ExternalLink,
+  MapPin,
+  MonitorCog,
+  Moon,
+  Sun,
+  User,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,12 +18,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/app/components/ui/dialog';
-import { Button } from '@/app/components/ui/button';
-import { Card, CardContent } from '@/app/components/ui/card';
-import { Badge } from '@/app/components/ui/badge';
-import { useConference } from '@/app/contexts/ConferenceContext';
-import { NavLink } from 'react-router-dom';
+} from "@/app/components/ui/dialog";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { Badge } from "@/app/components/ui/badge";
+import { useConference } from "@/app/contexts/ConferenceContext";
+import { NavLink } from "react-router-dom";
 import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 
@@ -36,22 +46,22 @@ import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 //export { Button };
 
 function formatHeaderFull(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat('en-US', {
+  const timeFormatter = new Intl.DateTimeFormat("en-US", {
     timeZone: tzString,
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
   return timeFormatter.format(isoDate);
 }
 
 function formatHeaderMonth(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat('en-US', {
+  const timeFormatter = new Intl.DateTimeFormat("en-US", {
     timeZone: tzString,
-    month: 'long',
+    month: "long",
   });
   return timeFormatter.format(isoDate);
-};
+}
 
 // had tz difficulties, used split instead
 //function formatHeaderDay(isoDate: Date, tzString: string) {
@@ -63,36 +73,36 @@ function formatHeaderMonth(isoDate: Date, tzString: string) {
 //};
 
 function formatHeaderYear(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat('en-US', {
+  const timeFormatter = new Intl.DateTimeFormat("en-US", {
     timeZone: tzString,
-    year: 'numeric'
+    year: "numeric",
   });
   return timeFormatter.format(isoDate);
 }
 
 function contrastingColor(color: string) {
   // Convert hex to RGB array if needed (example function below)
-  const rgb = (typeof color === 'string') ? hexToRGBArray(color) : color;
+  const rgb = typeof color === "string" ? hexToRGBArray(color) : color;
   // Calculate Luma (brightness)
-  const luma = (0.2126 * rgb[0]) + (0.7152 * rgb[1]) + (0.0722 * rgb[2]);
+  const luma = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
   // Use black text if the background is light, white text if the background is dark
-  return (luma >= 165) ? '#000000' : '#FFFFFF';
+  return luma >= 165 ? "#000000" : "#FFFFFF";
 }
 
 function contrastingLinkColor(color: string) {
   // Convert hex to RGB array if needed (example function below)
-  const rgb = (typeof color === 'string') ? hexToRGBArray(color) : color;
+  const rgb = typeof color === "string" ? hexToRGBArray(color) : color;
   // Calculate Luma (brightness)
-  const luma = (0.2126 * rgb[0]) + (0.7152 * rgb[1]) + (0.0722 * rgb[2]);
+  const luma = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
   // Use black text if the background is light, white text if the background is dark
   //    light 155dfc blue-600 oklch(54.6% 0.245 262.881)
   // or dark  9098dc blue-400 oklch(70.7% 0.165 254.624)
-  return (luma >= 165) ? '#155dfc' : '#9098dc';
+  return luma >= 165 ? "#155dfc" : "#9098dc";
 }
 
 function hexToRGBArray(hex: string) {
-  if (hex.startsWith('#')) hex = hex.substring(1);
-  if (hex.length === 3) hex = hex.replace(/./g, '$&$&'); // Expand shorthand
+  if (hex.startsWith("#")) hex = hex.substring(1);
+  if (hex.length === 3) hex = hex.replace(/./g, "$&$&"); // Expand shorthand
   if (hex.length !== 6) throw new Error(`Invalid HEX color: ${hex}`);
   const rgb = [];
   for (let i = 0; i <= 2; i++) {
@@ -104,48 +114,51 @@ function hexToRGBArray(hex: string) {
 export function ConferenceHeader() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
-  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { activeConference, allConferencesList, setActiveConference } =
+    useConference();
   const { theme, setTheme } = useTheme();
 
   const headerTextColor = contrastingColor(activeConference.primaryColor);
   const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
 
   const icalUrlDisplay = (iurl: string) => {
-    if (iurl === '')
-      return '';
+    if (iurl === "") return "";
     else
-      return <a
-        href={iurl}
-        download
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 hover:underline"
-        style={{ color: headerLinkColor }}
-      >
-        &nbsp;iCal<ExternalLink className="h-4 w-4" />
-      </a>;
+      return (
+        <a
+          href={iurl}
+          download
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 hover:underline"
+          style={{ color: headerLinkColor }}
+        >
+          &nbsp;iCal
+          <ExternalLink className="h-4 w-4" />
+        </a>
+      );
   };
   const googlecalUrlDisplay = (gurl: string) => {
-    if (gurl === '')
-      return '';
+    if (gurl === "") return "";
     else
-      return <a
-        href={gurl}
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <img
-          src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
-          alt="Google Calendar"
-        />
-      </a>;
+      return (
+        <a href={gurl} rel="noopener noreferrer" target="_blank">
+          <img
+            src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
+            alt="Google Calendar"
+          />
+        </a>
+      );
   };
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const startDateNum = start.split('-')[2];
-    const endDateNum = end.split('-')[2];
+    const startDateNum = start.split("-")[2];
+    const endDateNum = end.split("-")[2];
 
-    if (startDate.getMonth() === endDate.getMonth() && startDate.getFullYear() === endDate.getFullYear()) {
+    if (
+      startDate.getMonth() === endDate.getMonth() &&
+      startDate.getFullYear() === endDate.getFullYear()
+    ) {
       return `${formatHeaderMonth(startDate, activeConference.timezone)} ${startDateNum}-${endDateNum}, ${formatHeaderYear(startDate, activeConference.timezone)}`;
     }
 
@@ -173,8 +186,8 @@ export function ConferenceHeader() {
   };
 
   const navItems = [
-    { to: '/alerts', icon: Bell, label: 'Alert' },
-    { to: '/profile', icon: User, label: 'Profile' },
+    { to: "/alerts", icon: Bell, label: "Alert" },
+    { to: "/profile", icon: User, label: "Profile" },
   ];
 
   return (
@@ -186,40 +199,58 @@ export function ConferenceHeader() {
         title="Collapse / Expand"
       >
         <svg
-          className={`w-5 h-5 transition-transform flex ${isHeaderCollapsed ? '-rotate-90' : ''}`}
+          className={`w-5 h-5 transition-transform flex ${isHeaderCollapsed ? "-rotate-90" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
-      <div className={`mb-6 self-stretch w-full rounded-xl p-4 ${isHeaderCollapsed ?
-        'cursor-pointer hover:opacity-90 transition-opacity' :
-        ''}`}
-        style={{ backgroundColor: activeConference.primaryColor, color: headerTextColor }}
-        onClick={isHeaderCollapsed ? () => setIsHeaderCollapsed(false) : undefined}
+      <div
+        className={`mb-6 self-stretch w-full rounded-xl p-4 ${
+          isHeaderCollapsed
+            ? "cursor-pointer hover:opacity-90 transition-opacity"
+            : ""
+        }`}
+        style={{
+          backgroundColor: activeConference.primaryColor,
+          color: headerTextColor,
+        }}
+        onClick={
+          isHeaderCollapsed ? () => setIsHeaderCollapsed(false) : undefined
+        }
       >
         {isHeaderCollapsed ? (
-          <h1 className="text-3xl md:text-4xl font-bold">{activeConference.name}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">
+            {activeConference.name}
+          </h1>
         ) : (
           <>
             <div className="flex self-stretch w-full">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">{activeConference.name}
-                  &nbsp;&nbsp;<a
+                <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">
+                  {activeConference.name}
+                  &nbsp;&nbsp;
+                  <a
                     href={activeConference.conferenceWebsite}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 hover:underline"
                     style={{ color: headerLinkColor }}
                   >
-                    website<ExternalLink className="h-4 w-4" />
+                    website
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                 </h1>
               </div>
-              {(activeConference.logoUrl && !isHeaderCollapsed) ? (
+              {activeConference.logoUrl && !isHeaderCollapsed ? (
                 <a
                   href={activeConference.conferenceWebsite}
                   target="_blank"
@@ -227,9 +258,14 @@ export function ConferenceHeader() {
                   className="flex items-center gap-2 hover:underline"
                   style={{ color: headerLinkColor }}
                 >
-                  <img src={activeConference.logoUrl} alt="Conference Logo"></img>
+                  <img
+                    src={activeConference.logoUrl}
+                    alt="Conference Logo"
+                  ></img>
                 </a>
-              ) : ""}
+              ) : (
+                ""
+              )}
               <div className="ml-auto flex flex-col items-end gap-2">
                 {/* Conference Selector (top) */}
                 <Dialog open={isSelectOpen} onOpenChange={setIsSelectOpen}>
@@ -245,9 +281,7 @@ export function ConferenceHeader() {
                   <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Select Conference</DialogTitle>
-                      <DialogDescription>
-                        Amateur radio
-                      </DialogDescription>
+                      <DialogDescription>Amateur radio</DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 mt-4">
@@ -261,10 +295,9 @@ export function ConferenceHeader() {
                         return (
                           <Card
                             key={conference.id}
-                            className={`cursor-pointer transition-all hover:shadow-md ${isActive ?
-                              'ring-2 ring-blue-500' :
-                              ''
-                              }`}
+                            className={`cursor-pointer transition-all hover:shadow-md ${
+                              isActive ? "ring-2 ring-blue-500" : ""
+                            }`}
                             onClick={() => handleSelectConference(conference)}
                           >
                             <CardContent className="p-4">
@@ -291,31 +324,30 @@ export function ConferenceHeader() {
                                     )}
                                   </div>
                                   <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-
                                     <div className="flex items-center gap-2">
                                       <Calendar className="h-4 w-4 flex-shrink-0" />
                                       <span className="truncate">
-                                        {formatDateRange(conference.startDate, conference.endDate)}
+                                        {formatDateRange(
+                                          conference.startDate,
+                                          conference.endDate,
+                                        )}
                                       </span>
                                     </div>
 
                                     <div className="flex items-center gap-2">
                                       <MapPin className="h-4 w-4 flex-shrink-0" />
                                       <span className="truncate">
-                                        {conference.venue}<br />{conference.location}
+                                        {conference.venue}
+                                        <br />
+                                        {conference.location}
                                       </span>
                                     </div>
-
-
                                   </div>
-
                                 </div>
 
                                 {isActive && (
                                   <div className="flex-shrink-0">
-                                    <Badge variant="default">
-                                      Selected
-                                    </Badge>
+                                    <Badge variant="default">Selected</Badge>
                                   </div>
                                 )}
                               </div>
@@ -340,27 +372,46 @@ export function ConferenceHeader() {
                   aria-label="Theme"
                   className="bg-white/30 dark:bg-black/20 backdrop-blur-sm"
                 >
-                  <ToggleGroupItem value="light" aria-label="Light theme" title="Light theme">
+                  <ToggleGroupItem
+                    value="light"
+                    aria-label="Light theme"
+                    title="Light theme"
+                  >
                     <Sun className="h-4 w-4" />
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="system" aria-label="System theme" title="System Theme">
+                  <ToggleGroupItem
+                    value="system"
+                    aria-label="System theme"
+                    title="System Theme"
+                  >
                     <MonitorCog className="h-4 w-4" />
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="dark" aria-label="Dark theme" title="Dark theme">
+                  <ToggleGroupItem
+                    value="dark"
+                    aria-label="Dark theme"
+                    title="Dark theme"
+                  >
                     <Moon className="h-4 w-4" />
                   </ToggleGroupItem>
                 </ToggleGroup>
-
               </div>
             </div>
 
-            <div className="space-y-2"
+            <div
+              className="space-y-2"
               // text-gray-700 dark:text-gray-300"
-              style={{ backgroundColor: activeConference.primaryColor, color: headerTextColor }}
+              style={{
+                backgroundColor: activeConference.primaryColor,
+                color: headerTextColor,
+              }}
             >
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                <span>{formatDateRange(activeConference.startDate, activeConference.endDate)}
+                <span>
+                  {formatDateRange(
+                    activeConference.startDate,
+                    activeConference.endDate,
+                  )}
                   &nbsp;
                   {icalUrlDisplay(activeConference.icalUrl)}
                   &nbsp;&nbsp;&nbsp;
@@ -369,23 +420,29 @@ export function ConferenceHeader() {
               </div>
 
               <div className="flex items-center gap-2">
-                <span><a
-                  href={activeConference.venueWebsite}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  className="flex items-center gap-2 hover:underline"
-                  style={{ color: headerLinkColor }}
-                >
-                  {activeConference.venue}<ExternalLink className="h-4 w-4" /></a>,
-                  &nbsp;{activeConference.location}
-                  &nbsp;&nbsp;<a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ''}`}
+                <span>
+                  <a
+                    href={activeConference.venueWebsite}
                     rel="noopener noreferrer"
                     target="_blank"
                     className="flex items-center gap-2 hover:underline"
                     style={{ color: headerLinkColor }}
                   >
-                    <MapPin className="flex h-5 w-5" />map<ExternalLink className="h-4 w-4" />
+                    {activeConference.venue}
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                  , &nbsp;{activeConference.location}
+                  &nbsp;&nbsp;
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="flex items-center gap-2 hover:underline"
+                    style={{ color: headerLinkColor }}
+                  >
+                    <MapPin className="flex h-5 w-5" />
+                    map
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                   &nbsp;&nbsp;&nbsp;{activeConference.venueGPS}
                   &nbsp;&nbsp;&nbsp;{activeConference.venueGridSquare}
@@ -401,9 +458,10 @@ export function ConferenceHeader() {
           to={to}
           title={label}
           className={({ isActive }) =>
-            `self-stretch mb-3 flex flex-col items-center justify-center gap-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-md transition-colors ${isActive
-              ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm font-medium'
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium'
+            `self-stretch mb-3 flex flex-col items-center justify-center gap-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-md transition-colors ${
+              isActive
+                ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm font-medium"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium"
             }`
           }
         >
@@ -414,4 +472,3 @@ export function ConferenceHeader() {
     </div> // container
   ); // return
 } // export function ConferenceHeader
-

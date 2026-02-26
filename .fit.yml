@@ -4,7 +4,7 @@ ImportCommentsTogether: true
 TagKeyValue: true
 NewFieldAsTag: true
 NewFieldLowerCase: true
-#GithubPersonalAccessToken: 
+#GithubPersonalAccessToken:
 #FitSite: https://www.github.com/mdarc-developers/pacific-div-figma
 CloseStatusTag: true
 ClosePreventDelete: true

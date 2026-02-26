@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
-import { ExhibitorView } from '@/app/components/ExhibitorView';
-import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
-import { useConference } from '@/app/contexts/ConferenceContext';
-import { MapImage, Booth, Exhibitor } from '@/types/conference';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useState, useEffect, useRef } from "react";
+import { ExhibitorView } from "@/app/components/ExhibitorView";
+import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { useConference } from "@/app/contexts/ConferenceContext";
+import { MapImage, Booth, Exhibitor } from "@/types/conference";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 interface MapsModule {
   conferenceMaps?: MapImage[];
@@ -23,7 +23,9 @@ interface ExhibitorModule {
 
 // Import all session data files at once using Vite's glob import
 // This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
+const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
+  eager: true,
+});
 
 // Process the modules into a lookup object
 const MAP_DATA: Record<string, MapImage[]> = {};
@@ -32,7 +34,7 @@ const EXHIBITOR_DATA: Record<string, [string, Exhibitor[]]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
-  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedMapModule = module as MapsModule;
   const typedBoothModule = module as BoothModule;
   const typedExhibitorModule = module as ExhibitorModule;
@@ -48,9 +50,12 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 });
 
 export function ExhibitorsPage() {
-  const [bookmarkedExhibitors, setBookmarkedExhibitors] = useState<string[]>([]);
+  const [bookmarkedExhibitors, setBookmarkedExhibitors] = useState<string[]>(
+    [],
+  );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { activeConference, allConferencesList, setActiveConference } =
+    useConference();
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id];
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
@@ -71,31 +76,37 @@ export function ExhibitorsPage() {
       //console.log(ex.location[boo].toString() + " " + ex.name);
       boothToName.set(ex.location[boo], ex);
     }
-  };
+  }
   //const foundMap = conferenceMaps.find(m => m.url === element)
   //if ( foundMap ) { multipleExhibitorMaps.push(foundMap);
 
-  const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(() => {
-    // Single-map assumption: always pick the map whose URL matches mapBooths[0].
-    // TODO: restore `activeConference.mapExhibitorsUrl.length === 1` guard when multi-map is re-enabled.
-    const boothMapUrl = boothEntry?.[0];
-    return (boothMapUrl ? conferenceMaps.find(m => m.url === boothMapUrl) : undefined) || {
-      order: 1,
-      id: 'map-0',
-      name: 'No Exhibitors Map Found',
-      url: '/pacificon-exhibitors-2025.png',
-      origHeightNum: 256,
-      origWidthNum: 582
-    };
-    // Multi-map initialiser (disabled — single-map assumption):
-    // if (activeConference.mapExhibitorsUrl.length === 1) {
-    //   return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
-    //     order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
-    //     url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
-    //   };
-    // }
-    // return undefined;
-  });
+  const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(
+    () => {
+      // Single-map assumption: always pick the map whose URL matches mapBooths[0].
+      // TODO: restore `activeConference.mapExhibitorsUrl.length === 1` guard when multi-map is re-enabled.
+      const boothMapUrl = boothEntry?.[0];
+      return (
+        (boothMapUrl
+          ? conferenceMaps.find((m) => m.url === boothMapUrl)
+          : undefined) || {
+          order: 1,
+          id: "map-0",
+          name: "No Exhibitors Map Found",
+          url: "/pacificon-exhibitors-2025.png",
+          origHeightNum: 256,
+          origWidthNum: 582,
+        }
+      );
+      // Multi-map initialiser (disabled — single-map assumption):
+      // if (activeConference.mapExhibitorsUrl.length === 1) {
+      //   return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
+      //     order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
+      //     url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
+      //   };
+      // }
+      // return undefined;
+    },
+  );
   // Multi-map state (disabled — single-map assumption):
   // const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
   //   if (activeConference.mapExhibitorsUrl.length > 1) {
@@ -103,7 +114,9 @@ export function ExhibitorsPage() {
   //   }
   //   return [];
   // });
-  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>([]);
+  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<
+    MapImage[]
+  >([]);
 
   useEffect(() => {
     if (!mapRef.current || !exhibitorsMap) return;
@@ -111,7 +124,10 @@ export function ExhibitorsPage() {
     const setHeight = () => {
       if (!mapRef.current) return;
       const calcW = mapRef.current.offsetWidth;
-      const calcH = Math.round(calcW * origAspect(exhibitorsMap.origHeightNum, exhibitorsMap.origWidthNum));
+      const calcH = Math.round(
+        calcW *
+          origAspect(exhibitorsMap.origHeightNum, exhibitorsMap.origWidthNum),
+      );
       mapRef.current.style.height = `${calcH}px`;
       leafletRef.current?.invalidateSize();
     };
@@ -128,12 +144,15 @@ export function ExhibitorsPage() {
   // Auto-height for PDF iframe: measures wrapper width and applies aspect-ratio height
   useEffect(() => {
     const el = pdfRef.current;
-    if (!el || !exhibitorsMap?.url.endsWith('.pdf')) return;
+    if (!el || !exhibitorsMap?.url.endsWith(".pdf")) return;
     const updateHeight = () => {
       const w = el.offsetWidth;
-      const h = exhibitorsMap.origHeightNum && exhibitorsMap.origWidthNum
-        ? Math.round(w * (exhibitorsMap.origHeightNum / exhibitorsMap.origWidthNum))
-        : Math.round(w * (11 / 8.5)); // A4/Letter fallback
+      const h =
+        exhibitorsMap.origHeightNum && exhibitorsMap.origWidthNum
+          ? Math.round(
+              w * (exhibitorsMap.origHeightNum / exhibitorsMap.origWidthNum),
+            )
+          : Math.round(w * (11 / 8.5)); // A4/Letter fallback
       setPdfHeight(h);
     };
     const obs = new ResizeObserver(updateHeight);
@@ -147,14 +166,16 @@ export function ExhibitorsPage() {
     // TODO: restore numEmaps > 1 branch when multi-map is re-enabled.
     const boothMapUrl = BOOTH_DATA[activeConference.id]?.[0];
     setExhibitorsMap(
-      (boothMapUrl ? conferenceMaps.find(m => m.url === boothMapUrl) : undefined) || {
+      (boothMapUrl
+        ? conferenceMaps.find((m) => m.url === boothMapUrl)
+        : undefined) || {
         order: 1,
-        id: 'map-0',
-        name: 'No Exhibitors Map Found',
-        url: '/pacificon-exhibitors-2025.png',
+        id: "map-0",
+        name: "No Exhibitors Map Found",
+        url: "/pacificon-exhibitors-2025.png",
         origHeightNum: 256,
-        origWidthNum: 582
-      }
+        origWidthNum: 582,
+      },
     );
     setMultipleExhibitorMaps([]);
     // Multi-map branch (disabled — single-map assumption):
@@ -199,7 +220,7 @@ export function ExhibitorsPage() {
 
     // ... (rest of your exhibitorsMap initialization code) ...
     // Click handler for finding coordinates while building room polygons
-    leafletMap.on('click', (e) => {
+    leafletMap.on("click", (e) => {
       const { lat, lng } = e.latlng;
       console.log(`Clicked: [${lat.toFixed(1)}, ${lng.toFixed(1)}]`);
     });
@@ -220,10 +241,10 @@ export function ExhibitorsPage() {
     setTimeout(() => leafletMap.invalidateSize(), 100);
 
     let found: Exhibitor | undefined;
-    exhibitorBooths.forEach(exhibitorBooth => {
+    exhibitorBooths.forEach((exhibitorBooth) => {
       const polygon = L.polygon(exhibitorBooth.coords as [number, number][], {
-        color: '#fff',
-        fillColor: '#fff',
+        color: "#fff",
+        fillColor: "#fff",
         fillOpacity: 0.0,
         weight: 2,
       }).addTo(leafletMap);
@@ -237,8 +258,8 @@ export function ExhibitorsPage() {
         polygon.bindPopup(exhibitorBooth.id.toString());
       }
       // Your mouseover/mouseout functions with arrow syntax to fix 'this' typing:
-      polygon.on('mouseover', () => polygon.setStyle({ fillOpacity: 0.6 }));
-      polygon.on('mouseout', () => polygon.setStyle({ fillOpacity: 0.0 }));
+      polygon.on("mouseover", () => polygon.setStyle({ fillOpacity: 0.6 }));
+      polygon.on("mouseout", () => polygon.setStyle({ fillOpacity: 0.0 }));
     });
 
     leafletRef.current = leafletMap;
@@ -251,18 +272,16 @@ export function ExhibitorsPage() {
   }, [exhibitorsMap]);
 
   function origAspect(h?: number, w?: number) {
-    if (!h)
-      throw new Error("exhibitorsMap missing origHeightNum");
-    else if (!w)
-      throw new Error("exhibitorsMap missing origWidthNum");
+    if (!h) throw new Error("exhibitorsMap missing origHeightNum");
+    else if (!w) throw new Error("exhibitorsMap missing origWidthNum");
     return h / w;
-  };
+  }
 
   const handleToggleBookmark = (exhibitorId: string) => {
-    setBookmarkedExhibitors(prev =>
+    setBookmarkedExhibitors((prev) =>
       prev.includes(exhibitorId)
-        ? prev.filter(id => id !== exhibitorId)
-        : [...prev, exhibitorId]
+        ? prev.filter((id) => id !== exhibitorId)
+        : [...prev, exhibitorId],
     );
   };
 
@@ -277,9 +296,10 @@ export function ExhibitorsPage() {
                 title="Exhibitors Map"
                 src={exhibitorsMap.url}
                 className="w-full"
-                style={{ height: pdfHeight > 0 ? `${pdfHeight}px` : '100vh' }}
+                style={{ height: pdfHeight > 0 ? `${pdfHeight}px` : "100vh" }}
               >
-                Your browser does not support iframes. <a href={exhibitorsMap.url}>Download the PDF</a> instead.
+                Your browser does not support iframes.{" "}
+                <a href={exhibitorsMap.url}>Download the PDF</a> instead.
               </iframe>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
@@ -295,7 +315,7 @@ export function ExhibitorsPage() {
         //  />
         return (
           <>
-            <div className="w-full" ref={mapRef} ></div>
+            <div className="w-full" ref={mapRef}></div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
               {exhibitorsMap.name}
             </p>
@@ -327,9 +347,7 @@ export function ExhibitorsPage() {
 
   return (
     <div className="block">
-      <div className="w-full">
-        {displayMaps(numEmaps)}
-      </div>
+      <div className="w-full">{displayMaps(numEmaps)}</div>
       <ExhibitorView
         bookmarkedExhibitors={bookmarkedExhibitors}
         onToggleBookmark={handleToggleBookmark}

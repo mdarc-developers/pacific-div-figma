@@ -3,9 +3,7 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ], // Maps @/ to the baseUrl directory (src)
+      "@/*": ["./src/*"] // Maps @/ to the baseUrl directory (src)
     },
     // Ensure moduleResolution is set appropriately (e.g., "node", "Bundler", etc.)
     "module": "esnext",
@@ -20,9 +18,7 @@
       "dom"
     ],
     "esModuleInterop": true,
-    "types": [],
+    "types": []
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"]
 }

@@ -1,7 +1,5 @@
-import { MapsView } from '@/app/components/MapsView';
+import { MapsView } from "@/app/components/MapsView";
 
 export function MapsPage() {
-  return (
-    <MapsView />
-  );
+  return <MapsView />;
 }

@@ -1,7 +1,6 @@
-import { AlertsView } from '@/app/components/AlertsView';
+import { AlertsView } from "@/app/components/AlertsView";
 //import { User } from "lucide-react";
-import { useAuth } from '../contexts/AuthContext';
-
+import { useAuth } from "../contexts/AuthContext";
 
 export function AlertsPage() {
   const { user } = useAuth();

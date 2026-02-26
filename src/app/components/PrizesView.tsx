@@ -1,9 +1,19 @@
-import { useRef, useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { Award, HandHelping, Info, Trophy } from 'lucide-react';
-import { Prize, PrizeWinner } from '@/types/conference';
-import { useConference } from '@/app/contexts/ConferenceContext';
+import { useRef, useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/components/ui/tabs";
+import { Award, HandHelping, Info, Trophy } from "lucide-react";
+import { Prize, PrizeWinner } from "@/types/conference";
+import { useConference } from "@/app/contexts/ConferenceContext";
 
 interface PrizeCardProps {
   prize: Prize;
@@ -16,7 +26,7 @@ function PrizeCard({ prize, prizeWinner, isHighlighted }: PrizeCardProps) {
 
   useEffect(() => {
     if (isHighlighted && prizeRef.current) {
-      prizeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      prizeRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [isHighlighted]);
 
@@ -24,12 +34,13 @@ function PrizeCard({ prize, prizeWinner, isHighlighted }: PrizeCardProps) {
     <div
       ref={prizeRef}
       id={`prize-${prize.id}`}
-      className={`mb-4 transition-all w-full ${isHighlighted
-        ? 'ring-2 ring-blue-500 shadow-lg scale-105'
-        : ''
-        }`}
+      className={`mb-4 transition-all w-full ${
+        isHighlighted ? "ring-2 ring-blue-500 shadow-lg scale-105" : ""
+      }`}
     >
-      <Card className={`transition-all w-full  ${isHighlighted ? 'ring-2 ring-blue-500 shadow-lg scale-105' : ''}`}>
+      <Card
+        className={`transition-all w-full  ${isHighlighted ? "ring-2 ring-blue-500 shadow-lg scale-105" : ""}`}
+      >
         <CardHeader>
           <div className="flex space-y-2 gap-2 justify-between items-start">
             <Trophy className="h-4 w-4" />
@@ -37,7 +48,13 @@ function PrizeCard({ prize, prizeWinner, isHighlighted }: PrizeCardProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <img className="float-right" alt="prize image" src={prize.imageUrl} width="200px" height="200px" />
+          <img
+            className="float-right"
+            alt="prize image"
+            src={prize.imageUrl}
+            width="200px"
+            height="200px"
+          />
           <p className="text-sm space-y-2 flex gap-2 text-gray-600 dark:text-gray-400 mb-3">
             <Info className="h-4 w-4" />
             {prize.description}
@@ -49,9 +66,7 @@ function PrizeCard({ prize, prizeWinner, isHighlighted }: PrizeCardProps) {
             </div>
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Award className="h-4 w-4" />
-              <span>
-                {prizeWinner}
-              </span>
+              <span>{prizeWinner}</span>
             </div>
           </div>
         </CardContent>
@@ -71,13 +86,15 @@ interface PrizeWinnerModule {
 }
 
 // Import all prize data files at once using Vite's glob import
-const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
+const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
+  eager: true,
+});
 
 // Process the modules into a lookup object
 const PRIZE_DATA: Record<string, Prize[]> = {};
 const PRIZE_WINNER_DATA: Record<string, PrizeWinner[]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
-  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedModule = module as PrizeModule;
   if (typedModule.samplePrizes) {
     PRIZE_DATA[conferenceId] = typedModule.samplePrizes;
@@ -92,19 +109,19 @@ interface PrizesViewProps {
   highlightPrizeId?: string;
 }
 
-export function PrizesView({
-  highlightPrizeId }: PrizesViewProps) {
+export function PrizesView({ highlightPrizeId }: PrizesViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { activeConference, allConferencesList, setActiveConference } =
+    useConference();
   const prizes = PRIZE_DATA[activeConference.id] || [];
   const prizeWinners = PRIZE_WINNER_DATA[activeConference.id] || [];
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Group prizes by category
   const groupPrizesByCategory = (prizes: Prize[]) => {
     const grouped: Record<string, Prize[]> = {};
-    prizes.forEach(loopprize => {
-      const category = loopprize.category ? loopprize.category : 'Prize';
+    prizes.forEach((loopprize) => {
+      const category = loopprize.category ? loopprize.category : "Prize";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -134,27 +151,28 @@ export function PrizesView({
 
   const pwin = (pw?: string) => {
     if (pw) {
-      const pwId = prizeWinners.find(element => element.id === pw);
+      const pwId = prizeWinners.find((element) => element.id === pw);
       if (pwId) {
-        if (pwId.claimedAt)
-          return pwId.winningTicket + " <claimed>";
+        if (pwId.claimedAt) return pwId.winningTicket + " <claimed>";
         else {
-          if (pwId.notifiedAt)
-            return pwId.winningTicket + " [notified]";
-          else
-            return pwId.winningTicket + " not claimed";
+          if (pwId.notifiedAt) return pwId.winningTicket + " [notified]";
+          else return pwId.winningTicket + " not claimed";
         }
       }
     }
     return "";
-  }
+  };
 
   return (
     <div className="w-full">
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+      <Tabs
+        value={selectedCategory}
+        onValueChange={setSelectedCategory}
+        className="w-full"
+      >
         <TabsList className="w-full mb-6 flex-wrap h-auto">
           <TabsTrigger value="all">All Prizes</TabsTrigger>
-          {categoryKeys.map(category => (
+          {categoryKeys.map((category) => (
             <TabsTrigger key={category} value={category}>
               {category}
             </TabsTrigger>
@@ -162,14 +180,12 @@ export function PrizesView({
         </TabsList>
 
         <TabsContent value="all">
-          {categoryKeys.map(category => (
+          {categoryKeys.map((category) => (
             <div key={category} className="mb-8">
-              <h3 className="text-xl font-semibold mb-4">
-                {category}
-              </h3>
+              <h3 className="text-xl font-semibold mb-4">{category}</h3>
               {groupedPrizes[category]
                 .sort((a, b) => a.category.localeCompare(b.category))
-                .map(prize => (
+                .map((prize) => (
                   <PrizeCard
                     key={prize.id}
                     prize={prize}
@@ -181,11 +197,11 @@ export function PrizesView({
           ))}
         </TabsContent>
 
-        {categoryKeys.map(category => (
+        {categoryKeys.map((category) => (
           <TabsContent key={category} value={category}>
             {groupedPrizes[category]
               .sort((a, b) => a.category.localeCompare(b.category))
-              .map(prize => (
+              .map((prize) => (
                 <PrizeCard
                   key={prize.id}
                   prize={prize}

@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { ScheduleView } from '@/app/components/ScheduleView';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useConference } from '@/app/contexts/ConferenceContext';
-import { useSearch } from '@/app/contexts/SearchContext';
-import { MapImage, Room } from '@/types/conference';
-import { useBookmarks } from '@/app/hooks/useBookmarks';
+import { useEffect, useRef } from "react";
+import { ScheduleView } from "@/app/components/ScheduleView";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useConference } from "@/app/contexts/ConferenceContext";
+import { useSearch } from "@/app/contexts/SearchContext";
+import { MapImage, Room } from "@/types/conference";
+import { useBookmarks } from "@/app/hooks/useBookmarks";
 
 interface MapsModule {
   conferenceMaps?: MapImage[];
@@ -19,7 +19,9 @@ interface RoomModule {
 
 // Import all session data files at once using Vite's glob import
 // This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
+const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
+  eager: true,
+});
 
 // Process the modules into a lookup object
 const MAP_DATA: Record<string, MapImage[]> = {};
@@ -27,7 +29,7 @@ const ROOM_DATA: Record<string, [string, Room[]]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
-  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedMapModule = module as MapsModule;
   const typedRoomModule = module as RoomModule;
   if (typedMapModule.conferenceMaps) {
@@ -40,9 +42,12 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 
 export function ForumsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { activeConference, allConferencesList, setActiveConference } =
+    useConference();
   const { highlightForumRoomName } = useSearch();
-  const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(activeConference.id);
+  const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(
+    activeConference.id,
+  );
   const forumMapUrl = ROOM_DATA[activeConference.id]?.[0];
   const forumRooms = ROOM_DATA[activeConference.id]?.[1] || [];
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
@@ -51,12 +56,10 @@ export function ForumsPage() {
   const polygonRefs = useRef<Map<string, L.Polygon>>(new Map());
 
   function origAspect(h?: number, w?: number) {
-    if (!h)
-      throw new Error("forumMap missing origHeightNum");
-    else if (!w)
-      throw new Error("forumMap missing origWidthNum");
+    if (!h) throw new Error("forumMap missing origHeightNum");
+    else if (!w) throw new Error("forumMap missing origWidthNum");
     return h / w;
-  };
+  }
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -64,7 +67,9 @@ export function ForumsPage() {
     const setHeight = () => {
       if (!mapRef.current) return;
       const calcW = mapRef.current.offsetWidth;
-      const calcH = Math.round(calcW * origAspect(forumMap.origHeightNum, forumMap.origWidthNum));
+      const calcH = Math.round(
+        calcW * origAspect(forumMap.origHeightNum, forumMap.origWidthNum),
+      );
       mapRef.current.style.height = `${calcH}px`;
       leafletRef.current?.invalidateSize();
     };
@@ -114,7 +119,7 @@ export function ForumsPage() {
 
     // ... (rest of your forumMap initialization code) ...
     // Click handler for finding coordinates while building room polygons
-    leafletMap.on('click', (e) => {
+    leafletMap.on("click", (e) => {
       const { lat, lng } = e.latlng;
       console.log(`Clicked: [${lat.toFixed(1)}, ${lng.toFixed(1)}]`);
     });
@@ -135,7 +140,7 @@ export function ForumsPage() {
     // Small delay ensures container has rendered with correct dimensions before fit
     setTimeout(() => leafletMap.invalidateSize(), 100);
 
-    forumRooms.forEach(forumRoom => {
+    forumRooms.forEach((forumRoom) => {
       const polygon = L.polygon(forumRoom.coords as [number, number][], {
         color: forumRoom.color,
         fillColor: forumRoom.color,
@@ -145,8 +150,8 @@ export function ForumsPage() {
       polygon.bindPopup(forumRoom.name);
       polygonRefs.current.set(forumRoom.name, polygon);
       // Your mouseover/mouseout functions with arrow syntax to fix 'this' typing:
-      polygon.on('mouseover', () => polygon.setStyle({ fillOpacity: 0.6 }));
-      polygon.on('mouseout', () => polygon.setStyle({ fillOpacity: 0.3 }));
+      polygon.on("mouseover", () => polygon.setStyle({ fillOpacity: 0.6 }));
+      polygon.on("mouseout", () => polygon.setStyle({ fillOpacity: 0.3 }));
     });
 
     leafletRef.current = leafletMap;
@@ -166,23 +171,27 @@ export function ForumsPage() {
       if (name === highlightForumRoomName) {
         polygon.setStyle({ fillOpacity: 0.7, weight: 4 });
         polygon.openPopup();
-        leafletRef.current?.fitBounds(polygon.getBounds(), { padding: [20, 20] });
+        leafletRef.current?.fitBounds(polygon.getBounds(), {
+          padding: [20, 20],
+        });
       } else {
         polygon.setStyle({ fillOpacity: 0.3, weight: 2 });
       }
     });
   }, [highlightForumRoomName]);
 
-  const forumMap: MapImage = conferenceMaps.find(m => m.url === forumMapUrl ) || {
+  const forumMap: MapImage = conferenceMaps.find(
+    (m) => m.url === forumMapUrl,
+  ) || {
     // when using origHeightNum assume origWidthNum is set as well
     // this is a backup default image
-    id: 'map-0',
-    conferenceId: 'pacificon-2026',
-    name: 'noForumMapFound',
-    url: '/pacificon-forums-2025.jpg',
+    id: "map-0",
+    conferenceId: "pacificon-2026",
+    name: "noForumMapFound",
+    url: "/pacificon-forums-2025.jpg",
     order: 6,
     origHeightNum: 256,
-    origWidthNum: 582
+    origWidthNum: 582,
   };
 
   return (
@@ -193,7 +202,7 @@ export function ForumsPage() {
           miscalculate its viewport and render polygons outside the visible area.
         - Height is set dynamically by the ResizeObserver above.
       */}
-      <div className="w-full" ref={mapRef} ></div>
+      <div className="w-full" ref={mapRef}></div>
       <ScheduleView
         bookmarkedSessions={bookmarkedSessions}
         onToggleBookmark={handleToggleBookmark}

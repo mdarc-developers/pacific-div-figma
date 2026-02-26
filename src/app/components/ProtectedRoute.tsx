@@ -1,5 +1,5 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 //import { auth } from '../../lib/firebase';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {

@@ -12,18 +12,21 @@ This application uses Firebase for backend services. Follow these steps to confi
 ## 2. Enable Firebase Services
 
 ### Authentication
+
 1. In Firebase Console, go to "Authentication"
 2. Click "Get Started"
 3. Enable "Email/Password" sign-in method
 4. Optionally enable "Google" sign-in for easier authentication
 
 ### Firestore Database
+
 1. Go to "Firestore Database"
 2. Click "Create database"
 3. Choose "Start in production mode"
 4. Select a location closest to your users
 
 ### Storage
+
 1. Go to "Storage"
 2. Click "Get Started"
 3. Accept the default security rules (you can customize later)
@@ -40,30 +43,37 @@ This application uses Firebase for backend services. Follow these steps to confi
 Create these collections in Firestore:
 
 ### conferences
+
 - **Document ID**: conference-id (e.g., "pacificon-2026")
 - **Fields**: name, location, venue, startDate, endDate, timezone, primaryColor, secondaryColor, website
 
 ### sessions
+
 - **Document ID**: auto-generated
 - **Fields**: conferenceId, title, description, speaker, location, startTime, endTime, category, track
 
 ### maps
+
 - **Document ID**: auto-generated
 - **Fields**: conferenceId, name, url, floor, order
 
 ### users
+
 - **Document ID**: uid (Firebase Auth user ID)
 - **Fields**: email, callsign, displayName, darkMode, bookmarkedSessions[], notificationsEnabled, smsNotifications, phoneNumber
 
 ### prizes
+
 - **Document ID**: auto-generated
 - **Fields**: conferenceId, name, description, category
 
 ### prizeWinners
+
 - **Document ID**: auto-generated
 - **Fields**: prizeId, winnerCallsign, winnerEmail, winnerName, notifiedAt, claimedAt
 
 ### messages
+
 - **Document ID**: auto-generated
 - **Fields**: conferenceId, from, to, isPublic, content, boardId, votes, createdAt
 
@@ -78,41 +88,41 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
-    
+
     match /sessions/{sessionId} {
       allow read: if true;
       allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
-    
+
     match /maps/{mapId} {
       allow read: if true;
       allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
-    
+
     // Users can read and write their own profile
     match /users/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
-    
+
     // Public read for prizes
     match /prizes/{prizeId} {
       allow read: if true;
       allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
-    
+
     // Prize winners can only see their own wins
     match /prizeWinners/{winnerId} {
-      allow read: if request.auth != null && 
-        (resource.data.winnerEmail == request.auth.token.email || 
+      allow read: if request.auth != null &&
+        (resource.data.winnerEmail == request.auth.token.email ||
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
       allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
-    
+
     // Messages
     match /messages/{messageId} {
-      allow read: if resource.data.isPublic == true || 
-        (request.auth != null && 
+      allow read: if resource.data.isPublic == true ||
+        (request.auth != null &&
          (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid));
       allow create: if request.auth != null;
       allow update: if request.auth != null && resource.data.from == request.auth.uid;
@@ -133,7 +143,7 @@ service firebase.storage {
       allow read: if true;
       allow write: if request.auth != null;
     }
-    
+
     // User profile images
     match /profile-images/{userId}/{allPaths=**} {
       allow read: if true;
@@ -154,6 +164,7 @@ The app is designed to load data from CSV files. To implement this:
 ### Example CSV Structure
 
 **sessions.csv**:
+
 ```
 title,description,speaker,location,startTime,endTime,category,track
 "Introduction to HF Digital Modes","Learn about FT8...","John Smith K6JS","Main Ballroom","2026-10-16T09:00:00","2026-10-16T10:30:00","Technical","Digital Modes"
@@ -170,20 +181,24 @@ To enable the admin interfaces for Forums Chair and Prizes Chair:
 ## 9. Notifications
 
 ### Email Notifications
+
 - Use Firebase Cloud Functions with SendGrid or Mailgun
 - Trigger on prizeWinner document creation
 
 ### SMS Notifications
+
 - Use Twilio integration in Cloud Functions
 - Check user's `smsNotifications` preference
 
 ### In-App Notifications
+
 - Use Firestore real-time listeners
 - Display notifications when user's callsign/email matches a new prize winner
 
 ## 10. Multi-Conference Support
 
 The architecture supports multiple conferences:
+
 - Each conference has a unique ID
 - All related data (sessions, maps) reference the conferenceId
 - Users can view multiple conferences through a conference selector

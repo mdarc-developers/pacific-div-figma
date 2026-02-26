@@ -1,16 +1,16 @@
-import { NavLink } from 'react-router-dom';
-import { Award, Calendar, Map, Mic, SquareUser, User } from 'lucide-react';
+import { NavLink } from "react-router-dom";
+import { Award, Calendar, Map, Mic, SquareUser, User } from "lucide-react";
 
 export function Navigation() {
   const navItems = [
-    { to: '/schedule', icon: Calendar, label: 'Schedule' },
-    { to: '/maps', icon: Map, label: 'Venue' },
-    { to: '/forums', icon: Mic, label: 'Forums' },
+    { to: "/schedule", icon: Calendar, label: "Schedule" },
+    { to: "/maps", icon: Map, label: "Venue" },
+    { to: "/forums", icon: Mic, label: "Forums" },
     //{ to: '/alerts', icon: Bell, label: 'Prizes' },
     //{ to: '/profile', icon: User, label: 'Profile' },
-    { to: '/exhibitors', icon: SquareUser , label: 'Exhibitors' },
-    { to: '/prizes', icon: Award , label: 'Prizes' },
-    { to: '/attendees', icon: User , label: 'Attendees' },
+    { to: "/exhibitors", icon: SquareUser, label: "Exhibitors" },
+    { to: "/prizes", icon: Award, label: "Prizes" },
+    { to: "/attendees", icon: User, label: "Attendees" },
   ];
 
   return (
@@ -21,9 +21,10 @@ export function Navigation() {
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-colors ${isActive
-                ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm font-medium'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium'
+              `flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                isActive
+                  ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm font-medium"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium"
               }`
             }
           >

@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 
-const STORAGE_KEY_PREFIX = 'bookmarks_';
+const STORAGE_KEY_PREFIX = "bookmarks_";
 
 function loadBookmarks(conferenceId: string): string[] {
   try {
@@ -13,15 +13,20 @@ function loadBookmarks(conferenceId: string): string[] {
 
 function saveBookmarks(conferenceId: string, bookmarks: string[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY_PREFIX + conferenceId, JSON.stringify(bookmarks));
+    localStorage.setItem(
+      STORAGE_KEY_PREFIX + conferenceId,
+      JSON.stringify(bookmarks),
+    );
   } catch {
     // silently ignore storage errors (e.g. private browsing quota)
   }
 }
 
-export function useBookmarks(conferenceId: string): [string[], (sessionId: string) => void] {
+export function useBookmarks(
+  conferenceId: string,
+): [string[], (sessionId: string) => void] {
   const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>(() =>
-    loadBookmarks(conferenceId)
+    loadBookmarks(conferenceId),
   );
 
   // Reload bookmarks whenever the active conference changes
@@ -31,15 +36,15 @@ export function useBookmarks(conferenceId: string): [string[], (sessionId: strin
 
   const toggleBookmark = useCallback(
     (sessionId: string) => {
-      setBookmarkedSessions(prev => {
+      setBookmarkedSessions((prev) => {
         const next = prev.includes(sessionId)
-          ? prev.filter(id => id !== sessionId)
+          ? prev.filter((id) => id !== sessionId)
           : [...prev, sessionId];
         saveBookmarks(conferenceId, next);
         return next;
       });
     },
-    [conferenceId]
+    [conferenceId],
   );
 
   return [bookmarkedSessions, toggleBookmark];

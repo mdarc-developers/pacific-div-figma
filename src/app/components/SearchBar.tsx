@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
-import { searchService, SearchResult } from '@/services/searchService';
-import { Session } from '@/types/conference';
-import { Button } from '@/app/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { useConference } from '@/app/contexts/ConferenceContext';
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { Search, X } from "lucide-react";
+import { searchService, SearchResult } from "@/services/searchService";
+import { Session } from "@/types/conference";
+import { Button } from "@/app/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useConference } from "@/app/contexts/ConferenceContext";
 
 interface SessionModule {
   mapSessions?: [string, Session[]];
@@ -13,14 +13,16 @@ interface SessionModule {
 
 // Import all session data files at once using Vite's glob import
 // This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
+const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
+  eager: true,
+});
 
 // Process the modules into a lookup object
 const SESSION_DATA: Record<string, Session[]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
-  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedModule = module as SessionModule;
   if (typedModule.mapSessions) {
     SESSION_DATA[conferenceId] = typedModule.mapSessions;
@@ -37,11 +39,11 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({
   onSelectSession,
   onSearch,
-  placeholderProp = 'Search forums...',
+  placeholderProp = "Search forums...",
   //placeholder="Search speakers, forums, events, exhibitors..."
-  classNameProp = '',
+  classNameProp = "",
 }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -50,7 +52,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { activeConference, allConferencesList, setActiveConference } =
+    useConference();
 
   const indexSessions = SESSION_DATA[activeConference.id] || [];
 
@@ -89,7 +92,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         //if (onSearch) onSearch(searchQuery);
       }, 300);
     },
-    [onSearch]
+    [onSearch],
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +102,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleClear = () => {
-    setQuery('');
+    setQuery("");
     setResults([]);
     setIsOpen(false);
     setSelectedIndex(-1);
@@ -107,7 +110,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleSelectResult = (session: Session) => {
-    setQuery('');
+    setQuery("");
     setResults([]);
     setIsOpen(false);
     if (onSelectSession) {
@@ -120,23 +123,23 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     if (!isOpen || results.length === 0) return;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < results.length - 1 ? prev + 1 : prev
+          prev < results.length - 1 ? prev + 1 : prev,
         );
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
         break;
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0) {
           handleSelectResult(results[selectedIndex].session);
         }
         break;
-      case 'Escape':
+      case "Escape":
         e.preventDefault();
         setIsOpen(false);
         break;
@@ -157,20 +160,22 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
     //<div className="gap-2 p-1 rounded-lg mb-2">
-    <div className={`relative w-full ${classNameProp} gap-2 p-1 rounded-lg mb-2`}>
+    <div
+      className={`relative w-full ${classNameProp} gap-2 p-1 rounded-lg mb-2`}
+    >
       <form onSubmit={(e) => e.preventDefault()} className="relative">
         <div className="relative flex items-center">
           <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
           <input
-            id='searchBarInput'
+            id="searchBarInput"
             ref={inputRef}
             type="text"
             value={query}
@@ -211,14 +216,17 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 key={result.session.id}
                 onClick={() => handleSelectResult(result.session)}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full px-4 py-3 text-left border-b border-gray-200 dark:border-gray-700 last:border-b-0 transition-colors ${index === selectedIndex
-                  ? 'bg-blue-50 dark:bg-gray-700 text-gray-900 dark:text-white'
-                  : 'hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
-                  }`}
+                className={`w-full px-4 py-3 text-left border-b border-gray-200 dark:border-gray-700 last:border-b-0 transition-colors ${
+                  index === selectedIndex
+                    ? "bg-blue-50 dark:bg-gray-700 text-gray-900 dark:text-white"
+                    : "hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+                }`}
               >
                 <div className="flex flex-col gap-1">
                   {/* Session Title */}
-                  <p className="font-semibold text-sm">{result.session.title}</p>
+                  <p className="font-semibold text-sm">
+                    {result.session.title}
+                  </p>
 
                   {/* Speaker and Badges */}
                   <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
@@ -239,11 +247,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                   {result.session.startTime && (
                     <p className="text-xs text-gray-500 dark:text-gray-500">
                       {new Date(result.session.startTime).toLocaleTimeString(
-                        'en-US',
+                        "en-US",
                         {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        },
                       )}
                     </p>
                   )}

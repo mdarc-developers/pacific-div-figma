@@ -1,7 +1,5 @@
-import { AttendeesView } from '@/app/components/AttendeesView';
+import { AttendeesView } from "@/app/components/AttendeesView";
 
 export function AttendeesPage() {
-  return (
-    <AttendeesView />
-  );
+  return <AttendeesView />;
 }

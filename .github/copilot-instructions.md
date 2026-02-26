@@ -8,19 +8,19 @@ This is a **React 18 + TypeScript + Vite** progressive web app for amateur radio
 
 ## Technology stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | React 18 (peer dep) |
-| Language | TypeScript 5.x — **strict mode** |
-| Bundler | Vite 6.x with `@vitejs/plugin-react` and `@tailwindcss/vite` |
-| Styling | Tailwind CSS 4.x — **no `tailwind.config.js`**; CSS custom-property theme in `src/styles/theme.css` |
-| UI primitives | shadcn/ui pattern — thin wrappers in `src/app/components/ui/` over Radix UI |
-| Icons | `lucide-react` |
-| Calendar | FullCalendar 6.x (`timeGridThreeDay` + `timeGridDay`) |
-| Router | `react-router-dom` 7.x with `BrowserRouter` |
-| Backend / Auth | Firebase 12.x — Auth (email+password, Google OAuth), Firestore, Storage |
-| Lint | ESLint 9 flat config + `typescript-eslint` + `eslint-plugin-react` |
-| CI / Hosting | Firebase Hosting + GitHub Actions (merge-to-main → live; PR → preview) |
+| Layer          | Technology                                                                                          |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| Runtime        | React 18 (peer dep)                                                                                 |
+| Language       | TypeScript 5.x — **strict mode**                                                                    |
+| Bundler        | Vite 6.x with `@vitejs/plugin-react` and `@tailwindcss/vite`                                        |
+| Styling        | Tailwind CSS 4.x — **no `tailwind.config.js`**; CSS custom-property theme in `src/styles/theme.css` |
+| UI primitives  | shadcn/ui pattern — thin wrappers in `src/app/components/ui/` over Radix UI                         |
+| Icons          | `lucide-react`                                                                                      |
+| Calendar       | FullCalendar 6.x (`timeGridThreeDay` + `timeGridDay`)                                               |
+| Router         | `react-router-dom` 7.x with `BrowserRouter`                                                         |
+| Backend / Auth | Firebase 12.x — Auth (email+password, Google OAuth), Firestore, Storage                             |
+| Lint           | ESLint 9 flat config + `typescript-eslint` + `eslint-plugin-react`                                  |
+| CI / Hosting   | Firebase Hosting + GitHub Actions (merge-to-main → live; PR → preview)                              |
 
 ---
 
@@ -69,7 +69,7 @@ ARCHITECTURE.md        # Full technical reference — read before making major c
 2. **Page vs View split** — every route tab has two layers:
    - `src/app/pages/<Name>Page.tsx` — owns route-level state (auth checks, bookmarks, etc.)
    - `src/app/components/<Name>View.tsx` — handles all rendering; receives props from the Page.
-   Follow this pattern when adding new tabs.
+     Follow this pattern when adding new tabs.
 3. **Unauthenticated rendering** — `AlertsPage` and `ProfilePage` do **not** use `ProtectedRoute`. They conditionally render a placeholder View or the authenticated UI directly. This is intentional.
 4. **shadcn UI components** — everything in `src/app/components/ui/` is a Radix wrapper. Do not edit these files unless fixing a confirmed bug.
 5. **Commented-out scaffolding** — blocks of commented code in `App.tsx`, `ConferenceHeader.tsx`, `ProfilePage.tsx`, etc. are intentional placeholders for planned features. Do **not** remove them.

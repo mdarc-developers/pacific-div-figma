@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 //import { Conference } from '@/types/conference';
 import { User } from "lucide-react";
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
-  return 'An unexpected error occurred';
+  return "An unexpected error occurred";
 };
 
 export function SignUpPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export function SignUpPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate("/");
     }
   }, [user, navigate]);
 
@@ -29,20 +29,20 @@ export function SignUpPage() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      return setError('Passwords do not match');
+      return setError("Passwords do not match");
     }
 
     if (password.length < 6) {
-      return setError('Password must be at least 6 characters');
+      return setError("Password must be at least 6 characters");
     }
 
     try {
-      setError('');
+      setError("");
       setLoading(true);
       await signUp(email, password);
       // Navigation handled by useEffect when user state updates
     } catch (err: unknown) {
-      setError(getErrorMessage(err) || 'Failed to create an account');
+      setError(getErrorMessage(err) || "Failed to create an account");
     } finally {
       setLoading(false);
     }
@@ -50,12 +50,12 @@ export function SignUpPage() {
 
   const handleGoogleSignUp = async () => {
     try {
-      setError('');
+      setError("");
       setLoading(true);
       await signInWithGoogle();
       // Navigation handled by useEffect when user state updates
     } catch (err: unknown) {
-      setError(getErrorMessage(err) || 'Failed to sign up with Google');
+      setError(getErrorMessage(err) || "Failed to sign up with Google");
     } finally {
       setLoading(false);
     }
@@ -67,48 +67,51 @@ export function SignUpPage() {
       <form onSubmit={handleSubmit}>
         <h2 className="text-xl font-semibold mb-2">Sign Up</h2>
         {error && <div className="error">{error}</div>}
-
-        <input type="email"
+        <input
+          type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           disabled={loading}
-        /><br />
-
-        <input type="password"
+        />
+        <br />
+        <input
+          type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           disabled={loading}
-        /><br />
-
-        <input type="password"
+        />
+        <br />
+        <input
+          type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
           disabled={loading}
-        /><br />
-
+        />
+        <br />
         <button type="submit" disabled={loading}>
-          {loading ? 'Creating Account...' : 'Sign Up'}
-        </button> |
-
+          {loading ? "Creating Account..." : "Sign Up"}
+        </button>{" "}
+        |
         <button type="button" onClick={handleGoogleSignUp} disabled={loading}>
           &nbsp;Sign up with Google
         </button>
-
         <p>
           <br />
           Already have an account?
           <Link
             to="/login"
             className="gap-2 text-blue-600 dark:text-blue-400 hover:underline"
-          >&nbsp;Log in</Link>
+          >
+            &nbsp;Log in
+          </Link>
         </p>
       </form>
     </div>
   );
-};
+}

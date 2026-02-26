@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite'
-import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
-import eslint from '@nabla/vite-plugin-eslint';
+import { defineConfig } from "vite";
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import eslint from "@nabla/vite-plugin-eslint";
 
 export default defineConfig({
   plugins: [
@@ -12,23 +12,23 @@ export default defineConfig({
     tailwindcss(),
     // Skip the ESLint plugin during test runs — its file-system watchers keep
     // the Vitest process alive after tests complete (37 dangling FILEHANDLE).
-    ...( process.env.VITEST ? [] : [eslint()] ),
+    ...(process.env.VITEST ? [] : [eslint()]),
   ],
   resolve: {
     alias: {
       // Alias @ to the src directory
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {
     chunkSizeWarningLimit: 1600,
   },
   test: {
-    environment: 'jsdom',
+    environment: "jsdom",
     globals: true,
     css: false,
-    setupFiles: ['./src/test-setup.ts'],
+    setupFiles: ["./src/test-setup.ts"],
     // Exclude Playwright e2e specs — they use a different test runner
-    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
+    exclude: ["**/node_modules/**", "**/dist/**", "e2e/**"],
   },
-})
+});

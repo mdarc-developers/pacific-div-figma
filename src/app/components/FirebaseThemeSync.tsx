@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
-import { useTheme } from '@/app/contexts/ThemeContext';
-import { getUserTheme, setUserTheme } from '@/services/userSettingsService';
+import { useEffect, useRef } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useTheme } from "@/app/contexts/ThemeContext";
+import { getUserTheme, setUserTheme } from "@/services/userSettingsService";
 
 /**
  * Headless sync component.
@@ -41,7 +41,9 @@ export function FirebaseThemeSync() {
         if (!cancelled) loadedForUidRef.current = uidToLoad;
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [user, setTheme]);
 
   // Save theme to Firestore whenever it changes (only after the initial load).

@@ -38,7 +38,7 @@ export interface Booth {
   id: number;
   coords: [number, number][];
   locationZone: string;
-};
+}
 
 export interface Exhibitor {
   id: string;
@@ -56,7 +56,7 @@ export interface Room {
   name: string;
   coords: [number, number][];
   color: string;
-};
+}
 
 export interface Session {
   id: string;
@@ -122,4 +122,3 @@ export interface Message {
   boardId?: string; // for public board messages
   votes?: number;
 }
-

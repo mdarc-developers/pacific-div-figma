@@ -1,26 +1,26 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { SearchBar } from '@/app/components/SearchBar';
-import { Navigation } from '@/app/components/Navigation';
-import { FirebaseThemeSync } from '@/app/components/FirebaseThemeSync';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { SearchBar } from "@/app/components/SearchBar";
+import { Navigation } from "@/app/components/Navigation";
+import { FirebaseThemeSync } from "@/app/components/FirebaseThemeSync";
 //import { useState } from 'react';
 //import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 //import { Calendar, Map, User, Bell } from 'lucide-react';
 //import { ScheduleView } from '@/app/components/ScheduleView';
 //import { MapsView } from '@/app/components/MapsView';
-import { ConferenceHeader } from '@/app/components/ConferenceHeader';
-import { ConferenceFooter } from '@/app/components/ConferenceFooter';
-import { MapsPage } from '@/app/pages/MapsPage';
-import { PrizesPage } from '@/app/pages/PrizesPage';
-import { AttendeesPage } from '@/app/pages/AttendeesPage';
-import { ExhibitorsPage } from '@/app/pages/ExhibitorsPage';
-import { SchedulePage } from '@/app/pages/SchedulePage';
-import { ForumsPage } from '@/app/pages/ForumsPage';
-import { AlertsPage } from '@/app/pages/AlertsPage';
-import { ProfilePage } from '@/app/pages/ProfilePage';
-import { LoginPage } from '@/app/pages/LoginPage';
-import { SignUpPage } from '@/app/pages/SignUpPage';
-import { SearchPage } from '@/app/pages/SearchPage';
+import { ConferenceHeader } from "@/app/components/ConferenceHeader";
+import { ConferenceFooter } from "@/app/components/ConferenceFooter";
+import { MapsPage } from "@/app/pages/MapsPage";
+import { PrizesPage } from "@/app/pages/PrizesPage";
+import { AttendeesPage } from "@/app/pages/AttendeesPage";
+import { ExhibitorsPage } from "@/app/pages/ExhibitorsPage";
+import { SchedulePage } from "@/app/pages/SchedulePage";
+import { ForumsPage } from "@/app/pages/ForumsPage";
+import { AlertsPage } from "@/app/pages/AlertsPage";
+import { ProfilePage } from "@/app/pages/ProfilePage";
+import { LoginPage } from "@/app/pages/LoginPage";
+import { SignUpPage } from "@/app/pages/SignUpPage";
+import { SearchPage } from "@/app/pages/SearchPage";
 
 export default function App() {
   return (
@@ -49,7 +49,6 @@ export default function App() {
         </Routes>
 
         <ConferenceFooter />
-
       </div>
     </div>
   );

@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import { User } from "lucide-react";
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
-  return 'An unexpected error occurred';
+  return "An unexpected error occurred";
 };
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
@@ -19,19 +19,19 @@ export const LoginPage = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate('/profile');
+      navigate("/profile");
     }
   }, [user, navigate]);
 
   const handleSignInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      setError('');
-      setLoading(true)
+      setError("");
+      setLoading(true);
       await signIn(email, password);
       // Navigation handled by useEffect when user state updates
     } catch (err) {
-      setError(getErrorMessage(err) || 'Failed to sign in');
+      setError(getErrorMessage(err) || "Failed to sign in");
     } finally {
       setLoading(false);
     }
@@ -39,12 +39,12 @@ export const LoginPage = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      setError('');
-      setLoading(true)
+      setError("");
+      setLoading(true);
       await signInWithGoogle();
       // Navigation handled by useEffect when user state updates
     } catch (err) {
-      setError(getErrorMessage(err) || 'Failed to sign in with Google');
+      setError(getErrorMessage(err) || "Failed to sign in with Google");
     } finally {
       setLoading(false);
     }
@@ -82,21 +82,32 @@ export const LoginPage = () => {
           required
           disabled={loading}
         />
-        <button type="submit"
+        <button
+          type="submit"
           className="gap-2 text-blue-600 dark:text-blue-400 hover:underline"
           disabled={loading}
-        >{loading ? 'Signing In...' : 'Sign In'}</button> |
-        <button type="button"
+        >
+          {loading ? "Signing In..." : "Sign In"}
+        </button>{" "}
+        |
+        <button
+          type="button"
           onClick={handleGoogleSignIn}
           className="gap-2 text-blue-600 dark:text-blue-400 hover:underline"
           disabled={loading}
-        >&nbsp;Sign in with Google
-        </button><br /><br />
+        >
+          &nbsp;Sign in with Google
+        </button>
+        <br />
+        <br />
       </form>
-      First time? <a
+      First time?{" "}
+      <a
         href="/signup"
         className="gap-2 text-blue-600 dark:text-blue-400 hover:underline"
-      >sign up now</a>
+      >
+        sign up now
+      </a>
     </div>
   );
 };

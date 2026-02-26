@@ -1,9 +1,14 @@
-import { useRef, useEffect, useState } from 'react';
-import { Card, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { ExternalLink, Send, User } from 'lucide-react';
-import { UserProfile } from '@/types/conference';
-import { useConference } from '@/app/contexts/ConferenceContext';
+import { useRef, useEffect, useState } from "react";
+import { Card, CardHeader, CardTitle } from "@/app/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/components/ui/tabs";
+import { ExternalLink, Send, User } from "lucide-react";
+import { UserProfile } from "@/types/conference";
+import { useConference } from "@/app/contexts/ConferenceContext";
 
 interface AttendeeCardProps {
   attendee: UserProfile;
@@ -16,7 +21,10 @@ function AttendeeCard({ attendee, isHighlighted }: AttendeeCardProps) {
 
   useEffect(() => {
     if (isHighlighted && attendeeRef.current) {
-      attendeeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      attendeeRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   }, [isHighlighted]);
 
@@ -29,11 +37,12 @@ function AttendeeCard({ attendee, isHighlighted }: AttendeeCardProps) {
           rel="noopener noreferrer"
           target="_blank"
         >
-          {call}&nbsp;<ExternalLink className="flex h-4 w-4" />
+          {call}&nbsp;
+          <ExternalLink className="flex h-4 w-4" />
         </a>
       );
     } else {
-      return ('');
+      return "";
     }
   }
 
@@ -42,24 +51,24 @@ function AttendeeCard({ attendee, isHighlighted }: AttendeeCardProps) {
       <div
         ref={attendeeRef}
         id={`attendee-${attendee.uid}`}
-        className={`mb-4 transition-all w-full ${isHighlighted
-          ? 'ring-2 ring-blue-500 shadow-lg scale-105'
-          : ''
-          }`}
+        className={`mb-4 transition-all w-full ${
+          isHighlighted ? "ring-2 ring-blue-500 shadow-lg scale-105" : ""
+        }`}
       >
-        <Card className={`transition-all w-full  ${isHighlighted ? 'ring-2 ring-blue-500 shadow-lg scale-105' : ''}`}>
+        <Card
+          className={`transition-all w-full  ${isHighlighted ? "ring-2 ring-blue-500 shadow-lg scale-105" : ""}`}
+        >
           <CardHeader>
             <div className="flex space-y-2 gap-2 justify-between items-start">
               <User className="h-4 w-4" />
               <CardTitle className="flex text-lg mb-2 w-full gap-2 space-y-2">
                 {attendee.displayName}&nbsp;&nbsp;
                 {displayCallsign(attendee.callsign)}
-
-
               </CardTitle>
               <span className="float-right items-center space-y-2 gap-2 text-gray-700 dark:text-gray-300">
                 <a href={`mailto:${attendee.email}`} className="flex">
-                  email&nbsp;<Send className="flex h-4 w-4" />
+                  email&nbsp;
+                  <Send className="flex h-4 w-4" />
                 </a>
               </span>
             </div>
@@ -75,7 +84,7 @@ function AttendeeCard({ attendee, isHighlighted }: AttendeeCardProps) {
     //  </div>
     //</CardContent>
   } else {
-    return '';
+    return "";
   }
 }
 
@@ -85,12 +94,14 @@ interface AttendeeModule {
 }
 
 // Import all attendee data files at once using Vite's glob import
-const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
+const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
+  eager: true,
+});
 
 // Process the modules into a lookup object
 const ATTENDEE_DATA: Record<string, UserProfile[]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
-  const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
+  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedModule = module as AttendeeModule;
   if (typedModule.sampleAttendees) {
     ATTENDEE_DATA[conferenceId] = typedModule.sampleAttendees;
@@ -101,12 +112,12 @@ interface AttendeesViewProps {
   highlightAttendeeId?: string;
 }
 
-export function AttendeesView({
-  highlightAttendeeId }: AttendeesViewProps) {
+export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { activeConference, allConferencesList, setActiveConference } = useConference();
+  const { activeConference, allConferencesList, setActiveConference } =
+    useConference();
   const attendees = ATTENDEE_DATA[activeConference.id] || [];
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Group attendees by category
   //const groupAttendeesByCategory = (attendee: UserProfile[]) => {
@@ -139,19 +150,22 @@ export function AttendeesView({
 
   return (
     <div className="w-full">
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+      <Tabs
+        value={selectedCategory}
+        onValueChange={setSelectedCategory}
+        className="w-full"
+      >
         <TabsList className="hidden w-full mb-6 flex-wrap h-auto">
           <TabsTrigger value="all">Attendees</TabsTrigger>
         </TabsList>
         <TabsContent value="all">
-          {attendees
-            .map(attendee => (
-              <AttendeeCard
-                key={attendee.uid}
-                attendee={attendee}
-                isHighlighted={highlightAttendeeId === attendee.uid}
-              />
-            ))}
+          {attendees.map((attendee) => (
+            <AttendeeCard
+              key={attendee.uid}
+              attendee={attendee}
+              isHighlighted={highlightAttendeeId === attendee.uid}
+            />
+          ))}
         </TabsContent>
       </Tabs>
     </div>
