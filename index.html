@@ -42,6 +42,11 @@
           U+2212, U+2215, U+FEFF, U+FFFD;
       }
     </style>
+    <!-- Firebase Hosting SDK auto-configuration.
+         When served from Firebase Hosting this script sets window.__FIREBASE_DEFAULTS__
+         so firebase.ts can read the project config at runtime without baked-in secrets.
+         The onerror handler suppresses the expected 404 during local development. -->
+    <script src="/__/firebase/init.js" onerror="console.debug('Firebase auto-config unavailable (local dev) – falling back to env vars.')"></script>
   </head>
   <body>
     <div id="root"></div>
