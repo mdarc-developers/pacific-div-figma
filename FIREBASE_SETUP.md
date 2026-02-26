@@ -35,8 +35,39 @@ This application uses Firebase for backend services. Follow these steps to confi
 
 1. In Project Overview, click the web icon (</>) to add a web app
 2. Register your app with a nickname
-3. Copy the `firebaseConfig` object
-4. Paste it into `/src/lib/firebase.ts`, replacing the placeholder values
+3. Copy the `firebaseConfig` object — you'll need the six values below
+
+### Local development
+
+Copy `.env.example` to `.env` and fill in the six values from your Firebase config:
+
+```
+VITE_FIREBASE_API_KEY=AIza...
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project
+VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:abc123
+```
+
+Never commit `.env` — it is already listed in `.gitignore`.
+
+### GitHub Actions (CI/CD)
+
+The build step reads the same six variables from repository secrets so that
+the production and PR-preview bundles contain the correct Firebase config.
+
+1. In your GitHub repository go to **Settings → Secrets and variables → Actions**
+2. Add each of the following **Repository secrets** with its value from the Firebase Console:
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+
+Without these secrets the CI build will abort with a clear error message before
+Firebase is initialized, instead of producing a silent white-screen failure.
 
 ## 4. Set Up Firestore Collections
 
