@@ -24,9 +24,10 @@ export default defineConfig({
     ...(process.env.VITEST ? [] : [eslint()]),
   ],
   define: {
-    // Bake the current git commit SHA into the bundle at build time.
-    // Works for both local and CI builds without any extra env vars.
+    // Bake the current git commit SHA and build timestamp into the bundle at
+    // build time. Works for both local and CI builds without any extra env vars.
     "import.meta.env.VITE_GIT_SHA": JSON.stringify(getGitSha()),
+    "import.meta.env.VITE_BUILD_DATE": JSON.stringify(new Date().toISOString()),
   },
   resolve: {
     alias: {
