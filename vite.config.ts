@@ -29,10 +29,10 @@ export default defineConfig({
     "import.meta.env.VITE_GIT_SHA": JSON.stringify(getGitSha()),
     "import.meta.env.VITE_BUILD_DATE": JSON.stringify(new Date().toISOString()),
     "import.meta.env.VITE_BUILD_SOURCE": JSON.stringify(
-      process.env.VITE_BUILD_SOURCE ?? "local"
+      process.env.VITE_BUILD_SOURCE ?? "local",
     ),
     "import.meta.env.VITE_BUILD_RUN_ID": JSON.stringify(
-      process.env.VITE_BUILD_RUN_ID ?? ""
+      process.env.VITE_BUILD_RUN_ID ?? "",
     ),
   },
   resolve: {

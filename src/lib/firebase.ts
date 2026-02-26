@@ -21,7 +21,9 @@ declare global {
 
 // Auto-configuration provided by Firebase Hosting at runtime.
 const autoConfig =
-  typeof window !== "undefined" ? window.__FIREBASE_DEFAULTS__?.config : undefined;
+  typeof window !== "undefined"
+    ? window.__FIREBASE_DEFAULTS__?.config
+    : undefined;
 
 // Env-var configuration used for local development (see .env.example).
 const envConfig = {
@@ -52,7 +54,7 @@ if (!autoConfig) {
   if (missingVars.length > 0) {
     throw new Error(
       `Missing Firebase configuration. Ensure the following environment variables are set: ${missingVars.join(", ")}. ` +
-        "See .env.example and FIREBASE_SETUP.md for instructions."
+        "See .env.example and FIREBASE_SETUP.md for instructions.",
     );
   }
 }

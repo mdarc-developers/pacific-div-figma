@@ -59,7 +59,9 @@
           req.open("GET", "/__/firebase/init.json", false /* synchronous */);
           req.send(null);
           if (req.status === 200) {
-            window.__FIREBASE_DEFAULTS__ = { config: JSON.parse(req.responseText) };
+            window.__FIREBASE_DEFAULTS__ = {
+              config: JSON.parse(req.responseText),
+            };
           }
         } catch (_) {
           // Local dev or non-Hosting environment — firebase.ts falls back to env vars.

@@ -5,24 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hamvention Forum Schedule Extractor</title>
     <style>
-      body { font-family: monospace; padding: 20px; max-width: 1200px; margin: 0 auto; }
-      #controls { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-      label { font-weight: bold; }
-      input[type="text"] { padding: 6px 10px; font-family: monospace; width: 300px; border: 1px solid #ccc; }
-      button { padding: 8px 18px; cursor: pointer; }
-      #output { background: #f5f5f5; padding: 15px; border: 1px solid #ddd; white-space: pre-wrap; font-size: 12px; max-height: 600px; overflow-y: auto; }
-      .stats { background: #e8f4f8; padding: 10px; margin-bottom: 15px; border-left: 4px solid #0066cc; }
-      .error { background: #fde8e8; border-left: 4px solid #cc0000; }
+      body {
+        font-family: monospace;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+      label {
+        font-weight: bold;
+      }
+      input[type="text"] {
+        padding: 6px 10px;
+        font-family: monospace;
+        width: 300px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 8px 18px;
+        cursor: pointer;
+      }
+      #output {
+        background: #f5f5f5;
+        padding: 15px;
+        border: 1px solid #ddd;
+        white-space: pre-wrap;
+        font-size: 12px;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+      .stats {
+        background: #e8f4f8;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-left: 4px solid #0066cc;
+      }
+      .error {
+        background: #fde8e8;
+        border-left: 4px solid #cc0000;
+      }
     </style>
   </head>
   <body>
     <h1>Hamvention Forum Schedule Extractor v.8</h1>
-    <p>Load the Hamvention forum schedule <code>.pdf</code> to generate TypeScript <code>mapSessions</code> data.</p>
+    <p>
+      Load the Hamvention forum schedule <code>.pdf</code> to generate
+      TypeScript <code>mapSessions</code> data.
+    </p>
     <div id="controls">
       <input type="file" id="fileInput" accept=".pdf" />
-      <label>Map image path: <input type="text" id="mapImage" value="/hamvention-map-2025.jpg" /></label>
+      <label
+        >Map image path:
+        <input type="text" id="mapImage" value="/hamvention-map-2025.jpg"
+      /></label>
       <button onclick="copyToClipboard()">Copy to Clipboard</button>
-      <button onclick="dumpRaw()" style="background:#ffe0b2">Dump Raw PDF Text</button>
+      <button onclick="dumpRaw()" style="background: #ffe0b2">
+        Dump Raw PDF Text
+      </button>
     </div>
     <div id="stats" class="stats">No file loaded yet.</div>
     <div id="output"></div>
@@ -31,20 +76,24 @@
     <script src="./pdf.min.js"></script>
     <!-- https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js -->
     <script>
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "./pdf.worker.min.js";
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "./pdf.worker.min.js";
 
       let extractedData = "";
       let rawItems = [];
 
-      document.getElementById("fileInput").addEventListener("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (!file.name.toLowerCase().endsWith(".pdf")) { alert("Please load a .pdf file."); return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => processPDF(ev.target.result);
-        reader.readAsArrayBuffer(file);
-      });
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          if (!file.name.toLowerCase().endsWith(".pdf")) {
+            alert("Please load a .pdf file.");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (ev) => processPDF(ev.target.result);
+          reader.readAsArrayBuffer(file);
+        });
 
       async function processPDF(arrayBuffer) {
         document.getElementById("stats").innerHTML = "Reading PDF...";
@@ -67,8 +116,11 @@
             }
           }
           items.sort((a, b) =>
-            a.page !== b.page ? a.page - b.page :
-            a.y !== b.y ? a.y - b.y : a.x - b.x
+            a.page !== b.page
+              ? a.page - b.page
+              : a.y !== b.y
+                ? a.y - b.y
+                : a.x - b.x,
           );
           rawItems = items;
           console.log("Total items:", items.length);
@@ -151,11 +203,11 @@
       //
       // ─────────────────────────────────────────────────────────────
       function parse(items) {
-        const dayRe  = /^(Friday|Saturday|Sunday),?\s+May\s+(\d+)/i;
+        const dayRe = /^(Friday|Saturday|Sunday),?\s+May\s+(\d+)/i;
         const roomRe = /^Room\s+(\d)$/i;
 
-        const leftItems  = items.filter(it => it.x < 90);
-        const rightItems = items.filter(it => it.x >= 90);
+        const leftItems = items.filter((it) => it.x < 90);
+        const rightItems = items.filter((it) => it.x >= 90);
 
         // --- Pass 1: day events (position-keyed) ---
         const dayEvents = [];
@@ -164,17 +216,20 @@
           if (dm) {
             dayEvents.push({
               pos: it.page * 100000 + it.y,
-              date: "2025-05-" + dm[2].padStart(2,"0"),
+              date: "2025-05-" + dm[2].padStart(2, "0"),
               dayWord: dm[1].toLowerCase(),
             });
           }
         }
-        dayEvents.sort((a,b) => a.pos - b.pos);
+        dayEvents.sort((a, b) => a.pos - b.pos);
         console.log("Day events:", dayEvents);
 
         function dateAtPos(pos) {
           let r = { date: "", dayWord: "" };
-          for (const ev of dayEvents) { if (ev.pos <= pos) r = ev; else break; }
+          for (const ev of dayEvents) {
+            if (ev.pos <= pos) r = ev;
+            else break;
+          }
           return r;
         }
 
@@ -191,14 +246,27 @@
           if (/^(TIME|ROOM|FORUM)$/i.test(str)) continue;
           const rm = str.match(roomRe);
           if (rm) {
-            leftEvents.push({ pos, page, y, type:"room", room:"Room "+rm[1] });
+            leftEvents.push({
+              pos,
+              page,
+              y,
+              type: "room",
+              room: "Room " + rm[1],
+            });
             continue;
           }
           timeBuf.push(str);
-          const joined = timeBuf.join(" ").replace(/\s+/g," ").trim();
-          const m = joined.match(/(\d{1,2}:\d{2})\s*(AM|PM)\s+to\s+(\d{1,2}:\d{2})\s*(AM|PM)/i);
+          const joined = timeBuf.join(" ").replace(/\s+/g, " ").trim();
+          const m = joined.match(
+            /(\d{1,2}:\d{2})\s*(AM|PM)\s+to\s+(\d{1,2}:\d{2})\s*(AM|PM)/i,
+          );
           if (m) {
-            leftEvents.push({ pos, type:"time", start: m[1]+" "+m[2], end: m[3]+" "+m[4] });
+            leftEvents.push({
+              pos,
+              type: "time",
+              start: m[1] + " " + m[2],
+              end: m[3] + " " + m[4],
+            });
             timeBuf = [];
           }
         }
@@ -210,36 +278,39 @@
         // time token (same-y sort order issue).
         const anchors = [];
         let pendingStart = "";
-        let pendingEnd   = "";
+        let pendingEnd = "";
 
         for (let i = 0; i < leftEvents.length; i++) {
           const ev = leftEvents[i];
           if (ev.type === "time") {
             pendingStart = ev.start;
-            pendingEnd   = ev.end;
+            pendingEnd = ev.end;
           } else {
             // Room label — grab pending time, but also peek ahead a short
             // distance for a time token that might appear at same/near y
             let start = pendingStart;
-            let end   = pendingEnd;
+            let end = pendingEnd;
             if (!start) {
               // Look ahead up to 5 events for a time at similar pos
-              for (let j = i+1; j < Math.min(i+6, leftEvents.length); j++) {
+              for (let j = i + 1; j < Math.min(i + 6, leftEvents.length); j++) {
                 if (leftEvents[j].type === "time") {
                   start = leftEvents[j].start;
-                  end   = leftEvents[j].end;
+                  end = leftEvents[j].end;
                   // Consume it so it doesn't get re-used
                   pendingStart = start;
-                  pendingEnd   = end;
+                  pendingEnd = end;
                   break;
                 }
               }
             }
             const day = dateAtPos(ev.pos);
             anchors.push({
-              pos: ev.pos, page: ev.page, y: ev.y,
+              pos: ev.pos,
+              page: ev.page,
+              y: ev.y,
               room: ev.room,
-              start, end,
+              start,
+              end,
               date: day.date,
               dayWord: day.dayWord,
             });
@@ -249,9 +320,13 @@
         // Resolve startTime/endTime strings → ISO datetime
         for (const a of anchors) {
           a.startTime = buildDT(a.date, a.start);
-          a.endTime   = buildDT(a.date, a.end);
+          a.endTime = buildDT(a.date, a.end);
         }
-        console.log("Anchors:", anchors.length, anchors.map(a=>a.room+" "+a.startTime));
+        console.log(
+          "Anchors:",
+          anchors.length,
+          anchors.map((a) => a.room + " " + a.startTime),
+        );
 
         // --- Pass 3: assign content lines to anchors BY ROOM ---
         // Key insight: use room-specific assignment. For each content item,
@@ -280,12 +355,12 @@
         for (const room of Object.keys(anchorsByRoom)) {
           const list = anchorsByRoom[room];
           for (let i = 0; i < list.length; i++) {
-            list[i].endPos = i+1 < list.length ? list[i+1].pos : Infinity;
+            list[i].endPos = i + 1 < list.length ? list[i + 1].pos : Infinity;
           }
         }
 
         // Content items (x >= 128, skip day headers, page numbers, etc.)
-        const contentItems = rightItems.filter(it => {
+        const contentItems = rightItems.filter((it) => {
           if (it.x < 128) return false;
           if (it.str.match(dayRe)) return false;
           if (/^(TIME|ROOM|FORUM)$/i.test(it.str)) return false;
@@ -300,7 +375,7 @@
 
         // Build a flat list of all anchors with their [pos, endPos) ranges,
         // sorted by pos for binary search.
-        const allAnchors = anchors.slice().sort((a,b) => a.pos - b.pos);
+        const allAnchors = anchors.slice().sort((a, b) => a.pos - b.pos);
 
         // Assign each content item to an anchor
         const groups = new Map(); // anchorPos -> {anchor, lines[]}
@@ -325,17 +400,21 @@
           const { title, speakers, description } = parseContent(lines);
           if (!title && speakers.length === 0) continue;
           sessions.push({
-            id: createId(anchor.dayWord, title || (speakers[0]||"")),
+            id: createId(anchor.dayWord, title || speakers[0] || ""),
             title,
             description,
             speaker: speakers,
             location: anchor.room,
             startTime: anchor.startTime,
-            endTime:   anchor.endTime,
+            endTime: anchor.endTime,
             category: "Forums",
           });
         }
-        sessions.sort((a,b) => a.startTime.localeCompare(b.startTime) || a.location.localeCompare(b.location));
+        sessions.sort(
+          (a, b) =>
+            a.startTime.localeCompare(b.startTime) ||
+            a.location.localeCompare(b.location),
+        );
         return sessions;
       }
 
@@ -373,7 +452,12 @@
           const words = s.trim().split(/\s+/);
           if (words.length > 8) return false; // too long
           // Role indicators
-          if (/^(ARRL|Warning|Sales|Amateur|Volunteer|Emergency|Education|Radiosport|Director|Manager|Coordinator|Meteorolog)/i.test(s)) return true;
+          if (
+            /^(ARRL|Warning|Sales|Amateur|Volunteer|Emergency|Education|Radiosport|Director|Manager|Coordinator|Meteorolog)/i.test(
+              s,
+            )
+          )
+            return true;
           // "–" or "," with no callsign and short = likely role
           if (/[–\-]/.test(s) && words.length <= 6) return true;
           return false;
@@ -382,20 +466,28 @@
         let title = "";
         const speakerRaw = []; // {name, role}
         const descParts = [];
-        let state = "title";   // "title" | "speakers" | "desc"
+        let state = "title"; // "title" | "speakers" | "desc"
         let speakerLabelSeen = false;
         let awaitingName = false;
 
         for (const line of lines) {
           // Bare label
           if (/^(Moderators?|Speakers?|Participants?):\s*$/i.test(line)) {
-            speakerLabelSeen = true; state = "speakers"; awaitingName = true; continue;
+            speakerLabelSeen = true;
+            state = "speakers";
+            awaitingName = true;
+            continue;
           }
           // Label + inline content
-          const lm = line.match(/^(Moderators?|Speakers?|Participants?):\s*(.+)/i);
+          const lm = line.match(
+            /^(Moderators?|Speakers?|Participants?):\s*(.+)/i,
+          );
           if (lm) {
-            speakerLabelSeen = true; state = "speakers"; awaitingName = false;
-            extractSpeakersRaw(lm[2], speakerRaw); continue;
+            speakerLabelSeen = true;
+            state = "speakers";
+            awaitingName = false;
+            extractSpeakersRaw(lm[2], speakerRaw);
+            continue;
           }
           // Line right after bare label — only accept as speaker if short
           if (awaitingName) {
@@ -403,7 +495,8 @@
             if (isShortEnoughForSpeaker(line)) {
               extractSpeakersRaw(line, speakerRaw);
             } else {
-              state = "desc"; descParts.push(line);
+              state = "desc";
+              descParts.push(line);
             }
             continue;
           }
@@ -414,7 +507,8 @@
             // and a title already exists
             const words = line.trim().split(/\s+/).length;
             if (!callRe.test(line) && words > 12 && title) {
-              state = "desc"; descParts.push(line);
+              state = "desc";
+              descParts.push(line);
             } else {
               title = title ? title + " " + line : line;
             }
@@ -430,7 +524,8 @@
                 extractSpeakersRaw(line, speakerRaw);
               }
             } else {
-              state = "desc"; descParts.push(line);
+              state = "desc";
+              descParts.push(line);
             }
             continue;
           }
@@ -449,7 +544,11 @@
         }
 
         const cleanedSpeakers = cleanSpeakers(speakers);
-        return { title: title.trim(), speakers: cleanedSpeakers, description: descParts.join(" ").trim() };
+        return {
+          title: title.trim(),
+          speakers: cleanedSpeakers,
+          description: descParts.join(" ").trim(),
+        };
       }
 
       // Like extractSpeakers but pushes {name, role:""} objects
@@ -463,7 +562,8 @@
       function cleanSpeakers(raw) {
         const callRe = /\b[A-Z]{1,2}[0-9][A-Z]{1,3}\b/;
         // Entries that are purely role/org text with no callsign and match noise patterns
-        const noiseRe = /^(ARRL\s[\w\s]+|Radiosport|Manager|Administrator|Advisor|Learning|Division|Initiative|Sales\s+Manager|Amateur\s+Radio\s+Sales|Warning\s+Coordination\s+Meteorologist|Meteorologi[a-z]+|ARRL\s+Director[\w\s–-]*)$/i;
+        const noiseRe =
+          /^(ARRL\s[\w\s]+|Radiosport|Manager|Administrator|Advisor|Learning|Division|Initiative|Sales\s+Manager|Amateur\s+Radio\s+Sales|Warning\s+Coordination\s+Meteorologist|Meteorologi[a-z]+|ARRL\s+Director[\w\s–-]*)$/i;
 
         const out = [];
         for (let i = 0; i < raw.length; i++) {
@@ -471,10 +571,15 @@
           if (!s) continue;
 
           // Fix "and Jim" followed by "Reed, N4BFR"
-          if (/^and\s+\w+$/i.test(s) && i+1 < raw.length && callRe.test(raw[i+1])) {
+          if (
+            /^and\s+\w+$/i.test(s) &&
+            i + 1 < raw.length &&
+            callRe.test(raw[i + 1])
+          ) {
             const firstName = s.replace(/^and\s+/i, "");
-            out.push(firstName + " " + raw[i+1].trim().replace(/,\s*$/, ""));
-            i++; continue;
+            out.push(firstName + " " + raw[i + 1].trim().replace(/,\s*$/, ""));
+            i++;
+            continue;
           }
 
           // Drop pure noise (no callsign + matches noise pattern)
@@ -491,25 +596,30 @@
 
       // Split a speaker string into individual "Name, CALL" entries.
       function extractSpeakers(str, out) {
-        const bareCallRe   = /^[A-Z]{1,2}[0-9][A-Z]{1,3}$/;
+        const bareCallRe = /^[A-Z]{1,2}[0-9][A-Z]{1,3}$/;
         const inlineCallRe = /\b([A-Z]{1,2}[0-9][A-Z]{1,3})\b/;
 
-        const parts = str.split(/,\s+(?=[A-Z\d])|\s+and\s+|\s*;\s*/i)
-                         .map(t => t.trim()).filter(Boolean);
+        const parts = str
+          .split(/,\s+(?=[A-Z\d])|\s+and\s+|\s*;\s*/i)
+          .map((t) => t.trim())
+          .filter(Boolean);
         let pending = "";
         for (const part of parts) {
           if (bareCallRe.test(part)) {
             out.push(pending ? `${pending}, ${part}` : part);
             pending = "";
           } else if (inlineCallRe.test(part)) {
-            const m = part.match(/^(.*?)[,\s]+([A-Z]{1,2}[0-9][A-Z]{1,3})\s*(.*)$/);
+            const m = part.match(
+              /^(.*?)[,\s]+([A-Z]{1,2}[0-9][A-Z]{1,3})\s*(.*)$/,
+            );
             if (m) {
               const name = (pending ? pending + " " : "") + m[1].trim();
               out.push(name ? `${name}, ${m[2]}` : m[2]);
               pending = m[3].trim();
             } else {
               if (pending) out.push(pending);
-              out.push(part); pending = "";
+              out.push(part);
+              pending = "";
             }
           } else {
             if (pending) out.push(pending);
@@ -529,29 +639,42 @@
         const ap = m[3].toUpperCase();
         if (ap === "AM" && h === 12) h = 0;
         else if (ap === "PM" && h !== 12) h += 12;
-        return `${dateStr}T${String(h).padStart(2,"0")}:${String(min).padStart(2,"0")}:00`;
+        return `${dateStr}T${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}:00`;
       }
 
       function escStr(s) {
-        return (s||"").replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/[\r\n]/g," ");
+        return (s || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"')
+          .replace(/[\r\n]/g, " ");
       }
       function createId(day, title) {
-        return ((day||"")+"-"+(title||"")).toLowerCase()
-          .replace(/[^a-z0-9\s-]/g,"").replace(/\s+/g,"-")
-          .replace(/-+/g,"-").substring(0,50).replace(/-$/,"");
+        return ((day || "") + "-" + (title || ""))
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .substring(0, 50)
+          .replace(/-$/, "");
       }
 
       function renderOutput(sessions) {
-        const mapImg = document.getElementById("mapImage").value.trim() || "/hamvention-map-2025.jpg";
+        const mapImg =
+          document.getElementById("mapImage").value.trim() ||
+          "/hamvention-map-2025.jpg";
         let out = "// Extracted forum schedule for Hamvention\n//\n";
-        out += "//export interface Session {\n//  id: string;\n//  title: string;\n";
-        out += "//  description: string;\n//  speaker: string[];\n//  location: string;\n";
-        out += "//  startTime: string; // local date-time for conference timezone\n";
-        out += "//  endTime: string;   // local date-time for conference timezone\n";
+        out +=
+          "//export interface Session {\n//  id: string;\n//  title: string;\n";
+        out +=
+          "//  description: string;\n//  speaker: string[];\n//  location: string;\n";
+        out +=
+          "//  startTime: string; // local date-time for conference timezone\n";
+        out +=
+          "//  endTime: string;   // local date-time for conference timezone\n";
         out += "//  category: string;\n//}\n\n";
         out += `export const mapSessions: [string, Session[]] = [\n  '${escStr(mapImg)}', [\n`;
         for (const s of sessions) {
-          const spk = s.speaker.map(sp=>`"${escStr(sp)}"`).join(", ");
+          const spk = s.speaker.map((sp) => `"${escStr(sp)}"`).join(", ");
           out += `  {\n    id: "${escStr(s.id)}",\n    title: "${escStr(s.title)}",\n`;
           out += `    description: "${escStr(s.description)}",\n    speaker: [${spk}],\n`;
           out += `    location: "${escStr(s.location)}",\n    startTime: "${s.startTime}",\n`;
@@ -560,16 +683,23 @@
         out += "]\n];\n";
         extractedData = out;
         document.getElementById("output").textContent = out;
-        const dates = [...new Set(sessions.map(s=>s.startTime.slice(0,10)).filter(Boolean))];
-        const withSpk = sessions.filter(s=>s.speaker.length>0).length;
+        const dates = [
+          ...new Set(
+            sessions.map((s) => s.startTime.slice(0, 10)).filter(Boolean),
+          ),
+        ];
+        const withSpk = sessions.filter((s) => s.speaker.length > 0).length;
         document.getElementById("stats").className = "stats";
         document.getElementById("stats").innerHTML =
-          `<strong>Extraction Summary:</strong><br>Total Sessions: ${sessions.length}<br>`+
+          `<strong>Extraction Summary:</strong><br>Total Sessions: ${sessions.length}<br>` +
           `Dates: ${dates.join(", ")}<br>Sessions with Speaker: ${withSpk}`;
       }
 
       function dumpRaw() {
-        if (!rawItems.length) { alert("Please load a .pdf file first!"); return; }
+        if (!rawItems.length) {
+          alert("Please load a .pdf file first!");
+          return;
+        }
         let out = "// RAW PDF TEXT ITEMS (page, x, y, text)\n\n";
         for (const it of rawItems)
           out += `p${it.page} x=${String(it.x).padStart(4)} y=${String(it.y).padStart(4)}  ${it.str}\n`;
@@ -581,10 +711,14 @@
       }
 
       function copyToClipboard() {
-        if (!extractedData) { alert("Please load a .pdf file first!"); return; }
-        navigator.clipboard.writeText(extractedData)
-          .then(()=>alert("Copied!"))
-          .catch(err=>alert("Failed: "+err));
+        if (!extractedData) {
+          alert("Please load a .pdf file first!");
+          return;
+        }
+        navigator.clipboard
+          .writeText(extractedData)
+          .then(() => alert("Copied!"))
+          .catch((err) => alert("Failed: " + err));
       }
     </script>
   </body>

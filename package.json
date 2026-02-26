@@ -77,6 +77,6 @@
     "inflight": "npm:@zkochan/inflight@^2.0.0"
   },
   "prettier": {
-    "tabwidth": 2
+    "tabWidth": 2
   }
 }
