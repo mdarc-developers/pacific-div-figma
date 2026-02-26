@@ -99,16 +99,16 @@ export interface PrizeWinner {
 export interface UserProfile {
   uid: string;
   email: string;
-  callsign?: string;
-  displayName?: string;
-  displayProfile?: string;
   darkMode: boolean;
   bookmarkedSessions: string[];
   notificationsEnabled: boolean;
   smsNotifications: boolean;
+  roles?: string[];
+  groups?: string[];
+  callsign?: string;
+  displayName?: string;
+  displayProfile?: string; // like a public QRZ text for display
   phoneNumber?: string;
-  isAdmin?: boolean;
-  adminRole?: string;
   votes?: number;
 }
 
