@@ -7,6 +7,13 @@ export function ConferenceFooter() {
   const sha = import.meta.env.VITE_GIT_SHA;
   const shortSha = sha ? sha.slice(0, 7) : null;
   const buildDate = import.meta.env.VITE_BUILD_DATE;
+  const buildSource = import.meta.env.VITE_BUILD_SOURCE;
+  const buildRunId = import.meta.env.VITE_BUILD_RUN_ID;
+  const buildTooltip = shortSha
+    ? buildSource === "gha"
+      ? `${shortSha} • gha${buildRunId ? ` #${buildRunId}` : ""}`
+      : `${shortSha} • ${buildSource}`
+    : undefined;
   const formattedDate = buildDate
     ? new Intl.DateTimeFormat("en-US", {
         year: "numeric",
@@ -35,7 +42,7 @@ export function ConferenceFooter() {
         </p>
         {formattedDate && (
           <p className="mt-2">
-            <span title={shortSha ?? undefined} className="cursor-default">
+            <span title={buildTooltip} className="cursor-default">
               Updated: {formattedDate}
             </span>
           </p>
