@@ -3,14 +3,15 @@ import { ProfileView } from "@/app/components/ProfileView";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { usePrizeAdmin } from "@/app/hooks/usePrizeAdmin";
 import {
   getAuth,
   sendEmailVerification,
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { Toaster, toast } from "sonner";
-import { MonitorCog, Moon, Sun, User } from "lucide-react";
+import { MonitorCog, Moon, ShieldCheck, Sun, User } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 
 function isTheme(value: string): value is Theme {
@@ -29,6 +30,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
+  const isPrizeAdmin = usePrizeAdmin();
   const [error, setError] = useState<string>("");
 
   if (!user) {
@@ -268,6 +270,21 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
           </label>
           <p>&lt;none yet&gt;</p>
         </div>
+
+        {isPrizeAdmin && (
+          <div className="profile-field">
+            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+              <ShieldCheck className="h-4 w-4 text-green-600" />
+              Admin
+            </label>
+            <Link
+              to="/admin/prizes"
+              className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+            >
+              Prize Management →
+            </Link>
+          </div>
+        )}
       </div>
 
       <button

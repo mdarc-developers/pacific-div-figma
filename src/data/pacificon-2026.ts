@@ -80,6 +80,22 @@ export const samplePrizeWinners: PrizeWinner[] = [
   },
 ];
 
+// Sample user profiles — groups simulate Google Cloud Groups membership.
+// prize-admin group grants access to the prize management admin page.
+export const sampleUserProfiles: UserProfile[] = [
+  {
+    uid: "prize-admin-demo",
+    email: "prizeadmin@example.com",
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: false,
+    smsNotifications: false,
+    groups: ["prize-admin"],
+    displayName: "Prize Admin",
+    callsign: "W6ADM",
+  },
+];
+
 export const mapExhibitors: [string, Exhibitor[]] = [
   "/pacificon-exhibitors-2025.png",
   // must match mapBooths URL
