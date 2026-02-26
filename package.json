@@ -75,5 +75,8 @@
     "glob": "^13.0.0",
     "rimraf": "^6.0.0",
     "inflight": "npm:@zkochan/inflight@^2.0.0"
+  },
+  "prettier": {
+    "tabwidth": 2
   }
 }

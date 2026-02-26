@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hamvention Forum Schedule Extractor</title>
+    <style>
+      body { font-family: monospace; padding: 20px; max-width: 1200px; margin: 0 auto; }
+      #controls { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+      label { font-weight: bold; }
+      input[type="text"] { padding: 6px 10px; font-family: monospace; width: 300px; border: 1px solid #ccc; }
+      button { padding: 8px 18px; cursor: pointer; }
+      #output { background: #f5f5f5; padding: 15px; border: 1px solid #ddd; white-space: pre-wrap; font-size: 12px; max-height: 600px; overflow-y: auto; }
+      .stats { background: #e8f4f8; padding: 10px; margin-bottom: 15px; border-left: 4px solid #0066cc; }
+      .error { background: #fde8e8; border-left: 4px solid #cc0000; }
+    </style>
+  </head>
+  <body>
+    <h1>Hamvention Forum Schedule Extractor v.8</h1>
+    <p>Load the Hamvention forum schedule <code>.pdf</code> to generate TypeScript <code>mapSessions</code> data.</p>
+    <div id="controls">
+      <input type="file" id="fileInput" accept=".pdf" />
+      <label>Map image path: <input type="text" id="mapImage" value="/hamvention-map-2025.jpg" /></label>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+      <button onclick="dumpRaw()" style="background:#ffe0b2">Dump Raw PDF Text</button>
+    </div>
+    <div id="stats" class="stats">No file loaded yet.</div>
+    <div id="output"></div>
+
+    <!-- https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js -->
+    <script src="./pdf.min.js"></script>
+    <!-- https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js -->
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "./pdf.worker.min.js";
+
+      let extractedData = "";
+      let rawItems = [];
+
+      document.getElementById("fileInput").addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith(".pdf")) { alert("Please load a .pdf file."); return; }
+        const reader = new FileReader();
+        reader.onload = (ev) => processPDF(ev.target.result);
+        reader.readAsArrayBuffer(file);
+      });
+
+      async function processPDF(arrayBuffer) {
+        document.getElementById("stats").innerHTML = "Reading PDF...";
+        try {
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          console.log("PDF loaded, pages:", pdf.numPages);
+          const items = [];
+          for (let p = 1; p <= pdf.numPages; p++) {
+            const page = await pdf.getPage(p);
+            const content = await page.getTextContent();
+            const h = page.getViewport({ scale: 1 }).height;
+            for (const it of content.items) {
+              if (!it.str || !it.str.trim()) continue;
+              items.push({
+                page: p,
+                x: Math.round(it.transform[4]),
+                y: Math.round(h - it.transform[5]),
+                str: it.str.trim(),
+              });
+            }
+          }
+          items.sort((a, b) =>
+            a.page !== b.page ? a.page - b.page :
+            a.y !== b.y ? a.y - b.y : a.x - b.x
+          );
+          rawItems = items;
+          console.log("Total items:", items.length);
+          const sessions = parse(items);
+          console.log("Sessions found:", sessions.length);
+          renderOutput(sessions);
+        } catch (err) {
+          document.getElementById("stats").className = "stats error";
+          document.getElementById("stats").innerHTML = "Error: " + err.message;
+          console.error(err);
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // PARSER  v.7
+      //
+      // Layout (from raw dump):
+      //   x < 90   = left column: time tokens + "Room N" labels
+      //   x >= 128 = content (title / moderator / speakers / description)
+      //   Day headers at x~188-303 in right stream
+      //
+      // Key fixes in v.7:
+      //
+      // 1. FIRST-SESSION TIME: The very first Room label on a day may appear
+      //    before its time tokens in the sorted stream (same y, lower x wins).
+      //    Fix: after building anchors, look-ahead to assign time to any
+      //    anchor that still has no time but whose content y-range overlaps
+      //    the next time block.
+      //
+      // 2. PHANTOM SPLIT SESSIONS: When the PDF lists multiple rooms under
+      //    the same time block, some Room labels appear with no new time above
+      //    them and their content interleaves with a prior anchor. These create
+      //    a second anchor with the right time (inherited) but whose content
+      //    lines were already claimed by the prior anchor's group.
+      //    Fix: after grouping, merge any anchor that has 0 content lines but
+      //    shares the same time+page neighbourhood with the prior anchor — but
+      //    actually the real fix is simpler: we detect "orphan" anchors whose
+      //    content block starts with a title/description (not a moderator label)
+      //    and whose title matches the Room label title already captured.
+      //    Even simpler: drop anchors whose content group produces no title AND
+      //    no speakers (already done). The remaining phantoms are anchors whose
+      //    ENTIRE content is description prose with no title — these should be
+      //    merged into the previous anchor for that room.
+      //
+      //    Root cause: in the PDF, "Room 2 / BalloonSat / Moderator: Bill Brown"
+      //    appears at y=738 on page 1, but the 11:10 AM time block is at y=738
+      //    too — however there is ALSO a prior "Room 2 / 9:15 AM" anchor at y=191.
+      //    The content for BalloonSat (description at y=89 on page 2) gets
+      //    assigned to the WRONG anchor (the one at p1/y=191) because that
+      //    anchor's pos is closest-but-before.
+      //    Real fix: assign content to the anchor whose room matches AND whose
+      //    position is closest-before, not just any closest-before anchor.
+      //
+      // 3. TITLE CONTINUATION ACROSS PDF LINES: Some titles span 2 PDF items
+      //    (e.g. "Collins Radio ... from the 1950s" / "to the 80s"). The "to the
+      //    80s" part has no callsign so it correctly goes into description — but
+      //    it shouldn't. Fix: if title is non-empty and no speaker label has
+      //    been seen yet, AND the next line looks like a title continuation
+      //    (short, no callsign, starts lowercase or "to"/"and"/"–"), append it.
+      //    Better fix used here: keep accumulating title lines until we see a
+      //    Moderator/Speaker label OR a callsign line OR a clearly long
+      //    description sentence (> 12 words).
+      //
+      // 4. SPEAKER NOISE: role/org fragments ("ARRL Education", "Learning",
+      //    "Radiosport", "Manager", "Administrator", "Advisor", "Sales Manager",
+      //    "and Jim") must not become speaker entries. Fix: after extractSpeakers,
+      //    filter out entries that have no callsign and are < 3 words or are
+      //    known noise tokens. Also fix "and Jim" + "Reed, N4BFR" → "Jim Reed, N4BFR".
+      //
+      // 5. HAM NATION WRONG TIME: caused by day-boundary page sharing (Saturday
+      //    header on same page as last Friday session). Fixed in v.6 with
+      //    position-based dateAtPos — but Ham Nation is the FIRST session on
+      //    Saturday (p5 y=98) and the Saturday header is also on p5 at y=67.
+      //    The anchor for Ham Nation is at p5 y=98 and the day event for
+      //    Saturday is at p5 y=67 → pos(Saturday header) < pos(Room 1 anchor) ✓
+      //    so it should work. The issue was the time "9:15 AM to 10:05 AM" at
+      //    p5 y=98-120 was parsed AFTER the Room label at y=98 (same y, x=88 <
+      //    x=128 so Room label sorts first). Fix: scan time tokens in a
+      //    lookahead window after each Room label when pendingStart is empty.
+      //
+      // ─────────────────────────────────────────────────────────────
+      function parse(items) {
+        const dayRe  = /^(Friday|Saturday|Sunday),?\s+May\s+(\d+)/i;
+        const roomRe = /^Room\s+(\d)$/i;
+
+        const leftItems  = items.filter(it => it.x < 90);
+        const rightItems = items.filter(it => it.x >= 90);
+
+        // --- Pass 1: day events (position-keyed) ---
+        const dayEvents = [];
+        for (const it of rightItems) {
+          const dm = it.str.match(dayRe);
+          if (dm) {
+            dayEvents.push({
+              pos: it.page * 100000 + it.y,
+              date: "2025-05-" + dm[2].padStart(2,"0"),
+              dayWord: dm[1].toLowerCase(),
+            });
+          }
+        }
+        dayEvents.sort((a,b) => a.pos - b.pos);
+        console.log("Day events:", dayEvents);
+
+        function dateAtPos(pos) {
+          let r = { date: "", dayWord: "" };
+          for (const ev of dayEvents) { if (ev.pos <= pos) r = ev; else break; }
+          return r;
+        }
+
+        // --- Pass 2: walk left stream, build anchors ---
+        // We also keep a full ordered list of (pos, type, value) events so we
+        // can do lookahead for time tokens that appear just after a Room label.
+        const leftEvents = []; // {pos, type:"room"|"time", ...}
+        let timeBuf = [];
+
+        for (const it of leftItems) {
+          const { page, y, str } = it;
+          const pos = page * 100000 + y;
+          if (/^\d{1,2}$/.test(str)) continue;
+          if (/^(TIME|ROOM|FORUM)$/i.test(str)) continue;
+          const rm = str.match(roomRe);
+          if (rm) {
+            leftEvents.push({ pos, page, y, type:"room", room:"Room "+rm[1] });
+            continue;
+          }
+          timeBuf.push(str);
+          const joined = timeBuf.join(" ").replace(/\s+/g," ").trim();
+          const m = joined.match(/(\d{1,2}:\d{2})\s*(AM|PM)\s+to\s+(\d{1,2}:\d{2})\s*(AM|PM)/i);
+          if (m) {
+            leftEvents.push({ pos, type:"time", start: m[1]+" "+m[2], end: m[3]+" "+m[4] });
+            timeBuf = [];
+          }
+        }
+        console.log("Left events:", leftEvents.length);
+
+        // Build anchors: walk leftEvents, carry pendingTime forward.
+        // For each Room label, assign the most recent time seen so far.
+        // Then do a forward pass to fix Room labels that appeared BEFORE their
+        // time token (same-y sort order issue).
+        const anchors = [];
+        let pendingStart = "";
+        let pendingEnd   = "";
+
+        for (let i = 0; i < leftEvents.length; i++) {
+          const ev = leftEvents[i];
+          if (ev.type === "time") {
+            pendingStart = ev.start;
+            pendingEnd   = ev.end;
+          } else {
+            // Room label — grab pending time, but also peek ahead a short
+            // distance for a time token that might appear at same/near y
+            let start = pendingStart;
+            let end   = pendingEnd;
+            if (!start) {
+              // Look ahead up to 5 events for a time at similar pos
+              for (let j = i+1; j < Math.min(i+6, leftEvents.length); j++) {
+                if (leftEvents[j].type === "time") {
+                  start = leftEvents[j].start;
+                  end   = leftEvents[j].end;
+                  // Consume it so it doesn't get re-used
+                  pendingStart = start;
+                  pendingEnd   = end;
+                  break;
+                }
+              }
+            }
+            const day = dateAtPos(ev.pos);
+            anchors.push({
+              pos: ev.pos, page: ev.page, y: ev.y,
+              room: ev.room,
+              start, end,
+              date: day.date,
+              dayWord: day.dayWord,
+            });
+          }
+        }
+
+        // Resolve startTime/endTime strings → ISO datetime
+        for (const a of anchors) {
+          a.startTime = buildDT(a.date, a.start);
+          a.endTime   = buildDT(a.date, a.end);
+        }
+        console.log("Anchors:", anchors.length, anchors.map(a=>a.room+" "+a.startTime));
+
+        // --- Pass 3: assign content lines to anchors BY ROOM ---
+        // Key insight: use room-specific assignment. For each content item,
+        // find the most recent anchor for that item's ROOM (not just any anchor).
+        // We determine the room of a content item by looking at which Room label
+        // most recently preceded it in the left stream at a nearby y position.
+        //
+        // Simpler approximation: build a per-room anchor list, then for each
+        // content item find the most recent anchor for any room whose y-range
+        // includes this item's y on this page.
+        //
+        // Actually the simplest correct approach: group anchors by room, and
+        // for each room assign content items that fall between this anchor's pos
+        // and the next anchor for the SAME room.
+
+        // Build per-room sorted anchor lists
+        const anchorsByRoom = {};
+        for (const a of anchors) {
+          if (!anchorsByRoom[a.room]) anchorsByRoom[a.room] = [];
+          anchorsByRoom[a.room].push(a);
+        }
+        // Each room's anchors are already in pos order
+
+        // For each room, compute the "end pos" of each anchor's content range
+        // = pos of next anchor for same room (or Infinity)
+        for (const room of Object.keys(anchorsByRoom)) {
+          const list = anchorsByRoom[room];
+          for (let i = 0; i < list.length; i++) {
+            list[i].endPos = i+1 < list.length ? list[i+1].pos : Infinity;
+          }
+        }
+
+        // Content items (x >= 128, skip day headers, page numbers, etc.)
+        const contentItems = rightItems.filter(it => {
+          if (it.x < 128) return false;
+          if (it.str.match(dayRe)) return false;
+          if (/^(TIME|ROOM|FORUM)$/i.test(it.str)) return false;
+          if (/^\d{1,2}$/.test(it.str) && it.x > 200) return false;
+          return true;
+        });
+
+        // We need to know which room each content item belongs to.
+        // Strategy: for each content item, check all rooms' anchor lists and
+        // find which anchor's [pos, endPos) range contains this item's pos.
+        // If multiple match (shouldn't happen often), pick the one with highest pos.
+
+        // Build a flat list of all anchors with their [pos, endPos) ranges,
+        // sorted by pos for binary search.
+        const allAnchors = anchors.slice().sort((a,b) => a.pos - b.pos);
+
+        // Assign each content item to an anchor
+        const groups = new Map(); // anchorPos -> {anchor, lines[]}
+        for (const a of allAnchors) groups.set(a.pos, { anchor: a, lines: [] });
+
+        for (const it of contentItems) {
+          const itemPos = it.page * 100000 + it.y;
+          // Find best anchor: latest anchor whose pos <= itemPos AND endPos > itemPos
+          let best = null;
+          for (const a of allAnchors) {
+            if (a.pos <= itemPos && a.endPos > itemPos) {
+              if (!best || a.pos > best.pos) best = a;
+            }
+          }
+          if (best) groups.get(best.pos).lines.push(it.str);
+        }
+
+        // --- Pass 4: build sessions from groups ---
+        const sessions = [];
+        for (const { anchor, lines } of groups.values()) {
+          if (lines.length === 0) continue;
+          const { title, speakers, description } = parseContent(lines);
+          if (!title && speakers.length === 0) continue;
+          sessions.push({
+            id: createId(anchor.dayWord, title || (speakers[0]||"")),
+            title,
+            description,
+            speaker: speakers,
+            location: anchor.room,
+            startTime: anchor.startTime,
+            endTime:   anchor.endTime,
+            category: "Forums",
+          });
+        }
+        sessions.sort((a,b) => a.startTime.localeCompare(b.startTime) || a.location.localeCompare(b.location));
+        return sessions;
+      }
+
+      // ── Content block parser ──────────────────────────────────────
+      //
+      // State machine:
+      //   "title"    - accumulating title lines
+      //   "speakers" - after a Moderator/Speaker label
+      //   "desc"     - everything after speakers
+      //
+      // Key rules:
+      // - Lines before ANY Moderator/Speaker label always go to title (even if
+      //   they contain a callsign) — this fixes "Elecraft K4D Users Group"
+      //   being parsed as a speaker instead of a title.
+      // - After a Moderator/Speaker label, lines go to speakers only if they
+      //   are SHORT (<=8 words). Long lines go to description.
+      // - A "role title" line after a speaker entry (no callsign, short,
+      //   looks like a role e.g. "ARRL Director – Great Lakes Division") gets
+      //   appended to the previous speaker entry.
+      // - Lines in awaitingName that are long prose → description, not speaker.
+      //
+      function parseContent(lines) {
+        const callRe = /\b[A-Z]{1,2}[0-9][A-Z]{1,3}\b/;
+
+        // A line qualifies as a speaker entry ONLY when in speaker state
+        // AND is short enough to be a name (not a sentence)
+        function isShortEnoughForSpeaker(s) {
+          return s.trim().split(/\s+/).length <= 10;
+        }
+
+        // Does a line look like a role/title appended to the previous speaker?
+        // e.g. "ARRL Director – Great Lakes Division", "Warning Coordination Meteorologist"
+        function isRoleTitle(s) {
+          if (callRe.test(s)) return false; // has callsign → new speaker
+          const words = s.trim().split(/\s+/);
+          if (words.length > 8) return false; // too long
+          // Role indicators
+          if (/^(ARRL|Warning|Sales|Amateur|Volunteer|Emergency|Education|Radiosport|Director|Manager|Coordinator|Meteorolog)/i.test(s)) return true;
+          // "–" or "," with no callsign and short = likely role
+          if (/[–\-]/.test(s) && words.length <= 6) return true;
+          return false;
+        }
+
+        let title = "";
+        const speakerRaw = []; // {name, role}
+        const descParts = [];
+        let state = "title";   // "title" | "speakers" | "desc"
+        let speakerLabelSeen = false;
+        let awaitingName = false;
+
+        for (const line of lines) {
+          // Bare label
+          if (/^(Moderators?|Speakers?|Participants?):\s*$/i.test(line)) {
+            speakerLabelSeen = true; state = "speakers"; awaitingName = true; continue;
+          }
+          // Label + inline content
+          const lm = line.match(/^(Moderators?|Speakers?|Participants?):\s*(.+)/i);
+          if (lm) {
+            speakerLabelSeen = true; state = "speakers"; awaitingName = false;
+            extractSpeakersRaw(lm[2], speakerRaw); continue;
+          }
+          // Line right after bare label — only accept as speaker if short
+          if (awaitingName) {
+            awaitingName = false;
+            if (isShortEnoughForSpeaker(line)) {
+              extractSpeakersRaw(line, speakerRaw);
+            } else {
+              state = "desc"; descParts.push(line);
+            }
+            continue;
+          }
+
+          if (state === "title") {
+            // Everything before first speaker label builds the title
+            // UNLESS it's a long description sentence (>12 words, no callsign)
+            // and a title already exists
+            const words = line.trim().split(/\s+/).length;
+            if (!callRe.test(line) && words > 12 && title) {
+              state = "desc"; descParts.push(line);
+            } else {
+              title = title ? title + " " + line : line;
+            }
+            continue;
+          }
+
+          if (state === "speakers") {
+            if (isShortEnoughForSpeaker(line)) {
+              // Check if this looks like a role title for the previous speaker
+              if (isRoleTitle(line) && speakerRaw.length > 0) {
+                speakerRaw[speakerRaw.length - 1].role = line;
+              } else {
+                extractSpeakersRaw(line, speakerRaw);
+              }
+            } else {
+              state = "desc"; descParts.push(line);
+            }
+            continue;
+          }
+
+          descParts.push(line);
+        }
+
+        // Build final speaker strings: "Name, CALL" optionally with role appended
+        const speakers = [];
+        for (const sp of speakerRaw) {
+          let entry = sp.name.trim().replace(/,\s*$/, "");
+          // Append role as a suffix if present, e.g. "Scott Yonally, N8SY – ARRL Director"
+          // Actually per user hint, role titles ARE part of the speaker display — skip appending
+          // and just drop role-only entries (those with no callsign in name)
+          if (entry) speakers.push(entry);
+        }
+
+        const cleanedSpeakers = cleanSpeakers(speakers);
+        return { title: title.trim(), speakers: cleanedSpeakers, description: descParts.join(" ").trim() };
+      }
+
+      // Like extractSpeakers but pushes {name, role:""} objects
+      function extractSpeakersRaw(str, out) {
+        const tmp = [];
+        extractSpeakers(str, tmp);
+        for (const name of tmp) out.push({ name, role: "" });
+      }
+
+      // Remove noise fragments from speaker list.
+      function cleanSpeakers(raw) {
+        const callRe = /\b[A-Z]{1,2}[0-9][A-Z]{1,3}\b/;
+        // Entries that are purely role/org text with no callsign and match noise patterns
+        const noiseRe = /^(ARRL\s[\w\s]+|Radiosport|Manager|Administrator|Advisor|Learning|Division|Initiative|Sales\s+Manager|Amateur\s+Radio\s+Sales|Warning\s+Coordination\s+Meteorologist|Meteorologi[a-z]+|ARRL\s+Director[\w\s–-]*)$/i;
+
+        const out = [];
+        for (let i = 0; i < raw.length; i++) {
+          const s = raw[i].trim().replace(/,\s*$/, "");
+          if (!s) continue;
+
+          // Fix "and Jim" followed by "Reed, N4BFR"
+          if (/^and\s+\w+$/i.test(s) && i+1 < raw.length && callRe.test(raw[i+1])) {
+            const firstName = s.replace(/^and\s+/i, "");
+            out.push(firstName + " " + raw[i+1].trim().replace(/,\s*$/, ""));
+            i++; continue;
+          }
+
+          // Drop pure noise (no callsign + matches noise pattern)
+          if (!callRe.test(s) && noiseRe.test(s)) continue;
+          // Drop no-callsign single words
+          if (!callRe.test(s) && s.split(/\s+/).length < 2) continue;
+          // Drop long sentences with no callsign (description leakage)
+          if (!callRe.test(s) && s.split(/\s+/).length > 9) continue;
+
+          out.push(s);
+        }
+        return out;
+      }
+
+      // Split a speaker string into individual "Name, CALL" entries.
+      function extractSpeakers(str, out) {
+        const bareCallRe   = /^[A-Z]{1,2}[0-9][A-Z]{1,3}$/;
+        const inlineCallRe = /\b([A-Z]{1,2}[0-9][A-Z]{1,3})\b/;
+
+        const parts = str.split(/,\s+(?=[A-Z\d])|\s+and\s+|\s*;\s*/i)
+                         .map(t => t.trim()).filter(Boolean);
+        let pending = "";
+        for (const part of parts) {
+          if (bareCallRe.test(part)) {
+            out.push(pending ? `${pending}, ${part}` : part);
+            pending = "";
+          } else if (inlineCallRe.test(part)) {
+            const m = part.match(/^(.*?)[,\s]+([A-Z]{1,2}[0-9][A-Z]{1,3})\s*(.*)$/);
+            if (m) {
+              const name = (pending ? pending + " " : "") + m[1].trim();
+              out.push(name ? `${name}, ${m[2]}` : m[2]);
+              pending = m[3].trim();
+            } else {
+              if (pending) out.push(pending);
+              out.push(part); pending = "";
+            }
+          } else {
+            if (pending) out.push(pending);
+            pending = part;
+          }
+        }
+        if (pending && pending.trim()) out.push(pending.trim());
+      }
+
+      // ── Time helpers ──────────────────────────────────────────────
+      function buildDT(dateStr, timeStr) {
+        if (!dateStr || !timeStr) return "";
+        const m = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!m) return "";
+        let h = parseInt(m[1]);
+        const min = parseInt(m[2]);
+        const ap = m[3].toUpperCase();
+        if (ap === "AM" && h === 12) h = 0;
+        else if (ap === "PM" && h !== 12) h += 12;
+        return `${dateStr}T${String(h).padStart(2,"0")}:${String(min).padStart(2,"0")}:00`;
+      }
+
+      function escStr(s) {
+        return (s||"").replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/[\r\n]/g," ");
+      }
+      function createId(day, title) {
+        return ((day||"")+"-"+(title||"")).toLowerCase()
+          .replace(/[^a-z0-9\s-]/g,"").replace(/\s+/g,"-")
+          .replace(/-+/g,"-").substring(0,50).replace(/-$/,"");
+      }
+
+      function renderOutput(sessions) {
+        const mapImg = document.getElementById("mapImage").value.trim() || "/hamvention-map-2025.jpg";
+        let out = "// Extracted forum schedule for Hamvention\n//\n";
+        out += "//export interface Session {\n//  id: string;\n//  title: string;\n";
+        out += "//  description: string;\n//  speaker: string[];\n//  location: string;\n";
+        out += "//  startTime: string; // local date-time for conference timezone\n";
+        out += "//  endTime: string;   // local date-time for conference timezone\n";
+        out += "//  category: string;\n//}\n\n";
+        out += `export const mapSessions: [string, Session[]] = [\n  '${escStr(mapImg)}', [\n`;
+        for (const s of sessions) {
+          const spk = s.speaker.map(sp=>`"${escStr(sp)}"`).join(", ");
+          out += `  {\n    id: "${escStr(s.id)}",\n    title: "${escStr(s.title)}",\n`;
+          out += `    description: "${escStr(s.description)}",\n    speaker: [${spk}],\n`;
+          out += `    location: "${escStr(s.location)}",\n    startTime: "${s.startTime}",\n`;
+          out += `    endTime: "${s.endTime}",\n    category: "Forums",\n  },\n`;
+        }
+        out += "]\n];\n";
+        extractedData = out;
+        document.getElementById("output").textContent = out;
+        const dates = [...new Set(sessions.map(s=>s.startTime.slice(0,10)).filter(Boolean))];
+        const withSpk = sessions.filter(s=>s.speaker.length>0).length;
+        document.getElementById("stats").className = "stats";
+        document.getElementById("stats").innerHTML =
+          `<strong>Extraction Summary:</strong><br>Total Sessions: ${sessions.length}<br>`+
+          `Dates: ${dates.join(", ")}<br>Sessions with Speaker: ${withSpk}`;
+      }
+
+      function dumpRaw() {
+        if (!rawItems.length) { alert("Please load a .pdf file first!"); return; }
+        let out = "// RAW PDF TEXT ITEMS (page, x, y, text)\n\n";
+        for (const it of rawItems)
+          out += `p${it.page} x=${String(it.x).padStart(4)} y=${String(it.y).padStart(4)}  ${it.str}\n`;
+        extractedData = out;
+        document.getElementById("output").textContent = out;
+        document.getElementById("stats").className = "stats";
+        document.getElementById("stats").innerHTML =
+          `<strong>Raw dump:</strong> ${rawItems.length} text items from PDF.`;
+      }
+
+      function copyToClipboard() {
+        if (!extractedData) { alert("Please load a .pdf file first!"); return; }
+        navigator.clipboard.writeText(extractedData)
+          .then(()=>alert("Copied!"))
+          .catch(err=>alert("Failed: "+err));
+      }
+    </script>
+  </body>
+</html>

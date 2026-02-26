@@ -22,7 +22,7 @@ The app is purpose-built for amateur radio (ham radio) ARRL Division conferences
 
 | Layer               | Technology                                                       | Notes                                                                                                                                 |
 | ------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Runtime             | React 19.x                                                       | Peer dependency; not in `dependencies` directly                                                                                       |
+| Runtime             | React 19.x, Node 24.12                                           | Peer dependencies; not in `dependencies` directly                                                                                     |
 | Language            | TypeScript 5.9                                                   | Strict mode enabled                                                                                                                   |
 | Bundler             | Vite 6.x                                                         | With `@vitejs/plugin-react` and `@tailwindcss/vite`                                                                                   |
 | Styling             | Tailwind CSS 4.1                                                 | Config-less; driven by `@tailwindcss/vite` plugin. CSS custom-property theme in `theme.css`. `tw-animate-css` for animation utilities |
