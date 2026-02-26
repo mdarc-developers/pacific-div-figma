@@ -13,11 +13,11 @@ interface SessionModule {
 
 // Import all session data files at once using Vite's glob import
 // This imports all files matching the pattern eagerly (at build time)
-const sessionModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
 
 // Process the modules into a lookup object
 const SESSION_DATA: Record<string, Session[]> = {};
-Object.entries(sessionModules).forEach(([path, module]) => {
+Object.entries(conferenceModules).forEach(([path, module]) => {
   // Extract the conference ID from the file path
   // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';

@@ -71,12 +71,12 @@ interface PrizeWinnerModule {
 }
 
 // Import all prize data files at once using Vite's glob import
-const prizeModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
 
 // Process the modules into a lookup object
 const PRIZE_DATA: Record<string, Prize[]> = {};
 const PRIZE_WINNER_DATA: Record<string, PrizeWinner[]> = {};
-Object.entries(prizeModules).forEach(([path, module]) => {
+Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as PrizeModule;
   if (typedModule.samplePrizes) {

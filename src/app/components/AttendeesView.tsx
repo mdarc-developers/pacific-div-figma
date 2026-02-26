@@ -85,11 +85,11 @@ interface AttendeeModule {
 }
 
 // Import all attendee data files at once using Vite's glob import
-const attendeeModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
 
 // Process the modules into a lookup object
 const ATTENDEE_DATA: Record<string, UserProfile[]> = {};
-Object.entries(attendeeModules).forEach(([path, module]) => {
+Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split('/').pop()?.replace('.ts', '') || '';
   const typedModule = module as AttendeeModule;
   if (typedModule.sampleAttendees) {

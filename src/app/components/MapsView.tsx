@@ -14,7 +14,7 @@ interface ConferenceModule {
 
 // Import all session data files at once using Vite's glob import
 // This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
 
 // Process the modules into a lookup object
 const MAP_DATA: Record<string, MapImage[]> = {};
