@@ -172,8 +172,10 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
     if (!isOpen) onClose();
   };
 
-  const setStr = (field: keyof Omit<PrizeWinner, "id" | "prizeId">, value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value || undefined }));
+  const setStr = (
+    field: keyof Omit<PrizeWinner, "id" | "prizeId">,
+    value: string,
+  ) => setForm((prev) => ({ ...prev, [field]: value || undefined }));
 
   const handleSave = () => {
     if (!form.winningTicket.trim()) return;
