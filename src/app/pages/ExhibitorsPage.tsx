@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { ExhibitorView } from "@/app/components/ExhibitorView";
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { MapImage, Booth, Exhibitor } from "@/types/conference";
 import L from "leaflet";
@@ -114,9 +113,11 @@ export function ExhibitorsPage() {
   //   }
   //   return [];
   // });
-  const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<
-    MapImage[]
-  >([]);
+
+  //const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<
+  //  MapImage[]
+  //>([]);
+  //console.log("no longer applicable, one mapExhibitors.url per conference. multipleExhibitorMaps: " + multipleExhibitorMaps);
 
   useEffect(() => {
     if (!mapRef.current || !exhibitorsMap) return;
@@ -177,7 +178,8 @@ export function ExhibitorsPage() {
         origWidthNum: 582,
       },
     );
-    setMultipleExhibitorMaps([]);
+    //setMultipleExhibitorMaps([]);
+
     // Multi-map branch (disabled — single-map assumption):
     // if (numEmaps === 1) {
     //   setExhibitorsMap(
