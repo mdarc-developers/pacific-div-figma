@@ -54,10 +54,16 @@ Never commit `.env` — it is already listed in `.gitignore`.
 
 ### GitHub Actions (CI/CD)
 
-The app uses **Firebase Hosting SDK auto-configuration**: when served from Firebase
-Hosting, the `/__/firebase/init.js` reserved URL automatically provides the Firebase
-project config at runtime. This means CI/CD builds no longer need the `VITE_FIREBASE_*`
-variables baked into the bundle.
+The app uses **Firebase Hosting runtime auto-configuration**: when served from Firebase
+Hosting, an inline script in `index.html` fetches `/__/firebase/init.json` (a JSON
+config endpoint provided by Firebase Hosting) synchronously before the app modules
+load. This sets `window.__FIREBASE_DEFAULTS__` so `firebase.ts` can read the project
+config at runtime without needing `VITE_FIREBASE_*` secrets baked into the build.
+
+> **Why `init.json` instead of `init.js`?** Firebase Hosting's `/__/firebase/init.js`
+> script requires the compat CDN SDK (`window.firebase`) to be present, which this app
+> does not load. Using the raw JSON endpoint (`/__/firebase/init.json`) avoids that
+> requirement entirely.
 
 The workflow files still accept these secrets as optional inputs (for PR preview
 deployments or non-Hosting environments). If you wish to set them, go to
@@ -71,7 +77,7 @@ deployments or non-Hosting environments). If you wish to set them, go to
 - `VITE_FIREBASE_APP_ID`
 
 When the secrets are absent the CI build still succeeds. On Firebase Hosting the
-config is supplied automatically at page load via `/__/firebase/init.js`.
+config is supplied automatically at page load via `/__/firebase/init.json`.
 
 ## 4. Set Up Firestore Collections
 

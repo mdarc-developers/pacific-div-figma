@@ -9,9 +9,10 @@ import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Firebase Hosting sets window.__FIREBASE_DEFAULTS__ via /__/firebase/init.js
-// (loaded in index.html). When that script is present the app reads its config
-// at runtime, so no VITE_FIREBASE_* build-time secrets are required in CI/CD.
+// Firebase Hosting sets window.__FIREBASE_DEFAULTS__ via an inline XHR that
+// fetches /__/firebase/init.json (loaded in index.html before module scripts).
+// When that config is present the app reads it at runtime, so no
+// VITE_FIREBASE_* build-time secrets are required in CI/CD.
 declare global {
   interface Window {
     __FIREBASE_DEFAULTS__?: { config?: Record<string, string> };
