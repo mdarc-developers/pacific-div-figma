@@ -90,7 +90,7 @@ interface ExhibitorModule {
 }
 
 // Import all session data files at once using Vite's glob import
-const conferenceModules = import.meta.glob('../../data/*-2026.ts', { eager: true });
+const conferenceModules = import.meta.glob('../../data/*-20[0-9][0-9].ts', { eager: true });
 
 // Process the modules into a lookup object
 const EXHIBITOR_DATA: Record<string, Exhibitor[]> = {};
@@ -109,7 +109,7 @@ export function ExhibitorView({
   const [selectedType, setSelectedType] = useState<string>('all');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } = useConference();
-  const exhibitors = EXHIBITOR_DATA[activeConference.id][1] || [];
+  const exhibitors = EXHIBITOR_DATA[activeConference.id]?.[1] ?? [];
 
   // Group exhibitors by type
   const groupExhibitorsByType = (exhibitors: Exhibitor[]) => {
