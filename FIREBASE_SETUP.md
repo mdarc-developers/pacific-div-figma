@@ -54,20 +54,24 @@ Never commit `.env` — it is already listed in `.gitignore`.
 
 ### GitHub Actions (CI/CD)
 
-The build step reads the same six variables from repository secrets so that
-the production and PR-preview bundles contain the correct Firebase config.
+The app uses **Firebase Hosting SDK auto-configuration**: when served from Firebase
+Hosting, the `/__/firebase/init.js` reserved URL automatically provides the Firebase
+project config at runtime. This means CI/CD builds no longer need the `VITE_FIREBASE_*`
+variables baked into the bundle.
 
-1. In your GitHub repository go to **Settings → Secrets and variables → Actions**
-2. Add each of the following **Repository secrets** with its value from the Firebase Console:
-   - `VITE_FIREBASE_API_KEY`
-   - `VITE_FIREBASE_AUTH_DOMAIN`
-   - `VITE_FIREBASE_PROJECT_ID`
-   - `VITE_FIREBASE_STORAGE_BUCKET`
-   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
-   - `VITE_FIREBASE_APP_ID`
+The workflow files still accept these secrets as optional inputs (for PR preview
+deployments or non-Hosting environments). If you wish to set them, go to
+**Settings → Secrets and variables → Actions** in your GitHub repository and add:
 
-Without these secrets the CI build will abort with a clear error message before
-Firebase is initialized, instead of producing a silent white-screen failure.
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+
+When the secrets are absent the CI build still succeeds. On Firebase Hosting the
+config is supplied automatically at page load via `/__/firebase/init.js`.
 
 ## 4. Set Up Firestore Collections
 
