@@ -27,8 +27,11 @@ import {
   Trash2,
   Trophy,
   Upload,
-  UserCheck } from "lucide-react";
+  UserCheck,
+} from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
+import { ref, uploadBytes, listAll, deleteObject } from "firebase/storage";
+import { storage } from "@/lib/firebase";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -39,8 +42,10 @@ function newId(prefix: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// File-download helpers
+// Cloud Storage upload helpers
 // ---------------------------------------------------------------------------
+
+const DATA_STORAGE_PATH = "data/prizes";
 
 function getDateTimeStamp(): string {
   const now = new Date();
@@ -49,35 +54,38 @@ function getDateTimeStamp(): string {
   const day = String(now.getDate()).padStart(2, "0");
   const hours = String(now.getHours()).padStart(2, "0");
   const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
-  const millis = String(now.getMilliseconds()).padStart(3, "0");
-  return `${year}${month}${day}T${hours}${minutes}${seconds}${millis}`;
+  return `${year}${month}${day}T${hours}${minutes}`;
 }
 
-function downloadTs(filename: string, content: string): void {
-  const blob = new Blob([content], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function saveToFiles(
+/** Delete all previous prize/prizewinner files for this conference, then upload the new pair. */
+async function saveToStorage(
   conferenceId: string,
   prizes: Prize[],
   winners: PrizeWinner[],
-): void {
+): Promise<void> {
+  const folderRef = ref(storage, DATA_STORAGE_PATH);
+  const existing = await listAll(folderRef);
+  const toDelete = existing.items.filter(
+    (item) =>
+      item.name.startsWith(`${conferenceId}-prize-`) ||
+      item.name.startsWith(`${conferenceId}-prizewinner-`),
+  );
+  await Promise.all(toDelete.map((item) => deleteObject(item)));
+
   const stamp = getDateTimeStamp();
-  downloadTs(
-    `${conferenceId}-prize-${stamp}.ts`,
-    `import { Prize } from "@/types/conference";\n\nexport const samplePrizes: Prize[] = ${JSON.stringify(prizes, null, 2)};\n`,
-  );
-  downloadTs(
-    `${conferenceId}-prizewinner-${stamp}.ts`,
-    `import { PrizeWinner } from "@/types/conference";\n\nexport const samplePrizeWinners: PrizeWinner[] = ${JSON.stringify(winners, null, 2)};\n`,
-  );
+  const prizeContent = `import { Prize } from "@/types/conference";\n\nexport const samplePrizes: Prize[] = ${JSON.stringify(prizes, null, 2)};\n`;
+  const winnerContent = `import { PrizeWinner } from "@/types/conference";\n\nexport const samplePrizeWinners: PrizeWinner[] = ${JSON.stringify(winners, null, 2)};\n`;
+
+  await Promise.all([
+    uploadBytes(
+      ref(storage, `${DATA_STORAGE_PATH}/${conferenceId}-prize-${stamp}.ts`),
+      new Blob([prizeContent], { type: "text/plain" }),
+    ),
+    uploadBytes(
+      ref(storage, `${DATA_STORAGE_PATH}/${conferenceId}-prizewinner-${stamp}.ts`),
+      new Blob([winnerContent], { type: "text/plain" }),
+    ),
+  ]);
 }
 
 // ---------------------------------------------------------------------------
@@ -484,18 +492,40 @@ export function PrizesAdminView({
   const deleteWinner = (id: string) =>
     setWinners((prev) => prev.filter((w) => w.id !== id));
 
+  // ----- upload state -----
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleSaveToStorage = async () => {
+    setUploading(true);
+    setUploadError(null);
+    try {
+      await saveToStorage(conferenceId, prizes, winners);
+    } catch (err) {
+      console.error("PrizesAdminView: upload failed", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setUploadError(`Upload failed: ${msg}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // ----- render -----
   return (
     <div className="space-y-10">
-      {/* ---- Save to Files ---- */}
-      <div className="flex items-center justify-end">
+      {/* ---- Save to Storage ---- */}
+      <div className="flex flex-col items-end gap-1">
         <Button
           variant="outline"
-          onClick={() => saveToFiles(conferenceId, prizes, winners)}
+          onClick={handleSaveToStorage}
+          disabled={uploading}
         >
           <Upload className="h-4 w-4" />
-          Save to web.app
+          {uploading ? "Uploading…" : "Save to web.app"}
         </Button>
+        {uploadError && (
+          <p className="text-sm text-red-500">{uploadError}</p>
+        )}
       </div>
 
       {/* ---- Prizes section ---- */}
