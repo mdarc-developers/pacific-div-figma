@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { usePrizeAdmin } from "@/app/hooks/usePrizeAdmin";
-import { PrizeAdminView } from "@/app/components/PrizeAdminView";
+import { PrizesAdminView } from "@/app/components/PrizesAdminView";
 import { Prize, PrizeWinner } from "@/types/conference";
 
 // Load sample data for all conferences (same glob as PrizesView)
@@ -90,7 +90,7 @@ export function PrizesAdminPage() {
         </code>{" "}
         group (simulating Google Cloud Groups).
       </p>
-      <PrizeAdminView initialPrizes={prizes} initialWinners={winners} />
+      <PrizesAdminView initialPrizes={prizes} initialWinners={winners} />
     </div>
   );
 }
