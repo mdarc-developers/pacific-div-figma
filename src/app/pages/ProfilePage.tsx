@@ -4,7 +4,7 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate, Link } from "react-router-dom";
-import { usePrizeAdmin } from "@/app/hooks/usePrizeAdmin";
+import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import {
   getAuth,
   sendEmailVerification,
@@ -30,7 +30,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
-  const isPrizeAdmin = usePrizeAdmin();
+  const isPrizesAdmin = usePrizesAdmin();
   const [error, setError] = useState<string>("");
 
   if (!user) {
@@ -271,7 +271,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
           <p>&lt;none yet&gt;</p>
         </div>
 
-        {isPrizeAdmin && (
+        {isPrizesAdmin && (
           <div className="profile-field">
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
               <ShieldCheck className="h-4 w-4 text-green-600" />
@@ -281,7 +281,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
               to="/admin/prizes"
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
-              Prize Management →
+              Prizes Management →
             </Link>
           </div>
         )}
