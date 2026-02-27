@@ -30,6 +30,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
+import { formatUpdateToken } from "@/app/components/PrizesView";
 import { getGoogleAccessToken, deleteDriveFile } from "@/lib/googleDrive";
 
 // ---------------------------------------------------------------------------
@@ -476,12 +477,14 @@ export interface PrizesAdminViewProps {
   conferenceId: string;
   initialPrizes: Prize[];
   initialWinners: PrizeWinner[];
+  updateToken?: string;
 }
 
 export function PrizesAdminView({
   conferenceId,
   initialPrizes,
   initialWinners,
+  updateToken,
 }: PrizesAdminViewProps) {
   // ----- prizes state -----
   const [prizes, setPrizes] = useState<Prize[]>(initialPrizes);
@@ -742,6 +745,15 @@ export function PrizesAdminView({
         onConfirm={() => winnerDelete && deleteWinner(winnerDelete.id)}
         onClose={() => setWinnerDelete(null)}
       />
+
+      {updateToken && (
+        <p
+          className="text-xs text-gray-400 mt-4"
+          title={updateToken}
+        >
+          Updated: {formatUpdateToken(updateToken)}
+        </p>
+      )}
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { PrizesAdminView } from "@/app/components/PrizesAdminView";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
-import { formatUpdateToken } from "@/app/components/PrizesView";
 import { Prize, PrizeWinner } from "@/types/conference";
 
 // Load sample data for all conferences (same glob as PrizesView)
@@ -137,7 +136,7 @@ export function PrizesAdminPage() {
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
         Use <strong>Save to drive</strong> to upload the current Prize and PrizeWinner data.
       </p>
-      <PrizesAdminView conferenceId={activeConference.id} initialPrizes={prizes} initialWinners={winners} />
+      <PrizesAdminView conferenceId={activeConference.id} initialPrizes={prizes} initialWinners={winners} updateToken={updateToken} />
 
       <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Image Library</h2>
@@ -150,14 +149,6 @@ export function PrizesAdminPage() {
         </p>
         <PrizesImageView />
       </div>
-      {updateToken && (
-        <p
-          className="text-xs text-gray-400 mt-4"
-          title={updateToken}
-        >
-          Updated: {formatUpdateToken(updateToken)}
-        </p>
-      )}
     </div>
   );
 }
