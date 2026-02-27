@@ -16,7 +16,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Award, HandHelping, Image, Info, Pencil, PlusCircle, Trash2, Trophy, UserCheck } from "lucide-react";
+import { Award, HandHelping, Image, ImageIcon, Info, Pencil, PlusCircle, Trash2, Trophy, UserCheck } from "lucide-react";
+import { PrizesImageView } from "@/app/components/PrizesImageView";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -50,6 +51,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
   const [form, setForm] = useState<Omit<Prize, "id">>(
     initial ? { ...initial } : { ...EMPTY_PRIZE },
   );
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   // Reset whenever the dialog is (re)opened
   const handleOpenChange = (isOpen: boolean) => {
@@ -67,76 +69,122 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{initial ? "Edit Prize" : "Add Prize"}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div>
-            <Label htmlFor="p-name">Name *</Label>
-            <Input
-              id="p-name"
-              value={form.name}
-              onChange={(e) => set("name", e.target.value)}
-            />
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{initial ? "Edit Prize" : "Add Prize"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label htmlFor="p-name">Name *</Label>
+              <Input
+                id="p-name"
+                value={form.name}
+                onChange={(e) => set("name", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="p-desc"><Info className="h-4 w-4" /> Description</Label>
+              <Input
+                id="p-desc"
+                value={form.description}
+                onChange={(e) => set("description", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="p-category">Category</Label>
+              <Input
+                id="p-category"
+                value={form.category}
+                onChange={(e) => set("category", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="p-donor"><HandHelping className="h-4 w-4" /> Donor</Label>
+              <Input
+                id="p-donor"
+                value={form.donor}
+                onChange={(e) => set("donor", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="p-image"><Image className="h-4 w-4" />Image</Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  id="p-image"
+                  value={form.imageUrl}
+                  onChange={(e) => set("imageUrl", e.target.value)}
+                    placeholder="https://… or select from library"
+                    className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Browse image library"
+                  onClick={() => setImagePickerOpen(true)}
+                >
+                  <ImageIcon className="h-4 w-4" />
+                </Button>
+              </div>
+              {form.imageUrl && (
+                <img
+                  src={form.imageUrl}
+                  alt="Prize preview"
+                  className="mt-2 h-20 w-auto rounded border object-contain"
+                />
+              )}
+            </div>
+            <div>
+              <Label htmlFor="p-winner">><Award className="h-4 w-4" />Winner ID (optional)</Label>
+              <Input
+                id="p-winner"
+                value={form.winner ?? ""}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    winner: e.target.value || undefined,
+                  }))
+                }
+              />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="p-desc"><Info className="h-4 w-4" /> Description</Label>
-            <Input
-              id="p-desc"
-              value={form.description}
-              onChange={(e) => set("description", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="p-category">Category</Label>
-            <Input
-              id="p-category"
-              value={form.category}
-              onChange={(e) => set("category", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="p-donor"><HandHelping className="h-4 w-4" /> Donor</Label>
-            <Input
-              id="p-donor"
-              value={form.donor}
-              onChange={(e) => set("donor", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="p-image"><Image className="h-4 w-4" /> Image URL</Label>
-            <Input
-              id="p-image"
-              value={form.imageUrl}
-              onChange={(e) => set("imageUrl", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="p-winner"><Award className="h-4 w-4" /> Winner ID (optional)</Label>
-            <Input
-              id="p-winner"
-              value={form.winner ?? ""}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  winner: e.target.value || undefined,
-                }))
-              }
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={!form.name.trim()}>
-            Save
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={!form.name.trim()}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image picker dialog */}
+      <Dialog open={imagePickerOpen} onOpenChange={setImagePickerOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Select Image</DialogTitle>
+          </DialogHeader>
+          <PrizesImageView
+            selectedUrl={form.imageUrl}
+            onSelect={(url) => {
+              set("imageUrl", url);
+              setImagePickerOpen(false);
+            }}
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setImagePickerOpen(false)}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
