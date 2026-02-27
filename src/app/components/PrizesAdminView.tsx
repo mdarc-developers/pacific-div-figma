@@ -30,8 +30,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { getGoogleAccessToken, deleteDriveFile } from "@/lib/googleDrive";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -45,12 +44,7 @@ function newId(prefix: string): string {
 // Google Drive upload helpers
 // ---------------------------------------------------------------------------
 
-const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 const DRIVE_FOLDER_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID as string | undefined;
-
-// Cache the token for the browser session; Google access tokens expire in 1 h.
-let cachedAccessToken: string | null = null;
-let tokenExpiresAt = 0;
 
 function getDateTimeStamp(): string {
   const now = new Date();
@@ -61,21 +55,6 @@ function getDateTimeStamp(): string {
   const minutes = String(now.getUTCMinutes()).padStart(2, "0");
   const seconds = String(now.getUTCSeconds()).padStart(2, "0");
   return `${year}${month}${day}T${hours}${minutes}${seconds}`;
-}
-
-/** Return a cached Drive-scoped access token, re-authenticating only when expired. */
-async function getGoogleAccessToken(): Promise<string> {
-  if (cachedAccessToken && Date.now() < tokenExpiresAt) {
-    return cachedAccessToken;
-  }
-  const provider = new GoogleAuthProvider();
-  provider.addScope(DRIVE_SCOPE);
-  const result = await signInWithPopup(auth, provider);
-  const credential = GoogleAuthProvider.credentialFromResult(result);
-  if (!credential?.accessToken) throw new Error("No Google access token returned");
-  cachedAccessToken = credential.accessToken;
-  tokenExpiresAt = Date.now() + 55 * 60 * 1000; // refresh 5 min before 1-h expiry
-  return cachedAccessToken;
 }
 
 interface DriveFile {
@@ -100,14 +79,6 @@ async function listDriveFiles(
   if (!res.ok) throw new Error(`Drive list failed: ${res.statusText}`);
   const data = await res.json() as { files?: DriveFile[] };
   return Array.isArray(data.files) ? data.files : [];
-}
-
-async function deleteDriveFile(accessToken: string, fileId: string): Promise<void> {
-  const res = await fetch(
-    `https://www.googleapis.com/drive/v3/files/${fileId}`,
-    { method: "DELETE", headers: { Authorization: `Bearer ${accessToken}` } },
-  );
-  if (!res.ok && res.status !== 404) throw new Error(`Drive delete failed: ${res.statusText}`);
 }
 
 async function uploadDriveFile(

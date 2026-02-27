@@ -1,20 +1,13 @@
-import { useState, useRef, useEffect } from "react";
-import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  listAll,
-  deleteObject,
-} from "firebase/storage";
-import { storage } from "@/lib/firebase";
+import { useState, useRef } from "react";
 import { Button } from "@/app/components/ui/button";
-import { ImageIcon, Trash2, Upload } from "lucide-react";
+import { ImageIcon, RefreshCw, Trash2, Upload } from "lucide-react";
+import { getGoogleAccessToken, deleteDriveFile } from "@/lib/googleDrive";
 
-const STORAGE_PATH = "assets/prizes";
+const DRIVE_FOLDER_PRIZES_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_PRIZES_ID as string | undefined;
 
 /** Remove path separators and non-printable chars to prevent path traversal. */
 function sanitizeFilename(name: string): string {
-  return name.replace(/[/\\]/g, "_").replace(/[^\w.\-]/g, "_");
+  return name.replace(/[/\\]/g, "_").replace(/[^\w.-]/g, "_");
 }
 
 // ---------------------------------------------------------------------------
@@ -24,7 +17,7 @@ function sanitizeFilename(name: string): string {
 export interface UploadedImage {
   name: string;
   url: string;
-  path: string;
+  path: string; // Drive file ID
 }
 
 export interface PrizesImageViewProps {
@@ -32,6 +25,68 @@ export interface PrizesImageViewProps {
   onSelect?: (url: string) => void;
   /** Highlights the currently-selected image URL. */
   selectedUrl?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Drive helpers
+// ---------------------------------------------------------------------------
+
+interface DriveImageFile {
+  id: string;
+  name: string;
+}
+
+async function listDrivePrizeImages(accessToken: string): Promise<DriveImageFile[]> {
+  if (!DRIVE_FOLDER_PRIZES_ID) throw new Error("VITE_GOOGLE_DRIVE_FOLDER_PRIZES_ID is not set");
+  const q = encodeURIComponent(`'${DRIVE_FOLDER_PRIZES_ID}' in parents and trashed = false`);
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (!res.ok) throw new Error(`Drive list failed: ${res.statusText}`);
+  const data = await res.json() as { files?: DriveImageFile[] };
+  return Array.isArray(data.files) ? data.files : [];
+}
+
+async function uploadDrivePrizeImage(
+  accessToken: string,
+  filename: string,
+  file: File,
+): Promise<string> {
+  if (!DRIVE_FOLDER_PRIZES_ID) throw new Error("VITE_GOOGLE_DRIVE_FOLDER_PRIZES_ID is not set");
+  const metadata = { name: filename, parents: [DRIVE_FOLDER_PRIZES_ID] };
+  const form = new FormData();
+  form.append(
+    "metadata",
+    new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+  );
+  form.append("file", file);
+  const uploadRes = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+    { method: "POST", headers: { Authorization: `Bearer ${accessToken}` }, body: form },
+  );
+  if (!uploadRes.ok) throw new Error(`Drive upload failed: ${uploadRes.statusText}`);
+  const data = await uploadRes.json() as { id: string };
+
+  // Make the file publicly readable so it can be used in <img> tags
+  const permRes = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${data.id}/permissions`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ role: "reader", type: "anyone" }),
+    },
+  );
+  if (!permRes.ok) throw new Error(`Drive set permissions failed: ${permRes.statusText}`);
+
+  return data.id;
+}
+
+function driveImageUrl(fileId: string): string {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
 }
 
 // ---------------------------------------------------------------------------
@@ -43,69 +98,59 @@ export function PrizesImageView({
   selectedUrl,
 }: PrizesImageViewProps) {
   const [images, setImages] = useState<UploadedImage[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadImages = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const listRef = ref(storage, STORAGE_PATH);
-      const result = await listAll(listRef);
-      const items = await Promise.all(
-        result.items.map(async (item) => ({
-          name: item.name,
-          url: await getDownloadURL(item),
-          path: item.fullPath,
+      const accessToken = await getGoogleAccessToken();
+      const files = await listDrivePrizeImages(accessToken);
+      setImages(
+        files.map((f) => ({
+          name: f.name,
+          url: driveImageUrl(f.id),
+          path: f.id,
         })),
       );
-      setImages(items);
+      setLoaded(true);
     } catch (err) {
       console.error("PrizesImageView: failed to list images", err);
-      setError("Failed to load images from storage.");
+      setError("Failed to load images from Drive.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadImages();
-  }, []);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setError(null);
     setUploading(true);
-    setUploadProgress(0);
-
     const safeName = sanitizeFilename(file.name);
-    const storageRef = ref(storage, `${STORAGE_PATH}/${safeName}`);
-    const task = uploadBytesResumable(storageRef, file);
-
-    task.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-        );
-        setUploadProgress(progress);
-      },
-      (err) => {
-        console.error("PrizesImageView: upload failed", err);
-        setError(`Upload failed: ${err.message}`);
-        setUploading(false);
-      },
-      async () => {
-        setUploading(false);
-        await loadImages();
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      },
-    );
+    try {
+      const accessToken = await getGoogleAccessToken();
+      await uploadDrivePrizeImage(accessToken, safeName, file);
+      await loadImages();
+    } catch (err) {
+      console.error("PrizesImageView: upload failed", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(`Upload failed: ${msg}`);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const handleDelete = async (img: UploadedImage) => {
     try {
-      await deleteObject(ref(storage, img.path));
+      const accessToken = await getGoogleAccessToken();
+      await deleteDriveFile(accessToken, img.path);
       setImages((prev) => prev.filter((i) => i.path !== img.path));
     } catch (err) {
       console.error(`PrizesImageView: failed to delete ${img.name}`, err);
@@ -121,11 +166,32 @@ export function PrizesImageView({
           variant="outline"
           size="sm"
           onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
+          disabled={uploading || loading}
         >
           <Upload className="h-4 w-4 mr-1" />
-          {uploading ? `Uploading… ${uploadProgress}%` : "Upload Image"}
+          {uploading ? "Uploading…" : "Upload Image"}
         </Button>
+        {!loaded ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadImages}
+            disabled={loading || uploading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? "animate-spin" : ""}`} />
+            {loading ? "Loading…" : "Load Images"}
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={loadImages}
+            disabled={loading || uploading}
+            aria-label="Refresh image list"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        )}
         <input
           ref={fileInputRef}
           type="file"
@@ -133,15 +199,14 @@ export function PrizesImageView({
           className="hidden"
           onChange={handleFileChange}
         />
-        {uploading && (
-          <span className="text-sm text-gray-500">{uploadProgress}%</span>
-        )}
       </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       {/* Image grid */}
-      {images.length === 0 ? (
+      {!loaded ? (
+        <p className="text-sm text-gray-500">Click &ldquo;Load Images&rdquo; to browse uploaded prize images.</p>
+      ) : images.length === 0 ? (
         <p className="text-sm text-gray-500">No images uploaded yet.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
