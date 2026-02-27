@@ -30,8 +30,8 @@ import {
   UserCheck,
 } from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
-import { ref, uploadBytes, listAll, deleteObject } from "firebase/storage";
-import { storage } from "@/lib/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -42,10 +42,15 @@ function newId(prefix: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Cloud Storage upload helpers
+// Google Drive upload helpers
 // ---------------------------------------------------------------------------
 
-const DATA_STORAGE_PATH = "data/prizes";
+const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+const DRIVE_FOLDER_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID as string | undefined;
+
+// Cache the token for the browser session; Google access tokens expire in 1 h.
+let cachedAccessToken: string | null = null;
+let tokenExpiresAt = 0;
 
 function getDateTimeStamp(): string {
   const now = new Date();
@@ -58,34 +63,94 @@ function getDateTimeStamp(): string {
   return `${year}${month}${day}T${hours}${minutes}${seconds}`;
 }
 
-/** Delete all previous prize/prizewinner files for this conference, then upload the new pair. */
-async function saveToStorage(
+/** Return a cached Drive-scoped access token, re-authenticating only when expired. */
+async function getGoogleAccessToken(): Promise<string> {
+  if (cachedAccessToken && Date.now() < tokenExpiresAt) {
+    return cachedAccessToken;
+  }
+  const provider = new GoogleAuthProvider();
+  provider.addScope(DRIVE_SCOPE);
+  const result = await signInWithPopup(auth, provider);
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  if (!credential?.accessToken) throw new Error("No Google access token returned");
+  cachedAccessToken = credential.accessToken;
+  tokenExpiresAt = Date.now() + 55 * 60 * 1000; // refresh 5 min before 1-h expiry
+  return cachedAccessToken;
+}
+
+interface DriveFile {
+  id: string;
+  name: string;
+}
+
+async function listDriveFiles(
+  accessToken: string,
+  conferenceId: string,
+): Promise<DriveFile[]> {
+  if (!DRIVE_FOLDER_ID) throw new Error("VITE_GOOGLE_DRIVE_FOLDER_ID is not set");
+  // Sanitize: conference IDs should only contain word chars and hyphens.
+  const safeId = conferenceId.replace(/[^a-zA-Z0-9\-_]/g, "");
+  const q = encodeURIComponent(
+    `'${DRIVE_FOLDER_ID}' in parents and (name contains '${safeId}-prize-' or name contains '${safeId}-prizewinner-') and trashed = false`,
+  );
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (!res.ok) throw new Error(`Drive list failed: ${res.statusText}`);
+  const data = await res.json() as { files?: DriveFile[] };
+  return Array.isArray(data.files) ? data.files : [];
+}
+
+async function deleteDriveFile(accessToken: string, fileId: string): Promise<void> {
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${fileId}`,
+    { method: "DELETE", headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (!res.ok && res.status !== 404) throw new Error(`Drive delete failed: ${res.statusText}`);
+}
+
+async function uploadDriveFile(
+  accessToken: string,
+  filename: string,
+  content: string,
+): Promise<void> {
+  if (!DRIVE_FOLDER_ID) throw new Error("VITE_GOOGLE_DRIVE_FOLDER_ID is not set");
+  const metadata = { name: filename, parents: [DRIVE_FOLDER_ID] };
+  const form = new FormData();
+  form.append(
+    "metadata",
+    new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+  );
+  form.append("file", new Blob([content], { type: "text/plain" }));
+  const res = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+    { method: "POST", headers: { Authorization: `Bearer ${accessToken}` }, body: form },
+  );
+  if (!res.ok) throw new Error(`Drive upload failed: ${res.statusText}`);
+}
+
+/**
+ * Delete all previous prize/prizewinner files for this conference in the
+ * designated Drive folder, then upload the new timestamped pair.
+ */
+async function saveToDrive(
   conferenceId: string,
   prizes: Prize[],
   winners: PrizeWinner[],
 ): Promise<void> {
-  const folderRef = ref(storage, DATA_STORAGE_PATH);
-  const existing = await listAll(folderRef);
-  const toDelete = existing.items.filter(
-    (item) =>
-      item.name.startsWith(`${conferenceId}-prize-`) ||
-      item.name.startsWith(`${conferenceId}-prizewinner-`),
-  );
-  await Promise.all(toDelete.map((item) => deleteObject(item)));
+  const accessToken = await getGoogleAccessToken();
+
+  const existing = await listDriveFiles(accessToken, conferenceId);
+  await Promise.all(existing.map((f) => deleteDriveFile(accessToken, f.id)));
 
   const stamp = getDateTimeStamp();
   const prizeContent = `import { Prize } from "@/types/conference";\n\nexport const samplePrizes: Prize[] = ${JSON.stringify(prizes, null, 2)};\n`;
   const winnerContent = `import { PrizeWinner } from "@/types/conference";\n\nexport const samplePrizeWinners: PrizeWinner[] = ${JSON.stringify(winners, null, 2)};\n`;
 
   await Promise.all([
-    uploadBytes(
-      ref(storage, `${DATA_STORAGE_PATH}/${conferenceId}-prize-${stamp}.ts`),
-      new Blob([prizeContent], { type: "text/plain" }),
-    ),
-    uploadBytes(
-      ref(storage, `${DATA_STORAGE_PATH}/${conferenceId}-prizewinner-${stamp}.ts`),
-      new Blob([winnerContent], { type: "text/plain" }),
-    ),
+    uploadDriveFile(accessToken, `${conferenceId}-prize-${stamp}.ts`, prizeContent),
+    uploadDriveFile(accessToken, `${conferenceId}-prizewinner-${stamp}.ts`, winnerContent),
   ]);
 }
 
@@ -501,7 +566,7 @@ export function PrizesAdminView({
     setUploading(true);
     setUploadError(null);
     try {
-      await saveToStorage(conferenceId, prizes, winners);
+      await saveToDrive(conferenceId, prizes, winners);
     } catch (err) {
       console.error("PrizesAdminView: upload failed", err);
       const msg = err instanceof Error ? err.message : String(err);
