@@ -137,7 +137,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               )}
             </div>
             <div>
-              <Label htmlFor="p-winner">><Award className="h-4 w-4" />Winner ID (optional)</Label>
+              <Label htmlFor="p-winner"><Award className="h-4 w-4" />Winner ID (optional)</Label>
               <Input
                 id="p-winner"
                 value={form.winner ?? ""}
