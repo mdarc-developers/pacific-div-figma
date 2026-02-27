@@ -587,7 +587,7 @@ export function PrizesAdminView({
           disabled={uploading}
         >
           <Upload className="h-4 w-4" />
-          {uploading ? "Uploading…" : "Save to web.app"}
+          {uploading ? "Uploading…" : "Save to drive"}
         </Button>
         {uploadError && (
           <p className="text-sm text-red-500">{uploadError}</p>

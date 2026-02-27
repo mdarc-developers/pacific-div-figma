@@ -1751,6 +1751,28 @@ export const conferenceMaps: MapImage[] = [
 
 export const sampleAttendees: UserProfile[] = [
   {
+    uid: "7dBAeZv7kJbVOI5A99Zol06dCTU2",
+    email: "grantbow@gmail.com",
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: true,
+    smsNotifications: true,
+    groups: ["prize-admin"],
+    displayName: "Grant B",
+    callsign: "K6CBK",
+  },
+  {
+    uid: "2JjLExoVgiVdblnPFUVX1YJzqdA2",
+    email: "grantbow@mdarc.org",
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: true,
+    smsNotifications: true,
+    groups: ["prize-admin"],
+    displayName: "Grant B",
+    callsign: "K6CBK",
+  },
+  {
     uid: "1",
     email: "test1test.com",
     callsign: "K6AL",
