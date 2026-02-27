@@ -52,7 +52,7 @@ export function PrizesAdminPage() {
           <Link to="/login" className="text-blue-600 hover:underline">
             sign in
           </Link>{" "}
-          to access prize management.
+          to access prizes management.
         </p>
       </div>
     );
@@ -78,7 +78,7 @@ export function PrizesAdminPage() {
     <div className="w-full">
       <div className="flex items-center gap-2 mb-6">
         <ShieldCheck className="h-5 w-5 text-green-600" />
-        <h1 className="text-2xl font-bold">Prize Management</h1>
+        <h1 className="text-2xl font-bold">Prizes Management</h1>
         <span className="text-sm text-gray-500 ml-2">
           ({activeConference.name})
         </span>
