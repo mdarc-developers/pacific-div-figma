@@ -105,6 +105,10 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   }
 });
 
+// Track the newest supplemental file timestamp token (string after the last "-")
+// per conference so it can be displayed as a data-freshness indicator.
+const PRIZE_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
+
 // Override with supplemental prize files (e.g. yuma-2026-prize-20260227T132422.ts).
 // Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
 // multiple supplemental files exist for the same conference.
@@ -121,6 +125,10 @@ Object.keys(supplementalPrizeModules)
       const typedModule = supplementalPrizeModules[path] as PrizeModule;
       if (typedModule.samplePrizes) {
         PRIZE_DATA[conferenceId] = typedModule.samplePrizes;
+        const token = filename.split("-").pop() ?? "";
+        if (token && token > (PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
+          PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] = token;
+        }
       }
     }
   });
@@ -139,9 +147,25 @@ Object.keys(supplementalPrizeWinnerModules)
       const typedModule = supplementalPrizeWinnerModules[path] as PrizeWinnerModule;
       if (typedModule.samplePrizeWinners) {
         PRIZE_WINNER_DATA[conferenceId] = typedModule.samplePrizeWinners;
+        const token = filename.split("-").pop() ?? "";
+        if (token && token > (PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
+          PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] = token;
+        }
       }
     }
   });
+
+/**
+ * Format a supplemental-file timestamp token for display.
+ * Input:  "20260227T132422"  (YYYYMMDDTHHmmss, the string after the last "-" in the filename)
+ * Output: "27T1324"          ({UTCday}T{UTChour}{UTCminute})
+ */
+export function formatUpdateToken(token: string): string {
+  const day = token.slice(6, 8);
+  const hour = token.slice(9, 11);
+  const minute = token.slice(11, 13);
+  return `${day}T${hour}${minute}`;
+}
 
 interface PrizesViewProps {
   highlightPrizeId?: string;
@@ -153,6 +177,7 @@ export function PrizesView({ highlightPrizeId }: PrizesViewProps) {
     useConference();
   const prizes = PRIZE_DATA[activeConference.id] || [];
   const prizeWinners = PRIZE_WINNER_DATA[activeConference.id] || [];
+  const updateToken = PRIZE_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Group prizes by category
@@ -250,6 +275,14 @@ export function PrizesView({ highlightPrizeId }: PrizesViewProps) {
           </TabsContent>
         ))}
       </Tabs>
+      {updateToken && (
+        <p
+          className="text-xs text-gray-400 mt-4"
+          title={updateToken}
+        >
+          Updated: {formatUpdateToken(updateToken)}
+        </p>
+      )}
     </div>
   );
 }

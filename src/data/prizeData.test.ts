@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { samplePrizes } from "./yuma-2026-prize-20260227T132422";
 import { samplePrizeWinners } from "./yuma-2026-prizewinner-20260227T132422";
+import { formatUpdateToken } from "@/app/components/PrizesView";
 import { Prize, PrizeWinner } from "@/types/conference";
 
 // ── yuma-2026 supplemental prize file ────────────────────────────────────────
@@ -39,7 +40,25 @@ describe("yuma-2026-prizewinner supplemental file", () => {
   });
 });
 
-// ── Supplemental file override logic ─────────────────────────────────────────
+// ── formatUpdateToken ─────────────────────────────────────────────────────────
+// Validates the formatting helper that converts a supplemental file timestamp
+// token (string after the last "-" in the filename) to the display string.
+describe("formatUpdateToken", () => {
+  it("formats a full timestamp token correctly", () => {
+    // yuma-2026-prize-20260227T132422 → token = "20260227T132422"
+    expect(formatUpdateToken("20260227T132422")).toBe("27T1324");
+  });
+
+  it("extracts day, hour, and minute correctly", () => {
+    // 20261016T093015 → day=16, hour=09, minute=30
+    expect(formatUpdateToken("20261016T093015")).toBe("16T0930");
+  });
+
+  it("handles midnight correctly", () => {
+    // 20260101T000000 → day=01, hour=00, minute=00
+    expect(formatUpdateToken("20260101T000000")).toBe("01T0000");
+  });
+});
 // Verifies that when supplemental data is present, it correctly overrides the
 // data embedded in the main conference file.
 describe("supplemental prize override logic", () => {
