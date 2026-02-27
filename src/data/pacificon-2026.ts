@@ -94,6 +94,17 @@ export const sampleUserProfiles: UserProfile[] = [
     displayName: "Grant B",
     callsign: "K6CBK",
   },
+  {
+    uid: "2JjLExoVgiVdblnPFUVX1YJzqdA2",
+    email: "grantbow@mdarc.org",
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: true,
+    smsNotifications: true,
+    groups: ["prize-admin"],
+    displayName: "Grant B",
+    callsign: "K6CBK",
+  },
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
