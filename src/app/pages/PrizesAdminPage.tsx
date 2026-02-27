@@ -83,12 +83,12 @@ export function PrizesAdminPage() {
         </span>
       </div>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-        Changes are in-memory only until Firestore persistence is wired up.
-        Access is gated by the{" "}
+        Changes are in-memory only until submissions and persistence are wired up differently.
+        Access is allowed by the {" "}
         <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">
           prize-admin
         </code>{" "}
-        group (simulating Google Cloud Groups).
+        group.
       </p>
       <PrizesAdminView initialPrizes={prizes} initialWinners={winners} />
     </div>

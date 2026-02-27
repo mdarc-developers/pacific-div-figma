@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Award, Calendar, Map, Mic, SquareUser, User } from "lucide-react";
+import { Calendar, Map, Mic, SquareUser, Trophy, User } from "lucide-react";
 
 export function Navigation() {
   const navItems = [
@@ -9,7 +9,7 @@ export function Navigation() {
     //{ to: '/alerts', icon: Bell, label: 'Prizes' },
     //{ to: '/profile', icon: User, label: 'Profile' },
     { to: "/exhibitors", icon: SquareUser, label: "Exhibitors" },
-    { to: "/prizes", icon: Award, label: "Prizes" },
+    { to: "/prizes", icon: Trophy, label: "Prizes" },
     { to: "/attendees", icon: User, label: "Attendees" },
   ];
 
