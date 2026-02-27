@@ -149,8 +149,8 @@ async function saveToDrive(
   const winnerContent = `import { PrizeWinner } from "@/types/conference";\n\nexport const samplePrizeWinners: PrizeWinner[] = ${JSON.stringify(winners, null, 2)};\n`;
 
   await Promise.all([
-    uploadDriveFile(accessToken, `${conferenceId}-prize-${stamp}.ts`, prizeContent),
-    uploadDriveFile(accessToken, `${conferenceId}-prizewinner-${stamp}.ts`, winnerContent),
+    uploadDriveFile(accessToken, `data_${conferenceId}-prize-${stamp}.ts`, prizeContent),
+    uploadDriveFile(accessToken, `data_${conferenceId}-prizewinner-${stamp}.ts`, winnerContent),
   ]);
 }
 
