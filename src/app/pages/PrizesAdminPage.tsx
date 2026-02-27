@@ -4,6 +4,7 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { usePrizeAdmin } from "@/app/hooks/usePrizeAdmin";
 import { PrizesAdminView } from "@/app/components/PrizesAdminView";
+import { PrizesImageView } from "@/app/components/PrizesImageView";
 import { Prize, PrizeWinner } from "@/types/conference";
 
 // Load sample data for all conferences (same glob as PrizesView)
@@ -91,6 +92,18 @@ export function PrizesAdminPage() {
         group (simulating Google Cloud Groups).
       </p>
       <PrizesAdminView initialPrizes={prizes} initialWinners={winners} />
+
+      <div className="mt-10">
+        <h2 className="text-xl font-semibold mb-4">Image Library</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Upload prize images to Firebase Cloud Storage (
+          <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">
+            assets/prizes/
+          </code>
+          ). Select an image when editing a prize to set its image URL.
+        </p>
+        <PrizesImageView />
+      </div>
     </div>
   );
 }
