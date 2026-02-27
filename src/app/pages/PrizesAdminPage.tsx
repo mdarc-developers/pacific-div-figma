@@ -84,14 +84,20 @@ export function PrizesAdminPage() {
         </span>
       </div>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-        Changes are in-memory only until submissions and persistence are wired up differently.
-        Access is allowed by the {" "}
+        Use <strong>Save to Files</strong> to download the current Prize and PrizeWinner data as
+        TypeScript files (e.g.{" "}
+        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">
+          {activeConference.id}-prize-20260227T1118.ts
+        </code>
+        ). Place the downloaded files in <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">src/data/</code> and keep only the newest timestamped pair.
+        Run <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">npx prettier --write</code> on the files before committing.
+        Access is allowed by the{" "}
         <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">
           prize-admin
         </code>{" "}
         group.
       </p>
-      <PrizesAdminView initialPrizes={prizes} initialWinners={winners} />
+      <PrizesAdminView conferenceId={activeConference.id} initialPrizes={prizes} initialWinners={winners} />
 
       <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Image Library</h2>

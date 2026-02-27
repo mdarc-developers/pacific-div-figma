@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Prize, PrizeWinner } from "@/types/conference";
 import { Button } from "@/app/components/ui/button";
+import { Download } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,46 @@ import { PrizesImageView } from "@/app/components/PrizesImageView";
 
 function newId(prefix: string): string {
   return `${prefix}-${Date.now()}`;
+}
+
+// ---------------------------------------------------------------------------
+// File-download helpers
+// ---------------------------------------------------------------------------
+
+function getDateTimeStamp(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  return `${year}${month}${day}T${hours}${minutes}`;
+}
+
+function downloadTs(filename: string, content: string): void {
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function saveToFiles(
+  conferenceId: string,
+  prizes: Prize[],
+  winners: PrizeWinner[],
+): void {
+  const stamp = getDateTimeStamp();
+  downloadTs(
+    `${conferenceId}-prize-${stamp}.ts`,
+    `import { Prize } from "@/types/conference";\n\nexport const samplePrizes: Prize[] = ${JSON.stringify(prizes, null, 2)};\n`,
+  );
+  downloadTs(
+    `${conferenceId}-prizewinner-${stamp}.ts`,
+    `import { PrizeWinner } from "@/types/conference";\n\nexport const samplePrizeWinners: PrizeWinner[] = ${JSON.stringify(winners, null, 2)};\n`,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -375,11 +416,13 @@ function DeleteDialog({ open, label, onConfirm, onClose }: DeleteDialogProps) {
 // ---------------------------------------------------------------------------
 
 export interface PrizesAdminViewProps {
+  conferenceId: string;
   initialPrizes: Prize[];
   initialWinners: PrizeWinner[];
 }
 
 export function PrizesAdminView({
+  conferenceId,
   initialPrizes,
   initialWinners,
 }: PrizesAdminViewProps) {
@@ -432,6 +475,17 @@ export function PrizesAdminView({
   // ----- render -----
   return (
     <div className="space-y-10">
+      {/* ---- Save to Files ---- */}
+      <div className="flex items-center justify-end">
+        <Button
+          variant="outline"
+          onClick={() => saveToFiles(conferenceId, prizes, winners)}
+        >
+          <Download className="h-4 w-4" />
+          Save to Files
+        </Button>
+      </div>
+
       {/* ---- Prizes section ---- */}
       <section>
         <div className="flex items-center justify-between mb-4">
