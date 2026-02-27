@@ -325,15 +325,15 @@ function DeleteDialog({ open, label, onConfirm, onClose }: DeleteDialogProps) {
 // Main admin view
 // ---------------------------------------------------------------------------
 
-export interface PrizeAdminViewProps {
+export interface PrizesAdminViewProps {
   initialPrizes: Prize[];
   initialWinners: PrizeWinner[];
 }
 
-export function PrizeAdminView({
+export function PrizesAdminView({
   initialPrizes,
   initialWinners,
-}: PrizeAdminViewProps) {
+}: PrizesAdminViewProps) {
   // ----- prizes state -----
   const [prizes, setPrizes] = useState<Prize[]>(initialPrizes);
   const [prizeForm, setPrizeForm] = useState<{
