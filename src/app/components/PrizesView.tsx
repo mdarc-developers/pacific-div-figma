@@ -161,10 +161,11 @@ Object.keys(supplementalPrizeWinnerModules)
  * Output: "27T1324"          ({UTCday}T{UTChour}{UTCminute})
  */
 export function formatUpdateToken(token: string): string {
+  const month = token.slice(4, 6);
   const day = token.slice(6, 8);
   const hour = token.slice(9, 11);
   const minute = token.slice(11, 13);
-  return `${day}T${hour}${minute}`;
+  return `${month}/${day} @ ${hour}:${minute}`;
 }
 
 interface PrizesViewProps {

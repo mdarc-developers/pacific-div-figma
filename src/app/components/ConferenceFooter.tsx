@@ -6,24 +6,23 @@ export function ConferenceFooter() {
     useConference();
   const sha = import.meta.env.VITE_GIT_SHA;
   const shortSha = sha ? sha.slice(0, 7) : null;
-  const buildDate = import.meta.env.VITE_BUILD_DATE;
+  const buildDate = import.meta.env.VITE_BUILD_DATE; // format 2026-02-27T22:35:18.692Z
   const buildSource = import.meta.env.VITE_BUILD_SOURCE;
   const buildRunId = import.meta.env.VITE_BUILD_RUN_ID;
   const buildTooltip = shortSha
     ? buildSource === "gha"
-      ? `${shortSha} • gha${buildRunId ? ` #${buildRunId}` : ""}`
-      : `${shortSha} • ${buildSource}`
+      ? `${buildDate} ${shortSha} • gha${buildRunId ? ` #${buildRunId}` : ""}`
+      : `${buildDate} ${shortSha} • ${buildSource}`
     : undefined;
   const formattedDate = buildDate
     ? new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
+        month: "2-digit",
+        day: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
         timeZone: "UTC",
-        timeZoneName: "short",
+        timeZoneName: "shortOffset",
       }).format(new Date(buildDate))
     : null;
   return (
