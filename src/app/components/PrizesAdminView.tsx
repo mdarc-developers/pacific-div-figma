@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Prize, PrizeWinner } from "@/types/conference";
 import { Button } from "@/app/components/ui/button";
-import { Download } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +16,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Award, HandHelping, Image, ImageIcon, Info, Pencil, PlusCircle, Trash2, Trophy, UserCheck } from "lucide-react";
+import {
+  Award,
+  HandHelping,
+  Image,
+  ImageIcon,
+  Info,
+  Pencil,
+  PlusCircle,
+  Trash2,
+  Trophy,
+  Upload,
+  UserCheck } from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
 
 // ---------------------------------------------------------------------------
@@ -483,8 +493,8 @@ export function PrizesAdminView({
           variant="outline"
           onClick={() => saveToFiles(conferenceId, prizes, winners)}
         >
-          <Download className="h-4 w-4" />
-          Save to Files
+          <Upload className="h-4 w-4" />
+          Save to web.app
         </Button>
       </div>
 
