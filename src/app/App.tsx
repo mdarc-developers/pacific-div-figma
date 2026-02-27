@@ -21,7 +21,7 @@ import { ProfilePage } from "@/app/pages/ProfilePage";
 import { LoginPage } from "@/app/pages/LoginPage";
 import { SignUpPage } from "@/app/pages/SignUpPage";
 import { SearchPage } from "@/app/pages/SearchPage";
-import { AdminPrizesPage } from "@/app/pages/AdminPrizesPage";
+import { PrizesAdminPage } from "@/app/pages/PrizesAdminPage";
 
 export default function App() {
   return (
@@ -46,7 +46,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/admin/prizes" element={<AdminPrizesPage />} />
+          <Route path="/admin/prizes" element={<PrizesAdminPage />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>
 
