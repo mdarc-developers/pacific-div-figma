@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { ImageIcon, Pencil, PlusCircle, Trash2, Trophy, UserCheck } from "lucide-react";
+import { Award, HandHelping, Image, ImageIcon, Info, Pencil, PlusCircle, Trash2, Trophy, UserCheck } from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
 
 // ---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ function newId(prefix: string): string {
 const EMPTY_PRIZE: Omit<Prize, "id"> = {
   name: "",
   description: "",
-  imageUrl: "",
+  imageUrl: "/assets/prizes/",
   category: "Prize",
   donor: "",
   winner: undefined,
@@ -85,7 +85,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="p-desc">Description</Label>
+              <Label htmlFor="p-desc"><Info className="h-4 w-4" /> Description</Label>
               <Input
                 id="p-desc"
                 value={form.description}
@@ -101,7 +101,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="p-donor">Donor</Label>
+              <Label htmlFor="p-donor"><HandHelping className="h-4 w-4" /> Donor</Label>
               <Input
                 id="p-donor"
                 value={form.donor}
@@ -109,14 +109,14 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="p-image">Image URL</Label>
+              <Label htmlFor="p-image"><Image className="h-4 w-4" />Image</Label>
               <div className="flex gap-2 items-center">
                 <Input
                   id="p-image"
                   value={form.imageUrl}
                   onChange={(e) => set("imageUrl", e.target.value)}
-                  placeholder="https://… or select from library"
-                  className="flex-1"
+                    placeholder="https://… or select from library"
+                    className="flex-1"
                 />
                 <Button
                   type="button"
@@ -137,7 +137,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               )}
             </div>
             <div>
-              <Label htmlFor="p-winner">Winner ID (optional)</Label>
+              <Label htmlFor="p-winner">><Award className="h-4 w-4" />Winner ID (optional)</Label>
               <Input
                 id="p-winner"
                 value={form.winner ?? ""}
@@ -276,6 +276,7 @@ function WinnerForm({ open, initial, onSave, onClose }: WinnerFormProps) {
             />
           </div>
           <div>
+            <Award className="h-4 w-4" />
             <Label htmlFor="w-name">Winner Name</Label>
             <Input
               id="w-name"
@@ -435,7 +436,6 @@ export function PrizesAdminView({
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold flex items-center gap-2">
-            <Trophy className="h-5 w-5" />
             Prizes
           </h2>
           <Button
@@ -452,8 +452,16 @@ export function PrizesAdminView({
             <Card key={prize.id}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center justify-between">
-                  <span>{prize.name}</span>
-                  <div className="flex gap-2">
+                  <Trophy className="h-5 w-5 mb-4" />
+                  <span>{prize.name}
+                    <img
+                      className=""
+                      alt="prize image"
+                      src={prize.imageUrl}
+                      width="200px"
+                      height="200px"
+                    /> </span>
+                  <div className="gap-2">
                     <Button
                       variant="outline"
                       size="icon"
@@ -474,16 +482,17 @@ export function PrizesAdminView({
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                <p>
-                  <strong>Category:</strong> {prize.category}
-                </p>
-                <p>
+                {prize.description &&
+                  <p className="flex justify-center justify-between"><Info className="h-5 w-5" />{prize.description}</p>
+                }
+                <p className="flex">
+                  <HandHelping className="h-4 w-4" />
                   <strong>Donor:</strong> {prize.donor}
                 </p>
-                {prize.description && <p>{prize.description}</p>}
                 {prize.winner && (
-                  <p>
-                    <strong>Winner ID:</strong> {prize.winner}
+                  <p className="flex">
+                    <Award className="h-4 w-4" />
+                    <strong>Winner:</strong> {prize.winner}
                   </p>
                 )}
               </CardContent>
@@ -516,6 +525,7 @@ export function PrizesAdminView({
             <Card key={winner.id}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center justify-between">
+                  <Award className="h-4 w-4" />
                   <span>
                     Ticket {winner.winningTicket}
                     {winner.winnerCallsign && ` — ${winner.winnerCallsign}`}

@@ -84,15 +84,15 @@ export const samplePrizeWinners: PrizeWinner[] = [
 // prize-admin group grants access to the prize management admin page.
 export const sampleUserProfiles: UserProfile[] = [
   {
-    uid: "prize-admin-demo",
-    email: "prizeadmin@example.com",
+    uid: "7dBAeZv7kJbVOI5A99Zol06dCTU2",
+    email: "grantbow@gmail.com",
     darkMode: false,
     bookmarkedSessions: [],
-    notificationsEnabled: false,
-    smsNotifications: false,
+    notificationsEnabled: true,
+    smsNotifications: true,
     groups: ["prize-admin"],
-    displayName: "Prize Admin",
-    callsign: "W6ADM",
+    displayName: "Grant B",
+    callsign: "K6CBK",
   },
 ];
 
