@@ -142,9 +142,9 @@ export function PrizesAdminPage() {
       <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Image Library</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-          Upload prize images to Firebase Cloud Storage (
+          Upload prize images to Google Drive (
           <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">
-            assets/prizes/
+            VITE_GOOGLE_DRIVE_FOLDER_PRIZES_ID
           </code>
           ). Select an image when editing a prize to set its image URL.
         </p>
