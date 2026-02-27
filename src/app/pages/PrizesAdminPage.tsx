@@ -2,7 +2,7 @@ import { ShieldAlert, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { usePrizeAdmin } from "@/app/hooks/usePrizeAdmin";
+import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { PrizesAdminView } from "@/app/components/PrizesAdminView";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
 import { Prize, PrizeWinner } from "@/types/conference";
@@ -31,7 +31,7 @@ Object.entries(conferenceModules).forEach(([path, mod]) => {
 export function PrizesAdminPage() {
   const { user, loading } = useAuth();
   const { activeConference } = useConference();
-  const isPrizeAdmin = usePrizeAdmin();
+  const isPrizesAdmin = usePrizesAdmin();
 
   if (loading) {
     return (
@@ -59,7 +59,7 @@ export function PrizesAdminPage() {
   }
 
   // Signed in but not in the prize-admin group
-  if (!isPrizeAdmin) {
+  if (!isPrizesAdmin) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <ShieldAlert className="h-12 w-12 text-red-400" />

@@ -28,7 +28,7 @@ Object.values(profileModules).forEach((mod) => {
  * eventually wired to Firestore / Cloud IAM the lookup here can be replaced
  * with a real profile fetch without changing any of the calling components.
  */
-export function usePrizeAdmin(): boolean {
+export function usePrizesAdmin(): boolean {
   const { user } = useAuth();
   if (!user?.email) return false;
   const profile = allSampleProfiles.find((p) => p.email === user.email);
