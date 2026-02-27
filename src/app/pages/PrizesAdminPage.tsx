@@ -27,7 +27,7 @@ Object.entries(conferenceModules).forEach(([path, mod]) => {
     PRIZE_WINNER_DATA[conferenceId] = typedMod.samplePrizeWinners;
 });
 
-export function AdminPrizesPage() {
+export function PrizesAdminPage() {
   const { user, loading } = useAuth();
   const { activeConference } = useConference();
   const isPrizeAdmin = usePrizeAdmin();
