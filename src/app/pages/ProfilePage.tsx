@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { ProfileView } from "@/app/components/ProfileView";
+import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate, Link } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { useBookmarks } from "@/app/hooks/useBookmarks";
+import { SESSION_DATA } from "@/lib/sessionData";
 import {
   getAuth,
   sendEmailVerification,
@@ -55,7 +57,7 @@ export function ProfilePage() {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
-  const [bookmarkedSessions] = useBookmarks(activeConference.id);
+  const [bookmarkedSessions, toggleBookmark, prevBookmarkedSessions] = useBookmarks(activeConference.id);
   const [error, setError] = useState<string>("");
   const [raffleTickets, setRaffleTickets] = useState<string[]>([]);
   const [newTicket, setNewTicket] = useState<string>("");
@@ -396,26 +398,12 @@ export function ProfilePage() {
       </Card>
 
       {/* Activity card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Activity</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-medium">Bookmarks</p>
-            {bookmarkedSessions.length > 0 ? (
-              <Badge variant="secondary">{bookmarkedSessions.length}</Badge>
-            ) : (
-              <span className="text-xs text-muted-foreground">None yet</span>
-            )}
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-medium">Prizes won</p>
-            <span className="text-xs text-muted-foreground">None yet</span>
-          </div>
-        </CardContent>
-      </Card>
+      <BookmarkListCard
+        sessions={SESSION_DATA[activeConference.id] ?? []}
+        bookmarkedIds={bookmarkedSessions}
+        prevBookmarkedIds={prevBookmarkedSessions}
+        onToggleBookmark={toggleBookmark}
+      />
 
       {/* Admin card */}
       {isPrizesAdmin && (

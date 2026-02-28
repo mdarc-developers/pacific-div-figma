@@ -29,28 +29,52 @@ function saveBookmarks(
 export function useBookmarks(
   conferenceId: string,
   keyPrefix: string = STORAGE_KEY_PREFIX,
-): [string[], (itemId: string) => void] {
+): [string[], (itemId: string) => void, string[]] {
   const [bookmarkedItems, setBookmarkedItems] = useState<string[]>(() =>
     loadBookmarks(conferenceId, keyPrefix),
+  );
+  const prevKeyPrefix = "prev_" + keyPrefix;
+  const [prevBookmarkedItems, setPrevBookmarkedItems] = useState<string[]>(() =>
+    loadBookmarks(conferenceId, prevKeyPrefix),
   );
 
   // Reload bookmarks whenever the active conference or key prefix changes
   useEffect(() => {
     setBookmarkedItems(loadBookmarks(conferenceId, keyPrefix));
-  }, [conferenceId, keyPrefix]);
+    setPrevBookmarkedItems(loadBookmarks(conferenceId, prevKeyPrefix));
+  }, [conferenceId, keyPrefix, prevKeyPrefix]);
 
   const toggleBookmark = useCallback(
     (itemId: string) => {
       setBookmarkedItems((prev) => {
-        const next = prev.includes(itemId)
+        const isCurrentlyBookmarked = prev.includes(itemId);
+        const next = isCurrentlyBookmarked
           ? prev.filter((id) => id !== itemId)
           : [...prev, itemId];
         saveBookmarks(conferenceId, next, keyPrefix);
+
+        // When unbookmarking, add to previously-bookmarked list
+        if (isCurrentlyBookmarked) {
+          setPrevBookmarkedItems((prevPrev) => {
+            if (prevPrev.includes(itemId)) return prevPrev;
+            const nextPrev = [...prevPrev, itemId];
+            saveBookmarks(conferenceId, nextPrev, prevKeyPrefix);
+            return nextPrev;
+          });
+        } else {
+          // When re-bookmarking, remove from previously-bookmarked list
+          setPrevBookmarkedItems((prevPrev) => {
+            const nextPrev = prevPrev.filter((id) => id !== itemId);
+            saveBookmarks(conferenceId, nextPrev, prevKeyPrefix);
+            return nextPrev;
+          });
+        }
+
         return next;
       });
     },
-    [conferenceId, keyPrefix],
+    [conferenceId, keyPrefix, prevKeyPrefix],
   );
 
-  return [bookmarkedItems, toggleBookmark];
+  return [bookmarkedItems, toggleBookmark, prevBookmarkedItems];
 }
