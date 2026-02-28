@@ -7,6 +7,7 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate, Link } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { useBookmarks } from "@/app/hooks/useBookmarks";
+import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { SESSION_DATA } from "@/lib/sessionData";
 import {
   getAuth,
@@ -59,7 +60,7 @@ export function ProfilePage() {
   const isPrizesAdmin = usePrizesAdmin();
   const [bookmarkedSessions, toggleBookmark, prevBookmarkedSessions] = useBookmarks(activeConference.id);
   const [error, setError] = useState<string>("");
-  const [raffleTickets, setRaffleTickets] = useState<string[]>([]);
+  const [raffleTickets, addRaffleTicket, removeRaffleTicket] = useRaffleTickets(activeConference.id);
   const [newTicket, setNewTicket] = useState<string>("");
 
   if (!user) {
@@ -119,13 +120,13 @@ export function ProfilePage() {
 
   const handleAddTicket = () => {
     const trimmed = newTicket.trim();
-    if (!trimmed || raffleTickets.includes(trimmed)) return;
-    setRaffleTickets([...raffleTickets, trimmed]);
+    if (!trimmed) return;
+    addRaffleTicket(trimmed);
     setNewTicket("");
   };
 
   const handleRemoveTicket = (ticket: string) => {
-    setRaffleTickets(raffleTickets.filter((t) => t != ticket));
+    removeRaffleTicket(ticket);
   };
 
   const initials = user.displayName
