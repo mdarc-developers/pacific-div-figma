@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { mapSessions } from "./seapac-2026-sesssion-20260227";
+import { mapSessions } from "./seapac-2026-session-20260227";
 import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
 import { Session } from "@/types/conference";
 
 // ── seapac-2026 supplemental session file ─────────────────────────────────────
 // Guards the shape and presence of the supplemental session export that overrides
 // the empty sessions in seapac-2026.ts when it exists.
-describe("seapac-2026-sesssion supplemental file", () => {
+describe("seapac-2026-session supplemental file", () => {
   it("exports a [url, Session[]] tuple", () => {
     expect(Array.isArray(mapSessions)).toBe(true);
     expect(mapSessions.length).toBe(2);
@@ -38,10 +38,10 @@ describe("seapac-2026-sesssion supplemental file", () => {
 
 // ── formatUpdateToken (date-only token) ───────────────────────────────────────
 // Validates that formatUpdateToken handles the date-only token format used by
-// the seapac-2026-sesssion-20260227.ts supplemental file.
+// the seapac-2026-session-20260227.ts supplemental file.
 describe("formatUpdateToken date-only token", () => {
   it("formats a date-only token (YYYYMMDD) correctly", () => {
-    // seapac-2026-sesssion-20260227 → token = "20260227"
+    // seapac-2026-session-20260227 → token = "20260227"
     expect(formatUpdateToken("20260227")).toBe("02/27");
   });
 
