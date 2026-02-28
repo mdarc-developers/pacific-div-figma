@@ -11,8 +11,27 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { Toaster, toast } from "sonner";
-import { MonitorCog, Moon, ShieldCheck, Sun, User } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  KeyRound,
+  LogOut,
+  MonitorCog,
+  Moon,
+  ShieldCheck,
+  Sun,
+} from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
+import { Separator } from "@/app/components/ui/separator";
 
 function isTheme(value: string): value is Theme {
   return value === "light" || value === "dark" || value === "system";
@@ -88,214 +107,260 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
     }
   };
 
+  const initials = user.displayName
+    ? user.displayName
+        .split(" ")
+        .filter(Boolean)
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : (user.email?.[0] ?? "?").toUpperCase();
+
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return "—";
+    return new Date(dateStr).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
-    <div className="max-w-md">
-      <>
-        <Toaster />
-      </>
-      <h1 className="text-3xl font-bold mb-8">
-        <User className="h-4 w-4" />
-        Profile
-      </h1>
+    <div className="max-w-lg space-y-4">
+      <Toaster />
 
-      <div className="space-y-6 profile-info">
-        {user.displayName && (
-          <div className="profile-field">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Display Name:
-            </label>
-            {user.displayName}
+      {/* Profile header card */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-4">
+            <Avatar className="h-16 w-16 text-2xl shrink-0">
+              {user.photoURL && (
+                <AvatarImage src={user.photoURL} alt="Profile picture" />
+              )}
+              <AvatarFallback className="text-xl font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              {user.displayName && (
+                <p className="text-lg font-semibold truncate">
+                  {user.displayName}
+                </p>
+              )}
+              <p className="text-sm text-muted-foreground truncate">
+                {user.email}
+              </p>
+              <div className="mt-1.5">
+                {user.emailVerified ? (
+                  <Badge
+                    variant="outline"
+                    className="gap-1 text-green-700 dark:text-green-400 border-green-300 dark:border-green-700"
+                  >
+                    <CheckCircle className="h-3 w-3" />
+                    Verified
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="gap-1 text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-700"
+                  >
+                    <AlertCircle className="h-3 w-3" />
+                    Not verified
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="shrink-0"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </Button>
           </div>
-        )}
+        </CardContent>
+      </Card>
 
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            User ID:
-          </label>
-          {user.uid}
-          <button
-            type="button"
-            onClick={handlePasswordReset}
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            &lt;reset password&gt;
-          </button>
-        </div>
-
-        {user.photoURL && (
-          <div className="profile-field">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Profile Picture:
-            </label>
-            <img
-              src={user.photoURL}
-              alt="Profile"
-              className="profile-picture"
-            />
+      {/* Account card */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Account</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">Email</p>
+              <p className="text-sm text-muted-foreground truncate">
+                {user.email}
+              </p>
+            </div>
+            {!user.emailVerified && (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={handleEmailVerification}
+                className="shrink-0 text-amber-600 dark:text-amber-400 px-0"
+              >
+                Send verification
+              </Button>
+            )}
           </div>
-        )}
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Last Sign In:
-          </label>
-          <p>{user.metadata.lastSignInTime}</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Account Created:
-          </label>
-          <p>{user.metadata.creationTime}</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email:
-          </label>
-          <p>{user.email}</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Verified:
-          </label>
-          <p>
-            {
-              user.emailVerified ? (
-                "Yes"
-              ) : (
-                //<form onSubmit={handleEmailVerification}>
-                <button
-                  type="button"
-                  onClick={handleEmailVerification}
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  &lt;send verification now&gt;
-                </button>
-              )
-              //</form>
-            }
-          </p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email alert toggle:
-          </label>
-          <p>&lt;none yet&gt;</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Bookmarks:
-          </label>
-          {bookmarkedSessions.length > 0 ? (
-            <p>{bookmarkedSessions}</p>
-          ) : (
-            <p>&lt;none yet&gt;</p>
-          )}
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Dark mode:
-          </label>
-          <ToggleGroup
-            type="single"
-            value={theme}
-            onValueChange={(value) => {
-              if (!value || !isTheme(value)) return;
-              setTheme(value);
-            }}
-            variant="outline"
-            size="sm"
-            aria-label="Theme"
-          >
-            <ToggleGroupItem
-              value="light"
-              aria-label="Light theme"
-              title="Light theme"
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Password</p>
+            <Button
+              variant="link"
+              size="sm"
+              onClick={handlePasswordReset}
+              className="shrink-0 px-0 gap-1"
             >
-              <Sun className="h-4 w-4" /> Light
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="system"
-              aria-label="System theme"
-              title="System theme"
-            >
-              <MonitorCog className="h-4 w-4" /> System
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="dark"
-              aria-label="Dark theme"
-              title="Dark theme"
-            >
-              <Moon className="h-4 w-4" /> Dark
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Prizes won:
-          </label>
-          <p>&lt;none yet&gt;</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            SMS Number:
-          </label>
-          <p>&lt;none yet&gt;</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            SMS alert toggle:
-          </label>
-          <p>&lt;none yet&gt;</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Messages:
-          </label>
-          <p>&lt;none yet&gt;</p>
-        </div>
-
-        <div className="profile-field">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Messages toggle:
-          </label>
-          <p>&lt;none yet&gt;</p>
-        </div>
-
-        {isPrizesAdmin && (
-          <div className="profile-field">
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-              <ShieldCheck className="h-4 w-4 text-green-600" />
-              Admin
-            </label>
-            <Link
-              to="/admin/prizes"
-              className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
-            >
-              Prizes Management →
-            </Link>
+              <KeyRound className="h-3.5 w-3.5" />
+              Reset password
+            </Button>
           </div>
-        )}
-      </div>
+          <Separator />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-xs text-muted-foreground">Last sign in</p>
+              <p className="text-xs mt-0.5">
+                {formatDate(user.metadata.lastSignInTime)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Member since</p>
+              <p className="text-xs mt-0.5">
+                {formatDate(user.metadata.creationTime)}
+              </p>
+            </div>
+          </div>
+          <Separator />
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">User ID</p>
+            <p className="text-xs font-mono text-muted-foreground break-all">
+              {user.uid}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
-      <button
-        onClick={handleLogout}
-        className="logout-button border-2 border-solid shadow-md"
-      >
-        Log Out
-      </button>
+      {/* Settings card */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-medium">Theme</p>
+              <p className="text-xs text-muted-foreground">
+                Appearance preference
+              </p>
+            </div>
+            <ToggleGroup
+              type="single"
+              value={theme}
+              onValueChange={(value) => {
+                if (!value || !isTheme(value)) return;
+                setTheme(value);
+              }}
+              variant="outline"
+              size="sm"
+              aria-label="Theme"
+            >
+              <ToggleGroupItem
+                value="light"
+                aria-label="Light theme"
+                title="Light theme"
+              >
+                <Sun className="h-4 w-4" /> Light
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="system"
+                aria-label="System theme"
+                title="System theme"
+              >
+                <MonitorCog className="h-4 w-4" /> System
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="dark"
+                aria-label="Dark theme"
+                title="Dark theme"
+              >
+                <Moon className="h-4 w-4" /> Dark
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Email alerts</p>
+            <Badge variant="secondary" className="text-xs">
+              Coming soon
+            </Badge>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">SMS alerts</p>
+            <Badge variant="secondary" className="text-xs">
+              Coming soon
+            </Badge>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Messages</p>
+            <Badge variant="secondary" className="text-xs">
+              Coming soon
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Activity card */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Activity</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Bookmarks</p>
+            {bookmarkedSessions.length > 0 ? (
+              <Badge variant="secondary">{bookmarkedSessions.length}</Badge>
+            ) : (
+              <span className="text-xs text-muted-foreground">None yet</span>
+            )}
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Prizes won</p>
+            <span className="text-xs text-muted-foreground">None yet</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Admin card */}
+      {isPrizesAdmin && (
+        <Card className="border-green-300 dark:border-green-800">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-green-600" />
+                <p className="text-sm font-medium">Administrator</p>
+              </div>
+              <Link
+                to="/admin/prizes"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Prizes Management →
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {error && (
-        <p className="text-red-500 dark:text-red-400 mt-4 text-sm">{error}</p>
+        <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>
       )}
     </div>
   );
