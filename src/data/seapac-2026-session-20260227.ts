@@ -568,7 +568,7 @@ export const mapSessions: [string, Session[]] = [
       gridKey: "7F",
     },
     {
-      id: "sun-grid-down-vara-fm-to-send-images-cont",
+      id: "sun-grid-down-vara-fm-to-send-images-cont-2",
       title: "Grid Down, VARA FM to Send Images (cont.)",
       description: "Continuation of Grid Down, VARA FM to Send Images.",
       speaker: ["KB7RHI"],
@@ -579,7 +579,7 @@ export const mapSessions: [string, Session[]] = [
       gridKey: "8A",
     },
     {
-      id: "sun-grid-down-vara-fm-to-send-images-cont",
+      id: "sun-grid-down-vara-fm-to-send-images-cont-3",
       title: "Grid Down, VARA FM to Send Images (cont.)",
       description: "Continuation of Grid Down, VARA FM to Send Images.",
       speaker: ["KB7RHI"],
@@ -602,7 +602,7 @@ export const mapSessions: [string, Session[]] = [
       gridKey: "8C",
     },
     {
-      id: "sun-sunday-multi-presenter-idea-sharing-session-co",
+      id: "sun-sunday-multi-presenter-idea-sharing-session-co-2",
       title: "Sunday Multi-Presenter Idea Sharing Session (cont.)",
       description:
         "Continuation of Sunday Multi-Presenter Idea Sharing Session.",
