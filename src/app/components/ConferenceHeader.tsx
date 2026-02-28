@@ -141,15 +141,20 @@ export function ConferenceHeader() {
   };
 
   const isUpcoming = (conference: Conference) => {
-    const startDate = new Date(conference.startDate);
+    const startDate = new Date(
+      `${conference.startDate}T00:00:00${conference.timezoneNumeric}`,
+    );
     const today = new Date();
     return startDate > today;
   };
 
   const isCurrent = (conference: Conference) => {
-    const startDate = new Date(conference.startDate);
-    const endDate = new Date(conference.endDate);
-    endDate.setHours(23, 59, 59, 999);
+    const startDate = new Date(
+      `${conference.startDate}T00:00:00${conference.timezoneNumeric}`,
+    );
+    const endDate = new Date(
+      `${conference.endDate}T23:59:59${conference.timezoneNumeric}`,
+    );
     const today = new Date();
     return today >= startDate && today <= endDate;
   };
