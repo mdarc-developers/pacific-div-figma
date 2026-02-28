@@ -5,6 +5,7 @@ import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate, Link } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
+import { useBookmarks } from "@/app/hooks/useBookmarks";
 import {
   getAuth,
   sendEmailVerification,
@@ -46,12 +47,7 @@ function isTheme(value: string): value is Theme {
   return value === "light" || value === "dark" || value === "system";
 }
 
-interface ProfilePageProps {
-  bookmarkedSessions?: string[];
-  onToggleBookmark?: (sessionId: string) => void;
-}
-
-export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
+export function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
@@ -59,6 +55,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
+  const [bookmarkedSessions] = useBookmarks(activeConference.id);
   const [error, setError] = useState<string>("");
   const [raffleTickets, setRaffleTickets] = useState<string[]>([]);
   const [newTicket, setNewTicket] = useState<string>("");
