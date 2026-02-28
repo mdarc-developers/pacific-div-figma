@@ -46,17 +46,17 @@ describe("yuma-2026-prizewinner supplemental file", () => {
 describe("formatUpdateToken", () => {
   it("formats a full timestamp token correctly", () => {
     // yuma-2026-prize-20260227T132422 → token = "20260227T132422"
-    expect(formatUpdateToken("20260227T132422")).toBe("27T1324");
+    expect(formatUpdateToken("20260227T132422")).toBe("02/27 @ 13:24");
   });
 
   it("extracts day, hour, and minute correctly", () => {
     // 20261016T093015 → day=16, hour=09, minute=30
-    expect(formatUpdateToken("20261016T093015")).toBe("16T0930");
+    expect(formatUpdateToken("20261016T093015")).toBe("10/16 @ 09:30");
   });
 
   it("handles midnight correctly", () => {
     // 20260101T000000 → day=01, hour=00, minute=00
-    expect(formatUpdateToken("20260101T000000")).toBe("01T0000");
+    expect(formatUpdateToken("20260101T000000")).toBe("01/01 @ 00:00");
   });
 });
 // Verifies that when supplemental data is present, it correctly overrides the
