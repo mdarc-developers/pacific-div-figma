@@ -44,7 +44,7 @@ export function Navigation() {
               className="flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50"
             >
               <Icon className="h-4 w-4" />
-              <span className="hidden sm:inline">{label}</span>
+              <span>{label}</span>
             </span>
           ) : (
             <NavLink
@@ -59,7 +59,7 @@ export function Navigation() {
               }
             >
               <Icon className="h-4 w-4" />
-              <span className="hidden sm:inline">{label}</span>
+              <span>{label}</span>
             </NavLink>
           )
         )}
