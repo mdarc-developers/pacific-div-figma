@@ -18,8 +18,11 @@ import {
   LogOut,
   MonitorCog,
   Moon,
+  Plus,
   ShieldCheck,
   Sun,
+  Ticket,
+  Trash2,
 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 import {
@@ -28,6 +31,7 @@ import {
   AvatarImage,
 } from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
+import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -55,6 +59,8 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
   const [error, setError] = useState<string>("");
+  const [raffleTickets, setRaffleTickets] = useState<string[]>([]);
+  const [newTicket, setNewTicket] = useState<string>("");
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -109,6 +115,17 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
         err instanceof Error ? err.message : "Failed to sendPasswordResetEmail";
       setError(message);
     }
+  };
+
+  const handleAddTicket = () => {
+    const trimmed = newTicket.trim();
+    if (!trimmed || raffleTickets.include(trimmed)) return;
+    setRaffleTickets([...raffleTickets, trimmed]);
+    setNewTicket("");
+  };
+
+  const handleRemoveTicket = (ticket: string) => {
+    setRaffleTickets(raffleTickets.filter((t) => t != ticket));
   };
 
   const initials = user.displayName
@@ -317,6 +334,54 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
             <Badge variant="secondary" className="text-xs">
               Coming soon
             </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Raffle Tickets card */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Ticket className="h-4 w-4" />
+            Raffle Tickets
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {raffleTickets.length > 0 && (
+            <ul className="space-y-2">
+              {raffleTickets.map((ticket) => (
+                <li key={ticket} className="flex items-center justify-between text-sm">
+                  <span className="font-mono">{ticket}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTicket(ticket)}
+                    aria-label={`Remove ticket ${ticket}`}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter ticket number"
+              value={newTicket}
+              onChange={(e) => setNewTicket(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleAddTicket(); }}
+              className="h-8 text-sm"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAddTicket}
+              disabled={!newTicket.trim()}
+              aria-label="Add ticket"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
           </div>
         </CardContent>
       </Card>
