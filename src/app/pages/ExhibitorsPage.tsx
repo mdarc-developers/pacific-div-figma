@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ExhibitorView } from "@/app/components/ExhibitorView";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { useBookmarks } from "@/app/hooks/useBookmarks";
 import { MapImage, Booth, Exhibitor } from "@/types/conference";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -58,6 +59,10 @@ export function ExhibitorsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
+  const [bookmarkedExhibitors, handleToggleBookmark] = useBookmarks(
+    activeConference.id,
+    "exhibitor_bookmarks_",
+  );
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id];
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
@@ -311,20 +316,6 @@ export function ExhibitorsPage() {
     else if (!w) throw new Error("exhibitorsMap missing origWidthNum");
     return h / w;
   }
-
-  const handleToggleBookmark = (exhibitorId: string) => {
-    setBookmarkedExhibitors((prev) =>
-      prev.includes(exhibitorId)
-        ? prev.filter((id) => id !== exhibitorId)
-        : [...prev, exhibitorId],
-    );
-  };
-
-  const handleLocationClick = (exhibitorId: string) => {
-    setHighlightedExhibitorId((prev) =>
-      prev === exhibitorId ? undefined : exhibitorId,
-    );
-  };
 
   const displayMaps = (numMaps: number) => {
     if (numMaps === 1 && exhibitorsMap) {

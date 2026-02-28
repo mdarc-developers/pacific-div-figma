@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ScheduleView } from "@/app/components/ScheduleView";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { useBookmarks } from "@/app/hooks/useBookmarks";
 import { useSearchParams } from "react-router-dom";
 
 export function SearchPage() {
-  const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { activeConference, allConferencesList, setActiveConference } =
-    useConference();
+  const { activeConference } = useConference();
+  const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(
+    activeConference.id,
+  );
   const [searchParams] = useSearchParams();
   const highlightSessionId = searchParams.get("highlight");
   const scrollToRef = useRef<HTMLDivElement>(null);
@@ -28,14 +29,6 @@ export function SearchPage() {
       return () => clearTimeout(timer);
     }
   }, [highlightSessionId]);
-
-  const handleToggleBookmark = (sessionId: string) => {
-    setBookmarkedSessions((prev) =>
-      prev.includes(sessionId)
-        ? prev.filter((id) => id !== sessionId)
-        : [...prev, sessionId],
-    );
-  };
 
   return (
     <div ref={scrollToRef}>
