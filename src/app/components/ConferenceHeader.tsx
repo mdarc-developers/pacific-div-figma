@@ -174,6 +174,7 @@ export function ConferenceHeader() {
   const isCurrent = (conference: Conference) => {
     const startDate = new Date(conference.startDate);
     const endDate = new Date(conference.endDate);
+    endDate.setHours(23, 59, 59, 999);
     const today = new Date();
     return today >= startDate && today <= endDate;
   };
