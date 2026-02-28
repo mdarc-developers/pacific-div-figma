@@ -56,6 +56,7 @@ export interface Room {
   name: string;
   coords: [number, number][];
   color: string;
+  locationZone?: string;
 }
 
 export interface Session {
