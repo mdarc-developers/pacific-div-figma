@@ -164,7 +164,7 @@ Roadrunner Camping Area",
     conferenceWebsite: "https://www.quartzfest.org",
     venuePhone: "",
     venueGPS: "33.5852,-114.2225",
-    venueGridSquare: "KO30de",
+    venueGridSquare: "DM23vn",
     venueWebsite: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
     timezoneNumeric: "-0700", // does not observe DST
     parkingWebsite: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
