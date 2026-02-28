@@ -317,70 +317,72 @@ export function ScheduleView({
 
   return (
     <div className="w-full">
-      {/* Filter toolbar */}
-      <div className="flex gap-2 mb-2">
-        <Button
-          variant={showBookmarkedOnly ? "default" : "outline"}
-          size="sm"
-          onClick={() => setShowBookmarkedOnly((v) => !v)}
-          className="flex items-center gap-1"
-        >
-          <Bookmark
-            className={`h-4 w-4 ${showBookmarkedOnly ? "fill-current" : ""}`}
-          />
-          Bookmarked
-        </Button>
-        <Button
-          variant={showNowAndNext ? "default" : "outline"}
-          size="sm"
-          onClick={() => setShowNowAndNext((v) => !v)}
-          className="flex items-center gap-1"
-        >
-          <Zap className="h-4 w-4" />
-          Now &amp; Next
-        </Button>
-      </div>
-
-      {/* Room filter row */}
-      <div className="flex gap-2 mb-4 flex-wrap">
-        <Button
-          variant={selectedRoom === "all" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setSelectedRoom("all")}
-          className="flex items-center gap-1"
-        >
-          <MapPin className="h-4 w-4" />
-          All Rooms
-        </Button>
-        {collectedRooms.map((room) => (
-          <Button
-            key={room}
-            variant={selectedRoom === room ? "default" : "outline"}
-            size="sm"
-            onClick={() =>
-              setSelectedRoom(selectedRoom === room ? "all" : room)
-            }
-            className="flex items-center gap-1"
-          >
-            <MapPin className="h-4 w-4" />
-            {room}
-          </Button>
-        ))}
-      </div>
-
       <Tabs
         value={selectedDay}
         onValueChange={setSelectedDay}
         className="w-full"
       >
-        <TabsList className="w-full mb-6 flex-wrap h-auto">
-          <TabsTrigger value="all">All Days</TabsTrigger>
-          {dateKeys.map((date) => (
-            <TabsTrigger key={date} value={date}>
-              {formatSessionDate(date, activeConference.timezoneNumeric)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 mb-6 w-full">
+          {/* Filter toolbar */}
+          <div className="flex gap-2 mb-2">
+            <Button
+              variant={showBookmarkedOnly ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowBookmarkedOnly((v) => !v)}
+              className="flex items-center gap-1"
+            >
+              <Bookmark
+                className={`h-4 w-4 ${showBookmarkedOnly ? "fill-current" : ""}`}
+              />
+              Bookmarked
+            </Button>
+            <Button
+              variant={showNowAndNext ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowNowAndNext((v) => !v)}
+              className="flex items-center gap-1"
+            >
+              <Zap className="h-4 w-4" />
+              Now &amp; Next
+            </Button>
+          </div>
+
+          {/* Room filter row */}
+          <div className="flex gap-2 mb-4 flex-wrap">
+            <Button
+              variant={selectedRoom === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedRoom("all")}
+              className="flex items-center gap-1"
+            >
+              <MapPin className="h-4 w-4" />
+              All Rooms
+            </Button>
+            {collectedRooms.map((room) => (
+              <Button
+                key={room}
+                variant={selectedRoom === room ? "default" : "outline"}
+                size="sm"
+                onClick={() =>
+                  setSelectedRoom(selectedRoom === room ? "all" : room)
+                }
+                className="flex items-center gap-1"
+              >
+                <MapPin className="h-4 w-4" />
+                {room}
+              </Button>
+            ))}
+          </div>
+
+          <TabsList className="w-full flex-wrap h-auto bg-transparent">
+            <TabsTrigger value="all">All Days</TabsTrigger>
+            {dateKeys.map((date) => (
+              <TabsTrigger key={date} value={date}>
+                {formatSessionDate(date, activeConference.timezoneNumeric)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         <TabsContent value="all">
           {dateKeys.map((date) => {
