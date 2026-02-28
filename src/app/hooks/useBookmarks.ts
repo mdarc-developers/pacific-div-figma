@@ -2,19 +2,19 @@ import { useState, useCallback, useEffect } from "react";
 
 const STORAGE_KEY_PREFIX = "bookmarks_";
 
-function loadBookmarks(conferenceId: string): string[] {
+function loadBookmarks(conferenceId: string, keyPrefix: string = STORAGE_KEY_PREFIX): string[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY_PREFIX + conferenceId);
+    const stored = localStorage.getItem(keyPrefix + conferenceId);
     return stored ? (JSON.parse(stored) as string[]) : [];
   } catch {
     return [];
   }
 }
 
-function saveBookmarks(conferenceId: string, bookmarks: string[]): void {
+function saveBookmarks(conferenceId: string, bookmarks: string[], keyPrefix: string = STORAGE_KEY_PREFIX): void {
   try {
     localStorage.setItem(
-      STORAGE_KEY_PREFIX + conferenceId,
+      keyPrefix + conferenceId,
       JSON.stringify(bookmarks),
     );
   } catch {
@@ -24,28 +24,29 @@ function saveBookmarks(conferenceId: string, bookmarks: string[]): void {
 
 export function useBookmarks(
   conferenceId: string,
-): [string[], (sessionId: string) => void] {
-  const [bookmarkedSessions, setBookmarkedSessions] = useState<string[]>(() =>
-    loadBookmarks(conferenceId),
+  keyPrefix: string = STORAGE_KEY_PREFIX,
+): [string[], (itemId: string) => void] {
+  const [bookmarkedItems, setBookmarkedItems] = useState<string[]>(() =>
+    loadBookmarks(conferenceId, keyPrefix),
   );
 
-  // Reload bookmarks whenever the active conference changes
+  // Reload bookmarks whenever the active conference or key prefix changes
   useEffect(() => {
-    setBookmarkedSessions(loadBookmarks(conferenceId));
-  }, [conferenceId]);
+    setBookmarkedItems(loadBookmarks(conferenceId, keyPrefix));
+  }, [conferenceId, keyPrefix]);
 
   const toggleBookmark = useCallback(
-    (sessionId: string) => {
-      setBookmarkedSessions((prev) => {
-        const next = prev.includes(sessionId)
-          ? prev.filter((id) => id !== sessionId)
-          : [...prev, sessionId];
-        saveBookmarks(conferenceId, next);
+    (itemId: string) => {
+      setBookmarkedItems((prev) => {
+        const next = prev.includes(itemId)
+          ? prev.filter((id) => id !== itemId)
+          : [...prev, itemId];
+        saveBookmarks(conferenceId, next, keyPrefix);
         return next;
       });
     },
-    [conferenceId],
+    [conferenceId, keyPrefix],
   );
 
-  return [bookmarkedSessions, toggleBookmark];
+  return [bookmarkedItems, toggleBookmark];
 }
