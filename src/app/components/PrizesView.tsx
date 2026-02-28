@@ -165,7 +165,7 @@ export function formatUpdateToken(token: string): string {
   const day = token.slice(6, 8);
   const hour = token.slice(9, 11);
   const minute = token.slice(11, 13);
-  return `${month}/${day} @ ${hour}:${minute}`;
+  return `${day}T${hour}${minute}`;
 }
 
 interface PrizesViewProps {
