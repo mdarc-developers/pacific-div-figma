@@ -27,6 +27,11 @@ import { NavLink } from "react-router-dom";
 import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
+import {
   contrastingColor,
   contrastingLinkColor,
 } from "@/lib/colorUtils";
@@ -401,34 +406,57 @@ export function ConferenceHeader() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span>
-                  <a
-                    href={activeConference.venueWebsite}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className="flex items-center gap-2 hover:underline"
-                    style={{ color: headerLinkColor }}
-                  >
-                    {activeConference.venue}
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                  , &nbsp;{activeConference.location}
-                  &nbsp;&nbsp;
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className="flex items-center gap-2 hover:underline"
-                    style={{ color: headerLinkColor }}
-                  >
-                    <MapPin className="flex h-5 w-5" />
-                    map
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                  &nbsp;&nbsp;&nbsp;{activeConference.venueGPS}
-                  &nbsp;&nbsp;&nbsp;{activeConference.venueGridSquare}
-                </span>
+              <div className="flex items-start gap-2">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="flex items-center gap-1">
+                    <a
+                      href={activeConference.venueWebsite}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      className="flex items-center gap-2 hover:underline"
+                      style={{ color: headerLinkColor }}
+                    >
+                      {activeConference.venue}
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                    ,&nbsp;{activeConference.location}
+                    &nbsp;&nbsp;
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      className="flex items-center gap-2 hover:underline"
+                      style={{ color: headerLinkColor }}
+                    >
+                      <MapPin className="flex h-5 w-5" />
+                      map
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span title="GPS Coordinates">
+                        {activeConference.venueGPS}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>GPS Coordinates</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a
+                        href={`https://www.levinecentral.com/ham/grid_square.php?Grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="hover:underline"
+                        style={{ color: headerLinkColor }}
+                        title="Maidenhead Gridsquare"
+                      >
+                        {activeConference.venueGridSquare}
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>Maidenhead Gridsquare</TooltipContent>
+                  </Tooltip>
+                </div>
               </div>
             </div>
           </>
