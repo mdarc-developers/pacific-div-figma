@@ -4,7 +4,7 @@ import { Calendar, Map, Mic, SquareUser, Trophy, User } from "lucide-react";
 export function Navigation() {
   const navItems = [
     { to: "/schedule", icon: Calendar, label: "Schedule" },
-    { to: "/maps", icon: Map, label: "Venue" },
+    { to: "/maps", icon: Map, label: "Maps" },
     { to: "/forums", icon: Mic, label: "Forums" },
     //{ to: '/alerts', icon: Bell, label: 'Prizes' },
     //{ to: '/profile', icon: User, label: 'Profile' },
