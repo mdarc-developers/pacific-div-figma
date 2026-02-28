@@ -66,23 +66,23 @@ export const samplePrizeWinners: PrizeWinner[] = [
   },
 ];
 
-export const mapExhibitors: [string, Exhibitor[]] = [
-  "/assets/maps/seapac-exhibitors-20260227.png",
+//export const mapExhibitors: [string, Exhibitor[]] = [
+//  "/assets/maps/seapac-exhibitors-20260227.png",
   // must match mapBooths URL
-  [
-  ]
-];
+//  [
+//  ]
+//];
 
-export const mapBooths: [string, Booth[]] = [
-  "/assets/maps/seapac-exhibitors-20260227.png",
+//export const mapBooths: [string, Booth[]] = [
+//  "/assets/maps/seapac-exhibitors-20260227.png",
   // must match mapExhibitors URL
   // Source: https://www.yumahamfest.com/vendorlayout.html (SVG extracted 2026-02-25)
   // SVG viewBox 0 0 724.2 378.4  →  image 1166 × 609
   // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
   // All y values measured from the bottom; all x values measured from the left.
-  [
-  ],
-];
+//  [
+//  ],
+//];
 
 // Define your room polygons here
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
