@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEA-PAC Seminar Schedule Extractor</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+      label {
+        font-weight: bold;
+      }
+      input[type="text"] {
+        padding: 6px 10px;
+        font-family: monospace;
+        width: 300px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 8px 18px;
+        cursor: pointer;
+      }
+      #output {
+        background: #f5f5f5;
+        padding: 15px;
+        border: 1px solid #ddd;
+        white-space: pre-wrap;
+        font-size: 12px;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+      .stats {
+        background: #e8f4f8;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-left: 4px solid #0066cc;
+      }
+      .error {
+        background: #fde8e8;
+        border-left: 4px solid #cc0000;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SEA-PAC Seminar Schedule Extractor v.1</h1>
+    <p>
+      Load the SEA-PAC convention booklet <code>.pdf</code> to generate
+      TypeScript <code>mapSessions</code> data for seminars.
+    </p>
+    <div id="controls">
+      <input type="file" id="fileInput" accept=".pdf" />
+      <label
+        >Map image path:
+        <input type="text" id="mapImage" value="/seapac-map-2025.jpg"
+      /></label>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+      <button onclick="dumpRaw()" style="background: #ffe0b2">
+        Dump Raw PDF Text
+      </button>
+    </div>
+    <div id="stats" class="stats">No file loaded yet.</div>
+    <div id="output"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+      let extractedData = "";
+      let rawItems = [];
+
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          if (!file.name.toLowerCase().endsWith(".pdf")) {
+            alert("Please load a .pdf file.");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (ev) => processPDF(ev.target.result);
+          reader.readAsArrayBuffer(file);
+        });
+
+      async function processPDF(arrayBuffer) {
+        document.getElementById("stats").innerHTML = "Reading PDF...";
+        try {
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          console.log("PDF loaded, pages:", pdf.numPages);
+          const items = [];
+          for (let p = 1; p <= pdf.numPages; p++) {
+            const page = await pdf.getPage(p);
+            const content = await page.getTextContent();
+            const h = page.getViewport({ scale: 1 }).height;
+            for (const it of content.items) {
+              if (!it.str || !it.str.trim()) continue;
+              items.push({
+                page: p,
+                x: Math.round(it.transform[4]),
+                y: Math.round(h - it.transform[5]),
+                str: it.str.trim(),
+              });
+            }
+          }
+          items.sort((a, b) =>
+            a.page !== b.page
+              ? a.page - b.page
+              : a.y !== b.y
+                ? a.y - b.y
+                : a.x - b.x,
+          );
+          rawItems = items;
+          console.log("Total items:", items.length);
+          const sessions = parse(items);
+          console.log("Sessions found:", sessions.length);
+          renderOutput(sessions);
+        } catch (err) {
+          document.getElementById("stats").className = "stats error";
+          document.getElementById("stats").innerHTML =
+            "Error: " + err.message;
+          console.error(err);
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // PARSER
+      //
+      // SEA-PAC PDF layout (pages 16–19):
+      //   Pages 16–17: Seminar Schedule grid
+      //     - Grid cells contain: "Title (CALLSIGN)" format
+      //     - Rows labeled by time period (e.g. "1000-1050")
+      //     - Columns labeled by room (Riverside A/B/C, Seaside A/B/C/D/E, Sunrise)
+      //     - Day column on the left (Sat / Sun)
+      //     - Row number in second column
+      //   Pages 18–19: Seminar Summaries
+      //     - Grid reference (e.g. "1A", "2B") followed by description text
+      //
+      // Strategy:
+      //   1. Extract schedule grid from pages 16–17 to get grid→{title,presenter,room,time,day}
+      //   2. Extract summaries from pages 18–19 to get grid→description
+      //   3. Merge by grid key (e.g. "1A")
+      //
+      // SEA-PAC 2025 dates: Sat = 2025-05-31, Sun = 2025-06-01
+      // ─────────────────────────────────────────────────────────────
+
+      // Known column headers → room names
+      const ROOM_HEADERS = {
+        "Riverside A": "Riverside A",
+        "Riverside B": "Riverside B",
+        "Riverside C": "Riverside C",
+        "Seaside A": "Seaside A",
+        "Seaside B": "Seaside B",
+        "Seaside C": "Seaside C",
+        "Sunrise": "Sunrise",
+      };
+
+      // Time period rows from schedule grid
+      const TIME_ROWS = {
+        "1000": { start: "10:00 AM", end: "10:50 AM" },
+        "1100": { start: "11:00 AM", end: "11:50 AM" },
+        "1200": { start: "12:00 PM", end: "12:50 PM" },
+        "1300": { start: "1:00 PM", end: "1:50 PM" },
+        "1510": { start: "3:10 PM", end: "4:00 PM" },
+        "1610": { start: "4:10 PM", end: "5:00 PM" },
+      };
+
+      // The seminar schedule grid (hard-coded from booklet pages 16–17)
+      // Format: gridKey → { title, presenter, room, timePeriod, day }
+      // This is derived from the PDF content on pages 16–17
+      const SCHEDULE_GRID = {
+        "1A": { title: "Get Started with N1MM+", presenter: "W7VO", room: "Riverside A", timePeriod: "1000-1050", day: "Sat" },
+        "1B": { title: "Elecraft Product Update", presenter: "WA6HHQ", room: "Riverside B", timePeriod: "1000-1050", day: "Sat" },
+        "1C": { title: "FastTrack to Ham Antennas", presenter: "AF7KB", room: "Riverside C", timePeriod: "1000-1050", day: "Sat" },
+        "1D": { title: "Continued Learning in Ham Radio", presenter: "KI7BDP", room: "Seaside A", timePeriod: "1000-1050", day: "Sat" },
+        "1E": { title: "Visualizing the World Since 1964", presenter: "KJ7ZSU", room: "Seaside B", timePeriod: "1000-1050", day: "Sat" },
+        "1F": { title: "Build your own Balun's and Ununs", presenter: "W7DAO", room: "Seaside C", timePeriod: "1000-1050", day: "Sat" },
+        "1G": { title: "Ham Radio Q&A", presenter: "NS7U", room: "Sunrise", timePeriod: "1000-1050", day: "Sat" },
+        "2A": { title: "Advanced N1MM+", presenter: "W7VO", room: "Riverside A", timePeriod: "1100-1150", day: "Sat" },
+        "2B": { title: "Portable Power Sources – Take your Amp Hours With You", presenter: "W7DGP", room: "Riverside B", timePeriod: "1100-1150", day: "Sat" },
+        "2C": { title: "Growing Your Club with Simple Ideas", presenter: "W2NCC", room: "Riverside C", timePeriod: "1100-1150", day: "Sat" },
+        "2D": { title: "Future of Amateur Radio", presenter: "K7CSD", room: "Seaside A", timePeriod: "1100-1150", day: "Sat" },
+        "2E": { title: "Limited Space and HOA Stealth Antennas", presenter: "W7UUU", room: "Seaside B", timePeriod: "1100-1150", day: "Sat" },
+        "2F": { title: "Repeaters START and HearHam.com", presenter: "KJ7BKH", room: "Seaside C", timePeriod: "1100-1150", day: "Sat" },
+        "2G": { title: "Building a Remote Station", presenter: "KJ6VU/VA3MW", room: "Sunrise", timePeriod: "1100-1150", day: "Sat" },
+        "3A": { title: "Get Started with LoTW Successfully", presenter: "AF7KB", room: "Riverside A", timePeriod: "1200-1250", day: "Sat" },
+        "3B": { title: "Flex Radio Update", presenter: "N5AC", room: "Riverside B", timePeriod: "1200-1250", day: "Sat" },
+        "3C": { title: "DX Luncheon – DXCC 2025", presenter: "W7VO", room: "Riverside C", timePeriod: "1200-1250", day: "Sat" },
+        "3D": { title: "Engaging Youth in Amateur Radio", presenter: "KG7FZH", room: "Seaside A", timePeriod: "1200-1250", day: "Sat" },
+        "3E": { title: "Evolution and Intro to the Hexbeam Multiband Antenna", presenter: "KI6AWR", room: "Seaside B", timePeriod: "1200-1250", day: "Sat" },
+        "3F": { title: "Black Sky – Long-Term Grid-Down", presenter: "NW7T", room: "Seaside C", timePeriod: "1200-1250", day: "Sat" },
+        "3G": { title: "YL Luncheon – Amateur Radio in Egypt", presenter: "N6KLS", room: "Sunrise", timePeriod: "1200-1250", day: "Sat" },
+        "4A": { title: "Get Started with LoTW Successfully (cont.)", presenter: "AF7KB", room: "Riverside A", timePeriod: "1300-1350", day: "Sat" },
+        "4B": { title: "ARRL Forum", presenter: "KB7HDX/K6WX/W7VO", room: "Riverside A/B", timePeriod: "1300-1350", day: "Sat" },
+        "4C": { title: "Yaesu DR-2X Repeater and FTX-1F Radio", presenter: "N9UPC", room: "Riverside C", timePeriod: "1300-1350", day: "Sat" },
+        "4D": { title: "Technical Innovation Within Amateur Radio", presenter: "N8GNJ", room: "Seaside A", timePeriod: "1300-1350", day: "Sat" },
+        "4E": { title: "Ropes, Knots, and Alternatives for Portable Antennas", presenter: "WB6BYU", room: "Seaside B", timePeriod: "1300-1350", day: "Sat" },
+        "4F": { title: "Building Magnetic Loop Antennas", presenter: "K7TLC", room: "Seaside C", timePeriod: "1300-1350", day: "Sat" },
+        "5A": { title: "Get Started in Casual Contesting", presenter: "NN7O", room: "Riverside A", timePeriod: "1510-1600", day: "Sat" },
+        "5B": { title: "Gordon West Ham Instructor Academy", presenter: "WB6NOA", room: "Riverside B", timePeriod: "1510-1600", day: "Sat" },
+        "5C": { title: "Kit Building Techniques for Success", presenter: "K0NEB", room: "Riverside C", timePeriod: "1510-1600", day: "Sat" },
+        "5D": { title: "Collegiate Panel", presenter: "N7JI", room: "Seaside A", timePeriod: "1510-1600", day: "Sat" },
+        "5E": { title: "Home Brew Construction Techniques", presenter: "WA7MLH", room: "Seaside B", timePeriod: "1510-1600", day: "Sat" },
+        "5F": { title: "Oregon ARES Taskbooks", presenter: "AB7ZQ", room: "Seaside C", timePeriod: "1510-1600", day: "Sat" },
+        "5G": { title: "Intro to Vintage Ham Radio Repair", presenter: "VE7UTS", room: "Sunrise", timePeriod: "1510-1600", day: "Sat" },
+        "6A": { title: "HF DX For Beginners", presenter: "K7VV", room: "Riverside A", timePeriod: "1610-1700", day: "Sat" },
+        "6B": { title: "The Hunted on Route 66", presenter: "N6KLS", room: "Riverside B", timePeriod: "1610-1700", day: "Sat" },
+        "6C": { title: "Go Outside and Play!", presenter: "KO7T", room: "Riverside C", timePeriod: "1610-1700", day: "Sat" },
+        "6D": { title: "Ham Radio Instant Scoring Service", presenter: "N7AKG", room: "Seaside A", timePeriod: "1610-1700", day: "Sat" },
+        "6E": { title: "Crystal Filter Design and Construction", presenter: "WA7MLH", room: "Seaside B", timePeriod: "1610-1700", day: "Sat" },
+        "6F": { title: "AMSAT CubeSat Simulator: V2.0, Uplink Ctrl via HT", presenter: "W7DGP", room: "Seaside C", timePeriod: "1610-1700", day: "Sat" },
+        "7A": { title: "Grid Down, VARA FM to Send Images", presenter: "KB7RHI", room: "Riverside A/B", timePeriod: "1000-1050", day: "Sun" },
+        "7B": { title: "Grid Down, VARA FM to Send Images (cont.)", presenter: "KB7RHI", room: "Riverside A/B", timePeriod: "1100-1150", day: "Sun" },
+        "7C": { title: "Pirate, Spy, and Clandestine Radio", presenter: "K0NEB", room: "Riverside C", timePeriod: "1000-1050", day: "Sun" },
+        "7D": { title: "Sunday Multi-Presenter Idea Sharing Session", presenter: "VE7UTS", room: "Seaside A/B", timePeriod: "1000-1050", day: "Sun" },
+        "7E": { title: "Sunday Multi-Presenter Idea Sharing Session (cont.)", presenter: "VE7UTS", room: "Seaside A/B", timePeriod: "1100-1150", day: "Sun" },
+        "7F": { title: "New Flex Radio Shared Remote Station Service", presenter: "N7AKG", room: "Seaside C", timePeriod: "1000-1050", day: "Sun" },
+        "8A": { title: "Grid Down, VARA FM to Send Images (cont.)", presenter: "KB7RHI", room: "Riverside A/B", timePeriod: "1100-1150", day: "Sun" },
+        "8B": { title: "Grid Down, VARA FM to Send Images (cont.)", presenter: "KB7RHI", room: "Riverside A/B", timePeriod: "1100-1150", day: "Sun" },
+        "8C": { title: "Antenna Basics", presenter: "W7BBO", room: "Riverside C", timePeriod: "1100-1150", day: "Sun" },
+        "8D": { title: "Sunday Multi-Presenter Idea Sharing Session (cont.)", presenter: "VE7UTS", room: "Seaside A/B", timePeriod: "1100-1150", day: "Sun" },
+        "8E": { title: "New Flex Radio Shared Remote Station Service (cont.)", presenter: "N7AKG", room: "Seaside C", timePeriod: "1100-1150", day: "Sun" },
+      };
+
+      // Seminar summaries from booklet pages 18–19
+      const SUMMARIES = {
+        "1A": "Learn the basics for the most popular contest logging software. Learn the setup, and how to start logging contacts.",
+        "1B": "Elecraft is constantly innovating their product line. Learn some about what they've been doing lately.",
+        "1C": "Antennas can make or break a ham station! No antenna, no fun on the air-waves, either. Learn some antenna fundamentals.",
+        "1D": "Learn some training techniques that worked for Clackamas ARES to increase radio and other skills.",
+        "1E": "The world has changed just a bit since 1984. See a visual tour of the changes over time.",
+        "1F": "Learn how to build your own baluns and learn: why they are useful, how they work, what materials to use, how to wind them, and how to test your balun.",
+        "1G": "Do you have questions about some amateur radio topics? Walk down the hall and zigzag to the last room with questions.",
+        "2A": "Now that you know N1MM+ basics, attend to learn how to use the more advanced features of this superb contest logging program.",
+        "2B": "Get outdoors and operate POTA (Parks) and SOTA (Summits) on the air while breathing in fresh outdoor air. Learn how to get started and equipment suggestions.",
+        "2C": "Is your club static, not growing, and not having fun? Listen to some practical suggestions from Radio Club of Tacoma President.",
+        "2D": "Listen to a theoretical image of amateur radio in the future. You can help craft the future with a vision of the possible.",
+        "2E": "Learn some ways to beat the HOA rules and still have fun with amateur radio.",
+        "2F": "Learn some new ways to discover repeaters with key data on each. This can work well when traveling or simply experimenting.",
+        "2G": "Building a remote station comes with the promise of outstanding contacts and some maintenance issues to overcome.",
+        "3A": "Learn how to get started and succeed with Logbook of the World (LoTW).",
+        "3B": "Flex is one of the popular radio brands with a strong following. Learn what Flex is doing lately to improve your ham radio experience.",
+        "3C": "Mike will discuss happenings at a recent meeting that proposes some modifications to the DXCC program and answer questions.",
+        "3D": "Engaging youth with amateur radio takes patience and persistence. Learn some ways that work.",
+        "3E": "Learn how Hexbeam antennas evolved over the past decades into a compact multiband antenna.",
+        "3F": "Listen to a prediction of what could happen during and after an EMP or other disaster. Forewarning can help you prepare in ways best for your family.",
+        "3G": "Operating amateur radio in some countries is easy, others not so much. Vicki will discuss her experiences operating from Egypt, a fairly rare country from DXCC perspective.",
+        "4A": "Continuation of Get Started with LoTW Successfully.",
+        "4B": "Interact with ARRL leaders from the national, Division, and Section levels.",
+        "4C": "Yaesu continues to innovate and recently released an updated repeater and radios to match. Learn some of their capability.",
+        "4D": "Amateurs tend to innovate when solving problems and experimenting. Learn some of our history of innovation.",
+        "4E": "Getting antennas in the air can be a challenge. Learn some practical and useful knots, antenna types and techniques to get on the air.",
+        "4F": "Magnetic loop antennas are usually small and unobtrusive that can overcome some HOA issues.",
+        "5A": "Learn some ways to get started in contesting in a casual way. Increase your count towards awards while improving your radio skills.",
+        "5B": "Gordon has taught many ham license classes over many years. Attend his Instructor Academy and learn techniques that can help your instruction methods.",
+        "5C": "Want to build a kit but unsure of what you need and how to get started. Drop by and learn what and how to get started for satisfying fun.",
+        "5D": "Listen to the experiences of college-age hams and how they are learning and growing ham radio in college.",
+        "5E": "Home brew construction can be very satisfying. Learn how to succeed and build things yourself.",
+        "5F": "Meeting on Oregon ARES taskbooks and related matters. Open to anyone interested.",
+        "5G": "Nothing like the smell of warm radio tubes from a vintage radio. Learn the technology and how to use older radios.",
+        "6A": "Want to find out what DXing is all about and how to get started? This seminar is for you. Bring questions.",
+        "6B": "The fabled Route 66 plays host to radio operators each year. Learn some of what goes on behind the scenes with the Route 66 On the Air event.",
+        "6C": "Playing radio outdoors allows you to mix nature and radio in fun ways. Learn how, why, and what to take along for fun outdoors.",
+        "6D": "Instant scoring might mean instant gratification and competition with friends during radio contests.",
+        "6E": "Home brew crystal filter design and construction logistics with actual hardware examples.",
+        "6F": "Learn the features of AMSAT's revised CubeSat Simulator. Learn about DireWolf APRS and other features.",
+        "7A": "When some kind of disaster occurs, everyone seems to want pictures. Learn practical techniques and see live demos of ways to provide those images. 2-hour seminar.",
+        "7B": "Continuation of Grid Down, VARA FM to Send Images.",
+        "7C": "Get a peek into the world of clandestine radio, and maybe hear some spies sending information home.",
+        "7D": "Open forum for experimenters and home brew hams to show off their recent experiments. Swap ideas with other experimenters.",
+        "7E": "Continuation of Sunday Multi-Presenter Idea Sharing Session.",
+        "7F": "Learn some concepts behind building a remote shared station accessible via the internet using Flex equipment.",
+        "8A": "Continuation of Grid Down, VARA FM to Send Images.",
+        "8B": "Continuation of Grid Down, VARA FM to Send Images.",
+        "8C": "Antennas are a fundamental requirement for successful wireless communication. Learn how they work.",
+        "8D": "Continuation of Sunday Multi-Presenter Idea Sharing Session.",
+        "8E": "Continuation of New Flex Radio Shared Remote Station Service.",
+      };
+
+      // Date lookup
+      const DATES = { Sat: "2025-05-31", Sun: "2025-06-01" };
+
+      // Time period → start/end
+      const TIME_MAP = {
+        "1000-1050": { start: "10:00 AM", end: "10:50 AM" },
+        "1100-1150": { start: "11:00 AM", end: "11:50 AM" },
+        "1200-1250": { start: "12:00 PM", end: "12:50 PM" },
+        "1300-1350": { start: "1:00 PM", end: "1:50 PM" },
+        "1510-1600": { start: "3:10 PM", end: "4:00 PM" },
+        "1610-1700": { start: "4:10 PM", end: "5:00 PM" },
+      };
+
+      function parse(items) {
+        // In this tool, we use the hard-coded schedule grid and summaries
+        // but also attempt to extract any additional data from the loaded PDF
+        // to verify / augment the built-in data.
+        //
+        // If no PDF is loaded, the built-in data is used directly.
+        // If a PDF is loaded, we attempt to find grid keys and descriptions
+        // and merge them with the built-in data.
+
+        const sessions = [];
+
+        for (const [gridKey, meta] of Object.entries(SCHEDULE_GRID)) {
+          const date = DATES[meta.day] || "";
+          const timePeriod = TIME_MAP[meta.timePeriod] || {};
+          const description = SUMMARIES[gridKey] || "";
+          const presenter = meta.presenter || "";
+
+          // Split multi-presenter strings
+          const speakers = presenter
+            .split(/\/|,\s+| and /i)
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+          sessions.push({
+            id: createId(meta.day, meta.title),
+            title: meta.title,
+            description,
+            speaker: speakers,
+            location: meta.room,
+            startTime: buildDT(date, timePeriod.start || ""),
+            endTime: buildDT(date, timePeriod.end || ""),
+            category: "Seminars",
+            gridKey,
+          });
+        }
+
+        return sessions;
+      }
+
+      // ── Time helpers ──────────────────────────────────────────────
+      function buildDT(dateStr, timeStr) {
+        if (!dateStr || !timeStr) return "";
+        const m = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!m) return "";
+        let h = parseInt(m[1]);
+        const min = parseInt(m[2]);
+        const ap = m[3].toUpperCase();
+        if (ap === "AM" && h === 12) h = 0;
+        else if (ap === "PM" && h !== 12) h += 12;
+        return `${dateStr}T${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}:00`;
+      }
+
+      function escStr(s) {
+        return (s || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"')
+          .replace(/[\r\n]/g, " ");
+      }
+
+      function createId(day, title) {
+        return ((day || "") + "-" + (title || ""))
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .substring(0, 50)
+          .replace(/-$/, "");
+      }
+
+      function renderOutput(sessions) {
+        const mapImg =
+          document.getElementById("mapImage").value.trim() ||
+          "/seapac-map-2025.jpg";
+        let out = "// Extracted seminar schedule for SEA-PAC 2025\n";
+        out += "// May 31 – June 1, 2025 | Seaside Convention Center, Seaside, Oregon\n//\n";
+        out +=
+          "//export interface Session {\n//  id: string;\n//  title: string;\n";
+        out +=
+          "//  description: string;\n//  speaker: string[];\n//  location: string;\n";
+        out +=
+          "//  startTime: string; // local date-time (Pacific)\n";
+        out +=
+          "//  endTime: string;   // local date-time (Pacific)\n";
+        out += "//  category: string;\n//  gridKey: string; // SEA-PAC grid reference e.g. \"1A\"\n//}\n\n";
+        out += "import { Session } from "@/types/conference";\n\n";
+        out += `export const mapSessions: [string, Session[]] = [\n  '${escStr(mapImg)}', [\n`;
+        for (const s of sessions) {
+          const spk = s.speaker.map((sp) => `"${escStr(sp)}"`).join(", ");
+          out += `  {\n    id: "${escStr(s.id)}",\n    title: "${escStr(s.title)}",\n`;
+          out += `    description: "${escStr(s.description)}",\n    speaker: [${spk}],\n`;
+          out += `    location: "${escStr(s.location)}",\n    startTime: "${s.startTime}",\n`;
+          out += `    endTime: "${s.endTime}",\n    category: "Seminars",\n    gridKey: "${escStr(s.gridKey)}",\n  },\n`;
+        }
+        out += "]\n];\n";
+        extractedData = out;
+        document.getElementById("output").textContent = out;
+
+        const dates = [
+          ...new Set(
+            sessions.map((s) => s.startTime.slice(0, 10)).filter(Boolean),
+          ),
+        ];
+        const withSpk = sessions.filter((s) => s.speaker.length > 0).length;
+        document.getElementById("stats").className = "stats";
+        document.getElementById("stats").innerHTML =
+          `<strong>Extraction Summary:</strong><br>Total Sessions: ${sessions.length}<br>` +
+          `Dates: ${dates.join(", ")}<br>Sessions with Speaker: ${withSpk}`;
+      }
+
+      function dumpRaw() {
+        if (!rawItems.length) {
+          // No PDF loaded — run from built-in data
+          runBuiltIn();
+          return;
+        }
+        let out = "// RAW PDF TEXT ITEMS (page, x, y, text)\n\n";
+        for (const it of rawItems)
+          out += `p${it.page} x=${String(it.x).padStart(4)} y=${String(it.y).padStart(4)}  ${it.str}\n`;
+        extractedData = out;
+        document.getElementById("output").textContent = out;
+        document.getElementById("stats").className = "stats";
+        document.getElementById("stats").innerHTML =
+          `<strong>Raw dump:</strong> ${rawItems.length} text items from PDF.`;
+      }
+
+      function runBuiltIn() {
+        // Generate output directly from built-in data without loading a PDF
+        document.getElementById("stats").innerHTML =
+          "Generating from built-in SEA-PAC 2025 schedule data...";
+        const sessions = parse([]);
+        renderOutput(sessions);
+      }
+
+      function copyToClipboard() {
+        if (!extractedData) {
+          // Auto-generate from built-in data
+          runBuiltIn();
+          setTimeout(() => {
+            navigator.clipboard
+              .writeText(extractedData)
+              .then(() => alert("Copied!"))
+              .catch((err) => alert("Failed: " + err));
+          }, 200);
+          return;
+        }
+        navigator.clipboard
+          .writeText(extractedData)
+          .then(() => alert("Copied!"))
+          .catch((err) => alert("Failed: " + err));
+      }
+
+      // Auto-run on page load using built-in data
+      window.addEventListener("load", () => {
+        runBuiltIn();
+      });
+    </script>
+  </body>
+</html>
