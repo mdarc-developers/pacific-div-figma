@@ -128,14 +128,8 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   };
 
   return (
-    <div className="max-w-md">
-      <>
-        <Toaster />
-      </>
-      <h1 className="text-3xl font-bold mb-8">
-        <User className="h-4 w-4" />
-        Profile
-      </h1>
+    <div className="max-w-lg space-y-4">
+      <Toaster />
 
       {/* Profile header card */}
       <Card>
@@ -182,7 +176,6 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
               variant="outline"
               size="sm"
               onClick={handleLogout}
-              //className="shrink-0"
               className="logout-button border-2 border-solid shadow-md"
             >
               <LogOut className="h-4 w-4" />
@@ -368,7 +361,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
       )}
 
       {error && (
-        <p className="text-red-500 dark:text-red-400 mt-4 text-sm">{error}</p>
+        <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>
       )}
     </div>
   );
