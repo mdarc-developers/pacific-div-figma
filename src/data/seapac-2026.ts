@@ -67,14 +67,14 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/assets/maps/yuma-vendors-20260225.png",
+  "/assets/maps/seapac-exhibitors-20260227.png",
   // must match mapBooths URL
   [
   ]
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/assets/maps/yuma-vendors-20260225.png",
+  "/assets/maps/seapac-exhibitors-20260227.png",
   // must match mapExhibitors URL
   // Source: https://www.yumahamfest.com/vendorlayout.html (SVG extracted 2026-02-25)
   // SVG viewBox 0 0 724.2 378.4  →  image 1166 × 609
@@ -89,7 +89,7 @@ export const mapBooths: [string, Booth[]] = [
 // NOTE: All y values are measured from the bottom, not from the top and y values <= origHeightNum (562)
 // NOTE: All x values are measured from the left and must be <= origWidthNum (998)
 export const mapRooms: [string, Room[]] = [
-  "/assets/maps/yuma_map_2026-01-06_160549-1.png",
+  "/assets/maps/seapac-forums-20260227.png",
   // must match mapSessions URL
   [
     // ... (your forumRooms data) ...
@@ -98,7 +98,7 @@ export const mapRooms: [string, Room[]] = [
 ];
 
 export const mapSessions: [string, Session[]] = [
-  "/assets/maps/yuma_map_2026-01-06_160549-1.png",
+  "/assets/maps/seapac-forums-20260227.png",
   // must match mapRooms URL
   // Source: https://www.yumahamfest.com/seminars.html (extracted 2026-02-25)
   [
@@ -108,22 +108,31 @@ export const mapSessions: [string, Session[]] = [
 // map images - in production these may be bundled images
 export const conferenceMaps: MapImage[] = [
   {
-    id: "map-3",
-    name: "Yuma Hamfest",
-    url: "/assets/maps/yuma_map_2026-01-06_160549-1.png",
+    id: "map-1",
+    name: "Lobby",
+    url: "/assets/maps/seapac-lobby-20260227.png",
+    floor: 'lobby',
     order: 1,
-    origHeightNum: 562,
-    origWidthNum: 998,
+    origWidthNum: 473,
+    origHeightNum: 624,
   },
   {
     id: "map-2",
     name: "Exhibitors",
-    //url: 'https://www.yumahamfest.com/vendorlayout.html',
-    url: "/assets/maps/yuma-vendors-20260225.png",
-    //floor: '2',
+    url: "/assets/maps/seapac-exhibitors-20260227.png",
+    floor: 'Main',
     order: 2,
-    origWidthNum: 1166,
-    origHeightNum: 609,
+    origWidthNum: 677,
+    origHeightNum: 741,
+  },
+  {
+    id: "map-3",
+    name: "Forums",
+    url: "/assets/maps/seapac-forums-20260227.png",
+    floor: 'Upstairs',
+    order: 3,
+    origWidthNum: 638,
+    origHeightNum: 726,
   },
 ];
 
