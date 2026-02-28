@@ -246,13 +246,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                   {/* Time */}
                   {result.session.startTime && (
                     <p className="text-xs text-gray-500 dark:text-gray-500">
-                      {new Date(result.session.startTime).toLocaleTimeString(
-                        "en-US",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        },
-                      )}
+                      {new Date(
+                        result.session.startTime +
+                          activeConference.timezoneNumeric,
+                      ).toLocaleTimeString("en-US", {
+                        timeZone: activeConference.timezone,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </p>
                   )}
                 </div>
