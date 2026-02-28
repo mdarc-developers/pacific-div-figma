@@ -11,30 +11,7 @@ import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Map as MapIcon } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
-
-// Type for the imported conference module
-interface ConferenceModule {
-  conferenceMaps?: MapImage[];
-  [key: string]: unknown;
-}
-
-// Import all session data files at once using Vite's glob import
-// This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-// Process the modules into a lookup object
-const MAP_DATA: Record<string, MapImage[]> = {};
-Object.entries(conferenceModules).forEach(([path, module]) => {
-  // Extract the conference ID from the file path
-  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
-  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
-  const typedModule = module as ConferenceModule;
-  if (typedModule.conferenceMaps) {
-    MAP_DATA[conferenceId] = typedModule.conferenceMaps;
-  }
-});
+import { MAP_DATA } from "@/lib/sessionData";
 
 /**
  * Renders a PDF inside an <iframe> whose height is automatically derived from
