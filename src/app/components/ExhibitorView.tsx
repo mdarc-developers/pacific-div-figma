@@ -24,6 +24,7 @@ interface ExhibitorViewProps {
   bookmarkedExhibitors?: string[];
   onToggleBookmark?: (exhibitorId: string) => void;
   highlightExhibitorId?: string;
+  onLocationClick?: (exhibitorId: string) => void;
 }
 
 // NEW: Separate component for individual exhibitor
@@ -32,6 +33,7 @@ interface ExhibitorCardProps {
   isBookmarked: boolean;
   isHighlighted: boolean;
   onToggleBookmark?: (exhibitorId: string) => void;
+  onLocationClick?: (exhibitorId: string) => void;
 }
 
 function ExhibitorCard({
@@ -39,6 +41,7 @@ function ExhibitorCard({
   isBookmarked,
   isHighlighted,
   onToggleBookmark,
+  onLocationClick,
 }: ExhibitorCardProps) {
   const exhibitorRef = useRef<HTMLDivElement>(null);
 
@@ -93,7 +96,35 @@ function ExhibitorCard({
             {exhibitor.description}
           </p>
           <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+            <div
+              className={`flex items-center gap-2 text-gray-700 dark:text-gray-300 ${
+                onLocationClick
+                  ? "cursor-pointer hover:text-amber-500 transition-colors"
+                  : ""
+              }`}
+              onClick={
+                onLocationClick
+                  ? () => onLocationClick(exhibitor.id)
+                  : undefined
+              }
+              onKeyDown={
+                onLocationClick
+                  ? (e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onLocationClick(exhibitor.id);
+                      }
+                    }
+                  : undefined
+              }
+              role={onLocationClick ? "button" : undefined}
+              tabIndex={onLocationClick ? 0 : undefined}
+              aria-label={
+                onLocationClick
+                  ? `Highlight booth for ${exhibitor.name}`
+                  : undefined
+              }
+            >
               <MapPin className="h-4 w-4" />
               <span>
                 {exhibitor.locationZone}&nbsp;
@@ -131,6 +162,7 @@ export function ExhibitorView({
   bookmarkedExhibitors = [],
   onToggleBookmark,
   highlightExhibitorId,
+  onLocationClick,
 }: ExhibitorViewProps) {
   const [selectedType, setSelectedType] = useState<string>("all");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -190,6 +222,7 @@ export function ExhibitorView({
                     isBookmarked={bookmarkedExhibitors.includes(exhibitor.id)}
                     isHighlighted={highlightExhibitorId === exhibitor.id}
                     onToggleBookmark={onToggleBookmark}
+                    onLocationClick={onLocationClick}
                   />
                 ))}
             </div>
@@ -207,6 +240,7 @@ export function ExhibitorView({
                   isBookmarked={bookmarkedExhibitors.includes(exhibitor.id)}
                   isHighlighted={highlightExhibitorId === exhibitor.id}
                   onToggleBookmark={onToggleBookmark}
+                  onLocationClick={onLocationClick}
                 />
               ))}
           </TabsContent>

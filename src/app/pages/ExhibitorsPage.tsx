@@ -52,6 +52,9 @@ export function ExhibitorsPage() {
   const [bookmarkedExhibitors, setBookmarkedExhibitors] = useState<string[]>(
     [],
   );
+  const [highlightedExhibitorId, setHighlightedExhibitorId] = useState<
+    string | undefined
+  >(undefined);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
@@ -62,6 +65,8 @@ export function ExhibitorsPage() {
   const mapExhibitors = exhibitorEntry ? exhibitorEntry[1] : [];
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
+  const polygonsRef = useRef<Map<number, L.Polygon>>(new Map());
+  const highlightedExhibitorIdRef = useRef<string | undefined>(undefined);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [pdfHeight, setPdfHeight] = useState<number>(0);
   // Single-map assumption: always use one exhibitors map.
@@ -241,6 +246,7 @@ export function ExhibitorsPage() {
     // Small delay ensures container has rendered with correct dimensions before fit
     setTimeout(() => leafletMap.invalidateSize(), 100);
 
+    polygonsRef.current.clear();
     let found: Exhibitor | undefined;
     exhibitorBooths.forEach((exhibitorBooth) => {
       const polygon = L.polygon(exhibitorBooth.coords as [number, number][], {
@@ -249,18 +255,31 @@ export function ExhibitorsPage() {
         fillOpacity: 0.0,
         weight: 2,
       }).addTo(leafletMap);
+      polygonsRef.current.set(exhibitorBooth.id, polygon);
       //console.log(exhibitorBooth.id.toString());
       found = boothToName.get(exhibitorBooth.id);
       if (found) {
         //console.log(exhibitorBooth.id.toString() + " " + found);
         polygon.bindPopup(found.boothName + "<br/>" + found.name);
+        const exhibitorId = found.id;
+        polygon.on("click", () =>
+          setHighlightedExhibitorId((prev) =>
+            prev === exhibitorId ? undefined : exhibitorId,
+          ),
+        );
       } else {
         //console.log(exhibitorBooth.id.toString());
         polygon.bindPopup(exhibitorBooth.id.toString());
       }
       // Your mouseover/mouseout functions with arrow syntax to fix 'this' typing:
       polygon.on("mouseover", () => polygon.setStyle({ fillOpacity: 0.6 }));
-      polygon.on("mouseout", () => polygon.setStyle({ fillOpacity: 0.0 }));
+      polygon.on("mouseout", () => {
+        const currentHighlight = highlightedExhibitorIdRef.current;
+        const ex = boothToName.get(exhibitorBooth.id);
+        const isHighlighted =
+          ex !== undefined && ex.id === currentHighlight;
+        polygon.setStyle({ fillOpacity: isHighlighted ? 0.6 : 0.0 });
+      });
     });
 
     leafletRef.current = leafletMap;
@@ -269,8 +288,23 @@ export function ExhibitorsPage() {
     return () => {
       leafletMap.remove();
       leafletRef.current = null;
+      polygonsRef.current.clear();
     };
   }, [exhibitorsMap]);
+
+  // Sync highlighted exhibitor → polygon fill style
+  useEffect(() => {
+    highlightedExhibitorIdRef.current = highlightedExhibitorId;
+    polygonsRef.current.forEach((polygon, boothId) => {
+      const exhibitor = boothToName.get(boothId);
+      const isHighlighted =
+        exhibitor !== undefined && exhibitor.id === highlightedExhibitorId;
+      polygon.setStyle({
+        fillColor: isHighlighted ? "#f59e0b" : "#fff",
+        fillOpacity: isHighlighted ? 0.6 : 0.0,
+      });
+    });
+  }, [highlightedExhibitorId]); // boothToName is derived from stable module-level data
 
   function origAspect(h?: number, w?: number) {
     if (!h) throw new Error("exhibitorsMap missing origHeightNum");
@@ -283,6 +317,12 @@ export function ExhibitorsPage() {
       prev.includes(exhibitorId)
         ? prev.filter((id) => id !== exhibitorId)
         : [...prev, exhibitorId],
+    );
+  };
+
+  const handleLocationClick = (exhibitorId: string) => {
+    setHighlightedExhibitorId((prev) =>
+      prev === exhibitorId ? undefined : exhibitorId,
     );
   };
 
@@ -352,6 +392,8 @@ export function ExhibitorsPage() {
       <ExhibitorView
         bookmarkedExhibitors={bookmarkedExhibitors}
         onToggleBookmark={handleToggleBookmark}
+        highlightExhibitorId={highlightedExhibitorId}
+        onLocationClick={handleLocationClick}
       />
     </div>
   );
