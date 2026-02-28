@@ -22,6 +22,12 @@ import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
+import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/app/components/ui/tooltip";
 
 interface CalendarProps {
   events: EventInput[];
@@ -203,6 +209,36 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   }
 });
 
+// Track the newest supplemental file timestamp token per conference.
+const SESSION_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
+
+// Override with supplemental session files (e.g. seapac-2026-sesssion-20260227.ts).
+// The glob matches both "session" and "sesssion" (common typo) via the * wildcard.
+// Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
+// multiple supplemental files exist for the same conference.
+const supplementalSessionModules = import.meta.glob(
+  "../../data/*-sess*ion-*.ts",
+  { eager: true },
+);
+Object.keys(supplementalSessionModules)
+  .sort()
+  .forEach((path) => {
+    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
+    // The regex matches both "session" and "sesssion" (triple-s typo in first file).
+    const conferenceIdMatch = filename.match(/^(.+)-sess.*ion-/);
+    if (conferenceIdMatch) {
+      const conferenceId = conferenceIdMatch[1];
+      const typedModule = supplementalSessionModules[path] as SessionModule;
+      if (typedModule.mapSessions) {
+        SESSION_DATA[conferenceId] = typedModule.mapSessions[1];
+        const token = filename.split("-").pop() ?? "";
+        if (token && token > (SESSION_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
+          SESSION_SUPPLEMENTAL_TOKEN[conferenceId] = token;
+        }
+      }
+    }
+  });
+
 interface ScheduleViewProps {
   bookmarkedSessions?: string[];
   onToggleBookmark?: (sessionId: string) => void;
@@ -230,6 +266,7 @@ export function ScheduleView({
   const navigate = useNavigate();
   const location = useLocation();
   const sessions = SESSION_DATA[activeConference.id] || [];
+  const updateToken = SESSION_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedDay, setSelectedDay] = useState<string>("all");
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [showNowAndNext, setShowNowAndNext] = useState(false);
@@ -463,6 +500,19 @@ export function ScheduleView({
         events={calendarEvents}
         startDate={activeConference.startDate}
       />
+      {updateToken && (
+        <p className="text-xs text-gray-400 mt-4">
+          Updated:{" "}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="underline decoration-dotted cursor-help">
+                {formatUpdateToken(updateToken)}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{formatUpdateTokenDetail(updateToken)}</TooltipContent>
+          </Tooltip>
+        </p>
+      )}
     </div>
   );
 }

@@ -30,8 +30,13 @@ import {
   UserCheck,
 } from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
-import { formatUpdateToken } from "@/app/components/PrizesView";
+import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
 import { getGoogleAccessToken, deleteDriveFile } from "@/lib/googleDrive";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/app/components/ui/tooltip";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -747,11 +752,16 @@ export function PrizesAdminView({
       />
 
       {updateToken && (
-        <p
-          className="text-xs text-gray-400 mt-4"
-          title={updateToken}
-        >
-          Updated: {formatUpdateToken(updateToken)}
+        <p className="text-xs text-gray-400 mt-4">
+          Updated:{" "}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="underline decoration-dotted cursor-help">
+                {formatUpdateToken(updateToken)}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{formatUpdateTokenDetail(updateToken)}</TooltipContent>
+          </Tooltip>
         </p>
       )}
     </div>
