@@ -67,13 +67,13 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/hamcation-2026-north.png",
+  "/assets/maps/hamcation-2026-north.png",
   // must match mapExhibitors URL
   [],
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/hamcation-2026-north.png",
+  "/assets/maps/hamcation-2026-north.png",
   // must match mapBooths URL
   [
     {
@@ -126,7 +126,7 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 // The Pleasanton/Danville/San Ramon coords below are PLACEHOLDERS — update them to match
 // your actual image. Their original x values (630–715) exceeded the image width of 582.
 export const mapRooms: [string, Room[]] = [
-  "/hamcation-2026-pavilion.png",
+  "/assets/maps/hamcation-2026-pavilion.png",
   // must match mapSessions URL
   [
     // ... (your forumRooms data) ...
@@ -179,7 +179,7 @@ export const mapRooms: [string, Room[]] = [
 ];
 
 export const mapSessions: [string, Session[]] = [
-  "/hamcation-2026-pavilion.png",
+  "/assets/maps/hamcation-2026-pavilion.png",
   // must match mapRooms URL
   [
     {
@@ -274,7 +274,7 @@ export const conferenceMaps: MapImage[] = [
   {
     id: "map-1",
     name: "Fairground",
-    url: "/hamcation-2026-fairgrounds.png",
+    url: "/assets/maps/hamcation-2026-fairgrounds.png",
     order: 1,
     origHeightNum: 647,
     origWidthNum: 1200,
@@ -282,7 +282,7 @@ export const conferenceMaps: MapImage[] = [
   {
     id: "map-2",
     name: "East and West Halls",
-    url: "/hamcation-2026-eastwest.png",
+    url: "/assets/maps/hamcation-2026-eastwest.png",
     order: 2,
     origHeightNum: 425,
     origWidthNum: 1199,
@@ -290,7 +290,7 @@ export const conferenceMaps: MapImage[] = [
   {
     id: "map-3",
     name: "North Hall",
-    url: "/hamcation-2026-north.png",
+    url: "/assets/maps/hamcation-2026-north.png",
     order: 3,
     origHeightNum: 550,
     origWidthNum: 1199,
@@ -298,7 +298,7 @@ export const conferenceMaps: MapImage[] = [
   {
     id: "map-4",
     name: "Pavilion",
-    url: "/hamcation-2026-pavilion.png",
+    url: "/assets/maps/hamcation-2026-pavilion.png",
     order: 4,
     origHeightNum: 840,
     origWidthNum: 1016,
@@ -306,7 +306,7 @@ export const conferenceMaps: MapImage[] = [
   {
     id: "map-5",
     name: "Outline",
-    url: "/hamcation-map-2026.png",
+    url: "/assets/maps/hamcation-map-2026.png",
     order: 5,
   },
 ];

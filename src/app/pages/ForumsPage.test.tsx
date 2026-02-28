@@ -71,7 +71,7 @@ describe("forumMap fallback selection", () => {
   const fallbackMap: MapImage = {
     id: "map-0",
     name: "noForumMapFound",
-    url: "/pacificon-forums-2025.jpg",
+    url: "/assets/maps/pacificon-forums-2025.jpg",
     order: 6,
     origHeightNum: 256,
     origWidthNum: 582,
@@ -80,7 +80,7 @@ describe("forumMap fallback selection", () => {
   const forumsMap: MapImage = {
     id: "map-forum",
     name: "Forums",
-    url: "/pacificon-forums-2025.jpg",
+    url: "/assets/maps/pacificon-forums-2025.jpg",
     order: 3,
     origHeightNum: 256,
     origWidthNum: 582,
@@ -89,14 +89,14 @@ describe("forumMap fallback selection", () => {
   const hotelMap: MapImage = {
     id: "map-hotel",
     name: "Hotel",
-    url: "/pacificon-hotel-2025.jpg",
+    url: "/assets/maps/pacificon-hotel-2025.jpg",
     order: 1,
     origHeightNum: 1201,
     origWidthNum: 983,
   };
 
   const roomEntry: [string, Room[]] = [
-    "/pacificon-forums-2025.jpg",
+    "/assets/maps/pacificon-forums-2025.jpg",
     [
       {
         name: "Salon E",
