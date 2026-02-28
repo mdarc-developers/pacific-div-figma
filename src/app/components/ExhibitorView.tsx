@@ -126,10 +126,7 @@ function ExhibitorCard({
               }
             >
               <MapPin className="h-4 w-4" />
-              <span>
-                {exhibitor.locationZone}&nbsp;
-                {exhibitor.location}
-              </span>
+              <span>{exhibitor.boothName}</span>
             </div>
           </div>
         </CardContent>
