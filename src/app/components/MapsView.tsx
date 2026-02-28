@@ -10,6 +10,7 @@ import {
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Map as MapIcon } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 
 // Type for the imported conference module
 interface ConferenceModule {
@@ -106,6 +107,9 @@ export function MapsView() {
     }
   }
 
+  const tabBg = blendWithWhite(activeConference.primaryColor);
+  const tabText = contrastingColor(tabBg);
+
   return (
     <div className="w-full">
       <Tabs
@@ -113,7 +117,10 @@ export function MapsView() {
         onValueChange={setSelectedMap}
         className="w-full"
       >
-        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 mb-6 w-full">
+        <div
+          className="rounded-lg p-2 mb-6 w-full"
+          style={{ backgroundColor: tabBg, color: tabText }}
+        >
           <TabsList className="w-full flex-wrap h-auto bg-transparent">
             {sortedMaps.map((map) => (
               <TabsTrigger key={map.id} value={map.id}>

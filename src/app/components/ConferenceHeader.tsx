@@ -26,6 +26,10 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { NavLink } from "react-router-dom";
 import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
+import {
+  contrastingColor,
+  contrastingLinkColor,
+} from "@/lib/colorUtils";
 
 //import { forwardRef } from 'react';
 //
@@ -80,36 +84,7 @@ function formatHeaderYear(isoDate: Date, tzString: string) {
   return timeFormatter.format(isoDate);
 }
 
-function contrastingColor(color: string) {
-  // Convert hex to RGB array if needed (example function below)
-  const rgb = typeof color === "string" ? hexToRGBArray(color) : color;
-  // Calculate Luma (brightness)
-  const luma = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-  // Use black text if the background is light, white text if the background is dark
-  return luma >= 165 ? "#000000" : "#FFFFFF";
-}
 
-function contrastingLinkColor(color: string) {
-  // Convert hex to RGB array if needed (example function below)
-  const rgb = typeof color === "string" ? hexToRGBArray(color) : color;
-  // Calculate Luma (brightness)
-  const luma = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-  // Use black text if the background is light, white text if the background is dark
-  //    light 155dfc blue-600 oklch(54.6% 0.245 262.881)
-  // or dark  9098dc blue-400 oklch(70.7% 0.165 254.624)
-  return luma >= 165 ? "#155dfc" : "#9098dc";
-}
-
-function hexToRGBArray(hex: string) {
-  if (hex.startsWith("#")) hex = hex.substring(1);
-  if (hex.length === 3) hex = hex.replace(/./g, "$&$&"); // Expand shorthand
-  if (hex.length !== 6) throw new Error(`Invalid HEX color: ${hex}`);
-  const rgb = [];
-  for (let i = 0; i <= 2; i++) {
-    rgb[i] = parseInt(hex.substr(i * 2, 2), 16);
-  }
-  return rgb;
-}
 
 export function ConferenceHeader() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
