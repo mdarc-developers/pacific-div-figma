@@ -152,3 +152,32 @@ describe("userprofile uid uniqueness", () => {
     });
   });
 });
+
+// ── locationZone migration: Exhibitor → Booth ─────────────────────────────────
+// locationZone was removed from Exhibitor and is now required on Booth.
+// These tests verify that old data has been fully migrated.
+describe("locationZone migration (Exhibitor → Booth)", () => {
+  CONFERENCE_MODULES.forEach(([confId, mod]) => {
+    it(`${confId}: no exhibitor has locationZone (field belongs on Booth)`, () => {
+      const exhibitors = mod.mapExhibitors?.[1] ?? [];
+      exhibitors.forEach((ex) => {
+        expect(
+          "locationZone" in ex,
+          `${confId}: exhibitor '${ex.id}' still has locationZone — move it to the corresponding Booth`,
+        ).toBe(false);
+      });
+    });
+  });
+
+  CONFERENCE_MODULES.forEach(([confId, mod]) => {
+    it(`${confId}: every booth has locationZone`, () => {
+      const booths = mod.mapBooths?.[1] ?? [];
+      booths.forEach((b) => {
+        expect(
+          typeof b.locationZone,
+          `${confId}: booth ${b.id} is missing locationZone`,
+        ).toBe("string");
+      });
+    });
+  });
+});
