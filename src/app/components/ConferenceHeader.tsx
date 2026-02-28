@@ -261,6 +261,7 @@ export function ConferenceHeader() {
                   <img
                     src={activeConference.logoUrl}
                     alt="Conference Logo"
+                    className="h-20 w-auto"
                   ></img>
                 </a>
               ) : (
