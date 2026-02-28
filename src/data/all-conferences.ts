@@ -4,7 +4,8 @@ export const allConferences: Conference[] = [
   //  {
   //    id: 'hamcation-2026',
   //    name: 'Hamcation 2026',
-  //    location: '4603 W Colonial Drive, Orlando, FL 32808',
+  //    location: '4603 W Colonial Drive,\
+  //Orlando, FL 32808',
   //    venue: 'Central Florida Fairgrounds',
   //    startDate: '2026-02-13',
   //    endDate: '2026-02-15',
@@ -28,7 +29,8 @@ export const allConferences: Conference[] = [
   {
     id: "yuma-2026",
     name: "Yuma Hamfest 2026",
-    location: "2520 E 32nd St, Yuma, AZ 85365",
+    location: "2520 E 32nd St,\
+Yuma, AZ 85365",
     venue: "Yuma County Fairgrounds",
     startDate: "2026-02-27",
     endDate: "2026-02-28",
@@ -52,7 +54,8 @@ export const allConferences: Conference[] = [
   {
     id: "hamvention-2026",
     name: "Hamvention 2026",
-    location: "120 Fairground Road, Xenia, OH 45385",
+    location: "120 Fairground Road,\
+Xenia, OH 45385",
     venue: "Greene County Fairgrounds",
     startDate: "2026-05-15",
     endDate: "2026-05-17",
@@ -76,7 +79,8 @@ export const allConferences: Conference[] = [
   {
     id: "seapac-2026",
     name: "Sea-Pac 2026",
-    location: "415 First Avenue, Seaside, OR 97138",
+    location: "415 First Avenue,\
+Seaside, OR 97138",
     venue: "Seaside Convention Center",
     startDate: "2026-06-05",
     endDate: "2026-06-07",
@@ -98,7 +102,8 @@ export const allConferences: Conference[] = [
   {
     id: "huntsville-hamfest-2026",
     name: "Huntsville Hamfest 2026",
-    location: "700 Monroe Street SW, Huntsville, AL 35801",
+    location: "700 Monroe Street SW,\
+Huntsville, AL 35801",
     venue: "Von Braun Center",
     startDate: "2026-08-21",
     endDate: "2026-08-22",
@@ -126,7 +131,8 @@ export const allConferences: Conference[] = [
     timezone: "America/Los_Angeles",
     primaryColor: "#3d71a3", // our blue
     secondaryColor: "#3b82f6", // blue-500
-    location: "2600 Bishop Drive, San Ramon, CA 94583", // changed
+    location: "2600 Bishop Drive,\
+San Ramon, CA 94583", // changed
     conferenceWebsite: "https://www.pacificon.org", // changed
     venuePhone: "925-867-9200",
     venueGPS: "37.7629,-121.9674",
@@ -146,8 +152,10 @@ export const allConferences: Conference[] = [
   {
     id: "quartzfest-2027",
     name: "Quartzfest 2027",
-    location: "US 95 @ La Paz Valley Road, La Paz Valley, AZ, 85346",
-    venue: "BLM La Posa LTVA, Roadrunner Camping Area",
+    location: "US 95 @ La Paz Valley Road,\
+La Paz Valley, AZ, 85346",
+    venue: "BLM La Posa LTVA,\
+Roadrunner Camping Area",
     startDate: "2027-01-17",
     endDate: "2027-01-23",
     timezone: "America/Phoenix",
@@ -168,7 +176,8 @@ export const allConferences: Conference[] = [
   {
     id: "hamcation-2027",
     name: "Hamcation 2027",
-    location: "4603 W Colonial Drive, Orlando, FL 32808",
+    location: "4603 W Colonial Drive,\
+Orlando, FL 32808",
     venue: "Central Florida Fairgrounds",
     startDate: "2027-02-13",
     endDate: "2027-02-15",
