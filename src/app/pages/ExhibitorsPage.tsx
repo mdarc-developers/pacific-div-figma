@@ -50,9 +50,6 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 });
 
 export function ExhibitorsPage() {
-  const [bookmarkedExhibitors, setBookmarkedExhibitors] = useState<string[]>(
-    [],
-  );
   const [highlightedExhibitorId, setHighlightedExhibitorId] = useState<
     string | undefined
   >(undefined);
