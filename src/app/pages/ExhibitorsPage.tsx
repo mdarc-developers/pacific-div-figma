@@ -50,9 +50,6 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 });
 
 export function ExhibitorsPage() {
-  const [bookmarkedExhibitors, setBookmarkedExhibitors] = useState<string[]>(
-    [],
-  );
   const [highlightedExhibitorId, setHighlightedExhibitorId] = useState<
     string | undefined
   >(undefined);
@@ -310,6 +307,10 @@ export function ExhibitorsPage() {
       });
     });
   }, [highlightedExhibitorId]); // boothToName is derived from stable module-level data
+
+  const handleLocationClick = (exhibitorId: string) => {
+    setHighlightedExhibitorId(exhibitorId);
+  };
 
   function origAspect(h?: number, w?: number) {
     if (!h) throw new Error("exhibitorsMap missing origHeightNum");
