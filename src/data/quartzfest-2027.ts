@@ -2,8 +2,6 @@ import {
   Session,
   MapImage,
   Room,
-  Exhibitor,
-  Booth,
   Prize,
   PrizeWinner,
   UserProfile,

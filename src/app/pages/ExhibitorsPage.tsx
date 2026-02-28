@@ -84,10 +84,9 @@ export function ExhibitorsPage() {
       // Single-map assumption: always pick the map whose URL matches mapBooths[0].
       // TODO: restore `activeConference.mapExhibitorsUrl.length === 1` guard when multi-map is re-enabled.
       const boothMapUrl = boothEntry?.[0];
+      if (!boothMapUrl) return undefined;
       return (
-        (boothMapUrl
-          ? conferenceMaps.find((m) => m.url === boothMapUrl)
-          : undefined) || {
+        conferenceMaps.find((m) => m.url === boothMapUrl) || {
           order: 1,
           id: "map-0",
           name: "No Exhibitors Map Found",
@@ -167,16 +166,16 @@ export function ExhibitorsPage() {
     // TODO: restore numEmaps > 1 branch when multi-map is re-enabled.
     const boothMapUrl = BOOTH_DATA[activeConference.id]?.[0];
     setExhibitorsMap(
-      (boothMapUrl
-        ? conferenceMaps.find((m) => m.url === boothMapUrl)
-        : undefined) || {
-        order: 1,
-        id: "map-0",
-        name: "No Exhibitors Map Found",
-        url: "/pacificon-exhibitors-2025.png",
-        origHeightNum: 256,
-        origWidthNum: 582,
-      },
+      boothMapUrl
+        ? conferenceMaps.find((m) => m.url === boothMapUrl) || {
+            order: 1,
+            id: "map-0",
+            name: "No Exhibitors Map Found",
+            url: "/pacificon-exhibitors-2025.png",
+            origHeightNum: 256,
+            origWidthNum: 582,
+          }
+        : undefined,
     );
     //setMultipleExhibitorMaps([]);
 
