@@ -15,7 +15,10 @@ import { Award, HandHelping, Info, Trophy } from "lucide-react";
 import { Prize, PrizeWinner } from "@/types/conference";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
-import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
+import {
+  formatUpdateToken,
+  formatUpdateTokenDetail,
+} from "@/lib/overrideUtils";
 import {
   Tooltip,
   TooltipTrigger,
@@ -151,7 +154,9 @@ Object.keys(supplementalPrizeWinnerModules)
     const match = filename.match(/^(.+)-prizewinner-/);
     if (match) {
       const conferenceId = match[1];
-      const typedModule = supplementalPrizeWinnerModules[path] as PrizeWinnerModule;
+      const typedModule = supplementalPrizeWinnerModules[
+        path
+      ] as PrizeWinnerModule;
       if (typedModule.samplePrizeWinners) {
         PRIZE_WINNER_DATA[conferenceId] = typedModule.samplePrizeWinners;
         const token = filename.split("-").pop() ?? "";
@@ -283,11 +288,16 @@ export function PrizesView({ highlightPrizeId }: PrizesViewProps) {
           Updated:{" "}
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className="underline decoration-dotted cursor-help">
+              <button
+                type="button"
+                className="underline decoration-dotted cursor-help"
+              >
                 {formatUpdateToken(updateToken)}
               </button>
             </TooltipTrigger>
-            <TooltipContent>{formatUpdateTokenDetail(updateToken)}</TooltipContent>
+            <TooltipContent>
+              {formatUpdateTokenDetail(updateToken)}
+            </TooltipContent>
           </Tooltip>
         </p>
       )}

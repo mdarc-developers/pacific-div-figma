@@ -66,18 +66,18 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 //export const mapExhibitors: [string, Exhibitor[]] = [
 //  "/assets/maps/seapac-exhibitors-20260227.png",
-  // must match mapBooths URL
+// must match mapBooths URL
 //  [
 //  ]
 //];
 
 //export const mapBooths: [string, Booth[]] = [
 //  "/assets/maps/seapac-exhibitors-20260227.png",
-  // must match mapExhibitors URL
-  // Source: https://www.yumahamfest.com/vendorlayout.html (SVG extracted 2026-02-25)
-  // SVG viewBox 0 0 724.2 378.4  →  image 1166 × 609
-  // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
-  // All y values measured from the bottom; all x values measured from the left.
+// must match mapExhibitors URL
+// Source: https://www.yumahamfest.com/vendorlayout.html (SVG extracted 2026-02-25)
+// SVG viewBox 0 0 724.2 378.4  →  image 1166 × 609
+// Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
+// All y values measured from the bottom; all x values measured from the left.
 //  [
 //  ],
 //];
@@ -94,23 +94,43 @@ export const mapRooms: [string, Room[]] = [
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
       name: "Area 1",
-      coords: [[218, 370], [295, 370], [295, 437], [218, 437]],
-      color: '#ffffff',
+      coords: [
+        [218, 370],
+        [295, 370],
+        [295, 437],
+        [218, 437],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Area 2",
-      coords: [[195, 181], [249, 181], [249, 240], [195, 240]],
-      color: '#ffffff',
+      coords: [
+        [195, 181],
+        [249, 181],
+        [249, 240],
+        [195, 240],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Area 3",
-      coords: [[87, 395], [135, 395], [135, 470], [87, 470]],
-      color: '#ffffff',
+      coords: [
+        [87, 395],
+        [135, 395],
+        [135, 470],
+        [87, 470],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Restrooms",
-      coords: [[471, 162], [513, 162], [513, 214], [471, 214]],
-      color: '#ffffff',
+      coords: [
+        [471, 162],
+        [513, 162],
+        [513, 214],
+        [471, 214],
+      ],
+      color: "#ffffff",
     },
   ],
 ];
@@ -119,8 +139,7 @@ export const mapSessions: [string, Session[]] = [
   "/assets/maps/quartzfest-map-20260227.png",
   // must match mapRooms URL
   // Source: https://www.yumahamfest.com/seminars.html (extracted 2026-02-25)
-  [
-  ],
+  [],
 ];
 
 // map images - in production these may be bundled images

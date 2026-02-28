@@ -69,8 +69,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 export const mapExhibitors: [string, Exhibitor[]] = [
   "/assets/maps/seapac-exhibitors-20260227.png",
   // must match mapBooths URL
-  [
-  ]
+  [],
 ];
 
 export const mapBooths: [string, Booth[]] = [
@@ -80,8 +79,7 @@ export const mapBooths: [string, Booth[]] = [
   // SVG viewBox 0 0 724.2 378.4  →  image 1166 × 609
   // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
   // All y values measured from the bottom; all x values measured from the left.
-  [
-  ],
+  [],
 ];
 
 // Define your room polygons here
@@ -101,8 +99,7 @@ export const mapSessions: [string, Session[]] = [
   "/assets/maps/seapac-forums-20260227.png",
   // must match mapRooms URL
   // Source: https://www.yumahamfest.com/seminars.html (extracted 2026-02-25)
-  [
-  ],
+  [],
 ];
 
 // map images - in production these may be bundled images
@@ -111,7 +108,7 @@ export const conferenceMaps: MapImage[] = [
     id: "map-1",
     name: "Lobby",
     url: "/assets/maps/seapac-lobby-20260227.png",
-    floor: 'lobby',
+    floor: "lobby",
     order: 1,
     origWidthNum: 473,
     origHeightNum: 624,
@@ -120,7 +117,7 @@ export const conferenceMaps: MapImage[] = [
     id: "map-2",
     name: "Exhibitors",
     url: "/assets/maps/seapac-exhibitors-20260227.png",
-    floor: 'Main',
+    floor: "Main",
     order: 2,
     origWidthNum: 677,
     origHeightNum: 741,
@@ -129,7 +126,7 @@ export const conferenceMaps: MapImage[] = [
     id: "map-3",
     name: "Forums",
     url: "/assets/maps/seapac-forums-20260227.png",
-    floor: 'Upstairs',
+    floor: "Upstairs",
     order: 3,
     origWidthNum: 638,
     origHeightNum: 726,

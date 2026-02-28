@@ -67,14 +67,25 @@ describe("supplemental prize override logic", () => {
     //   1. Main conference file contributes initial prizes
     //   2. Supplemental file overrides them
     const PRIZE_DATA: Record<string, Prize[]> = {
-      "yuma-2026": [{ id: "old-p1", name: "Old Prize", category: "Other", description: "", imageUrl: "", donor: "" }],
+      "yuma-2026": [
+        {
+          id: "old-p1",
+          name: "Old Prize",
+          category: "Other",
+          description: "",
+          imageUrl: "",
+          donor: "",
+        },
+      ],
     };
     // Apply override (same logic as in PrizesView.tsx)
     const conferenceId = "yuma-2026";
     PRIZE_DATA[conferenceId] = samplePrizes;
 
     expect(PRIZE_DATA["yuma-2026"]).toBe(samplePrizes);
-    expect(PRIZE_DATA["yuma-2026"].find((p) => p.id === "old-p1")).toBeUndefined();
+    expect(
+      PRIZE_DATA["yuma-2026"].find((p) => p.id === "old-p1"),
+    ).toBeUndefined();
     // Verify the supplemental data has the expected shape after override
     PRIZE_DATA["yuma-2026"].forEach((prize: Prize) => {
       expect(typeof prize.id).toBe("string");
@@ -85,13 +96,17 @@ describe("supplemental prize override logic", () => {
 
   it("supplemental prizewinners override main-file winners for same conferenceId", () => {
     const PRIZE_WINNER_DATA: Record<string, PrizeWinner[]> = {
-      "yuma-2026": [{ id: "old-w1", prizeId: ["old-p1"], winningTicket: "0000" }],
+      "yuma-2026": [
+        { id: "old-w1", prizeId: ["old-p1"], winningTicket: "0000" },
+      ],
     };
     const conferenceId = "yuma-2026";
     PRIZE_WINNER_DATA[conferenceId] = samplePrizeWinners;
 
     expect(PRIZE_WINNER_DATA["yuma-2026"]).toBe(samplePrizeWinners);
-    expect(PRIZE_WINNER_DATA["yuma-2026"].find((w) => w.id === "old-w1")).toBeUndefined();
+    expect(
+      PRIZE_WINNER_DATA["yuma-2026"].find((w) => w.id === "old-w1"),
+    ).toBeUndefined();
     // Verify the supplemental data has the expected shape after override
     PRIZE_WINNER_DATA["yuma-2026"].forEach((winner: PrizeWinner) => {
       expect(typeof winner.id).toBe("string");

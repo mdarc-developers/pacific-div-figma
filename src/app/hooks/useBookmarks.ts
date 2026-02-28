@@ -2,7 +2,10 @@ import { useState, useCallback, useEffect } from "react";
 
 const STORAGE_KEY_PREFIX = "bookmarks_";
 
-function loadBookmarks(conferenceId: string, keyPrefix: string = STORAGE_KEY_PREFIX): string[] {
+function loadBookmarks(
+  conferenceId: string,
+  keyPrefix: string = STORAGE_KEY_PREFIX,
+): string[] {
   try {
     const stored = localStorage.getItem(keyPrefix + conferenceId);
     return stored ? (JSON.parse(stored) as string[]) : [];
@@ -11,12 +14,13 @@ function loadBookmarks(conferenceId: string, keyPrefix: string = STORAGE_KEY_PRE
   }
 }
 
-function saveBookmarks(conferenceId: string, bookmarks: string[], keyPrefix: string = STORAGE_KEY_PREFIX): void {
+function saveBookmarks(
+  conferenceId: string,
+  bookmarks: string[],
+  keyPrefix: string = STORAGE_KEY_PREFIX,
+): void {
   try {
-    localStorage.setItem(
-      keyPrefix + conferenceId,
-      JSON.stringify(bookmarks),
-    );
+    localStorage.setItem(keyPrefix + conferenceId, JSON.stringify(bookmarks));
   } catch {
     // silently ignore storage errors (e.g. private browsing quota)
   }

@@ -29,7 +29,12 @@ export function Navigation() {
     { to: "/maps", icon: Map, label: "Maps" },
     //{ to: '/alerts', icon: Bell, label: 'Prizes' },
     //{ to: '/profile', icon: User, label: 'Profile' },
-    { to: "/exhibitors", icon: SquareUser, label: "Exhibitors", disabled: !hasBooths },
+    {
+      to: "/exhibitors",
+      icon: SquareUser,
+      label: "Exhibitors",
+      disabled: !hasBooths,
+    },
     { to: "/prizes", icon: Trophy, label: "Prizes" },
     { to: "/attendees", icon: User, label: "Attendees" },
   ];
@@ -61,7 +66,7 @@ export function Navigation() {
               <Icon className="h-4 w-4" />
               <span>{label}</span>
             </NavLink>
-          )
+          ),
         )}
       </div>
     </nav>

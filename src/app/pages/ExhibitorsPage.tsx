@@ -278,8 +278,7 @@ export function ExhibitorsPage() {
       polygon.on("mouseout", () => {
         const currentHighlight = highlightedExhibitorIdRef.current;
         const ex = boothToName.get(exhibitorBooth.id);
-        const isHighlighted =
-          ex !== undefined && ex.id === currentHighlight;
+        const isHighlighted = ex !== undefined && ex.id === currentHighlight;
         polygon.setStyle({ fillOpacity: isHighlighted ? 0.6 : 0.0 });
       });
     });

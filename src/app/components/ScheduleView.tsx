@@ -22,7 +22,10 @@ import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
-import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
+import {
+  formatUpdateToken,
+  formatUpdateTokenDetail,
+} from "@/lib/overrideUtils";
 import {
   Tooltip,
   TooltipTrigger,
@@ -505,11 +508,16 @@ export function ScheduleView({
           Updated:{" "}
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className="underline decoration-dotted cursor-help">
+              <button
+                type="button"
+                className="underline decoration-dotted cursor-help"
+              >
                 {formatUpdateToken(updateToken)}
               </button>
             </TooltipTrigger>
-            <TooltipContent>{formatUpdateTokenDetail(updateToken)}</TooltipContent>
+            <TooltipContent>
+              {formatUpdateTokenDetail(updateToken)}
+            </TooltipContent>
           </Tooltip>
         </p>
       )}

@@ -20,10 +20,13 @@ import {
   Moon,
   ShieldCheck,
   Sun,
-  User
 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {

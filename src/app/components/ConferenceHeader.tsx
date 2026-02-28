@@ -31,10 +31,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
-import {
-  contrastingColor,
-  contrastingLinkColor,
-} from "@/lib/colorUtils";
+import { contrastingColor, contrastingLinkColor } from "@/lib/colorUtils";
 
 //import { forwardRef } from 'react';
 //
@@ -88,8 +85,6 @@ function formatHeaderYear(isoDate: Date, tzString: string) {
   });
   return timeFormatter.format(isoDate);
 }
-
-
 
 export function ConferenceHeader() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);

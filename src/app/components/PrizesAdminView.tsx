@@ -30,7 +30,10 @@ import {
   UserCheck,
 } from "lucide-react";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
-import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
+import {
+  formatUpdateToken,
+  formatUpdateTokenDetail,
+} from "@/lib/overrideUtils";
 import { getGoogleAccessToken, deleteDriveFile } from "@/lib/googleDrive";
 import {
   Tooltip,
@@ -50,7 +53,9 @@ function newId(prefix: string): string {
 // Google Drive upload helpers
 // ---------------------------------------------------------------------------
 
-const DRIVE_FOLDER_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID as string | undefined;
+const DRIVE_FOLDER_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID as
+  | string
+  | undefined;
 
 function getDateTimeStamp(): string {
   const now = new Date();
@@ -72,7 +77,8 @@ async function listDriveFiles(
   accessToken: string,
   conferenceId: string,
 ): Promise<DriveFile[]> {
-  if (!DRIVE_FOLDER_ID) throw new Error("VITE_GOOGLE_DRIVE_FOLDER_ID is not set");
+  if (!DRIVE_FOLDER_ID)
+    throw new Error("VITE_GOOGLE_DRIVE_FOLDER_ID is not set");
   // Sanitize: conference IDs should only contain word chars and hyphens.
   const safeId = conferenceId.replace(/[^a-zA-Z0-9\-_]/g, "");
   const q = encodeURIComponent(
@@ -83,7 +89,7 @@ async function listDriveFiles(
     { headers: { Authorization: `Bearer ${accessToken}` } },
   );
   if (!res.ok) throw new Error(`Drive list failed: ${res.statusText}`);
-  const data = await res.json() as { files?: DriveFile[] };
+  const data = (await res.json()) as { files?: DriveFile[] };
   return Array.isArray(data.files) ? data.files : [];
 }
 
@@ -92,7 +98,8 @@ async function uploadDriveFile(
   filename: string,
   content: string,
 ): Promise<void> {
-  if (!DRIVE_FOLDER_ID) throw new Error("VITE_GOOGLE_DRIVE_FOLDER_ID is not set");
+  if (!DRIVE_FOLDER_ID)
+    throw new Error("VITE_GOOGLE_DRIVE_FOLDER_ID is not set");
   const metadata = { name: filename, parents: [DRIVE_FOLDER_ID] };
   const form = new FormData();
   form.append(
@@ -102,7 +109,11 @@ async function uploadDriveFile(
   form.append("file", new Blob([content], { type: "text/plain" }));
   const res = await fetch(
     "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-    { method: "POST", headers: { Authorization: `Bearer ${accessToken}` }, body: form },
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      body: form,
+    },
   );
   if (!res.ok) throw new Error(`Drive upload failed: ${res.statusText}`);
 }
@@ -126,8 +137,16 @@ async function saveToDrive(
   const winnerContent = `import { PrizeWinner } from "@/types/conference";\n\nexport const samplePrizeWinners: PrizeWinner[] = ${JSON.stringify(winners, null, 2)};\n`;
 
   await Promise.all([
-    uploadDriveFile(accessToken, `${conferenceId}-prize-${stamp}.ts`, prizeContent),
-    uploadDriveFile(accessToken, `${conferenceId}-prizewinner-${stamp}.ts`, winnerContent),
+    uploadDriveFile(
+      accessToken,
+      `${conferenceId}-prize-${stamp}.ts`,
+      prizeContent,
+    ),
+    uploadDriveFile(
+      accessToken,
+      `${conferenceId}-prizewinner-${stamp}.ts`,
+      winnerContent,
+    ),
   ]);
 }
 
@@ -189,7 +208,9 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="p-desc"><Info className="h-4 w-4" /> Description</Label>
+              <Label htmlFor="p-desc">
+                <Info className="h-4 w-4" /> Description
+              </Label>
               <Input
                 id="p-desc"
                 value={form.description}
@@ -205,7 +226,9 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="p-donor"><HandHelping className="h-4 w-4" /> Donor</Label>
+              <Label htmlFor="p-donor">
+                <HandHelping className="h-4 w-4" /> Donor
+              </Label>
               <Input
                 id="p-donor"
                 value={form.donor}
@@ -213,14 +236,17 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="p-image"><Image className="h-4 w-4" />Image</Label>
+              <Label htmlFor="p-image">
+                <Image className="h-4 w-4" />
+                Image
+              </Label>
               <div className="flex gap-2 items-center">
                 <Input
                   id="p-image"
                   value={form.imageUrl}
                   onChange={(e) => set("imageUrl", e.target.value)}
-                    placeholder="https://… or select from library"
-                    className="flex-1"
+                  placeholder="https://… or select from library"
+                  className="flex-1"
                 />
                 <Button
                   type="button"
@@ -241,7 +267,10 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
               )}
             </div>
             <div>
-              <Label htmlFor="p-winner"><Award className="h-4 w-4" />Winner ID (optional)</Label>
+              <Label htmlFor="p-winner">
+                <Award className="h-4 w-4" />
+                Winner ID (optional)
+              </Label>
               <Input
                 id="p-winner"
                 value={form.winner ?? ""}
@@ -279,10 +308,7 @@ function PrizeForm({ open, initial, onSave, onClose }: PrizeFormProps) {
             }}
           />
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setImagePickerOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setImagePickerOpen(false)}>
               Close
             </Button>
           </DialogFooter>
@@ -568,9 +594,7 @@ export function PrizesAdminView({
           <Upload className="h-4 w-4" />
           {uploading ? "Uploading…" : "Save to drive"}
         </Button>
-        {uploadError && (
-          <p className="text-sm text-red-500">{uploadError}</p>
-        )}
+        {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
       </div>
 
       {/* ---- Prizes section ---- */}
@@ -594,14 +618,16 @@ export function PrizesAdminView({
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center justify-between">
                   <Trophy className="h-5 w-5 mb-4" />
-                  <span>{prize.name}
+                  <span>
+                    {prize.name}
                     <img
                       className=""
                       alt="prize image"
                       src={prize.imageUrl}
                       width="200px"
                       height="200px"
-                    /> </span>
+                    />{" "}
+                  </span>
                   <div className="gap-2">
                     <Button
                       variant="outline"
@@ -623,9 +649,12 @@ export function PrizesAdminView({
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                {prize.description &&
-                  <p className="flex justify-center justify-between"><Info className="h-5 w-5" />{prize.description}</p>
-                }
+                {prize.description && (
+                  <p className="flex justify-center justify-between">
+                    <Info className="h-5 w-5" />
+                    {prize.description}
+                  </p>
+                )}
                 <p className="flex">
                   <HandHelping className="h-4 w-4" />
                   <strong>Donor:</strong> {prize.donor}
@@ -756,11 +785,16 @@ export function PrizesAdminView({
           Updated:{" "}
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className="underline decoration-dotted cursor-help">
+              <button
+                type="button"
+                className="underline decoration-dotted cursor-help"
+              >
                 {formatUpdateToken(updateToken)}
               </button>
             </TooltipTrigger>
-            <TooltipContent>{formatUpdateTokenDetail(updateToken)}</TooltipContent>
+            <TooltipContent>
+              {formatUpdateTokenDetail(updateToken)}
+            </TooltipContent>
           </Tooltip>
         </p>
       )}

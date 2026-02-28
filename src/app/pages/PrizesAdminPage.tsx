@@ -134,9 +134,15 @@ export function PrizesAdminPage() {
         </span>
       </div>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-        Use <strong>Save to drive</strong> to upload the current Prize and PrizeWinner data.
+        Use <strong>Save to drive</strong> to upload the current Prize and
+        PrizeWinner data.
       </p>
-      <PrizesAdminView conferenceId={activeConference.id} initialPrizes={prizes} initialWinners={winners} updateToken={updateToken} />
+      <PrizesAdminView
+        conferenceId={activeConference.id}
+        initialPrizes={prizes}
+        initialWinners={winners}
+        updateToken={updateToken}
+      />
 
       <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Image Library</h2>

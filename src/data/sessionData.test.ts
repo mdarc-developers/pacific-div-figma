@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { mapSessions } from "./seapac-2026-session-20260227";
-import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
+import {
+  formatUpdateToken,
+  formatUpdateTokenDetail,
+} from "@/lib/overrideUtils";
 import { Session } from "@/types/conference";
 
 // ── seapac-2026 supplemental session file ─────────────────────────────────────

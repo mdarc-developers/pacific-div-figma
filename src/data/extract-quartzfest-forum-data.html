@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quartzfest Forum Data Extractor</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+      label {
+        font-weight: bold;
+      }
+      input[type="text"] {
+        padding: 6px 10px;
+        font-family: monospace;
+        width: 300px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 8px 18px;
+        cursor: pointer;
+      }
+      #output {
+        background: #f5f5f5;
+        padding: 15px;
+        border: 1px solid #ddd;
+        white-space: pre-wrap;
+        font-size: 12px;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+      .stats {
+        background: #e8f4f8;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-left: 4px solid #0066cc;
+      }
+      .error {
+        background: #fde8e8;
+        border-left: 4px solid #cc0000;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Quartzfest Forum Data Extractor v.1</h1>
+    <p>
+      Load the Quartzfest schedule <code>.pdf</code> (e.g.
+      <code>quartzfest-2026-schedule-*.pdf</code>) to generate TypeScript
+      <code>mapSessions</code> data for presentations.
+    </p>
+    <div id="controls">
+      <input type="file" id="fileInput" accept=".pdf" />
+      <label
+        >Map image path:
+        <input type="text" id="mapImage" value="/quartzfest-map-2026.jpg"
+      /></label>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+      <button onclick="dumpRaw()" style="background: #ffe0b2">
+        Dump Raw PDF Text
+      </button>
+    </div>
+    <div id="stats" class="stats">No file loaded yet.</div>
+    <div id="output"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+      let extractedData = "";
+      let rawItems = [];
+
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          if (!file.name.toLowerCase().endsWith(".pdf")) {
+            alert("Please load a .pdf file.");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (ev) => processPDF(ev.target.result);
+          reader.readAsArrayBuffer(file);
+        });
+
+      async function processPDF(arrayBuffer) {
+        document.getElementById("stats").innerHTML = "Reading PDF...";
+        try {
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          console.log("PDF loaded, pages:", pdf.numPages);
+          const items = [];
+          for (let p = 1; p <= pdf.numPages; p++) {
+            const page = await pdf.getPage(p);
+            const content = await page.getTextContent();
+            const h = page.getViewport({ scale: 1 }).height;
+            for (const it of content.items) {
+              if (!it.str || !it.str.trim()) continue;
+              items.push({
+                page: p,
+                x: Math.round(it.transform[4]),
+                y: Math.round(h - it.transform[5]),
+                str: it.str.trim(),
+              });
+            }
+          }
+          items.sort((a, b) =>
+            a.page !== b.page
+              ? a.page - b.page
+              : a.y !== b.y
+                ? a.y - b.y
+                : a.x - b.x,
+          );
+          rawItems = items;
+          console.log("Total items:", items.length);
+          const sessions = parse(items);
+          console.log("Sessions found:", sessions.length);
+          renderOutput(sessions);
+        } catch (err) {
+          document.getElementById("stats").className = "stats error";
+          document.getElementById("stats").innerHTML = "Error: " + err.message;
+          console.error(err);
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────────────────
+      // QUARTZFEST SCHEDULE — BUILT-IN DATA
+      //
+      // Quartzfest 2026: January 18 – 25, 2026 (Sunday open, Saturday close)
+      // All times are local (Arizona, MST = UTC-7, no DST)
+      //
+      // Schedule format:
+      //   Day pages 2–7 (Monday–Saturday): rows of
+      //     startHHMM [endHHMM] [Area X] Title  Presenter Name CALLSIGN
+      //   Pages 10–24: Presenter bios + talk descriptions
+      //
+      // Locations: Area 1, Area 2, Area 3, offsite, various
+      // Days: Sunday=1/18, Monday=1/19 … Saturday=1/24
+      // ─────────────────────────────────────────────────────────────────────────
+
+      const DATE_MAP = {
+        Sunday: "2026-01-18",
+        Monday: "2026-01-19",
+        Tuesday: "2026-01-20",
+        Wednesday: "2026-01-21",
+        Thursday: "2026-01-22",
+        Friday: "2026-01-23",
+        Saturday: "2026-01-24",
+      };
+
+      // ── Hard-coded schedule entries ────────────────────────────────────────
+      // Each entry: { day, start, end, location, title, speaker[] }
+      // speaker entries are "Name CALLSIGN" strings (callsign may be absent)
+      const SCHEDULE = [
+        // Sunday
+        {
+          day: "Sunday",
+          start: "13:00",
+          end: "",
+          location: "Area 1",
+          title: "Quartzfest 2026 Opening Ceremony",
+          speaker: ["Kris Weed KR1SS"],
+        },
+
+        // Monday
+        {
+          day: "Monday",
+          start: "07:45",
+          end: "",
+          location: "146.550",
+          title: "Morning Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Monday",
+          start: "08:30",
+          end: "",
+          location: "offsite",
+          title: "Pico Balloon Launch",
+          speaker: ["Brian Basura N6CVO"],
+        },
+        {
+          day: "Monday",
+          start: "09:00",
+          end: "10:00",
+          location: "Area 1",
+          title: "Welcome Seminar",
+          speaker: ["Gordon West WB6NOA"],
+        },
+        {
+          day: "Monday",
+          start: "10:00",
+          end: "11:00",
+          location: "Area 3",
+          title: "Cornhole Practice",
+          speaker: ["Danette Key KI7VEY"],
+        },
+        {
+          day: "Monday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 1",
+          title: "ARRL Instructor Seminar with Live Kits",
+          speaker: [
+            "Gary Johnson AA6GJ",
+            "Debbie Johnson WB6LVC",
+            "Gordon West WB6NOA",
+          ],
+        },
+        {
+          day: "Monday",
+          start: "12:00",
+          end: "",
+          location: "146.550",
+          title: "Noon Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Monday",
+          start: "12:30",
+          end: "13:30",
+          location: "west of Area 1",
+          title: "License Testing",
+          speaker: ["Stephen Hutchings WM7X"],
+        },
+        {
+          day: "Monday",
+          start: "13:00",
+          end: "15:00",
+          location: "Area 3",
+          title: "Cornhole Tournament",
+          speaker: ["Danette Key KI7VEY"],
+        },
+        {
+          day: "Monday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 1",
+          title: "RV Upgrades Worth Investigating",
+          speaker: ["Keith Shomaker"],
+        },
+        {
+          day: "Monday",
+          start: "15:30",
+          end: "",
+          location: "Area 1",
+          title: "Happy Hour, Daily Prizes",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Monday",
+          start: "18:00",
+          end: "21:00",
+          location: "Area 2",
+          title: "Star Party",
+          speaker: ["Alan Kopp AK9K"],
+        },
+        {
+          day: "Monday",
+          start: "18:30",
+          end: "19:30",
+          location: "Area 3",
+          title: "Recruiting and Retaining New Hams",
+          speaker: ["Stiv Ostenberg K9STV"],
+        },
+
+        // Tuesday
+        {
+          day: "Tuesday",
+          start: "07:45",
+          end: "",
+          location: "146.550",
+          title: "Morning Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Tuesday",
+          start: "09:00",
+          end: "10:00",
+          location: "Area 1",
+          title: "Powering the Starlink Mini Using Ohms Law",
+          speaker: ["Carter Davis KH6FV"],
+        },
+        {
+          day: "Tuesday",
+          start: "09:00",
+          end: "10:00",
+          location: "Area 2",
+          title: "Disability Awareness",
+          speaker: ["Marcia DeRuntz KG6FIX"],
+        },
+        {
+          day: "Tuesday",
+          start: "09:00",
+          end: "14:00",
+          location: "offsite",
+          title: "Trip to Town and the RV & Rock Shows",
+          speaker: [],
+        },
+        {
+          day: "Tuesday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 1",
+          title: "Activating 74 Parks in 47 States in 3 Months",
+          speaker: ["John Kitchens NS6X"],
+        },
+        {
+          day: "Tuesday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 2",
+          title: "Why You'll Want to Add GMRS to Your Ham Toolkit",
+          speaker: ["Jim Mohan AA7JM"],
+        },
+        {
+          day: "Tuesday",
+          start: "12:00",
+          end: "",
+          location: "146.550",
+          title: "Noon Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Tuesday",
+          start: "12:30",
+          end: "13:30",
+          location: "west of Area 1",
+          title: "License Testing",
+          speaker: ["Stephen Hutchings WM7X"],
+        },
+        {
+          day: "Tuesday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 2",
+          title: "Quartz Rocks, Super Stars & Judging",
+          speaker: ["Gordon West WB6NOA"],
+        },
+        {
+          day: "Tuesday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 3",
+          title: "Bunny Hunt—Presentation followed by hunt",
+          speaker: ["Tony Levand AA9CC"],
+        },
+        {
+          day: "Tuesday",
+          start: "15:30",
+          end: "",
+          location: "Area 1",
+          title: "Happy Hour",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Tuesday",
+          start: "16:00",
+          end: "",
+          location: "Area 1",
+          title: "Pot Luck Dinner",
+          speaker: [],
+        },
+        {
+          day: "Tuesday",
+          start: "17:00",
+          end: "18:00",
+          location: "Area 1",
+          title: "Pet Parade",
+          speaker: ["Lyn Weed KJ7DSE"],
+        },
+        {
+          day: "Tuesday",
+          start: "18:30",
+          end: "19:30",
+          location: "Area 2",
+          title: "What You Should Know About Gen-IV Nuclear Power",
+          speaker: ["Scott Evans KO3B"],
+        },
+        {
+          day: "Tuesday",
+          start: "18:30",
+          end: "19:30",
+          location: "Area 3",
+          title: "First Aid—Stop the Bleed",
+          speaker: ["Michelle Pelkey KA7OQQ"],
+        },
+        {
+          day: "Tuesday",
+          start: "20:00",
+          end: "21:00",
+          location: "Area 3",
+          title: "Nano VNA",
+          speaker: ["Dave Smith W6DPS"],
+        },
+
+        // Wednesday
+        {
+          day: "Wednesday",
+          start: "07:45",
+          end: "",
+          location: "146.550",
+          title: "Morning Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Wednesday",
+          start: "09:00",
+          end: "10:00",
+          location: "Area 1",
+          title: "Pleasant Valley War—Why AZ Was Late to be a State",
+          speaker: ["Hal Key KG5LVG"],
+        },
+        {
+          day: "Wednesday",
+          start: "09:00",
+          end: "10:00",
+          location: "Area 2",
+          title: "Randy's Favorite Tools, Gizmos and Gadgets",
+          speaker: ["Randy Hall K7AGE"],
+        },
+        {
+          day: "Wednesday",
+          start: "09:00",
+          end: "14:00",
+          location: "offsite",
+          title: "Off Road Adventure",
+          speaker: ["Frank Engstrom KB7IQ"],
+        },
+        {
+          day: "Wednesday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 1",
+          title: "Experiments with Radio Waves",
+          speaker: ["Ernie Richards K1NI"],
+        },
+        {
+          day: "Wednesday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 2",
+          title: "Handiham Program",
+          speaker: ["Marcia DeRuntz KG6FIX"],
+        },
+        {
+          day: "Wednesday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 3",
+          title: "Lift Off! Discover the World of Pico-Ballooning",
+          speaker: ["Brian Basura N6CVO"],
+        },
+        {
+          day: "Wednesday",
+          start: "12:00",
+          end: "",
+          location: "146.550",
+          title: "Noon Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Wednesday",
+          start: "12:30",
+          end: "13:30",
+          location: "west of Area 1",
+          title: "License Testing",
+          speaker: ["Stephen Hutchings WM7X"],
+        },
+        {
+          day: "Wednesday",
+          start: "13:00",
+          end: "",
+          location: "south of Area 3",
+          title: "Jam Session and Hootenanny Practice",
+          speaker: ["Russ Decker KB6YAF"],
+        },
+        {
+          day: "Wednesday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 1",
+          title: "Antenna Launching for Ham Radio",
+          speaker: ["Alan Biocca W6AKB"],
+        },
+        {
+          day: "Wednesday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 3",
+          title: "Metal Detecting—Old Rare Coins Buried!",
+          speaker: ["Gordon West WB6NOA"],
+        },
+        {
+          day: "Wednesday",
+          start: "15:30",
+          end: "",
+          location: "Area 1",
+          title: "Happy Hour, Daily Prizes",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Wednesday",
+          start: "18:30",
+          end: "19:30",
+          location: "Area 2",
+          title: "Parks On The Air® (POTA)",
+          speaker: ["Craig McVeay N0CSM"],
+        },
+        {
+          day: "Wednesday",
+          start: "18:30",
+          end: "19:30",
+          location: "Area 3",
+          title: "Antenna Physics",
+          speaker: ["Avery Davis WB4RTP"],
+        },
+        {
+          day: "Wednesday",
+          start: "20:00",
+          end: "21:00",
+          location: "Area 2",
+          title: "Make an Antenna and Take it up a Mountain",
+          speaker: ["Tobias Feltus KK7BCO"],
+        },
+        {
+          day: "Wednesday",
+          start: "20:00",
+          end: "21:00",
+          location: "Area 3",
+          title: "Digital Amateur Television",
+          speaker: ["Joel Wilhite KD6W"],
+        },
+
+        // Thursday
+        {
+          day: "Thursday",
+          start: "07:45",
+          end: "",
+          location: "146.550",
+          title: "Morning Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Thursday",
+          start: "08:30",
+          end: "13:00",
+          location: "offsite",
+          title: "POTA: Drive to KOFA Park",
+          speaker: ["Nancy Crowley KD7S"],
+        },
+        {
+          day: "Thursday",
+          start: "08:30",
+          end: "13:00",
+          location: "offsite",
+          title: "SOTA Hike to Cunningham Peak",
+          speaker: ["Javi Beltran K6TNT"],
+        },
+        {
+          day: "Thursday",
+          start: "09:00",
+          end: "11:30",
+          location: "Area 1",
+          title: "Onan Generators, RV Electrical and Solar Systems",
+          speaker: ["Jerry Brown KP6GB"],
+        },
+        {
+          day: "Thursday",
+          start: "09:00",
+          end: "10:00",
+          location: "Area 2",
+          title: "YLRL Meeting & Presentation",
+          speaker: ["Vicki Zumwalt N6KLS"],
+        },
+        {
+          day: "Thursday",
+          start: "09:00",
+          end: "10:00",
+          location: "Area 3",
+          title: "Antennas",
+          speaker: ["Tom Schiller N6BT"],
+        },
+        {
+          day: "Thursday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 2",
+          title: "3D Printing for Ham Radio",
+          speaker: ["Alan Biocca W6AKB"],
+        },
+        {
+          day: "Thursday",
+          start: "12:00",
+          end: "",
+          location: "146.550",
+          title: "Noon Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Thursday",
+          start: "12:30",
+          end: "13:30",
+          location: "west of Area 1",
+          title: "License Testing",
+          speaker: ["Stephen Hutchings WM7X"],
+        },
+        {
+          day: "Thursday",
+          start: "13:00",
+          end: "15:00",
+          location: "camp",
+          title: "Solar Walkabout",
+          speaker: ["Carter Davis KH6FV"],
+        },
+        {
+          day: "Thursday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 1",
+          title: "A Simple Homebrew Hamstick Dipole",
+          speaker: ["Dave Smith W6DPS"],
+        },
+        {
+          day: "Thursday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 2",
+          title: "Crocheting",
+          speaker: ["Marcia DeRuntz KG6FIX"],
+        },
+        {
+          day: "Thursday",
+          start: "15:30",
+          end: "",
+          location: "Area 1",
+          title: "Happy Hour, Daily Prizes",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Thursday",
+          start: "16:30",
+          end: "",
+          location: "Area 1",
+          title: "Hootenanny",
+          speaker: ["Russ Decker KB6YAF"],
+        },
+
+        // Friday
+        {
+          day: "Friday",
+          start: "07:45",
+          end: "",
+          location: "146.550",
+          title: "Morning Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Friday",
+          start: "10:30",
+          end: "11:30",
+          location: "Area 1",
+          title: "ARRL Forum",
+          speaker: [],
+        },
+        {
+          day: "Friday",
+          start: "12:00",
+          end: "",
+          location: "146.550",
+          title: "Noon Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Friday",
+          start: "12:30",
+          end: "13:30",
+          location: "west of Area 1",
+          title: "License Testing",
+          speaker: ["Stephen Hutchings WM7X"],
+        },
+        {
+          day: "Friday",
+          start: "13:00",
+          end: "",
+          location: "camp",
+          title: "Antenna Walkabout",
+          speaker: ["Rob Fenn KC6TYD"],
+        },
+        {
+          day: "Friday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 1",
+          title: "Winlink Email Demonstration—How to do it QRP",
+          speaker: ["Frank Kostelac N7ZEV", "Linda Kostelac KC7IIT"],
+        },
+        {
+          day: "Friday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 2",
+          title: "Arizona Near Space Research (ANSR)",
+          speaker: ["Clayton Jacobs KJ6QJS"],
+        },
+        {
+          day: "Friday",
+          start: "14:00",
+          end: "15:00",
+          location: "Area 3",
+          title: "Getting on the Microwave Bands",
+          speaker: ["Joel Wilhite KD6W"],
+        },
+        {
+          day: "Friday",
+          start: "15:30",
+          end: "",
+          location: "Area 1",
+          title: "Happy Hour, Daily Prizes",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Friday",
+          start: "18:30",
+          end: "19:30",
+          location: "Area 2",
+          title: "Talk like a Ham",
+          speaker: ["Don Kelly WA6ZMT"],
+        },
+        {
+          day: "Friday",
+          start: "18:30",
+          end: "19:30",
+          location: "Area 3",
+          title: "QSO Party: Multi-County Expedition",
+          speaker: ["Tim Thorson KD6HOF"],
+        },
+        {
+          day: "Friday",
+          start: "20:00",
+          end: "21:00",
+          location: "Area 2",
+          title: "Movie: Making Waves",
+          speaker: ["Don Kelly WA6ZMT"],
+        },
+
+        // Saturday
+        {
+          day: "Saturday",
+          start: "07:45",
+          end: "",
+          location: "146.550",
+          title: "Morning Net",
+          speaker: ["Kris Weed KR1SS"],
+        },
+        {
+          day: "Saturday",
+          start: "10:00",
+          end: "11:30",
+          location: "south edge of camp",
+          title: "ANSR High Altitude Balloon Launch",
+          speaker: ["Clayton Jacobs KJ6QJS"],
+        },
+        {
+          day: "Saturday",
+          start: "12:00",
+          end: "14:00",
+          location: "Area 1",
+          title: "Closing Ceremony, Grand Prizes",
+          speaker: ["Kris Weed KR1SS"],
+        },
+      ];
+
+      // ── Descriptions keyed by title (trimmed) ─────────────────────────────
+      const DESCRIPTIONS = {
+        "ARRL Instructor Seminar with Live Kits":
+          "Hands-on instruction using four simple circuits with associated Lesson Plans: Simple Current Amplifier with Two LEDs, Diode Directionality, Capacitor Charging and Discharging, and Varying LED Brightness Using a Potentiometer. Each lesson reinforces concepts tested in the Technician Class Exam.",
+        "Cornhole Practice":
+          "Practice session ahead of the Monday afternoon tournament. Registration required at the registration tent.",
+        "Cornhole Tournament":
+          "Doubles-only competition using official rules. Register with a partner at the registration tent. Two sets of boards. Winners receive a nice gift.",
+        "RV Upgrades Worth Investigating":
+          "A look at RV upgrades worth considering for your rig.",
+        "Recruiting and Retaining New Hams":
+          "Ham Radio is facing a generational cliff as new hams fail to replace old. Discussion of how Southern Peninsula Emergency Communications System is reaching out to younger audiences, and how you as an individual ham can make a difference.",
+        "Powering the Starlink Mini Using Ohms Law":
+          "Based on PACE planning concepts. Discusses using non-OEM power sources with the Starlink Mini—the only current Starlink terminal that can operate under a significant variation of DC voltage sources.",
+        "Disability Awareness":
+          "Presentation on disability awareness by Marcia DeRuntz KG6FIX, who has been giving disabled awareness and service animal presentations for over 33 years.",
+        "Activating 74 Parks in 47 States in 3 Months":
+          "A three-month mostly-QRP POTA rove activating parks in 47 states—74 unique parks, SSB, CW and FT8/4. Includes stops at Four Days in May, Hamvention, LonsterCon, and OzarkCon.",
+        "Why You'll Want to Add GMRS to Your Ham Toolkit":
+          "An overview of Part 95 Personal Radio Service radios focusing mainly on GMRS—radios, license requirements, repeaters, and growth of the service.",
+        "Quartz Rocks, Super Stars & Judging":
+          "All who wander are not lost—some are looking for quartz rocks to enter in the Quartzfest contest. Categories include best find, best decorated, best whiteness, and something different never done before.",
+        "Bunny Hunt—Presentation followed by hunt":
+          "Presentation on radio direction finding followed by a live bunny hunt.",
+        "What You Should Know About Gen-IV Nuclear Power":
+          "Gen-IV nuclear technologies offer advantages over the existing Gen II/III fleet, including more efficient and safe electricity generation, hydrogen generation, chemical process heat, and synthesis of carbon-neutral fuels.",
+        "First Aid—Stop the Bleed":
+          "Learn three quick techniques to control life-threatening bleeding: applying hand pressure, packing a wound, and applying a tourniquet. Slide presentation followed by hands-on practice. Completion certificate awarded.",
+        "Nano VNA":
+          "Basics of using a NanoVNA for antenna testing, tuning filters and traps, testing coaxial cables, and isolating faults in antenna systems.",
+        "Pleasant Valley War—Why AZ Was Late to be a State":
+          "The feud between the Tewkesburys and the Grahams—resulting in more deaths than the Hatfields and McCoys feud—kept Arizona from becoming a state for nearly thirty years. It occurred in Pleasant Valley and had nothing to do with sheep.",
+        "Randy's Favorite Tools, Gizmos and Gadgets":
+          "Randy Hall K7AGE shares his favorite ham radio tools, gizmos, and gadgets.",
+        "Off Road Adventure":
+          "Off-road adventure outing led by Frank Engstrom KB7IQ.",
+        "Experiments with Radio Waves":
+          "Unexpected discoveries about radio waves, particularly low-frequency radio waves, and the vast electromagnetic spectrum including the brainwave connection to the Earth.",
+        "Handiham Program":
+          "Overview of the Handiham Program and encouraging ham radio in the disabled community.",
+        "Lift Off! Discover the World of Pico-Ballooning":
+          "Learn how tiny balloons carrying ham radios can travel vast distances—and how you can track or launch your own.",
+        "Antenna Launching for Ham Radio":
+          "Practical, proven methods for launching antenna lines in real-world conditions—from throw-weights and arborist techniques to pneumatic launchers. Covers safety, gear choices, and deployment strategies. Ideal for POTA/SOTA activators and Field Day operators.",
+        "Metal Detecting—Old Rare Coins Buried!":
+          "Gordo's metal and coin detecting meet-up. Walk to nearby buried-treasure grounds.",
+        "Parks On The Air® (POTA)":
+          "POTA from the activator's perspective: where to be, basic rules, setting up and getting on the air, logging options, uploading logs, and friendly reminders for a successful activation.",
+        "Antenna Physics":
+          "Antenna theory seminar addressing common misunderstandings, using Bob Zavrel W7SX's book Antenna Physics: An Introduction as a 'transitional' text between basic introductions and advanced academic treatments.",
+        "Make an Antenna and Take it up a Mountain":
+          "Home-made antennas for SOTA: linked dipoles, endfed halfwaves, off-center-fed dipoles, verticals, and linked verticals. A non-intimidating, practical approach to inspire the solder-shy.",
+        "Digital Amateur Television":
+          "Converting television from analog to digital for amateur radio—video/audio bitstream conversion and modulation. Covers deploying low-cost DATV solutions for various amateur radio applications.",
+        "POTA: Drive to KOFA Park":
+          "Drive to KOFA National Wildlife Refuge for a Parks On The Air activation. Meet west of registration tent.",
+        "SOTA Hike to Cunningham Peak":
+          "1,800-foot steep hike to Cunningham Mountain. All hike at your own pace. Group photo and raffle on the summit for SOTA participants. Meet east of registration tent at bulletin boards.",
+        "Onan Generators, RV Electrical and Solar Systems":
+          "Wide-ranging Q&A session covering generator troubleshooting and repair (Onan focus), RV AC/DC electrical systems, batteries (past/present/future of deep-discharge), solar panels, inverters, and system monitors.",
+        "YLRL Meeting & Presentation":
+          "Young Ladies Radio League meeting and presentation.",
+        Antennas: "Presentation on antennas by Tom Schiller N6BT.",
+        "3D Printing for Ham Radio":
+          "Practical, RF-friendly prints for ham radio: antenna insulators, mounts, cable guides, power accessories, and field hardware. Covers material choices for heat, UV, and mechanical stress. No prior 3D printing experience required.",
+        "Solar Walkabout":
+          "Program your HT for 146.600 simplex and meet at the registration tent. The group visits solar installations around camp and owners share their experiences.",
+        "A Simple Homebrew Hamstick Dipole":
+          "Build a hamstick dipole with simple hand tools and an electric drill. A simple option for POTA activations, Field Day, and operating within HOA restrictions.",
+        Crocheting: "Crocheting session with Marcia DeRuntz KG6FIX.",
+        Hootenanny:
+          "Camp musical jam session. Check quartzfest.org/hootenanny-files for the song list.",
+        "ARRL Forum": "ARRL Forum session.",
+        "Antenna Walkabout":
+          "Walk around camp looking at and learning about various antennas suitable for portable operation. If you have an antenna of interest, add your name and phone number to the list in the registration tent.",
+        "Winlink Email Demonstration—How to do it QRP":
+          "Live demonstration of Winlink email using QRP power levels.",
+        "Arizona Near Space Research (ANSR)":
+          "Presentation on Arizona Near Space Research balloon program.",
+        "Getting on the Microwave Bands":
+          "Introduction to getting on the microwave bands with low-cost or high-end options. Use it or lose it—these bands need activity to be retained by amateur radio.",
+        "Talk like a Ham":
+          "Part presentation, part discussion group about the time-honored lingo that hams use and newer ham terminology that can confuse old-timers.",
+        "QSO Party: Multi-County Expedition":
+          "Video of Tim Thorson's 2024 California QSO Party expedition, with Q&A. Tips for finding county-line locations and preparing and executing a successful expedition.",
+        "Movie: Making Waves":
+          "Ham radio enthusiasts exaggerate who they are to other listeners assuming they'll never meet—then have to live up to their fantasy personalities when they do.",
+        "ANSR High Altitude Balloon Launch":
+          "High altitude balloon launch by Arizona Near Space Research. South edge of camp.",
+        "Pico Balloon Launch":
+          "Pico-balloon launch by Brian Basura N6CVO. Launch area marked with orange cones at Quartzfest grid F2.",
+        "Jam Session and Hootenanny Practice":
+          "Informal music jam session and practice for the Thursday Hootenanny. South of Area 3. See quartzfest.org/hootenanny-files for the song list.",
+        "Star Party":
+          "Telescopes set up for all to enjoy. Bring your own if you have one.",
+      };
+
+      // ─────────────────────────────────────────────────────────────────────────
+      // PARSER — reads PDF text items for dynamic extraction (future-proofing)
+      // Falls back to built-in SCHEDULE when PDF parsing yields nothing useful.
+      // ─────────────────────────────────────────────────────────────────────────
+
+      function parse(items) {
+        // If a PDF was loaded we attempt dynamic parsing; otherwise use built-in.
+        let sessions = tryDynamicParse(items);
+        if (!sessions || sessions.length === 0) {
+          sessions = buildFromBuiltIn();
+        }
+        return sessions;
+      }
+
+      // Attempt to extract day-section blocks from raw PDF items.
+      // Returns [] if parsing is inconclusive (built-in will be used instead).
+      function tryDynamicParse(items) {
+        if (!items || items.length === 0) return null;
+
+        // Detect day headers (pages 2–7 in the known PDF)
+        const DAY_NAMES = [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ];
+        let currentDay = null;
+        const found = [];
+
+        // Group items by page then by row (y within 4px tolerance)
+        const pages = {};
+        for (const it of items) {
+          if (!pages[it.page]) pages[it.page] = [];
+          pages[it.page].push(it);
+        }
+
+        // Walk each page and collect rows
+        for (const [pageNum, pageItems] of Object.entries(pages)) {
+          const rows = groupByRow(pageItems);
+          for (const row of rows) {
+            const text = row
+              .map((it) => it.str)
+              .join(" ")
+              .trim();
+
+            // Detect day header (e.g. "Monday {Top}")
+            const dayMatch = DAY_NAMES.find(
+              (d) => text.startsWith(d) && text.length < d.length + 10,
+            );
+            if (dayMatch) {
+              currentDay = dayMatch;
+              continue;
+            }
+
+            if (!currentDay) continue;
+
+            // Attempt to parse a schedule row.
+            // Format: HHMM [HHMM] [Area N | location] Title  Presenter CALLSIGN
+            const entry = parseScheduleRow(text, currentDay);
+            if (entry) found.push(entry);
+          }
+        }
+
+        return found.length > 5 ? found : null;
+      }
+
+      function groupByRow(items) {
+        const sorted = [...items].sort((a, b) => a.y - b.y || a.x - b.x);
+        const rows = [];
+        let current = [];
+        let lastY = null;
+        for (const it of sorted) {
+          if (lastY === null || Math.abs(it.y - lastY) <= 5) {
+            current.push(it);
+          } else {
+            if (current.length) rows.push(current);
+            current = [it];
+          }
+          lastY = it.y;
+        }
+        if (current.length) rows.push(current);
+        return rows;
+      }
+
+      // Very basic heuristic row parser for Quartzfest schedule lines
+      function parseScheduleRow(text, day) {
+        // Must start with a 4-digit time
+        if (!/^\d{4}/.test(text)) return null;
+
+        const parts = text.split(/\s+/);
+        const start = formatTime(parts[0]);
+        if (!start) return null;
+
+        let idx = 1;
+        let end = "";
+        // Optional end time
+        if (parts[idx] && /^\d{4}$/.test(parts[idx])) {
+          end = formatTime(parts[idx]);
+          idx++;
+        }
+
+        // Optional location keyword
+        let location = "";
+        if (parts[idx]) {
+          const loc = parts.slice(idx, idx + 3).join(" ");
+          if (/^Area\s+\d/i.test(loc)) {
+            location = parts[idx] + " " + parts[idx + 1];
+            idx += 2;
+          } else if (/^146\.550$/.test(parts[idx])) {
+            location = parts[idx];
+            idx++;
+          } else if (/^offsite$/i.test(parts[idx])) {
+            location = parts[idx];
+            idx++;
+          }
+        }
+
+        const remainder = parts.slice(idx).join(" ").trim();
+        if (!remainder) return null;
+
+        // Last token that looks like a callsign (letter-digit pattern)
+        const callRx = /\b([A-Z]{1,2}\d[A-Z0-9]{1,3}[A-Z]{1,3})\b/g;
+        const calls = [...remainder.matchAll(callRx)].map((m) => m[1]);
+        const lastCall = calls.length ? calls[calls.length - 1] : "";
+
+        // Split title and presenter at callsign
+        let title = remainder;
+        let presenterStr = "";
+        if (lastCall) {
+          const callIdx = remainder.lastIndexOf(lastCall);
+          // Walk back to find the start of the presenter name
+          const before = remainder.slice(0, callIdx).trimEnd();
+          // Assume presenter name is 1-3 capitalized words before the callsign
+          const nameMatch = before.match(
+            /([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\s*$/,
+          );
+          if (nameMatch) {
+            title = before.slice(0, before.length - nameMatch[0].length).trim();
+            presenterStr = nameMatch[1].trim() + " " + lastCall;
+          } else {
+            presenterStr = lastCall;
+          }
+        }
+
+        const speaker = presenterStr ? [presenterStr] : [];
+        const description = DESCRIPTIONS[title] || "";
+        const date = DATE_MAP[day] || "";
+
+        return {
+          id: createId(day, title),
+          title,
+          description,
+          speaker,
+          location,
+          startTime: buildDT(date, start),
+          endTime: end ? buildDT(date, end) : "",
+          category: "Presentations",
+          day,
+        };
+      }
+
+      // Build sessions array from built-in SCHEDULE constant
+      function buildFromBuiltIn() {
+        return SCHEDULE.map((s) => {
+          const date = DATE_MAP[s.day] || "";
+          return {
+            id: createId(s.day, s.title),
+            title: s.title,
+            description: DESCRIPTIONS[s.title] || "",
+            speaker: s.speaker,
+            location: s.location,
+            startTime: buildDT(date, s.start),
+            endTime: s.end ? buildDT(date, s.end) : "",
+            category: "Presentations",
+            day: s.day,
+          };
+        });
+      }
+
+      // ── Time helpers ────────────────────────────────────────────────────────
+      function formatTime(hhmm) {
+        if (!hhmm || !/^\d{4}$/.test(hhmm)) return "";
+        const h = parseInt(hhmm.slice(0, 2));
+        const m = hhmm.slice(2);
+        return `${String(h).padStart(2, "0")}:${m}`;
+      }
+
+      function buildDT(dateStr, timeStr) {
+        if (!dateStr || !timeStr) return "";
+        return `${dateStr}T${timeStr}:00`;
+      }
+
+      function escStr(s) {
+        return (s || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"')
+          .replace(/[\r\n]/g, " ");
+      }
+
+      function createId(day, title) {
+        return ((day || "") + "-" + (title || ""))
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .substring(0, 60)
+          .replace(/-$/, "");
+      }
+
+      // ── Render ──────────────────────────────────────────────────────────────
+      function renderOutput(sessions) {
+        const mapImg =
+          document.getElementById("mapImage").value.trim() ||
+          "/quartzfest-map-2026.jpg";
+        let out = "// Extracted presentation schedule for Quartzfest 2026\n";
+        out +=
+          "// January 18 – 25, 2026 | La Posa South LTVA, Quartzsite, AZ\n//\n";
+        out +=
+          "//export interface Session {\n//  id: string;\n//  title: string;\n";
+        out +=
+          "//  description: string;\n//  speaker: string[];\n//  location: string;\n";
+        out += "//  startTime: string; // local date-time (MST, UTC-7)\n";
+        out += "//  endTime: string;   // local date-time (MST, UTC-7)\n";
+        out += "//  category: string;\n//  day: string;\n//}\n\n";
+        out += 'import { Session } from "@/types/conference";\n\n';
+        out += `export const mapSessions: [string, Session[]] = [\n  '${escStr(mapImg)}', [\n`;
+        for (const s of sessions) {
+          const spk = s.speaker.map((sp) => `"${escStr(sp)}"`).join(", ");
+          out += `  {\n    id: "${escStr(s.id)}",\n    title: "${escStr(s.title)}",\n`;
+          out += `    description: "${escStr(s.description)}",\n    speaker: [${spk}],\n`;
+          out += `    location: "${escStr(s.location)}",\n    startTime: "${s.startTime}",\n`;
+          out += `    endTime: "${s.endTime}",\n    category: "Presentations",\n    day: "${escStr(s.day)}",\n  },\n`;
+        }
+        out += "]\n];\n";
+        extractedData = out;
+        document.getElementById("output").textContent = out;
+
+        const days = [...new Set(sessions.map((s) => s.day))];
+        const withDesc = sessions.filter((s) => s.description).length;
+        const withSpk = sessions.filter((s) => s.speaker.length > 0).length;
+        document.getElementById("stats").className = "stats";
+        document.getElementById("stats").innerHTML =
+          `<strong>Extraction Summary:</strong><br>` +
+          `Total Sessions: ${sessions.length} &nbsp;|&nbsp; ` +
+          `Days: ${days.join(", ")}<br>` +
+          `Sessions with Speaker: ${withSpk} &nbsp;|&nbsp; ` +
+          `Sessions with Description: ${withDesc}`;
+      }
+
+      function dumpRaw() {
+        if (!rawItems.length) {
+          runBuiltIn();
+          return;
+        }
+        let out = "// RAW PDF TEXT ITEMS (page, x, y, text)\n\n";
+        for (const it of rawItems)
+          out += `p${it.page} x=${String(it.x).padStart(4)} y=${String(it.y).padStart(4)}  ${it.str}\n`;
+        extractedData = out;
+        document.getElementById("output").textContent = out;
+        document.getElementById("stats").className = "stats";
+        document.getElementById("stats").innerHTML =
+          `<strong>Raw dump:</strong> ${rawItems.length} text items from PDF.`;
+      }
+
+      function runBuiltIn() {
+        document.getElementById("stats").innerHTML =
+          "Generating from built-in Quartzfest 2026 schedule data...";
+        const sessions = parse([]);
+        renderOutput(sessions);
+      }
+
+      function copyToClipboard() {
+        if (!extractedData) {
+          runBuiltIn();
+          setTimeout(() => {
+            navigator.clipboard
+              .writeText(extractedData)
+              .then(() => alert("Copied!"))
+              .catch((err) => alert("Failed: " + err));
+          }, 200);
+          return;
+        }
+        navigator.clipboard
+          .writeText(extractedData)
+          .then(() => alert("Copied!"))
+          .catch((err) => alert("Failed: " + err));
+      }
+
+      // Auto-run on page load using built-in data
+      window.addEventListener("load", () => {
+        runBuiltIn();
+      });
+    </script>
+  </body>
+</html>
