@@ -13,6 +13,7 @@ import {
 import { Toaster, toast } from "sonner";
 import {
   AlertCircle,
+  Bell,
   CheckCircle,
   KeyRound,
   LogOut,
@@ -119,7 +120,7 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
 
   const handleAddTicket = () => {
     const trimmed = newTicket.trim();
-    if (!trimmed || raffleTickets.include(trimmed)) return;
+    if (!trimmed || raffleTickets.includes(trimmed)) return;
     setRaffleTickets([...raffleTickets, trimmed]);
     setNewTicket("");
   };
@@ -314,7 +315,18 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
-          <Separator />
+        </CardContent>
+      </Card>
+
+      {/* Notifications card */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            Notifications
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-medium">Email alerts</p>
             <Badge variant="secondary" className="text-xs">
