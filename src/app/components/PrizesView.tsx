@@ -15,6 +15,12 @@ import { Award, HandHelping, Info, Trophy } from "lucide-react";
 import { Prize, PrizeWinner } from "@/types/conference";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
+import { formatUpdateToken, formatUpdateTokenDetail } from "@/lib/overrideUtils";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/app/components/ui/tooltip";
 
 interface PrizeCardProps {
   prize: Prize;
@@ -156,19 +162,6 @@ Object.keys(supplementalPrizeWinnerModules)
     }
   });
 
-/**
- * Format a supplemental-file timestamp token for display.
- * Input:  "20260227T132422"  (YYYYMMDDTHHmmss, the string after the last "-" in the filename)
- * Output: "02/27 @ 13:24"    (MM/DD @ HH:MM)
- */
-export function formatUpdateToken(token: string): string {
-  const month = token.slice(4, 6);
-  const day = token.slice(6, 8);
-  const hour = token.slice(9, 11);
-  const minute = token.slice(11, 13);
-  return `${month}/${day} @ ${hour}:${minute}`;
-}
-
 interface PrizesViewProps {
   highlightPrizeId?: string;
 }
@@ -286,11 +279,16 @@ export function PrizesView({ highlightPrizeId }: PrizesViewProps) {
         ))}
       </Tabs>
       {updateToken && (
-        <p
-          className="text-xs text-gray-400 mt-4"
-          title={updateToken}
-        >
-          Updated: {formatUpdateToken(updateToken)}
+        <p className="text-xs text-gray-400 mt-4">
+          Updated:{" "}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="underline decoration-dotted cursor-help">
+                {formatUpdateToken(updateToken)}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{formatUpdateTokenDetail(updateToken)}</TooltipContent>
+          </Tooltip>
         </p>
       )}
     </div>

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { samplePrizes } from "./yuma-2026-prize-20260227T132422";
 import { samplePrizeWinners } from "./yuma-2026-prizewinner-20260227T132422";
-import { formatUpdateToken } from "@/app/components/PrizesView";
+import { formatUpdateToken } from "@/lib/overrideUtils";
 import { Prize, PrizeWinner } from "@/types/conference";
 
 // ── yuma-2026 supplemental prize file ────────────────────────────────────────
