@@ -146,7 +146,7 @@ const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
 });
 
 // Process the modules into a lookup object
-const EXHIBITOR_DATA: Record<string, Exhibitor[]> = {};
+const EXHIBITOR_DATA: Record<string, [string, Exhibitor[]]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedModule = module as ExhibitorModule;
@@ -165,13 +165,14 @@ export function ExhibitorView({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
-  const exhibitors = EXHIBITOR_DATA[activeConference.id]?.[1] ?? [];
+  const exhibitorEntry = EXHIBITOR_DATA[activeConference.id];
+  const exhibitors: Exhibitor[] = exhibitorEntry ? exhibitorEntry[1] : [];
 
   // Group exhibitors by type
   const groupExhibitorsByType = (exhibitors: Exhibitor[]) => {
     const grouped: Record<string, Exhibitor[]> = {};
     exhibitors.forEach((exhibitor) => {
-      const type = exhibitor.type;
+      const type = exhibitor.type ?? "other";
       if (!grouped[type]) {
         grouped[type] = [];
       }
