@@ -12,21 +12,19 @@ import {
 } from "firebase/auth";
 import { Toaster, toast } from "sonner";
 import {
-  BadgeCheck,
-  Bookmark,
-  Bell,
+  AlertCircle,
+  CheckCircle,
   KeyRound,
   LogOut,
   MonitorCog,
   Moon,
-  Plus,
   ShieldCheck,
   Sun,
-  Ticket,
-  Trash2,
-  User,
+  User
 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -34,8 +32,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Input } from "@/app/components/ui/input";
+import { Separator } from "@/app/components/ui/separator";
 
 function isTheme(value: string): value is Theme {
   return value === "light" || value === "dark" || value === "system";
@@ -55,8 +52,6 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
   const [error, setError] = useState<string>("");
-  const [raffleTickets, setRaffleTickets] = useState<string[]>([]);
-  const [newTicket, setNewTicket] = useState<string>("");
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -113,131 +108,165 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
     }
   };
 
-  const handleAddTicket = () => {
-    const trimmed = newTicket.trim();
-    if (!trimmed || raffleTickets.includes(trimmed)) return;
-    setRaffleTickets([...raffleTickets, trimmed]);
-    setNewTicket("");
-  };
-
-  const handleRemoveTicket = (ticket: string) => {
-    setRaffleTickets(raffleTickets.filter((t) => t !== ticket));
-  };
-
   const initials = user.displayName
     ? user.displayName
         .split(" ")
+        .filter(Boolean)
         .map((n) => n[0])
         .join("")
         .toUpperCase()
         .slice(0, 2)
     : (user.email?.[0] ?? "?").toUpperCase();
 
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return "—";
+    return new Date(dateStr).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
-    <div className="max-w-lg space-y-4">
-      <Toaster />
+    <div className="max-w-md">
+      <>
+        <Toaster />
+      </>
+      <h1 className="text-3xl font-bold mb-8">
+        <User className="h-4 w-4" />
+        Profile
+      </h1>
 
       {/* Profile header card */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-          <div className="relative flex size-16 shrink-0 overflow-hidden rounded-full bg-muted items-center justify-center">
-              {user.photoURL ? (
-                <img src={user.photoURL} alt="Profile picture" className="aspect-square size-full object-cover" />
-              ) : (
-                <span className="text-xl font-semibold text-muted-foreground">{initials}</span>
+          <div className="flex items-start gap-4">
+            <Avatar className="h-16 w-16 text-2xl shrink-0">
+              {user.photoURL && (
+                <AvatarImage src={user.photoURL} alt="Profile picture" />
               )}
-            </div>
-            <div className="min-w-0 flex-1">
+              <AvatarFallback className="text-xl font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
               {user.displayName && (
-                <p className="text-lg font-semibold leading-tight truncate">
+                <p className="text-lg font-semibold truncate">
                   {user.displayName}
                 </p>
               )}
               <p className="text-sm text-muted-foreground truncate">
                 {user.email}
               </p>
-              <div className="mt-1">
+              <div className="mt-1.5">
                 {user.emailVerified ? (
-                  <Badge variant="secondary" className="gap-1 text-xs">
-                    <BadgeCheck className="h-3 w-3 text-green-600" />
+                  <Badge
+                    variant="outline"
+                    className="gap-1 text-green-700 dark:text-green-400 border-green-300 dark:border-green-700"
+                  >
+                    <CheckCircle className="h-3 w-3" />
                     Verified
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-xs text-amber-600 border-amber-400">
+                  <Badge
+                    variant="outline"
+                    className="gap-1 text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-700"
+                  >
+                    <AlertCircle className="h-3 w-3" />
                     Not verified
                   </Badge>
                 )}
               </div>
             </div>
-            {isPrizesAdmin && (
-              <ShieldCheck className="h-5 w-5 text-green-600 flex-shrink-0" title="Admin" />
-            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              //className="shrink-0"
+              className="logout-button border-2 border-solid shadow-md"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Account info card */}
+      {/* Account card */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Account
-          </CardTitle>
+          <CardTitle className="text-base">Account</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex justify-between items-start text-sm">
-            <span className="text-muted-foreground">Last sign in</span>
-            <span className="text-right text-xs">{user.metadata.lastSignInTime}</span>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="flex justify-between items-start text-sm">
-            <span className="text-muted-foreground">Account created</span>
-            <span className="text-right text-xs">{user.metadata.creationTime}</span>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-muted-foreground">Email verified</span>
-            {user.emailVerified ? (
-              <span className="text-green-600 dark:text-green-400 text-xs font-medium">Yes</span>
-            ) : (
-              <button
-                type="button"
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">Email</p>
+              <p className="text-sm text-muted-foreground truncate">
+                {user.email}
+              </p>
+            </div>
+            {!user.emailVerified && (
+              <Button
+                variant="link"
+                size="sm"
                 onClick={handleEmailVerification}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-xs"
+                className="shrink-0 text-amber-600 dark:text-amber-400 px-0"
               >
                 Send verification
-              </button>
+              </Button>
             )}
           </div>
-          <div className="h-px bg-border" />
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-muted-foreground flex items-center gap-1">
-              <KeyRound className="h-3.5 w-3.5" />
-              Password
-            </span>
-            <button
-              type="button"
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Password</p>
+            <Button
+              variant="link"
+              size="sm"
               onClick={handlePasswordReset}
-              className="text-blue-600 dark:text-blue-400 hover:underline text-xs"
+              className="shrink-0 px-0 gap-1"
             >
-              Send reset email
-            </button>
+              <KeyRound className="h-3.5 w-3.5" />
+              Reset password
+            </Button>
+          </div>
+          <Separator />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-xs text-muted-foreground">Last sign in</p>
+              <p className="text-xs mt-0.5">
+                {formatDate(user.metadata.lastSignInTime)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Member since</p>
+              <p className="text-xs mt-0.5">
+                {formatDate(user.metadata.creationTime)}
+              </p>
+            </div>
+          </div>
+          <Separator />
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">User ID</p>
+            <p className="text-xs font-mono text-muted-foreground break-all">
+              {user.uid}
+            </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Appearance card */}
+      {/* Settings card */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Sun className="h-4 w-4" />
-            Appearance
-          </CardTitle>
+          <CardTitle className="text-base">Settings</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-muted-foreground">Theme</span>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-medium">Theme</p>
+              <p className="text-xs text-muted-foreground">
+                Appearance preference
+              </p>
+            </div>
             <ToggleGroup
               type="single"
               value={theme}
@@ -272,145 +301,74 @@ export function ProfilePage({ bookmarkedSessions = [] }: ProfilePageProps) {
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Email alerts</p>
+            <Badge variant="secondary" className="text-xs">
+              Coming soon
+            </Badge>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">SMS alerts</p>
+            <Badge variant="secondary" className="text-xs">
+              Coming soon
+            </Badge>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Messages</p>
+            <Badge variant="secondary" className="text-xs">
+              Coming soon
+            </Badge>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Bookmarks card */}
+      {/* Activity card */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Bookmark className="h-4 w-4" />
-            Bookmarks
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          {bookmarkedSessions.length > 0 ? (
-            <ul className="space-y-1">
-              {bookmarkedSessions.map((id) => (
-                <li key={id} className="truncate">{id}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No bookmarked sessions yet.</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Raffle Tickets card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Ticket className="h-4 w-4" />
-            Raffle Tickets
-          </CardTitle>
+          <CardTitle className="text-base">Activity</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {raffleTickets.length > 0 && (
-            <ul className="space-y-2">
-              {raffleTickets.map((ticket) => (
-                <li key={ticket} className="flex items-center justify-between text-sm">
-                  <span className="font-mono">{ticket}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTicket(ticket)}
-                    aria-label={`Remove ticket ${ticket}`}
-                    className="text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter ticket number"
-              value={newTicket}
-              onChange={(e) => setNewTicket(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleAddTicket(); }}
-              className="h-8 text-sm"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAddTicket}
-              disabled={!newTicket.trim()}
-              aria-label="Add ticket"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Bookmarks</p>
+            {bookmarkedSessions.length > 0 ? (
+              <Badge variant="secondary">{bookmarkedSessions.length}</Badge>
+            ) : (
+              <span className="text-xs text-muted-foreground">None yet</span>
+            )}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Notifications card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            Notifications
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Email alerts</span>
-            <span className="text-muted-foreground text-xs italic">Coming soon</span>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">SMS number</span>
-            <span className="text-muted-foreground text-xs italic">Coming soon</span>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">SMS alerts</span>
-            <span className="text-muted-foreground text-xs italic">Coming soon</span>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Messages</span>
-            <span className="text-muted-foreground text-xs italic">Coming soon</span>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Prizes won</span>
-            <span className="text-muted-foreground text-xs italic">Coming soon</span>
+          <Separator />
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Prizes won</p>
+            <span className="text-xs text-muted-foreground">None yet</span>
           </div>
         </CardContent>
       </Card>
 
       {/* Admin card */}
       {isPrizesAdmin && (
-        <Card className="border-green-200 dark:border-green-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-green-600" />
-              Admin
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm">
-            <Link
-              to="/admin/prizes"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              Prizes Management →
-            </Link>
+        <Card className="border-green-300 dark:border-green-800">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-green-600" />
+                <p className="text-sm font-medium">Administrator</p>
+              </div>
+              <Link
+                to="/admin/prizes"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Prizes Management →
+              </Link>
+            </div>
           </CardContent>
         </Card>
       )}
 
-      <Button
-        variant="destructive"
-        onClick={handleLogout}
-        className="w-full"
-      >
-        <LogOut className="h-4 w-4" />
-        Log Out
-      </Button>
-
       {error && (
-        <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>
+        <p className="text-red-500 dark:text-red-400 mt-4 text-sm">{error}</p>
       )}
     </div>
   );
