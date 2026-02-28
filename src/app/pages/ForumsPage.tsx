@@ -188,7 +188,7 @@ export function ForumsPage() {
     id: "map-0",
     conferenceId: "pacificon-2026",
     name: "noForumMapFound",
-    url: "/pacificon-forums-2025.jpg",
+    url: "/assets/maps/pacificon-forums-2025.jpg",
     order: 6,
     origHeightNum: 256,
     origWidthNum: 582,

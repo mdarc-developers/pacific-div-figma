@@ -108,7 +108,7 @@ export const sampleUserProfiles: UserProfile[] = [
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/pacificon-exhibitors-2025.png",
+  "/assets/maps/pacificon-exhibitors-2025.png",
   // must match mapBooths URL
   [
     {
@@ -759,7 +759,7 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/pacificon-exhibitors-2025.png",
+  "/assets/maps/pacificon-exhibitors-2025.png",
   // must match mapExhibitors URL
   // origHeightNum: 1702,
   // origWidthNum: 1280,
@@ -1703,7 +1703,7 @@ export const mapBooths: [string, Booth[]] = [
 // Extracted forums schedule from pacificon.org
 // Extracted event schedule from pacificon.org
 export const mapSessions: [string, Session[]] = [
-  "/pacificon-hotel-2025.jpg",
+  "/assets/maps/pacificon-hotel-2025.jpg",
   // must match mapRooms URL
   [
     {
@@ -2866,7 +2866,7 @@ export const mapSessions: [string, Session[]] = [
 ];
 
 export const mapRooms: [string, Room[]] = [
-  "/pacificon-hotel-2025.jpg",
+  "/assets/maps/pacificon-hotel-2025.jpg",
   // must match mapSessions URL
   //origHeightNum: 1201,
   //origWidthNum: 983,
@@ -3033,7 +3033,7 @@ export const mapRooms: [string, Room[]] = [
 // saved all the work to specify these rooms for forums, however the larger hotel map may be better for navigation.
 
 export const mapRooms1: [string, Room[]] = [
-  "/pacificon-forums-2025.jpg",
+  "/assets/maps/pacificon-forums-2025.jpg",
   [
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
@@ -3140,13 +3140,13 @@ export const mapRooms1: [string, Room[]] = [
 ];
 
 // map images - in production these may be bundled images
-//           mapSessionsUrl: '/pacificon-forums-2025.jpg', // for Room[] and Session[] - category types Forum and Event
-//           mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[]
+//           mapSessionsUrl: '/assets/maps/pacificon-forums-2025.jpg', // for Room[] and Session[] - category types Forum and Event
+//           mapExhibitorsUrl: ['/assets/maps/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[]
 export const conferenceMaps: MapImage[] = [
   {
     id: "map-1",
     name: "Hotel",
-    url: "/pacificon-hotel-2025.jpg",
+    url: "/assets/maps/pacificon-hotel-2025.jpg",
     //floor: '1',
     order: 1,
     origHeightNum: 1201,
@@ -3155,7 +3155,7 @@ export const conferenceMaps: MapImage[] = [
   {
     id: "map-2",
     name: "Exhibitors",
-    url: "/pacificon-exhibitors-2025.png",
+    url: "/assets/maps/pacificon-exhibitors-2025.png",
     //floor: '2',
     order: 2,
     origHeightNum: 1702,
@@ -3163,25 +3163,25 @@ export const conferenceMaps: MapImage[] = [
   },
   //{
   //  id: 'map-3',
-  //  url: '/hamfest-parking-map-20260101.jpg',
+  //  url: '/assets/maps/hamfest-parking-map-20260101.jpg',
   //  order: 3,
   //},
   //{
   //  id: 'map-4',
   //  name: 'Hamfest Layout',
-  //  url: '/hamfest-layout-2026.png',
+  //  url: '/assets/maps/hamfest-layout-2026.png',
   //  order: 4,
   //},
   //{
   //  id: 'map-5',
   //  name: 'Hamcation Site',
-  //  url: '/hamcation-map-2026.png',
+  //  url: '/assets/maps/hamcation-map-2026.png',
   //  order: 5,
   //},
   {
     id: "map-6",
     name: "Forums",
-    url: "/pacificon-forums-2025.jpg",
+    url: "/assets/maps/pacificon-forums-2025.jpg",
     //floor: '2',
     order: 6,
     origHeightNum: 256,

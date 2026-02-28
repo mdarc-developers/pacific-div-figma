@@ -97,7 +97,7 @@ export function ExhibitorsPage() {
           order: 1,
           id: "map-0",
           name: "No Exhibitors Map Found",
-          url: "/pacificon-exhibitors-2025.png",
+          url: "/assets/maps/pacificon-exhibitors-2025.png",
           origHeightNum: 256,
           origWidthNum: 582,
         }
@@ -106,7 +106,7 @@ export function ExhibitorsPage() {
       // if (activeConference.mapExhibitorsUrl.length === 1) {
       //   return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
       //     order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
-      //     url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
+      //     url: '/assets/maps/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
       //   };
       // }
       // return undefined;
@@ -178,7 +178,7 @@ export function ExhibitorsPage() {
             order: 1,
             id: "map-0",
             name: "No Exhibitors Map Found",
-            url: "/pacificon-exhibitors-2025.png",
+            url: "/assets/maps/pacificon-exhibitors-2025.png",
             origHeightNum: 256,
             origWidthNum: 582,
           }
@@ -191,7 +191,7 @@ export function ExhibitorsPage() {
     //   setExhibitorsMap(
     //     conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
     //       order: 1, id: 'map-0', name: 'No Exhibitors Map Found',
-    //       url: '/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
+    //       url: '/assets/maps/pacificon-exhibitors-2025.png', origHeightNum: 256, origWidthNum: 582
     //     }
     //   );
     //   setMultipleExhibitorMaps([]);
