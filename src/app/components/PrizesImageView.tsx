@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/app/components/ui/button";
 import { ImageIcon, RefreshCw, Trash2, Upload } from "lucide-react";
 import { getGoogleAccessToken, deleteDriveFile } from "@/lib/googleDrive";
@@ -18,6 +18,7 @@ export interface UploadedImage {
   name: string;
   url: string;
   path: string; // Drive file ID
+  previewUrl?: string; // blob URL for in-browser preview
 }
 
 export interface PrizesImageViewProps {
@@ -89,6 +90,16 @@ function driveImageUrl(fileId: string): string {
   return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
 }
 
+async function fetchDriveImageBlobUrl(accessToken: string, fileId: string): Promise<string> {
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (!res.ok) throw new Error(`Failed to fetch image preview for ${fileId}: ${res.statusText}`);
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -103,20 +114,36 @@ export function PrizesImageView({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const blobUrlsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    return () => {
+      blobUrlsRef.current.forEach(URL.revokeObjectURL);
+    };
+  }, []);
 
   const loadImages = async () => {
     setLoading(true);
     setError(null);
+    // Revoke any previously created blob URLs before loading fresh ones
+    blobUrlsRef.current.forEach(URL.revokeObjectURL);
+    blobUrlsRef.current = [];
     try {
       const accessToken = await getGoogleAccessToken();
       const files = await listDrivePrizeImages(accessToken);
-      setImages(
-        files.map((f) => ({
-          name: f.name,
-          url: driveImageUrl(f.id),
-          path: f.id,
-        })),
+      const imageList = await Promise.all(
+        files.map(async (f) => {
+          const previewUrl = await fetchDriveImageBlobUrl(accessToken, f.id);
+          blobUrlsRef.current.push(previewUrl);
+          return {
+            name: f.name,
+            url: driveImageUrl(f.id),
+            path: f.id,
+            previewUrl,
+          };
+        }),
       );
+      setImages(imageList);
       setLoaded(true);
     } catch (err) {
       console.error("PrizesImageView: failed to list images", err);
@@ -221,7 +248,7 @@ export function PrizesImageView({
               onClick={() => onSelect?.(img.url)}
             >
               <img
-                src={img.url}
+                src={img.previewUrl ?? img.url}
                 alt={img.name}
                 className="w-full h-24 object-cover"
               />
