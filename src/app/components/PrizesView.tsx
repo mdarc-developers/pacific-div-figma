@@ -14,6 +14,7 @@ import {
 import { Award, HandHelping, Info, Trophy } from "lucide-react";
 import { Prize, PrizeWinner } from "@/types/conference";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 
 interface PrizeCardProps {
   prize: Prize;
@@ -227,6 +228,9 @@ export function PrizesView({ highlightPrizeId }: PrizesViewProps) {
     return "";
   };
 
+  const tabBg = blendWithWhite(activeConference.primaryColor);
+  const tabText = contrastingColor(tabBg);
+
   return (
     <div className="w-full">
       <Tabs
@@ -234,8 +238,11 @@ export function PrizesView({ highlightPrizeId }: PrizesViewProps) {
         onValueChange={setSelectedCategory}
         className="w-full"
       >
-        <div className="rounded-lg p-2 mb-6 w-full">
-          <TabsList className="w-full flex-wrap h-auto bg-gray-100 dark:bg-gray-800">
+        <div
+          className="rounded-lg p-2 mb-6 w-full"
+          style={{ backgroundColor: tabBg, color: tabText }}
+        >
+          <TabsList className="w-full flex-wrap h-auto bg-transparent">
             <TabsTrigger value="all">All Prizes</TabsTrigger>
             {categoryKeys.map((category) => (
               <TabsTrigger key={category} value={category}>

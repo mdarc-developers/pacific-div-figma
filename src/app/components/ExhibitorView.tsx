@@ -18,6 +18,7 @@ import { Bookmark, MapPin } from "lucide-react";
 import { Exhibitor } from "@/types/conference";
 //import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 
 interface ExhibitorViewProps {
   bookmarkedExhibitors?: string[];
@@ -152,6 +153,8 @@ export function ExhibitorView({
 
   const groupedExhibitors = groupExhibitorsByType(exhibitors);
   const typeKeys = Object.keys(groupedExhibitors).sort();
+  const tabBg = blendWithWhite(activeConference.primaryColor);
+  const tabText = contrastingColor(tabBg);
 
   return (
     <div className="w-full">
@@ -160,8 +163,11 @@ export function ExhibitorView({
         onValueChange={setSelectedType}
         className="w-full"
       >
-        <div className="rounded-lg p-2 mb-6 w-full">
-          <TabsList className="w-full flex-wrap h-auto bg-gray-100 dark:bg-gray-800">
+        <div
+          className="rounded-lg p-2 mb-6 w-full"
+          style={{ backgroundColor: tabBg, color: tabText }}
+        >
+          <TabsList className="w-full flex-wrap h-auto bg-transparent">
             <TabsTrigger value="all">All Types</TabsTrigger>
             {typeKeys.map((type) => (
               <TabsTrigger key={type} value={type}>

@@ -21,6 +21,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
+import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 
 interface CalendarProps {
   events: EventInput[];
@@ -315,6 +316,9 @@ export function ScheduleView({
     }
   };
 
+  const tabBg = blendWithWhite(activeConference.primaryColor);
+  const tabText = contrastingColor(tabBg);
+
   return (
     <div className="w-full">
       <Tabs
@@ -322,7 +326,10 @@ export function ScheduleView({
         onValueChange={setSelectedDay}
         className="w-full"
       >
-        <div className="rounded-lg p-2 mb-6 w-full">
+        <div
+          className="rounded-lg p-2 mb-6 w-full"
+          style={{ backgroundColor: tabBg, color: tabText }}
+        >
           {/* Filter toolbar */}
           <div className="flex gap-2 mb-2">
             <Button
@@ -374,7 +381,7 @@ export function ScheduleView({
             ))}
           </div>
 
-          <TabsList className="w-full flex-wrap h-auto bg-gray-100 dark:bg-gray-800">
+          <TabsList className="w-full flex-wrap h-auto bg-transparent">
             <TabsTrigger value="all">All Days</TabsTrigger>
             {dateKeys.map((date) => (
               <TabsTrigger key={date} value={date}>
