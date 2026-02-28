@@ -113,14 +113,16 @@ export function MapsView() {
         onValueChange={setSelectedMap}
         className="w-full"
       >
-        <TabsList className="w-full mb-6 flex-wrap h-auto">
-          {sortedMaps.map((map) => (
-            <TabsTrigger key={map.id} value={map.id}>
-              {map.name} Map
-              {map.floor && ` (Floor ${map.floor})`}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 mb-6 w-full">
+          <TabsList className="w-full flex-wrap h-auto bg-transparent">
+            {sortedMaps.map((map) => (
+              <TabsTrigger key={map.id} value={map.id}>
+                {map.name} Map
+                {map.floor && ` (Floor ${map.floor})`}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         {sortedMaps.map((map) => (
           <TabsContent key={map.id} value={map.id}>

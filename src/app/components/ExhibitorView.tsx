@@ -160,14 +160,16 @@ export function ExhibitorView({
         onValueChange={setSelectedType}
         className="w-full"
       >
-        <TabsList className="w-full mb-6 flex-wrap h-auto">
-          <TabsTrigger value="all">All Types</TabsTrigger>
-          {typeKeys.map((type) => (
-            <TabsTrigger key={type} value={type}>
-              {type}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 mb-6 w-full">
+          <TabsList className="w-full flex-wrap h-auto bg-transparent">
+            <TabsTrigger value="all">All Types</TabsTrigger>
+            {typeKeys.map((type) => (
+              <TabsTrigger key={type} value={type}>
+                {type}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         <TabsContent value="all">
           {typeKeys.map((type) => (
