@@ -109,6 +109,7 @@ export interface UserProfile {
   displayName?: string;
   displayProfile?: string; // like a public QRZ text for display
   phoneNumber?: string;
+  raffleTickets?: string[];
   votes?: number;
 }
 
