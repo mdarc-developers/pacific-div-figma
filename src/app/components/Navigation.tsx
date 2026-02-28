@@ -15,7 +15,7 @@ export function Navigation() {
 
   return (
     <nav className="w-full mb-8">
-      <div className="grid grid-cols-2 gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+      <div className="grid grid-cols-3 gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
