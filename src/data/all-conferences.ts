@@ -89,7 +89,7 @@ export const allConferences: Conference[] = [
     venueGridSquare: "CN85ax",
     venueWebsite: "https://www.seasideconvention.com",
     timezoneNumeric: "-0800", // observes DST
-    parkingWebsite: "https://seapac.org/map.html",
+    parkingWebsite: "https://seapac.org/#map",
     icalUrl: "",
     googlecalUrl: "",
     contactEmail: "info@seapac.org",
