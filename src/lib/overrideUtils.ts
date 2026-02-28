@@ -3,9 +3,8 @@
  *
  * Handles date-only tokens ("YYYYMMDD") and full datetime tokens
  * ("YYYYMMDDTHHmmss"), which are the string after the last "-" in the
- * supplemental override filename.  Note: the first session override file was
- * named with a triple-s typo ("sesssion") — the glob and regex in ScheduleView
- * intentionally match both spellings.
+ * supplemental override filename.  The glob and regex in ScheduleView
+ * match both "session" and "sesssion" spellings for backwards compatibility.
  *
  * Examples:
  *   "20260227T132422"  →  "02/27 @ 13:24"
