@@ -339,7 +339,12 @@ export function ScheduleView({
             <Button
               variant={showNowAndNext ? "default" : "outline"}
               size="sm"
-              onClick={() => setShowNowAndNext((v) => !v)}
+              onClick={() => {
+                setShowNowAndNext((v) => {
+                  if (!v) setSelectedDay("all");
+                  return !v;
+                });
+              }}
               className="flex items-center gap-1"
             >
               <Zap className="h-4 w-4" />

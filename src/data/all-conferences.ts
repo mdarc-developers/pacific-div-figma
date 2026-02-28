@@ -67,7 +67,7 @@ Xenia, OH 45385",
     venueGPS: "39.6990,-83.9412",
     venueGridSquare: "EM89aq",
     venueWebsite: "https://greenecoexpocenter.com/",
-    timezoneNumeric: "-0700", // DST, PDT ends early Nov
+    timezoneNumeric: "-0400", // EDT in May (Eastern Daylight Time)
     parkingWebsite: "https://hamvention.org/travel-parking/directions/",
     icalUrl: "",
     googlecalUrl: "",
@@ -92,7 +92,7 @@ Seaside, OR 97138",
     venueGPS: "45.9940,-123.9280",
     venueGridSquare: "CN85ax",
     venueWebsite: "https://www.seasideconvention.com",
-    timezoneNumeric: "-0800", // observes DST
+    timezoneNumeric: "-0700", // PDT in June (Pacific Daylight Time)
     parkingWebsite: "https://seapac.org/#map",
     icalUrl: "",
     googlecalUrl: "",
@@ -115,7 +115,7 @@ Huntsville, AL 35801",
     venueGPS: "34.7269,-86.5934",
     venueGridSquare: "EM64qr",
     venueWebsite: "http://www.vonbrauncenter.com/",
-    timezoneNumeric: "-0700", // DST, PDT ends early Nov
+    timezoneNumeric: "-0500", // CDT in August (Central Daylight Time)
     parkingWebsite: "https://hamfest.org/directions",
     icalUrl: "",
     googlecalUrl: "",
@@ -189,7 +189,7 @@ Orlando, FL 32808",
     venueGPS: "28.5556,-81.4402",
     venueGridSquare: "EL98gn",
     venueWebsite: "https://www.centralfloridafair.com/",
-    timezoneNumeric: "-0700", // DST, PDT ends early Nov
+    timezoneNumeric: "-0500", // EST in February (Eastern Standard Time)
     parkingWebsite: "",
     icalUrl: "",
     googlecalUrl: "",
