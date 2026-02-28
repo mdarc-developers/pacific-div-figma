@@ -322,7 +322,7 @@ export function ScheduleView({
         onValueChange={setSelectedDay}
         className="w-full"
       >
-        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 mb-6 w-full">
+        <div className="rounded-lg p-2 mb-6 w-full">
           {/* Filter toolbar */}
           <div className="flex gap-2 mb-2">
             <Button
@@ -374,7 +374,7 @@ export function ScheduleView({
             ))}
           </div>
 
-          <TabsList className="w-full flex-wrap h-auto bg-transparent">
+          <TabsList className="w-full flex-wrap h-auto bg-gray-100 dark:bg-gray-800">
             <TabsTrigger value="all">All Days</TabsTrigger>
             {dateKeys.map((date) => (
               <TabsTrigger key={date} value={date}>
