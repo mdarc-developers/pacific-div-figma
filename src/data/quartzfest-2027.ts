@@ -95,18 +95,23 @@ export const mapRooms: [string, Room[]] = [
     // ... (your forumRooms data) ...
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
-      name: 1,
+      name: "Area 1",
       coords: [[218, 370], [295, 370], [295, 437], [218, 437]],
       color: '#ffffff',
     },
     {
-      name: 2,
+      name: "Area 2",
       coords: [[195, 181], [249, 181], [249, 240], [195, 240]],
       color: '#ffffff',
     },
     {
-      name: 3,
+      name: "Area 3",
       coords: [[87, 395], [135, 395], [135, 470], [87, 470]],
+      color: '#ffffff',
+    },
+    {
+      name: "Restrooms",
+      coords: [[471, 162], [513, 162], [513, 214], [471, 214]],
       color: '#ffffff',
     },
   ],

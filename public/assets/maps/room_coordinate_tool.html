@@ -420,7 +420,7 @@
         });
 
         const coordString = coords.map((c) => `[${c[0]}, ${c[1]}]`).join(", ");
-        const outputText = `\n  {\n    name: ${boothName},\n    coords: [${coordString}],\n    color: \'#ffffff\',\n  },\n\n`;
+        const outputText = `\n  {\n    name: "${boothName}",\n    coords: [${coordString}],\n    color: \'#ffffff\',\n  },\n\n`;
 
         output.textContent = outputText;
 
