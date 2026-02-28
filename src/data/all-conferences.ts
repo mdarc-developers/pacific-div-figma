@@ -22,8 +22,8 @@ export const allConferences: Conference[] = [
   //    googlecalUrl: '',
   //    contactEmail: '',
   //    logoUrl: '/hamcation-2026-logo.png',
-  //    mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
-  //    mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
+  //    //mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
+  //    //mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
   //  },
   {
     id: "yuma-2026",
@@ -116,8 +116,6 @@ export const allConferences: Conference[] = [
     googlecalUrl: "",
     contactEmail: "",
     logoUrl: "/assets/images/huntsville-logo.png",
-    //mapSessionsUrl: '', // for Room[]
-    //mapExhibitorsUrl: ['/hamfest-layout-2026.png'], // for Booth[]
   },
   {
     id: "pacificon-2026",
@@ -146,6 +144,28 @@ export const allConferences: Conference[] = [
     //mapExhibitorsUrl: ['/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
   },
   {
+    id: "quartzfest-2027",
+    name: "Quartzfest 2027",
+    location: "US 95 @ La Paz Valley Road, La Paz Valley, AZ, 85346",
+    venue: "BLM La Posa LTVA, Roadrunner Camping Area",
+    startDate: "2027-01-17",
+    endDate: "2027-01-23",
+    timezone: "America/Phoenix",
+    primaryColor: "#53DEBF",
+    secondaryColor: "#f97316",
+    conferenceWebsite: "https://www.quartzfest.org",
+    venuePhone: "",
+    venueGPS: "33.5852,-114.2225",
+    venueGridSquare: "KO30de",
+    venueWebsite: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
+    timezoneNumeric: "-0700", // does not observe DST
+    parkingWebsite: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
+    icalUrl: "",
+    googlecalUrl: "",
+    contactEmail: "hkey073@gmail.com",
+    logoUrl: "/assets/images/quartzfest-logo-w1000_h1000.webp",
+  },
+  {
     id: "hamcation-2027",
     name: "Hamcation 2027",
     location: "4603 W Colonial Drive, Orlando, FL 32808",
@@ -169,4 +189,4 @@ export const allConferences: Conference[] = [
     //mapSessionsUrl: '/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/hamcation-2026-north.png', '/hamcation-2026-eastwest.png'], // for Booth[]
   },
-];
+]; // 53DEBF

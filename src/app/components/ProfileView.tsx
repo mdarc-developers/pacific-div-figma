@@ -22,7 +22,13 @@ export function ProfileView() {
         <li>• SMS &amp; email notifications</li>
       </ul>
       <p className="text-sm text-gray-500 dark:text-gray-500 mt-6">
-        Authentication will be enabled with Firebase configuration
+        First time?{" "}
+        <a
+          href="/signup"
+          className="gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          Sign up now
+        </a>
       </p>
     </div>
   );
