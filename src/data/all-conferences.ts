@@ -139,7 +139,7 @@ export const allConferences: Conference[] = [
     googlecalUrl:
       "https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org",
     contactEmail: "webmaster@pacificon.org",
-    logoUrl: "/assets/maps/2026-pacificon-logo-208-110.jpg",
+    logoUrl: "/assets/images/pacificon-2026-logo-208-110.jpg",
     //mapSessionsUrl: '/assets/maps/pacificon-hotel-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
     //mapExhibitorsUrl: ['/assets/maps/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
   },
@@ -187,7 +187,7 @@ Roadrunner Camping Area",
     icalUrl: "",
     googlecalUrl: "",
     contactEmail: "",
-    logoUrl: "/assets/maps/hamcation-2026-logo.png",
+    logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
   },
