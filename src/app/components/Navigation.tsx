@@ -1,27 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { Calendar, Map, Mic, SquareUser, Trophy, User } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
-
-interface BoothModule {
-  mapBooths?: unknown;
-  [key: string]: unknown;
-}
-
-const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-const BOOTH_IDS = new Set<string>();
-Object.entries(conferenceModules).forEach(([path, module]) => {
-  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
-  if ((module as BoothModule).mapBooths) {
-    BOOTH_IDS.add(conferenceId);
-  }
-});
+import { BOOTH_DATA } from "@/lib/sessionData";
 
 export function Navigation() {
   const { activeConference } = useConference();
-  const hasBooths = BOOTH_IDS.has(activeConference.id);
+  const hasBooths = !!BOOTH_DATA[activeConference.id];
 
   const navItems = [
     { to: "/schedule", icon: Calendar, label: "Schedule" },
