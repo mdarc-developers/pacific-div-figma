@@ -107,11 +107,13 @@ export interface UserProfile {
   roles?: string[];
   groups?: string[];
   callsign?: string;
-  displayName?: string;
-  displayProfile?: string; // like a public QRZ text for display
-  phoneNumber?: string;
+  displayName?: string; // important for exhibitor or speaker
+  displayProfile?: string; // like a public QRZ text for display, also speaker bio - should not be empty for speakers
+  phoneNumber?: string; // not for public display, just for alerts/notifications
   raffleTickets?: string[];
-  votes?: number;
+  votes?: number; // an interesting popularity contest for Gordo then everyone else!
+  exhibitors?: string[];
+  sessions?: string[];
 }
 
 export interface Message {
