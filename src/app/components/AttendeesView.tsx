@@ -9,6 +9,7 @@ import {
 import { ExternalLink, Send, User } from "lucide-react";
 import { UserProfile } from "@/types/conference";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 
 interface AttendeeCardProps {
   attendee: UserProfile;
@@ -119,21 +120,29 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const attendees = ATTENDEE_DATA[activeConference.id] || [];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  // Group attendees by category
-  //const groupAttendeesByCategory = (attendee: UserProfile[]) => {
-  //const grouped: Record<string, UserProfile[]> = {};
-  //attendees.forEach(loopattendee => {
-  //  const category = loopattendee.category ? loopattendee.category : 'Attendee';
-  //  if (!grouped[category]) {
-  //    grouped[category] = [];
-  //  }
-  //  grouped[category].push(loopattendee);
-  //});
-  //return grouped;
-  //};
+  // Derive category lists from UserProfile attributes
+  const speakers = attendees.filter(
+    (a) => a.sessions && a.sessions.length > 0,
+  );
+  const exhibitors = attendees.filter(
+    (a) => a.exhibitors && a.exhibitors.length > 0,
+  );
+  // Users with any group membership are treated as organizers/staff
+  const organizers = attendees.filter(
+    (a) => a.groups && a.groups.length > 0,
+  );
 
-  //const groupedAttendees = groupAttendeesByCategory(attendees);
-  //const categoryKeys = Object.keys(groupedAttendees).sort();
+  // Build the list of visible category tabs (only show non-empty ones)
+  const categoryTabs = (
+    [
+      { key: "speakers", label: "Speakers", list: speakers },
+      { key: "exhibitors", label: "Exhibitors", list: exhibitors },
+      { key: "organizers", label: "Organizers", list: organizers },
+    ] as { key: string; label: string; list: UserProfile[] }[]
+  ).filter((cat) => cat.list.length > 0);
+
+  const tabBg = blendWithWhite(activeConference.primaryColor);
+  const tabText = contrastingColor(tabBg);
 
   //export interface UserProfile {
   //  uid: string;
@@ -155,9 +164,19 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
         onValueChange={setSelectedCategory}
         className="w-full"
       >
-        <TabsList className="hidden w-full mb-6 flex-wrap h-auto">
-          <TabsTrigger value="all">Attendees</TabsTrigger>
-        </TabsList>
+        <div
+          className="rounded-lg p-2 mb-6 w-full"
+          style={{ backgroundColor: tabBg, color: tabText }}
+        >
+          <TabsList className="w-full flex-wrap h-auto bg-transparent">
+            <TabsTrigger value="all">All Attendees</TabsTrigger>
+            {categoryTabs.map((cat) => (
+              <TabsTrigger key={cat.key} value={cat.key}>
+                {cat.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
         <TabsContent value="all">
           {attendees.map((attendee) => (
             <AttendeeCard
@@ -167,6 +186,17 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
             />
           ))}
         </TabsContent>
+        {categoryTabs.map((cat) => (
+          <TabsContent key={cat.key} value={cat.key}>
+            {cat.list.map((attendee) => (
+              <AttendeeCard
+                key={attendee.uid}
+                attendee={attendee}
+                isHighlighted={highlightAttendeeId === attendee.uid}
+              />
+            ))}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
