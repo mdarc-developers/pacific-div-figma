@@ -22,6 +22,7 @@ import { LoginPage } from "@/app/pages/LoginPage";
 import { SignUpPage } from "@/app/pages/SignUpPage";
 import { SearchPage } from "@/app/pages/SearchPage";
 import { PrizesAdminPage } from "@/app/pages/PrizesAdminPage";
+import { PacificonFloorMap } from "@/app/components/PacificonFloorMap";
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/admin/prizes" element={<PrizesAdminPage />} />
+          <Route path="/pacificonfloormap" element={<PacificonFloorMap />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>
 
