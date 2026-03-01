@@ -1703,7 +1703,8 @@ export const mapBooths: [string, Booth[]] = [
 // Extracted forums schedule from pacificon.org
 // Extracted event schedule from pacificon.org
 export const mapSessions: [string, Session[]] = [
-  "/assets/maps/pacificon-hotel-2025.jpg",
+  //"/assets/maps/pacificon-hotel-2025.jpg",
+  "/assets/maps/pacificon-forums-2025.jpg",
   // must match mapRooms URL
   [
     {
@@ -2865,7 +2866,7 @@ export const mapSessions: [string, Session[]] = [
   ],
 ];
 
-export const mapRooms: [string, Room[]] = [
+export const mapRooms1: [string, Room[]] = [
   "/assets/maps/pacificon-hotel-2025.jpg",
   // must match mapSessions URL
   //origHeightNum: 1201,
@@ -3032,7 +3033,7 @@ export const mapRooms: [string, Room[]] = [
 
 // saved all the work to specify these rooms for forums, however the larger hotel map may be better for navigation.
 
-export const mapRooms1: [string, Room[]] = [
+export const mapRooms: [string, Room[]] = [
   "/assets/maps/pacificon-forums-2025.jpg",
   [
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]

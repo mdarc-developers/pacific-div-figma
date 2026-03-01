@@ -439,7 +439,8 @@ export function ConferenceHeader() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <a
-                        href={`https://www.levinecentral.com/ham/grid_square.php?Grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
+                        //href={`https://www.levinecentral.com/ham/grid_square.php?Grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
+                        href={`https://www.karhukoti.com/maidenhead-grid-square-locator/?grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
                         rel="noopener noreferrer"
                         target="_blank"
                         className="hover:underline"
