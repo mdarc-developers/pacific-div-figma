@@ -6,7 +6,7 @@ import { UserProfile } from "@/types/conference.ts";
 
 export const sampleAttendees: UserProfile[] = [
   {
-    uid: "",
+    uid: "1",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -19,7 +19,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-antenna-launching-for-ham-radio", "thursday-3d-printing-for-ham-radio"],
   },
   {
-    uid: "",
+    uid: "2",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -31,7 +31,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-star-party"],
   },
   {
-    uid: "",
+    uid: "3",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -44,7 +44,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-antenna-physics"],
   },
   {
-    uid: "",
+    uid: "4",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -57,7 +57,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-pico-balloon-launch", "wednesday-lift-off-discover-the-world-of-pico-ballooning"],
   },
   {
-    uid: "",
+    uid: "5",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -70,7 +70,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-powering-the-starlink-mini-using-ohms-law", "thursday-solar-walkabout"],
   },
   {
-    uid: "",
+    uid: "6",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -82,7 +82,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["friday-arizona-near-space-research-ansr", "saturday-ansr-high-altitude-balloon-launch"],
   },
   {
-    uid: "",
+    uid: "7",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -95,7 +95,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-parks-on-the-air-pota"],
   },
   {
-    uid: "",
+    uid: "8",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -108,7 +108,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-cornhole-practice", "monday-cornhole-tournament"],
   },
   {
-    uid: "",
+    uid: "9",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -121,7 +121,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-nano-vna", "thursday-a-simple-homebrew-hamstick-dipole"],
   },
   {
-    uid: "",
+    uid: "10",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -133,7 +133,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-arrl-instructor-seminar-with-live-kits"],
   },
   {
-    uid: "",
+    uid: "11",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -146,7 +146,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["friday-talk-like-a-ham", "friday-movie-making-waves"],
   },
   {
-    uid: "",
+    uid: "12",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -159,7 +159,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-experiments-with-radio-waves"],
   },
   {
-    uid: "",
+    uid: "13",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -171,7 +171,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-off-road-adventure"],
   },
   {
-    uid: "",
+    uid: "14",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -183,7 +183,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["friday-winlink-email-demonstrationhow-to-do-it-qrp"],
   },
   {
-    uid: "",
+    uid: "15",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -196,7 +196,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-arrl-instructor-seminar-with-live-kits"],
   },
   {
-    uid: "",
+    uid: "16",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -209,7 +209,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-welcome-seminar", "monday-arrl-instructor-seminar-with-live-kits", "tuesday-quartz-rocks-super-stars-judging", "wednesday-metal-detectingold-rare-coins-buried"],
   },
   {
-    uid: "",
+    uid: "17",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -222,7 +222,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-pleasant-valley-warwhy-az-was-late-to-be-a-state"],
   },
   {
-    uid: "",
+    uid: "18",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -234,7 +234,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["thursday-sota-hike-to-cunningham-peak"],
   },
   {
-    uid: "",
+    uid: "19",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -247,7 +247,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["thursday-onan-generators-rv-electrical-and-solar-systems"],
   },
   {
-    uid: "",
+    uid: "20",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -259,7 +259,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-why-youll-want-to-add-gmrs-to-your-ham-toolkit"],
   },
   {
-    uid: "",
+    uid: "21",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -272,7 +272,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-digital-amateur-television", "friday-getting-on-the-microwave-bands"],
   },
   {
-    uid: "",
+    uid: "22",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -284,7 +284,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-activating-74-parks-in-47-states-in-3-months"],
   },
   {
-    uid: "",
+    uid: "23",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -296,7 +296,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["sunday-quartzfest-2026-opening-ceremony", "monday-morning-net", "monday-noon-net", "monday-happy-hour-daily-prizes", "tuesday-morning-net", "tuesday-noon-net", "tuesday-happy-hour", "wednesday-morning-net", "wednesday-noon-net", "wednesday-happy-hour-daily-prizes", "thursday-morning-net", "thursday-noon-net", "thursday-happy-hour-daily-prizes", "friday-morning-net", "friday-noon-net", "friday-happy-hour-daily-prizes", "saturday-morning-net", "saturday-closing-ceremony-grand-prizes"],
   },
   {
-    uid: "",
+    uid: "24",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -308,7 +308,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["friday-winlink-email-demonstrationhow-to-do-it-qrp"],
   },
   {
-    uid: "",
+    uid: "25",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -320,7 +320,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-pet-parade"],
   },
   {
-    uid: "",
+    uid: "26",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -333,7 +333,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-disability-awareness", "wednesday-handiham-program", "thursday-crocheting"],
   },
   {
-    uid: "",
+    uid: "27",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -346,7 +346,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-first-aidstop-the-bleed"],
   },
   {
-    uid: "",
+    uid: "28",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -358,7 +358,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["thursday-pota-drive-to-kofa-park"],
   },
   {
-    uid: "",
+    uid: "29",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -370,7 +370,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-randys-favorite-tools-gizmos-and-gadgets"],
   },
   {
-    uid: "",
+    uid: "30",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -382,7 +382,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["friday-antenna-walkabout"],
   },
   {
-    uid: "",
+    uid: "31",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -394,7 +394,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-jam-session-and-hootenanny-practice", "thursday-hootenanny"],
   },
   {
-    uid: "",
+    uid: "32",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -407,7 +407,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-what-you-should-know-about-gen-iv-nuclear-power"],
   },
   {
-    uid: "",
+    uid: "33",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -420,7 +420,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-license-testing", "tuesday-license-testing", "wednesday-license-testing", "thursday-license-testing", "friday-license-testing"],
   },
   {
-    uid: "",
+    uid: "34",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -433,7 +433,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["monday-recruiting-and-retaining-new-hams"],
   },
   {
-    uid: "",
+    uid: "35",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -446,7 +446,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["friday-qso-party-multi-county-expedition"],
   },
   {
-    uid: "",
+    uid: "36",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -459,7 +459,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["wednesday-make-an-antenna-and-take-it-up-a-mountain"],
   },
   {
-    uid: "",
+    uid: "37",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -471,7 +471,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["thursday-antennas"],
   },
   {
-    uid: "",
+    uid: "38",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
@@ -483,7 +483,7 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["tuesday-bunny-huntpresentation-followed-by-hunt"],
   },
   {
-    uid: "",
+    uid: "39",
     email: "",
     darkMode: false,
     bookmarkedSessions: [],
