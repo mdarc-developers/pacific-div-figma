@@ -45,6 +45,8 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
+import { MAX_RANGE_SIZE } from "@/app/hooks/useRaffleTickets";
 
 function isTheme(value: string): value is Theme {
   return value === "light" || value === "dark" || value === "system";
@@ -60,8 +62,10 @@ export function ProfilePage() {
   const isPrizesAdmin = usePrizesAdmin();
   const [bookmarkedSessions, toggleBookmark, prevBookmarkedSessions] = useBookmarks(activeConference.id);
   const [error, setError] = useState<string>("");
-  const [raffleTickets, addRaffleTicket, removeRaffleTicket] = useRaffleTickets(activeConference.id);
+  const [raffleTickets, addRaffleTicket, removeRaffleTicket, addRaffleTicketRange] = useRaffleTickets(activeConference.id);
   const [newTicket, setNewTicket] = useState<string>("");
+  const [rangeStart, setRangeStart] = useState<string>("");
+  const [rangeEnd, setRangeEnd] = useState<string>("");
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -127,6 +131,26 @@ export function ProfilePage() {
 
   const handleRemoveTicket = (ticket: string) => {
     removeRaffleTicket(ticket);
+  };
+
+  const rangeStartNum = parseInt(rangeStart, 10);
+  const rangeEndNum = parseInt(rangeEnd, 10);
+  const rangeSize = !isNaN(rangeStartNum) && !isNaN(rangeEndNum)
+    ? rangeEndNum - rangeStartNum + 1
+    : 0;
+  const isRangeValid =
+    rangeStart.trim() !== "" &&
+    rangeEnd.trim() !== "" &&
+    !isNaN(rangeStartNum) &&
+    !isNaN(rangeEndNum) &&
+    rangeStartNum <= rangeEndNum &&
+    rangeSize <= MAX_RANGE_SIZE;
+
+  const handleAddRange = () => {
+    if (!isRangeValid) return;
+    addRaffleTicketRange(rangeStartNum, rangeEndNum);
+    setRangeStart("");
+    setRangeEnd("");
   };
 
   const initials = user.displayName
@@ -376,25 +400,75 @@ export function ProfilePage() {
               ))}
             </ul>
           )}
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter ticket number"
-              value={newTicket}
-              onChange={(e) => setNewTicket(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleAddTicket(); }}
-              className="h-8 text-sm"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAddTicket}
-              disabled={!newTicket.trim()}
-              aria-label="Add ticket"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
+          <Tabs defaultValue="single">
+            <TabsList className="h-7 text-xs mb-1">
+              <TabsTrigger value="single" className="h-6 px-3 text-xs">Single</TabsTrigger>
+              <TabsTrigger value="range" className="h-6 px-3 text-xs">Range</TabsTrigger>
+            </TabsList>
+            <TabsContent value="single" className="mt-0">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter ticket number"
+                  value={newTicket}
+                  onChange={(e) => setNewTicket(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleAddTicket(); }}
+                  className="h-8 text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddTicket}
+                  disabled={!newTicket.trim()}
+                  aria-label="Add ticket"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </TabsContent>
+            <TabsContent value="range" className="mt-0 space-y-2">
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  placeholder="First"
+                  value={rangeStart}
+                  onChange={(e) => setRangeStart(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleAddRange(); }}
+                  className="h-8 text-sm w-24"
+                  aria-label="Range start ticket number"
+                />
+                <span className="text-sm text-muted-foreground">–</span>
+                <Input
+                  type="number"
+                  placeholder="Last"
+                  value={rangeEnd}
+                  onChange={(e) => setRangeEnd(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleAddRange(); }}
+                  className="h-8 text-sm w-24"
+                  aria-label="Range end ticket number"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddRange}
+                  disabled={!isRangeValid}
+                  aria-label="Add ticket range"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              {rangeStart && rangeEnd && !isNaN(rangeStartNum) && !isNaN(rangeEndNum) && (
+                <p className="text-xs text-muted-foreground">
+                  {rangeStartNum > rangeEndNum
+                    ? "Start must be ≤ end"
+                    : rangeSize > MAX_RANGE_SIZE
+                    ? `Range too large (max ${MAX_RANGE_SIZE})`
+                    : `${rangeSize} ticket${rangeSize !== 1 ? "s" : ""} will be added`}
+                </p>
+              )}
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
