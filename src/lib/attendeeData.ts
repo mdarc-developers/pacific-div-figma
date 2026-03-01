@@ -1,14 +1,10 @@
 import { UserProfile } from "@/types/conference";
+import { conferenceModules } from "@/lib/conferenceData";
 
 interface AttendeeModule {
   sampleAttendees?: UserProfile[];
   [key: string]: unknown;
 }
-
-// Import all attendee data files at once using Vite's glob import
-const conferenceModules = import.meta.glob("../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
 
 // Process the modules into a lookup object
 export const ATTENDEE_DATA: Record<string, UserProfile[]> = {};
