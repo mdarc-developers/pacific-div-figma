@@ -1,5 +1,5 @@
-// Extracted presentation schedule for Quartzfest 2027
-// January 17 – 23, 2027 | BLM La Posa LTVA, La Paz Valley, AZ
+// Extracted presentation schedule for Quartzfest 2026
+// January 18 – 25, 2026 | La Posa South LTVA, Quartzsite, AZ
 //
 //export interface Session {
 //  id: string;
@@ -417,7 +417,7 @@ export const mapSessions: [string, Session[]] = [
       speaker: ["Prizes Kris Weed KR1SS"],
       location: "Area 1",
       startTime: "2026-01-20T15:30:00",
-      endTime: "2026-01-20T16:30:00",
+      startTime: "2026-01-20T16:30:00",
       category: "Presentations",
     },
     {
