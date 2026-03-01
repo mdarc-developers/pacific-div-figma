@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { mapSessions } from "./seapac-2026-session-20260227";
 import { mapSessions as quartzfestSessions } from "./quartzfest-2027-session-20260218";
+import { allConferences } from "./all-conferences";
 import {
   formatUpdateToken,
   formatUpdateTokenDetail,
   resolveSessionEndTime,
+  isSessionWithinConference,
 } from "@/lib/overrideUtils";
 import { Session } from "@/types/conference";
 
@@ -180,5 +182,148 @@ describe("quartzfest-2027-session supplemental file", () => {
       );
       expect(resolved).toBe(session.endTime);
     });
+  });
+});
+
+// ── isSessionWithinConference ─────────────────────────────────────────────────
+// Validates the helper that checks whether a session's start/end dates fall
+// within the inclusive date range of its conference.
+describe("isSessionWithinConference", () => {
+  const conf = {
+    id: "test-conf",
+    name: "Test",
+    venue: "",
+    startDate: "2027-01-17",
+    endDate: "2027-01-23",
+    timezone: "America/Phoenix",
+    timezoneNumeric: "-0700",
+    primaryColor: "#000000",
+    secondaryColor: "#000000",
+    location: "",
+    conferenceWebsite: "",
+    venuePhone: "",
+    venueGPS: "",
+    venueGridSquare: "",
+    venueWebsite: "",
+    parkingWebsite: "",
+    icalUrl: "",
+    googlecalUrl: "",
+    contactEmail: "",
+    logoUrl: "",
+  };
+
+  const makeSession = (start: string, end: string): Session => ({
+    id: "s1",
+    title: "Test",
+    description: "",
+    speaker: [],
+    location: "",
+    startTime: start,
+    endTime: end,
+    category: "Test",
+  });
+
+  it("returns true when session is fully within the conference dates", () => {
+    expect(
+      isSessionWithinConference(
+        makeSession("2027-01-18T09:00:00", "2027-01-18T10:00:00"),
+        conf,
+      ),
+    ).toBe(true);
+  });
+
+  it("returns true for a session on the first day of the conference", () => {
+    expect(
+      isSessionWithinConference(
+        makeSession("2027-01-17T08:00:00", "2027-01-17T09:00:00"),
+        conf,
+      ),
+    ).toBe(true);
+  });
+
+  it("returns true for a session on the last day of the conference", () => {
+    expect(
+      isSessionWithinConference(
+        makeSession("2027-01-23T20:00:00", "2027-01-23T21:00:00"),
+        conf,
+      ),
+    ).toBe(true);
+  });
+
+  it("returns false when startTime is before the conference start date", () => {
+    expect(
+      isSessionWithinConference(
+        makeSession("2027-01-16T09:00:00", "2027-01-17T10:00:00"),
+        conf,
+      ),
+    ).toBe(false);
+  });
+
+  it("returns false when endTime is after the conference end date", () => {
+    expect(
+      isSessionWithinConference(
+        makeSession("2027-01-23T20:00:00", "2027-01-24T00:00:00"),
+        conf,
+      ),
+    ).toBe(false);
+  });
+
+  it("returns false when the session is entirely in a different year", () => {
+    expect(
+      isSessionWithinConference(
+        makeSession("2026-01-18T09:00:00", "2026-01-18T10:00:00"),
+        conf,
+      ),
+    ).toBe(false);
+  });
+
+  it("uses startTime date as proxy for endTime when endTime is empty", () => {
+    // start is within range, so should return true
+    expect(
+      isSessionWithinConference(makeSession("2027-01-20T09:00:00", ""), conf),
+    ).toBe(true);
+  });
+
+  it("uses startTime date as proxy for endTime when endTime is invalid", () => {
+    expect(
+      isSessionWithinConference(
+        makeSession("2027-01-20T09:00:00", "INVALID"),
+        conf,
+      ),
+    ).toBe(true);
+  });
+});
+
+// ── conference date-range checks for real session data ────────────────────────
+// These tests document that both the seapac-2026 and quartzfest-2027
+// supplemental files contain sessions whose dates do NOT match their
+// respective conference date ranges.  This is known bad data and these tests
+// serve as a regression guard — a CI failure here signals that the session
+// dates have been corrected (or new mismatches introduced).
+describe("conference date-range checks for real session data", () => {
+  it("seapac-2026 conference is defined in allConferences", () => {
+    const seapac = allConferences.find((c) => c.id === "seapac-2026");
+    expect(seapac).toBeDefined();
+  });
+
+  it("seapac-2026 sessions contain dates outside the conference date range", () => {
+    const seapac = allConferences.find((c) => c.id === "seapac-2026")!;
+    const outsideRange = mapSessions[1].filter(
+      (s) => !isSessionWithinConference(s, seapac),
+    );
+    expect(outsideRange.length).toBeGreaterThan(0);
+  });
+
+  it("quartzfest-2027 conference is defined in allConferences", () => {
+    const qf = allConferences.find((c) => c.id === "quartzfest-2027");
+    expect(qf).toBeDefined();
+  });
+
+  it("quartzfest-2027 sessions contain dates outside the conference date range", () => {
+    const qf = allConferences.find((c) => c.id === "quartzfest-2027")!;
+    const outsideRange = quartzfestSessions[1].filter(
+      (s) => !isSessionWithinConference(s, qf),
+    );
+    expect(outsideRange.length).toBeGreaterThan(0);
   });
 });

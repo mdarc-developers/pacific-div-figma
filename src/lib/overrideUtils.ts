@@ -1,3 +1,5 @@
+import { Conference, Session } from "@/types/conference";
+
 /**
  * Format a supplemental-file timestamp token for brief display.
  *
@@ -53,6 +55,35 @@ export function resolveSessionEndTime(
     return endTime;
   }
   return new Date(startMs + 60 * 60 * 1000).toISOString().slice(0, 19);
+}
+
+/**
+ * Returns true if a session's start and end dates both fall within the
+ * inclusive date range of the given conference.
+ *
+ * Only the date portion ("YYYY-MM-DD") of `startTime` and `endTime` is
+ * compared against `conference.startDate` / `conference.endDate`.  When
+ * `endTime` is empty or not a valid ISO datetime the start-date is used as
+ * a proxy for the end-date (best effort).
+ *
+ * Examples (conference 2027-01-17 – 2027-01-23):
+ *   startTime "2027-01-18T09:00:00", endTime "2027-01-18T10:00:00" → true
+ *   startTime "2026-01-18T09:00:00", endTime "2026-01-18T10:00:00" → false
+ *   startTime "2027-01-23T20:00:00", endTime "2027-01-24T00:00:00" → false
+ */
+export function isSessionWithinConference(
+  session: Session,
+  conference: Conference,
+): boolean {
+  const sessionStartDate = session.startTime.split("T")[0];
+  const sessionEndDate =
+    session.endTime && !isNaN(new Date(session.endTime).getTime())
+      ? session.endTime.split("T")[0]
+      : sessionStartDate;
+  return (
+    sessionStartDate >= conference.startDate &&
+    sessionEndDate <= conference.endDate
+  );
 }
 
 /**
