@@ -22,6 +22,40 @@ export function formatUpdateToken(token: string): string {
 }
 
 /**
+ * Return a valid endTime string for a session.
+ *
+ * If `endTime` is a non-empty valid ISO datetime string it is returned
+ * unchanged.  Otherwise (empty string, non-ISO garbage, etc.) the function
+ * returns a string that is exactly one hour after `startTime`.  If
+ * `startTime` is itself unparseable the original (invalid) `endTime` is
+ * returned so the caller can still render the session.
+ *
+ * Both `startTime` and `endTime` are expected to be local-time ISO strings
+ * without a timezone suffix (e.g. "2027-01-18T09:00:00").
+ *
+ * Examples:
+ *   ("2027-01-18T09:00:00", "2027-01-18T10:30:00") → "2027-01-18T10:30:00"
+ *   ("2027-01-18T09:00:00", "")                     → "2027-01-18T10:00:00"
+ *   ("2027-01-18T09:00:00", "INVALID")              → "2027-01-18T10:00:00"
+ *   ("NOT-A-DATE",          "")                     → ""
+ */
+export function resolveSessionEndTime(
+  startTime: string,
+  endTime: string,
+): string {
+  if (endTime && !isNaN(new Date(endTime).getTime())) {
+    return endTime;
+  }
+  // Append "Z" so the string is always parsed as UTC, making the +1 h
+  // arithmetic timezone-independent in all JS environments.
+  const startMs = new Date(startTime + "Z").getTime();
+  if (isNaN(startMs)) {
+    return endTime;
+  }
+  return new Date(startMs + 60 * 60 * 1000).toISOString().slice(0, 19);
+}
+
+/**
  * Return a human-readable full detail string for a supplemental-file timestamp
  * token, suitable for use in a tooltip.
  *

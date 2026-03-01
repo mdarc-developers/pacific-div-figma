@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { mapSessions } from "./seapac-2026-session-20260227";
+import { mapSessions as quartzfestSessions } from "./quartzfest-2027-session-20260218";
 import {
   formatUpdateToken,
   formatUpdateTokenDetail,
+  resolveSessionEndTime,
 } from "@/lib/overrideUtils";
 import { Session } from "@/types/conference";
 
@@ -80,6 +82,103 @@ describe("supplemental session override logic", () => {
     SESSION_DATA["seapac-2026"].forEach((session: Session) => {
       expect(typeof session.id).toBe("string");
       expect(typeof session.title).toBe("string");
+    });
+  });
+});
+
+// ── resolveSessionEndTime ─────────────────────────────────────────────────────
+// Validates the end-time normalisation helper used by sessionData.ts to ensure
+// sessions with missing or invalid endTimes are displayed with a sensible
+// 1-hour default instead of "Invalid Date".
+describe("resolveSessionEndTime", () => {
+  it("returns endTime unchanged when it is a valid ISO datetime", () => {
+    expect(
+      resolveSessionEndTime("2027-01-18T09:00:00", "2027-01-18T10:30:00"),
+    ).toBe("2027-01-18T10:30:00");
+  });
+
+  it("defaults to startTime + 1 hour when endTime is empty", () => {
+    expect(resolveSessionEndTime("2027-01-18T09:00:00", "")).toBe(
+      "2027-01-18T10:00:00",
+    );
+  });
+
+  it("defaults to startTime + 1 hour when endTime is an invalid string", () => {
+    expect(resolveSessionEndTime("2027-01-18T09:00:00", "INVALID")).toBe(
+      "2027-01-18T10:00:00",
+    );
+  });
+
+  it("returns the original endTime when startTime is also unparseable", () => {
+    expect(resolveSessionEndTime("NOT-A-DATE", "")).toBe("");
+  });
+
+  it("handles midnight rollover correctly", () => {
+    expect(resolveSessionEndTime("2027-01-18T23:00:00", "")).toBe(
+      "2027-01-19T00:00:00",
+    );
+  });
+});
+
+// ── quartzfest-2027 supplemental session file ──────────────────────────────────
+// Guards the shape of the supplemental session export and verifies that the
+// bad-data examples (empty / invalid endTime) are normalised to valid times
+// when resolveSessionEndTime is applied.
+describe("quartzfest-2027-session supplemental file", () => {
+  it("exports a [url, Session[]] tuple", () => {
+    expect(Array.isArray(quartzfestSessions)).toBe(true);
+    expect(quartzfestSessions.length).toBe(2);
+    expect(typeof quartzfestSessions[0]).toBe("string");
+    expect(Array.isArray(quartzfestSessions[1])).toBe(true);
+  });
+
+  it("exports a non-empty Session array", () => {
+    expect(quartzfestSessions[1].length).toBeGreaterThan(0);
+  });
+
+  it("each session has required fields", () => {
+    quartzfestSessions[1].forEach((session) => {
+      expect(typeof session.id).toBe("string");
+      expect(session.id.length).toBeGreaterThan(0);
+      expect(typeof session.title).toBe("string");
+      // some quartzfest sessions intentionally have empty titles (bad data)
+      expect(typeof session.startTime).toBe("string");
+      expect(typeof session.endTime).toBe("string");
+      expect(typeof session.location).toBe("string");
+      expect(typeof session.category).toBe("string");
+    });
+  });
+
+  it("contains sessions with invalid end times (the bad-data examples)", () => {
+    const badEndTimes = quartzfestSessions[1].filter(
+      (s) => !s.endTime || isNaN(new Date(s.endTime).getTime()),
+    );
+    expect(badEndTimes.length).toBeGreaterThan(0);
+  });
+
+  it("resolveSessionEndTime produces a valid ISO datetime for sessions with a valid startTime", () => {
+    quartzfestSessions[1]
+      .filter((s) => !isNaN(new Date(s.startTime + "Z").getTime()))
+      .forEach((session) => {
+        const resolved = resolveSessionEndTime(
+          session.startTime,
+          session.endTime,
+        );
+        expect(isNaN(new Date(resolved).getTime())).toBe(false);
+      });
+  });
+
+  it("resolveSessionEndTime returns the original endTime when startTime is also invalid", () => {
+    const badStartSessions = quartzfestSessions[1].filter((s) =>
+      isNaN(new Date(s.startTime + "Z").getTime()),
+    );
+    expect(badStartSessions.length).toBeGreaterThan(0);
+    badStartSessions.forEach((session) => {
+      const resolved = resolveSessionEndTime(
+        session.startTime,
+        session.endTime,
+      );
+      expect(resolved).toBe(session.endTime);
     });
   });
 });

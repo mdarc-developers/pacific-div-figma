@@ -1,5 +1,6 @@
 import { Session, MapImage, Room, Booth, Exhibitor } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
+import { resolveSessionEndTime } from "@/lib/overrideUtils";
 
 interface ConferenceModule {
   mapSessions?: [string, Session[]];
@@ -11,6 +12,13 @@ interface ConferenceModule {
 }
 
 // Process the modules into a lookup object
+function normalizeSessions(sessions: Session[]): Session[] {
+  return sessions.map((s) => ({
+    ...s,
+    endTime: resolveSessionEndTime(s.startTime, s.endTime),
+  }));
+}
+
 export const SESSION_DATA: Record<string, Session[]> = {};
 export const MAP_DATA: Record<string, MapImage[]> = {};
 // ROOM_DATA, BOOTH_DATA, and EXHIBITOR_DATA use [mapUrl, items[]] tuples so that
@@ -22,7 +30,7 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedModule = module as ConferenceModule;
   if (typedModule.mapSessions) {
-    SESSION_DATA[conferenceId] = typedModule.mapSessions[1];
+    SESSION_DATA[conferenceId] = normalizeSessions(typedModule.mapSessions[1]);
   }
   if (typedModule.conferenceMaps) {
     MAP_DATA[conferenceId] = typedModule.conferenceMaps;
@@ -58,7 +66,7 @@ Object.keys(supplementalSessionModules)
       const conferenceId = conferenceIdMatch[1];
       const typedModule = supplementalSessionModules[path] as ConferenceModule;
       if (typedModule.mapSessions) {
-        SESSION_DATA[conferenceId] = typedModule.mapSessions[1];
+        SESSION_DATA[conferenceId] = normalizeSessions(typedModule.mapSessions[1]);
         const token = filename.split("-").pop() ?? "";
         if (token && token > (SESSION_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
           SESSION_SUPPLEMENTAL_TOKEN[conferenceId] = token;
