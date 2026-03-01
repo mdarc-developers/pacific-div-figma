@@ -11,7 +11,8 @@ import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Map as MapIcon } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
-import { MAP_DATA } from "@/lib/sessionData";
+import { MAP_DATA, ROOM_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Renders a PDF inside an <iframe> whose height is automatically derived from
@@ -56,6 +57,7 @@ function PdfIframe({ map }: { map: MapImage }) {
 
 export function MapsView() {
   const { activeConference } = useConference();
+  const navigate = useNavigate();
   const maps = MAP_DATA[activeConference.id] || [];
   const [selectedMap, setSelectedMap] = useState<string>(maps[0]?.id || "");
 
@@ -69,6 +71,15 @@ export function MapsView() {
   }
 
   const sortedMaps = [...maps].sort((a, b) => a.order - b.order);
+
+  const forumsMapUrl = ROOM_DATA[activeConference.id]?.[0];
+  const exhibitorsMapUrl = EXHIBITOR_DATA[activeConference.id]?.[0];
+
+  function getMapDestination(map: MapImage): string | null {
+    if (forumsMapUrl && map.url === forumsMapUrl) return "/forums";
+    if (exhibitorsMapUrl && map.url === exhibitorsMapUrl) return "/exhibitors";
+    return null;
+  }
 
   function displayImage(map: MapImage) {
     if (map.url.endsWith("pdf")) {
@@ -108,19 +119,39 @@ export function MapsView() {
           </TabsList>
         </div>
 
-        {sortedMaps.map((map) => (
-          <TabsContent key={map.id} value={map.id}>
-            <Card>
-              <CardContent className="p-4">
-                <div className="w-full overflow-auto">{displayImage(map)}</div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
-                  {map.name}
-                  {map.floor && ` - Floor ${map.floor}`}
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
+        {sortedMaps.map((map) => {
+          const destination = getMapDestination(map);
+          const destinationLabel =
+            destination === "/forums"
+              ? "→ View Forums"
+              : destination === "/exhibitors"
+                ? "→ View Exhibitors"
+                : null;
+          return (
+            <TabsContent key={map.id} value={map.id}>
+              <Card>
+                <CardContent className="p-4">
+                  <div
+                    className={`w-full overflow-auto ${destination ? "cursor-pointer" : ""}`.trim()}
+                    onClick={destination ? () => navigate(destination) : undefined}
+                    title={destinationLabel ? `View interactive ${destinationLabel.slice(2).toLowerCase()} map` : undefined}
+                  >
+                    {displayImage(map)}
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
+                    {map.name}
+                    {map.floor && ` - Floor ${map.floor}`}
+                    {destinationLabel && (
+                      <span className="ml-2 text-blue-600 dark:text-blue-400 underline">
+                        {destinationLabel}
+                      </span>
+                    )}
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          );
+        })}
       </Tabs>
     </div>
   );
