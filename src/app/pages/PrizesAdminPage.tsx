@@ -5,77 +5,11 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { PrizesAdminView } from "@/app/components/PrizesAdminView";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
-import { Prize, PrizeWinner } from "@/types/conference";
-
-// Load sample data for all conferences (same glob as PrizesView)
-interface PrizeModule {
-  samplePrizes?: Prize[];
-  samplePrizeWinners?: PrizeWinner[];
-  [key: string]: unknown;
-}
-
-const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-const PRIZE_DATA: Record<string, Prize[]> = {};
-const PRIZE_WINNER_DATA: Record<string, PrizeWinner[]> = {};
-Object.entries(conferenceModules).forEach(([path, mod]) => {
-  const conferenceId = path.split("/").pop()?.replace(".ts", "") ?? "";
-  const typedMod = mod as PrizeModule;
-  if (typedMod.samplePrizes) PRIZE_DATA[conferenceId] = typedMod.samplePrizes;
-  if (typedMod.samplePrizeWinners)
-    PRIZE_WINNER_DATA[conferenceId] = typedMod.samplePrizeWinners;
-});
-
-// Track the newest supplemental file timestamp token per conference.
-const PRIZE_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
-
-// Override with supplemental prize files (e.g. yuma-2026-prize-20260227T132422.ts).
-// Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
-// multiple supplemental files exist for the same conference.
-const supplementalPrizeModules = import.meta.glob("../../data/*-prize-*.ts", {
-  eager: true,
-});
-Object.keys(supplementalPrizeModules)
-  .sort()
-  .forEach((path) => {
-    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
-    const match = filename.match(/^(.+)-prize-/);
-    if (match) {
-      const conferenceId = match[1];
-      const typedMod = supplementalPrizeModules[path] as PrizeModule;
-      if (typedMod.samplePrizes) {
-        PRIZE_DATA[conferenceId] = typedMod.samplePrizes;
-        const token = filename.split("-").pop() ?? "";
-        if (token && token > (PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
-          PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] = token;
-        }
-      }
-    }
-  });
-
-const supplementalPrizeWinnerModules = import.meta.glob(
-  "../../data/*-prizewinner-*.ts",
-  { eager: true },
-);
-Object.keys(supplementalPrizeWinnerModules)
-  .sort()
-  .forEach((path) => {
-    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
-    const match = filename.match(/^(.+)-prizewinner-/);
-    if (match) {
-      const conferenceId = match[1];
-      const typedMod = supplementalPrizeWinnerModules[path] as PrizeModule;
-      if (typedMod.samplePrizeWinners) {
-        PRIZE_WINNER_DATA[conferenceId] = typedMod.samplePrizeWinners;
-        const token = filename.split("-").pop() ?? "";
-        if (token && token > (PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
-          PRIZE_SUPPLEMENTAL_TOKEN[conferenceId] = token;
-        }
-      }
-    }
-  });
+import {
+  PRIZE_DATA,
+  PRIZE_WINNER_DATA,
+  PRIZE_SUPPLEMENTAL_TOKEN,
+} from "@/lib/prizesData";
 
 export function PrizesAdminPage() {
   const { user, loading } = useAuth();

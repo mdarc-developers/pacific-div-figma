@@ -5,29 +5,7 @@ import { Session } from "@/types/conference";
 import { Button } from "@/app/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useConference } from "@/app/contexts/ConferenceContext";
-
-interface SessionModule {
-  mapSessions?: [string, Session[]];
-  [key: string]: unknown;
-}
-
-// Import all session data files at once using Vite's glob import
-// This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-// Process the modules into a lookup object
-const SESSION_DATA: Record<string, Session[]> = {};
-Object.entries(conferenceModules).forEach(([path, module]) => {
-  // Extract the conference ID from the file path
-  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
-  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
-  const typedModule = module as SessionModule;
-  if (typedModule.mapSessions) {
-    SESSION_DATA[conferenceId] = typedModule.mapSessions;
-  }
-});
+import { SESSION_DATA } from "@/lib/sessionData";
 
 interface SearchBarProps {
   onSelectSession?: (session: Session) => void;
@@ -59,8 +37,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   // Initialize search index on mount
   useEffect(() => {
-    searchService.buildIndex(indexSessions[1]);
-  }, [indexSessions[1]]);
+    searchService.buildIndex(indexSessions);
+  }, [indexSessions]);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

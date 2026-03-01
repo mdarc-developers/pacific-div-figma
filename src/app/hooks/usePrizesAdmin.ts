@@ -1,24 +1,5 @@
 import { useAuth } from "@/app/contexts/AuthContext";
-import { UserProfile } from "@/types/conference";
-
-// Load all sampleUserProfiles exports from every conference data file.
-// This mirrors the pattern used in PrizesView for prizes/winners.
-interface ProfileModule {
-  sampleUserProfiles?: UserProfile[];
-  [key: string]: unknown;
-}
-
-const profileModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-const allSampleProfiles: UserProfile[] = [];
-Object.values(profileModules).forEach((mod) => {
-  const typedMod = mod as ProfileModule;
-  if (typedMod.sampleUserProfiles) {
-    allSampleProfiles.push(...typedMod.sampleUserProfiles);
-  }
-});
+import { ALL_USER_PROFILES } from "@/lib/userProfileData";
 
 /**
  * Returns true when the currently authenticated user's email matches a sample
@@ -31,6 +12,6 @@ Object.values(profileModules).forEach((mod) => {
 export function usePrizesAdmin(): boolean {
   const { user } = useAuth();
   if (!user?.email) return false;
-  const profile = allSampleProfiles.find((p) => p.email === user.email);
+  const profile = ALL_USER_PROFILES.find((p) => p.email === user.email);
   return profile?.groups?.includes("prize-admin") ?? false;
 }
