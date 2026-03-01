@@ -8,7 +8,7 @@ import {
 } from "@/app/components/ui/tabs";
 import { ExternalLink, Send, User } from "lucide-react";
 import { UserProfile } from "@/types/conference";
-import { ATTENDEE_DATA, ATTENDEE_SUPPLEMENTAL_TOKEN } from "@/lib/attendeeData";
+import { ATTENDEE_DATA, ATTENDEE_SUPPLEMENTAL_TOKEN } from "@/lib/userProfileData";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 import {
