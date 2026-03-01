@@ -325,7 +325,7 @@ export function ScheduleView({
           style={{ backgroundColor: tabBg, color: tabText }}
         >
           {/* Filter toolbar */}
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-2 justify-center">
             <Button
               variant={showBookmarkedOnly ? "default" : "outline"}
               size="sm"
