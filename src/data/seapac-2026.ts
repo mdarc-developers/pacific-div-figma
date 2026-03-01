@@ -145,8 +145,8 @@ export const conferenceMaps: MapImage[] = [
     url: "/assets/maps/seapac-lobby-20260227.png",
     floor: "lobby",
     order: 1,
-    origWidthNum: 638,
-    origHeightNum: 726,
+    origWidthNum: 473,
+    origHeightNum: 624,
   },
   {
     id: "map-2",
