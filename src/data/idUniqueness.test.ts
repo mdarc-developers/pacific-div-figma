@@ -15,6 +15,7 @@ import * as quartzfest2027 from "./quartzfest-2027";
 import { mapSessions as seapacSessions } from "./seapac-2026-session-20260227";
 import { samplePrizes as yumaSupPrizes } from "./yuma-2026-prize-20260227T132422";
 import { samplePrizeWinners as yumaSupWinners } from "./yuma-2026-prizewinner-20260227T132422";
+import { sampleAttendees as quartzfestSupAttendees } from "./quartzfest-2027-userprofile-20260301";
 
 // ── helper ───────────────────────────────────────────────────────────────────
 function findDuplicates(ids: (string | number)[]): (string | number)[] {
@@ -150,6 +151,11 @@ describe("userprofile uid uniqueness", () => {
       const uids = attendees.map((u) => u.uid);
       expect(findDuplicates(uids), `Duplicate userprofile uids in ${confId}`).toEqual([]);
     });
+  });
+
+  it("quartzfest-2027-userprofile supplemental: userprofile uids are unique", () => {
+    const uids = quartzfestSupAttendees.map((a) => a.uid);
+    expect(findDuplicates(uids)).toEqual([]);
   });
 });
 
