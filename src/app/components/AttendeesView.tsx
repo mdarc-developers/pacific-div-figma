@@ -10,6 +10,15 @@ import { ExternalLink, Send, User } from "lucide-react";
 import { UserProfile } from "@/types/conference";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
+import {
+  formatUpdateToken,
+  formatUpdateTokenDetail,
+} from "@/lib/overrideUtils";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/app/components/ui/tooltip";
 
 interface AttendeeCardProps {
   attendee: UserProfile;
@@ -109,6 +118,37 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   }
 });
 
+// Track the newest supplemental file timestamp token per conference.
+const ATTENDEE_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
+
+// Override with supplemental userprofile files (e.g. quartzfest-2027-userprofile-20260301.ts).
+// Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
+// multiple supplemental files exist for the same conference.
+const supplementalAttendeeModules = import.meta.glob(
+  "../../data/*-userprofile-*.ts",
+  { eager: true },
+);
+Object.keys(supplementalAttendeeModules)
+  .sort()
+  .forEach((path) => {
+    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
+    const match = filename.match(/^(.+)-userprofile-/);
+    if (match) {
+      const conferenceId = match[1];
+      const typedModule = supplementalAttendeeModules[path] as AttendeeModule;
+      if (typedModule.sampleAttendees) {
+        ATTENDEE_DATA[conferenceId] = typedModule.sampleAttendees;
+        const token = filename.split("-").pop() ?? "";
+        if (
+          token &&
+          token > (ATTENDEE_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")
+        ) {
+          ATTENDEE_SUPPLEMENTAL_TOKEN[conferenceId] = token;
+        }
+      }
+    }
+  });
+
 interface AttendeesViewProps {
   highlightAttendeeId?: string;
 }
@@ -118,6 +158,7 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
   const attendees = ATTENDEE_DATA[activeConference.id] || [];
+  const updateToken = ATTENDEE_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Derive category lists from UserProfile attributes
@@ -198,6 +239,24 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
           </TabsContent>
         ))}
       </Tabs>
+      {updateToken && (
+        <p className="text-xs text-gray-400 mt-4">
+          Updated:{" "}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="underline decoration-dotted cursor-help"
+              >
+                {formatUpdateToken(updateToken)}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {formatUpdateTokenDetail(updateToken)}
+            </TooltipContent>
+          </Tooltip>
+        </p>
+      )}
     </div>
   );
 }
