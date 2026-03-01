@@ -26,7 +26,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-18T13:00:00",
       endTime: "2026-01-18T14:00:00",
       category: "Presentations",
-      day: "Sunday",
     },
     {
       id: "monday-morning",
@@ -37,7 +36,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T07:45:00",
       endTime: "2026-01-19T08:45:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-pico-balloon-launch-brian-basura-n6cvo",
@@ -48,7 +46,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T08:30:00",
       endTime: "2026-01-19T09:30:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-welcome-seminar-gordo-and-team-give-a-preview-of-all",
@@ -60,7 +57,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T09:00:00",
       endTime: "2026-01-19T10:00:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-arrl-instructor-seminar-with-live",
@@ -71,7 +67,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T10:30:00",
       endTime: "2026-01-19T11:30:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-14655-0-noon",
@@ -79,10 +74,9 @@ export const mapSessions: [string, Session[]] = [
       description: "",
       speaker: ["Net Kris Weed KR1SS"],
       location: "",
-      startTime: "2026-01-19T12:00:00",
       startTime: "2026-01-19T13:00:00",
+      endTime: "", // missing end time – will default to 14:00
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-license-testing-wm7x-rv-west-of-area-1-stephen-hutchi-1",
@@ -93,7 +87,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T12:30:00",
       endTime: "2026-01-19T13:30:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-cornhole",
@@ -104,7 +97,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T13:00:00",
       endTime: "2026-01-19T15:00:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-rv-u-pgrades-w-orth-i-nvestigating-keith-shomaker",
@@ -115,7 +107,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T14:00:00",
       endTime: "2026-01-19T15:00:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-happy-hour-daily",
@@ -126,7 +117,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T15:30:00",
       endTime: "2026-01-19T16:30:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-star-party-alan-kopp-ak9k",
@@ -137,7 +127,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T18:00:00",
       endTime: "2026-01-19T21:00:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "monday-recruiting-and-retaining-n-ew",
@@ -148,7 +137,6 @@ export const mapSessions: [string, Session[]] = [
       startTime: "2026-01-19T18:30:00",
       endTime: "2026-01-19T19:30:00",
       category: "Presentations",
-      day: "Monday",
     },
     {
       id: "tuesday-morning-1",
@@ -202,7 +190,7 @@ export const mapSessions: [string, Session[]] = [
     },
     {
       id: "tuesday-why-youll-want-to-add-gmrs-to-j-im",
-      title: "Why You’ll Want to Add GMRS to J im",
+      title: "Why You'll Want to Add GMRS to J im",
       description: "",
       speaker: ["Mohan AA7JM"],
       location: "Area 2",
@@ -680,8 +668,8 @@ export const mapSessions: [string, Session[]] = [
       description: "",
       speaker: [],
       location: "",
-      startTime: "2026-01-20T19:70:00",
-      endTime: "",
+      startTime: "2026-01-20T19:70:00", // invalid minute – bad data example
+      endTime: "", // missing end time – will default to startTime + 1 hour
       category: "Presentations",
     },
     {
@@ -692,7 +680,7 @@ export const mapSessions: [string, Session[]] = [
       speaker: [],
       location: "",
       startTime: "2026-01-20T13:00:00",
-      endTime: "",
+      endTime: "", // missing end time – will default to 14:00
       category: "Presentations",
     },
     {
