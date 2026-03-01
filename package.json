@@ -14,7 +14,7 @@
     "test": "vitest run",
     "testverbose": "vitest run --reporter=verbose",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
     "testimagesizes": "npx vitest run src/data/mapImageDimensions.test.ts"
   },
   "dependencies": {
