@@ -1,54 +1,54 @@
 import { Conference } from "@/types/conference";
 
 export const allConferences: Conference[] = [
-  //  {
-  //    id: 'hamcation-2026',
-  //    name: 'Hamcation 2026',
-  //    location: '4603 W Colonial Drive, Orlando, FL 32808',
-  //    venue: 'Central Florida Fairgrounds',
-  //    startDate: '2026-02-13',
-  //    endDate: '2026-02-15',
-  //    timezone: 'America/New_York',
-  //    primaryColor: '#000000',
-  //    secondaryColor: '#f97316',
-  //    conferenceWebsite: 'https://www.hamcation.com',
-  //    venuePhone: '407-385-3247',
-  //    venueGPS: '28.5556,-81.4402',
-  //    venueGridSquare: 'EL98gn',
-  //    venueWebsite: 'https://www.centralfloridafair.com/',
-  //    timezoneNumeric: '-0700', // DST, PDT ends early Nov
-  //    parkingWebsite: '',
-  //    icalUrl: '',
-  //    googlecalUrl: '',
-  //    contactEmail: '',
-  //    logoUrl: '/assets/maps/hamcation-2026-logo.png',
-  //    //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
-  //    //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
-  //  },
-  {
-    id: "yuma-2026",
-    name: "Yuma Hamfest 2026",
-    location: "2520 E 32nd St, Yuma, AZ 85365",
-    venue: "Yuma County Fairgrounds",
-    startDate: "2026-02-27",
-    endDate: "2026-02-28",
-    timezone: "America/Phoenix",
-    primaryColor: "#F5E556",
-    secondaryColor: "#253C61",
-    conferenceWebsite: "https://www.yumahamfest.com",
-    venuePhone: "(928) 726-4420",
-    venueGPS: "32.6707,-114.5943",
-    venueGridSquare: "DM22qq",
-    venueWebsite: "https://www.yumafair.com",
-    timezoneNumeric: "-0700", // does not observe DST
-    parkingWebsite: "https://www.yumahamfest.com/parking.html",
-    icalUrl: "",
-    googlecalUrl: "",
-    contactEmail: "info@yumahamfest.org",
-    logoUrl: "/assets/images/yuma-buzzard.webp",
-    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
-    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-  },
+//  {
+//    id: 'hamcation-2026',
+//    name: 'Hamcation 2026',
+//    location: '4603 W Colonial Drive, Orlando, FL 32808',
+//    venue: 'Central Florida Fairgrounds',
+//    startDate: '2026-02-13',
+//    endDate: '2026-02-15',
+//    timezone: 'America/New_York',
+//    primaryColor: '#000000',
+//    secondaryColor: '#f97316',
+//    conferenceWebsite: 'https://www.hamcation.com',
+//    venuePhone: '407-385-3247',
+//    venueGPS: '28.5556,-81.4402',
+//    venueGridSquare: 'EL98gn',
+//    venueWebsite: 'https://www.centralfloridafair.com/',
+//    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+//    parkingWebsite: '',
+//    icalUrl: '',
+//    googlecalUrl: '',
+//    contactEmail: '',
+//    logoUrl: '/assets/maps/hamcation-2026-logo.png',
+//    //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
+//    //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
+//  },
+//  {
+//    id: "yuma-2026",
+//    name: "Yuma Hamfest 2026",
+//    location: "2520 E 32nd St, Yuma, AZ 85365",
+//    venue: "Yuma County Fairgrounds",
+//    startDate: "2026-02-27",
+//    endDate: "2026-02-28",
+//    timezone: "America/Phoenix",
+//    primaryColor: "#F5E556",
+//    secondaryColor: "#253C61",
+//    conferenceWebsite: "https://www.yumahamfest.com",
+//    venuePhone: "(928) 726-4420",
+//    venueGPS: "32.6707,-114.5943",
+//    venueGridSquare: "DM22qq",
+//    venueWebsite: "https://www.yumafair.com",
+//    timezoneNumeric: "-0700", // does not observe DST
+//    parkingWebsite: "https://www.yumahamfest.com/parking.html",
+//    icalUrl: "",
+//    googlecalUrl: "",
+//    contactEmail: "info@yumahamfest.org",
+//    logoUrl: "/assets/images/yuma-buzzard.webp",
+//    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+//    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+//  },
   {
     id: "hamvention-2026",
     name: "Hamvention 2026",
@@ -191,4 +191,28 @@ Roadrunner Camping Area",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
   },
-]; // 53DEBF
+  {
+    id: "yuma-2027",
+    name: "Yuma Hamfest 2027",
+    location: "2520 E 32nd St, Yuma, AZ 85365",
+    venue: "Yuma County Fairgrounds",
+    startDate: "2027-02-27",
+    endDate: "2027-02-28",
+    timezone: "America/Phoenix",
+    primaryColor: "#F5E556",
+    secondaryColor: "#253C61",
+    conferenceWebsite: "https://www.yumahamfest.com",
+    venuePhone: "(928) 726-4420",
+    venueGPS: "32.6707,-114.5943",
+    venueGridSquare: "DM22qq",
+    venueWebsite: "https://www.yumafair.com",
+    timezoneNumeric: "-0700", // does not observe DST
+    parkingWebsite: "https://www.yumahamfest.com/parking.html",
+    icalUrl: "",
+    googlecalUrl: "",
+    contactEmail: "info@yumahamfest.org",
+    logoUrl: "/assets/images/yuma-buzzard.webp",
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+  },
+];
