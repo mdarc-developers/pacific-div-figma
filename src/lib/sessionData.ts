@@ -46,11 +46,10 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 export const SESSION_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 
 // Override with supplemental session files (e.g. seapac-2026-sesssion-20260227.ts).
-// The glob matches both "session" and "sesssion" (common typo) via the * wildcard.
 // Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
 // multiple supplemental files exist for the same conference.
 const supplementalSessionModules = import.meta.glob(
-  "../data/*-sess*ion-*.ts",
+  "../data/*-session-*.ts",
   { eager: true },
 );
 Object.keys(supplementalSessionModules)
