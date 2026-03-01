@@ -417,7 +417,7 @@ export const mapSessions: [string, Session[]] = [
       speaker: ["Prizes Kris Weed KR1SS"],
       location: "Area 1",
       startTime: "2026-01-20T15:30:00",
-      startTime: "2026-01-20T16:30:00",
+      endTime: "2026-01-20T16:30:00",
       category: "Presentations",
     },
     {
