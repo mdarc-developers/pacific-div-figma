@@ -50,6 +50,7 @@ export interface Exhibitor {
   url?: string;
   color?: string;
   votes?: number;
+  prizesDonated?: string[];
 }
 
 export interface Room {
@@ -84,16 +85,16 @@ export interface Prize {
   votes?: number;
 }
 
-export interface PrizeWinner {
-  id: string;
-  prizeId: string[];
-  winningTicket: string;
-  winnerCallsign?: string;
-  winnerEmail?: string;
-  winnerName?: string;
-  drawing?: string;
-  notifiedAt?: string;
-  claimedAt?: string;
+export interface PrizeWinner { // PrizeAwards? attributes of Prize? typically unidentified at first
+  id: string; // multiple ids for multiple prizes won
+  prizeId: string[]; // I think just string
+  winningTicket: string; // public
+  winnerCallsign?: string; // not public
+  winnerEmail?: string; // not public
+  winnerName?: string; // not public
+  drawing?: string;  // award
+  notifiedAt?: string;  // award
+  claimedAt?: string;  // award
   votes?: number;
 }
 
@@ -107,13 +108,16 @@ export interface UserProfile {
   roles?: string[];
   groups?: string[];
   callsign?: string;
-  displayName?: string; // important for exhibitor or speaker
+  displayName?: string; // for exhibitors, speakers or anyone
   displayProfile?: string; // like a public QRZ text for display, also speaker bio - should not be empty for speakers
   phoneNumber?: string; // not for public display, just for alerts/notifications
   raffleTickets?: string[];
   votes?: number; // an interesting popularity contest for Gordo then everyone else!
-  exhibitors?: string[];
-  sessions?: string[];
+  exhibitors?: string[]; // employees or owners, possibly associated with multiple exhibitors
+                         // including Pacificon, MDARC, ARRL, a vendor, a nonprofit, etc.
+  sessions?: string[]; // could be leading more than one session
+  prizesDonated?: string[];
+  prizeWinnerId?: string[];
 }
 
 export interface Message {
