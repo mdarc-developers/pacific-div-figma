@@ -1,4 +1,5 @@
 import { Session, MapImage, Room, Booth, Exhibitor } from "@/types/conference";
+import { conferenceModules } from "@/lib/conferenceData";
 
 interface ConferenceModule {
   mapSessions?: [string, Session[]];
@@ -8,11 +9,6 @@ interface ConferenceModule {
   mapExhibitors?: [string, Exhibitor[]];
   [key: string]: unknown;
 }
-
-// Import all session data files at once using Vite's glob import
-const conferenceModules = import.meta.glob("../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
 
 // Process the modules into a lookup object
 export const SESSION_DATA: Record<string, Session[]> = {};
