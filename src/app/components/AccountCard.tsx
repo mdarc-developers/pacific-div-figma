@@ -24,7 +24,11 @@ function formatDate(dateStr: string | null | undefined): string {
   });
 }
 
-export function AccountCard({ user, onEmailVerification, onPasswordReset }: AccountCardProps) {
+export function AccountCard({
+  user,
+  onEmailVerification,
+  onPasswordReset,
+}: AccountCardProps) {
   return (
     <Card>
       <CardHeader className="pb-2">

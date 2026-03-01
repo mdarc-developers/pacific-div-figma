@@ -1,5 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { Session, Prize, PrizeWinner, Exhibitor, Booth, MapImage, Room, UserProfile } from "@/types/conference";
+import {
+  Session,
+  Prize,
+  PrizeWinner,
+  Exhibitor,
+  Booth,
+  MapImage,
+  Room,
+  UserProfile,
+} from "@/types/conference";
 
 // ── conference data files ────────────────────────────────────────────────────
 import * as yuma2026 from "./yuma-2026";
@@ -57,7 +66,9 @@ describe("session id uniqueness", () => {
     it(`${confId}: session ids are unique`, () => {
       const sessions = mod.mapSessions?.[1] ?? [];
       const ids = sessions.map((s) => s.id);
-      expect(findDuplicates(ids), `Duplicate session ids in ${confId}`).toEqual([]);
+      expect(findDuplicates(ids), `Duplicate session ids in ${confId}`).toEqual(
+        [],
+      );
     });
   });
 
@@ -73,7 +84,9 @@ describe("prize id uniqueness", () => {
     it(`${confId}: prize ids are unique`, () => {
       const prizes = mod.samplePrizes ?? [];
       const ids = prizes.map((p) => p.id);
-      expect(findDuplicates(ids), `Duplicate prize ids in ${confId}`).toEqual([]);
+      expect(findDuplicates(ids), `Duplicate prize ids in ${confId}`).toEqual(
+        [],
+      );
     });
   });
 
@@ -89,7 +102,10 @@ describe("prizewinner id uniqueness", () => {
     it(`${confId}: prizewinner ids are unique`, () => {
       const winners = mod.samplePrizeWinners ?? [];
       const ids = winners.map((w) => w.id);
-      expect(findDuplicates(ids), `Duplicate prizewinner ids in ${confId}`).toEqual([]);
+      expect(
+        findDuplicates(ids),
+        `Duplicate prizewinner ids in ${confId}`,
+      ).toEqual([]);
     });
   });
 
@@ -105,7 +121,10 @@ describe("exhibitor id uniqueness", () => {
     it(`${confId}: exhibitor ids are unique`, () => {
       const exhibitors = mod.mapExhibitors?.[1] ?? [];
       const ids = exhibitors.map((e) => e.id);
-      expect(findDuplicates(ids), `Duplicate exhibitor ids in ${confId}`).toEqual([]);
+      expect(
+        findDuplicates(ids),
+        `Duplicate exhibitor ids in ${confId}`,
+      ).toEqual([]);
     });
   });
 });
@@ -116,7 +135,9 @@ describe("booth id uniqueness", () => {
     it(`${confId}: booth ids are unique`, () => {
       const booths = mod.mapBooths?.[1] ?? [];
       const ids = booths.map((b) => b.id);
-      expect(findDuplicates(ids), `Duplicate booth ids in ${confId}`).toEqual([]);
+      expect(findDuplicates(ids), `Duplicate booth ids in ${confId}`).toEqual(
+        [],
+      );
     });
   });
 });
@@ -127,7 +148,10 @@ describe("room name uniqueness", () => {
     it(`${confId}: room names are unique`, () => {
       const rooms = mod.mapRooms?.[1] ?? [];
       const names = rooms.map((r) => r.name);
-      expect(findDuplicates(names), `Duplicate room names in ${confId}`).toEqual([]);
+      expect(
+        findDuplicates(names),
+        `Duplicate room names in ${confId}`,
+      ).toEqual([]);
     });
   });
 });
@@ -138,7 +162,10 @@ describe("mapimage id uniqueness", () => {
     it(`${confId}: mapimage ids are unique`, () => {
       const maps = mod.conferenceMaps ?? [];
       const ids = maps.map((m) => m.id);
-      expect(findDuplicates(ids), `Duplicate mapimage ids in ${confId}`).toEqual([]);
+      expect(
+        findDuplicates(ids),
+        `Duplicate mapimage ids in ${confId}`,
+      ).toEqual([]);
     });
   });
 });
@@ -149,7 +176,10 @@ describe("userprofile uid uniqueness", () => {
     it(`${confId}: userprofile uids are unique`, () => {
       const attendees = mod.sampleAttendees ?? [];
       const uids = attendees.map((u) => u.uid);
-      expect(findDuplicates(uids), `Duplicate userprofile uids in ${confId}`).toEqual([]);
+      expect(
+        findDuplicates(uids),
+        `Duplicate userprofile uids in ${confId}`,
+      ).toEqual([]);
     });
   });
 

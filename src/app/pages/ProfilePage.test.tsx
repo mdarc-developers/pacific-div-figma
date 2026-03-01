@@ -6,7 +6,12 @@ import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 
 // ── Mock Firebase auth so AuthContext initialises without credentials ─────────
 vi.mock("@/lib/firebase", () => ({
-  auth: { onAuthStateChanged: vi.fn((_a, cb) => { cb(null); return () => {}; }) },
+  auth: {
+    onAuthStateChanged: vi.fn((_a, cb) => {
+      cb(null);
+      return () => {};
+    }),
+  },
   db: {},
   storage: {},
 }));
@@ -16,7 +21,10 @@ vi.mock("firebase/auth", async (importOriginal) => {
   return {
     ...actual,
     getAuth: vi.fn(() => ({ currentUser: null })),
-    onAuthStateChanged: vi.fn((_a, cb) => { (cb as (u: null) => void)(null); return () => {}; }),
+    onAuthStateChanged: vi.fn((_a, cb) => {
+      (cb as (u: null) => void)(null);
+      return () => {};
+    }),
     sendEmailVerification: vi.fn(),
     sendPasswordResetEmail: vi.fn(),
   };

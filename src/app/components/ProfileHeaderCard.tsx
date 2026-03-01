@@ -1,5 +1,9 @@
 import { AlertCircle, CheckCircle, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
@@ -11,7 +15,11 @@ interface ProfileHeaderCardProps {
   onLogout: () => void;
 }
 
-export function ProfileHeaderCard({ user, initials, onLogout }: ProfileHeaderCardProps) {
+export function ProfileHeaderCard({
+  user,
+  initials,
+  onLogout,
+}: ProfileHeaderCardProps) {
   return (
     <Card>
       <CardContent className="pt-6">

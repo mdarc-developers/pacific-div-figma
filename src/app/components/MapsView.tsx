@@ -133,8 +133,14 @@ export function MapsView() {
                 <CardContent className="p-4">
                   <div
                     className={`w-full overflow-auto ${destination ? "cursor-pointer" : ""}`.trim()}
-                    onClick={destination ? () => navigate(destination) : undefined}
-                    title={destinationLabel ? `View interactive ${destinationLabel.slice(2).toLowerCase()} map` : undefined}
+                    onClick={
+                      destination ? () => navigate(destination) : undefined
+                    }
+                    title={
+                      destinationLabel
+                        ? `View interactive ${destinationLabel.slice(2).toLowerCase()} map`
+                        : undefined
+                    }
                   >
                     {displayImage(map)}
                   </div>

@@ -15,8 +15,12 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "W6AKB",
     displayName: "Alan Biocca",
-    displayProfile: "Active amateur radio operator with a strong focus on portable HF operation, antenna experimentation, and practical field techniques. Uses pneumatic antenna launchers, 3D printing, microcontrollers, and custom software. Decades of hands-on technical experience.",
-    sessions: ["wednesday-antenna-launching-for-ham-radio", "thursday-3d-printing-for-ham-radio"],
+    displayProfile:
+      "Active amateur radio operator with a strong focus on portable HF operation, antenna experimentation, and practical field techniques. Uses pneumatic antenna launchers, 3D printing, microcontrollers, and custom software. Decades of hands-on technical experience.",
+    sessions: [
+      "wednesday-antenna-launching-for-ham-radio",
+      "thursday-3d-printing-for-ham-radio",
+    ],
   },
   {
     uid: "2",
@@ -40,7 +44,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "WB4RTP",
     displayName: "Avery Davis",
-    displayProfile: "Electrical engineer retired from the aerospace industry. Extra Class license since 1970. M.S.E.E. from Georgia Tech; worked for Georgia Tech Research Institute. Later worked for Raytheon in Tucson (1998–2022). Past president of the Catalina Radio Club.",
+    displayProfile:
+      "Electrical engineer retired from the aerospace industry. Extra Class license since 1970. M.S.E.E. from Georgia Tech; worked for Georgia Tech Research Institute. Later worked for Raytheon in Tucson (1998–2022). Past president of the Catalina Radio Club.",
     sessions: ["wednesday-antenna-physics"],
   },
   {
@@ -53,8 +58,12 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "N6CVO",
     displayName: "Brian Basura",
-    displayProfile: "Amateur Radio Extra Class operator. ARES LAX High Desert District ADEC, board member of Antelope Valley ARC and Acton Agua Dulce ARC. Decades of experience in aerospace, IT consulting, and hydroelectric power. Supports STEM education and technical projects from Tesla coils to Pico-Balloons.",
-    sessions: ["monday-pico-balloon-launch", "wednesday-lift-off-discover-the-world-of-pico-ballooning"],
+    displayProfile:
+      "Amateur Radio Extra Class operator. ARES LAX High Desert District ADEC, board member of Antelope Valley ARC and Acton Agua Dulce ARC. Decades of experience in aerospace, IT consulting, and hydroelectric power. Supports STEM education and technical projects from Tesla coils to Pico-Balloons.",
+    sessions: [
+      "monday-pico-balloon-launch",
+      "wednesday-lift-off-discover-the-world-of-pico-ballooning",
+    ],
   },
   {
     uid: "5",
@@ -66,8 +75,12 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KH6FV",
     displayName: "Carter Davis",
-    displayProfile: "Licensed since the mid-1970s. Retired from a large metro fire department, dispatched to national wildfire events in the communications unit. Telecommunications specialist with Hawaii Disaster Medical Assistance Team. Experienced with RF and satellite communications in adverse/major events.",
-    sessions: ["tuesday-powering-the-starlink-mini-using-ohms-law", "thursday-solar-walkabout"],
+    displayProfile:
+      "Licensed since the mid-1970s. Retired from a large metro fire department, dispatched to national wildfire events in the communications unit. Telecommunications specialist with Hawaii Disaster Medical Assistance Team. Experienced with RF and satellite communications in adverse/major events.",
+    sessions: [
+      "tuesday-powering-the-starlink-mini-using-ohms-law",
+      "thursday-solar-walkabout",
+    ],
   },
   {
     uid: "6",
@@ -79,7 +92,10 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KJ6QJS",
     displayName: "Clayton Jacobs",
-    sessions: ["friday-arizona-near-space-research-ansr", "saturday-ansr-high-altitude-balloon-launch"],
+    sessions: [
+      "friday-arizona-near-space-research-ansr",
+      "saturday-ansr-high-altitude-balloon-launch",
+    ],
   },
   {
     uid: "7",
@@ -91,7 +107,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "N0CSM",
     displayName: "Craig McVeay",
-    displayProfile: "Nevada Section Manager. Previously presented at Quartzfest about deploying to Puerto Rico after Hurricane Maria as part of the 'Force of 50.' Active POTA activator and FEMA SHARES participant. Operations Officer for a search and rescue team in Southern Nevada.",
+    displayProfile:
+      "Nevada Section Manager. Previously presented at Quartzfest about deploying to Puerto Rico after Hurricane Maria as part of the 'Force of 50.' Active POTA activator and FEMA SHARES participant. Operations Officer for a search and rescue team in Southern Nevada.",
     sessions: ["wednesday-parks-on-the-air-pota"],
   },
   {
@@ -104,7 +121,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KI7VEY",
     displayName: "Danette Key",
-    displayProfile: "Retired resident of Young, Arizona. Band member of Polyurethane and the Acetones since 2023. Has hosted several cornhole competitions.",
+    displayProfile:
+      "Retired resident of Young, Arizona. Band member of Polyurethane and the Acetones since 2023. Has hosted several cornhole competitions.",
     sessions: ["monday-cornhole-practice", "monday-cornhole-tournament"],
   },
   {
@@ -117,8 +135,12 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "W6DPS",
     displayName: "Dave Smith",
-    displayProfile: "Licensed since 1977, Extra since 2001. ARRL registered instructor and VE accredited by ARRL, GLAARG, and WM7X. Has attended and presented at Quartzfest for over ten years.",
-    sessions: ["tuesday-nano-vna", "thursday-a-simple-homebrew-hamstick-dipole"],
+    displayProfile:
+      "Licensed since 1977, Extra since 2001. ARRL registered instructor and VE accredited by ARRL, GLAARG, and WM7X. Has attended and presented at Quartzfest for over ten years.",
+    sessions: [
+      "tuesday-nano-vna",
+      "thursday-a-simple-homebrew-hamstick-dipole",
+    ],
   },
   {
     uid: "10",
@@ -142,7 +164,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "WA6ZMT",
     displayName: "Don Kelly",
-    displayProfile: "Licensed as Novice and Tech in 1962, now Extra class. Computer professional since 1968. Active in amateur radio club administration; boards of Saint Paul Radio Club (K0AGF), Desert Circle ARC (NU7DE), Minnesota Amateur Radio Consortium. ARRL Minnesota Affiliated Club Coordinator. Handles Quartzfest registration and presenter scheduling.",
+    displayProfile:
+      "Licensed as Novice and Tech in 1962, now Extra class. Computer professional since 1968. Active in amateur radio club administration; boards of Saint Paul Radio Club (K0AGF), Desert Circle ARC (NU7DE), Minnesota Amateur Radio Consortium. ARRL Minnesota Affiliated Club Coordinator. Handles Quartzfest registration and presenter scheduling.",
     sessions: ["friday-talk-like-a-ham", "friday-movie-making-waves"],
   },
   {
@@ -155,7 +178,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "K1NI",
     displayName: "Ernie Richards",
-    displayProfile: "Researcher in bioenergetics and subtle energy. Grew up on a dairy farm in Maine where he discovered worldwide radio communications as a teenager. Career in early computer, digital, and microwave engineering. Studies in consciousness, vibration healing, and bio-cosmic communication.",
+    displayProfile:
+      "Researcher in bioenergetics and subtle energy. Grew up on a dairy farm in Maine where he discovered worldwide radio communications as a teenager. Career in early computer, digital, and microwave engineering. Studies in consciousness, vibration healing, and bio-cosmic communication.",
     sessions: ["wednesday-experiments-with-radio-waves"],
   },
   {
@@ -192,7 +216,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "AA6GJ",
     displayName: "Gary Johnson",
-    displayProfile: "Amateur radio educator and instructor with Gordon West's Instructor Academy. Focuses on helping instructors teach amateur radio concepts clearly. Experienced HF and VHF/UHF operator emphasizing practical operating skills, modern digital modes, and instructor-ready lesson design.",
+    displayProfile:
+      "Amateur radio educator and instructor with Gordon West's Instructor Academy. Focuses on helping instructors teach amateur radio concepts clearly. Experienced HF and VHF/UHF operator emphasizing practical operating skills, modern digital modes, and instructor-ready lesson design.",
     sessions: ["monday-arrl-instructor-seminar-with-live-kits"],
   },
   {
@@ -205,8 +230,14 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "WB6NOA",
     displayName: "Gordon West",
-    displayProfile: "Ham radio ambassador and educator with 60+ years of experience. ARRL National Instructor Program ambassador, prolific author of ham radio license study guides published in cooperation with ARRL. Amateur Extra class.",
-    sessions: ["monday-welcome-seminar", "monday-arrl-instructor-seminar-with-live-kits", "tuesday-quartz-rocks-super-stars-judging", "wednesday-metal-detectingold-rare-coins-buried"],
+    displayProfile:
+      "Ham radio ambassador and educator with 60+ years of experience. ARRL National Instructor Program ambassador, prolific author of ham radio license study guides published in cooperation with ARRL. Amateur Extra class.",
+    sessions: [
+      "monday-welcome-seminar",
+      "monday-arrl-instructor-seminar-with-live-kits",
+      "tuesday-quartz-rocks-super-stars-judging",
+      "wednesday-metal-detectingold-rare-coins-buried",
+    ],
   },
   {
     uid: "17",
@@ -218,7 +249,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KG5LVG",
     displayName: "Hal Key",
-    displayProfile: "Retired from the Mesa Fire Department in 2010. Has lived in Pleasant Valley (Young, Arizona mailing address) since 2017. Got his ham license for emergency preparedness reasons.",
+    displayProfile:
+      "Retired from the Mesa Fire Department in 2010. Has lived in Pleasant Valley (Young, Arizona mailing address) since 2017. Got his ham license for emergency preparedness reasons.",
     sessions: ["wednesday-pleasant-valley-warwhy-az-was-late-to-be-a-state"],
   },
   {
@@ -243,7 +275,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KP6GB",
     displayName: "Jerry Brown",
-    displayProfile: "Retired electrical engineer and VP of Engineering for Raytheon Missile Systems in Tucson, AZ. 65-year DIY-er and RV enthusiast. For the last 20 years has repaired and refurbished Onan Generators, designed and installed solar and lithium battery systems.",
+    displayProfile:
+      "Retired electrical engineer and VP of Engineering for Raytheon Missile Systems in Tucson, AZ. 65-year DIY-er and RV enthusiast. For the last 20 years has repaired and refurbished Onan Generators, designed and installed solar and lithium battery systems.",
     sessions: ["thursday-onan-generators-rv-electrical-and-solar-systems"],
   },
   {
@@ -268,8 +301,12 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KD6W",
     displayName: "Joel Wilhite",
-    displayProfile: "Chair at the international amateur radio microwave update conference held in Tucson.",
-    sessions: ["wednesday-digital-amateur-television", "friday-getting-on-the-microwave-bands"],
+    displayProfile:
+      "Chair at the international amateur radio microwave update conference held in Tucson.",
+    sessions: [
+      "wednesday-digital-amateur-television",
+      "friday-getting-on-the-microwave-bands",
+    ],
   },
   {
     uid: "22",
@@ -293,7 +330,26 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KR1SS",
     displayName: "Kris Weed",
-    sessions: ["sunday-quartzfest-2026-opening-ceremony", "monday-morning-net", "monday-noon-net", "monday-happy-hour-daily-prizes", "tuesday-morning-net", "tuesday-noon-net", "tuesday-happy-hour", "wednesday-morning-net", "wednesday-noon-net", "wednesday-happy-hour-daily-prizes", "thursday-morning-net", "thursday-noon-net", "thursday-happy-hour-daily-prizes", "friday-morning-net", "friday-noon-net", "friday-happy-hour-daily-prizes", "saturday-morning-net", "saturday-closing-ceremony-grand-prizes"],
+    sessions: [
+      "sunday-quartzfest-2026-opening-ceremony",
+      "monday-morning-net",
+      "monday-noon-net",
+      "monday-happy-hour-daily-prizes",
+      "tuesday-morning-net",
+      "tuesday-noon-net",
+      "tuesday-happy-hour",
+      "wednesday-morning-net",
+      "wednesday-noon-net",
+      "wednesday-happy-hour-daily-prizes",
+      "thursday-morning-net",
+      "thursday-noon-net",
+      "thursday-happy-hour-daily-prizes",
+      "friday-morning-net",
+      "friday-noon-net",
+      "friday-happy-hour-daily-prizes",
+      "saturday-morning-net",
+      "saturday-closing-ceremony-grand-prizes",
+    ],
   },
   {
     uid: "24",
@@ -329,8 +385,13 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KG6FIX",
     displayName: "Marcia DeRuntz",
-    displayProfile: "A.A. in Recreation for the Physically and Emotionally Disabled, B.S. in Special Education, Masters in Psychology. Has given disabled awareness and service animal presentations for over 33 years. Licensed ham since 2000; started a Handiham net. Also teaches crocheting.",
-    sessions: ["tuesday-disability-awareness", "wednesday-handiham-program", "thursday-crocheting"],
+    displayProfile:
+      "A.A. in Recreation for the Physically and Emotionally Disabled, B.S. in Special Education, Masters in Psychology. Has given disabled awareness and service animal presentations for over 33 years. Licensed ham since 2000; started a Handiham net. Also teaches crocheting.",
+    sessions: [
+      "tuesday-disability-awareness",
+      "wednesday-handiham-program",
+      "thursday-crocheting",
+    ],
   },
   {
     uid: "27",
@@ -391,7 +452,10 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KB6YAF",
     displayName: "Russ Decker",
-    sessions: ["wednesday-jam-session-and-hootenanny-practice", "thursday-hootenanny"],
+    sessions: [
+      "wednesday-jam-session-and-hootenanny-practice",
+      "thursday-hootenanny",
+    ],
   },
   {
     uid: "32",
@@ -403,7 +467,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KO3B",
     displayName: "Scott Evans",
-    displayProfile: "Serial entrepreneur, electrical engineer, and nuclear enthusiast. Lives in Colorado. Extra class licensed for 16 years, recently active via POTA.",
+    displayProfile:
+      "Serial entrepreneur, electrical engineer, and nuclear enthusiast. Lives in Colorado. Extra class licensed for 16 years, recently active via POTA.",
     sessions: ["tuesday-what-you-should-know-about-gen-iv-nuclear-power"],
   },
   {
@@ -416,8 +481,15 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "WM7X",
     displayName: "Stephen Hutchings",
-    displayProfile: "Licensed since 1996. Directed a repeater association for 10 years. Full-time RVer for 8 years. Volunteer Examiner for 11 years; leads an 11-member VE team that has grown to nearly 200, averaging ~3000 applicants yearly.",
-    sessions: ["monday-license-testing", "tuesday-license-testing", "wednesday-license-testing", "thursday-license-testing", "friday-license-testing"],
+    displayProfile:
+      "Licensed since 1996. Directed a repeater association for 10 years. Full-time RVer for 8 years. Volunteer Examiner for 11 years; leads an 11-member VE team that has grown to nearly 200, averaging ~3000 applicants yearly.",
+    sessions: [
+      "monday-license-testing",
+      "tuesday-license-testing",
+      "wednesday-license-testing",
+      "thursday-license-testing",
+      "friday-license-testing",
+    ],
   },
   {
     uid: "34",
@@ -429,7 +501,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "K9STV",
     displayName: "Stiv Ostenberg",
-    displayProfile: "Retired Sales/Systems Engineer using experience promoting products to 'sell' amateur radio. Involved with Southern Peninsula Emergency Communications System outreach to younger audiences.",
+    displayProfile:
+      "Retired Sales/Systems Engineer using experience promoting products to 'sell' amateur radio. Involved with Southern Peninsula Emergency Communications System outreach to younger audiences.",
     sessions: ["monday-recruiting-and-retaining-new-hams"],
   },
   {
@@ -442,7 +515,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KD6HOF",
     displayName: "Tim Thorson",
-    displayProfile: "Retired computer/electronics field service technician covering Northern California and Nevada. General class ham; enjoys many aspects of the hobby.",
+    displayProfile:
+      "Retired computer/electronics field service technician covering Northern California and Nevada. General class ham; enjoys many aspects of the hobby.",
     sessions: ["friday-qso-party-multi-county-expedition"],
   },
   {
@@ -455,7 +529,8 @@ export const sampleAttendees: UserProfile[] = [
     roles: ["speaker"],
     callsign: "KK7BCO",
     displayName: "Tobias Feltus",
-    displayProfile: "Technician licensed in 2021. Focuses on SOTA, kits, and DIY electronics. Background in analog photography and industrial design; bicycle mechanic for over a decade. Has activated SOTA summits in 5 countries over 4 years using HF QRP SSB.",
+    displayProfile:
+      "Technician licensed in 2021. Focuses on SOTA, kits, and DIY electronics. Background in analog photography and industrial design; bicycle mechanic for over a decade. Has activated SOTA summits in 5 countries over 4 years using HF QRP SSB.",
     sessions: ["wednesday-make-an-antenna-and-take-it-up-a-mountain"],
   },
   {
@@ -495,4 +570,3 @@ export const sampleAttendees: UserProfile[] = [
     sessions: ["thursday-ylrl-meeting-presentation"],
   },
 ];
-

@@ -94,38 +94,73 @@ export const mapRooms: [string, Room[]] = [
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
       name: "Seaside A",
-      coords: [[208, 340], [291, 340], [291, 404], [208, 404]],
-      color: '#ffffff',
+      coords: [
+        [208, 340],
+        [291, 340],
+        [291, 404],
+        [208, 404],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Seaside B",
-      coords: [[206, 252], [290, 252], [290, 339], [206, 339]],
-      color: '#ffffff',
+      coords: [
+        [206, 252],
+        [290, 252],
+        [290, 339],
+        [206, 339],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Seaside C",
-      coords: [[209, 187], [289, 187], [289, 250], [209, 250]],
-      color: '#ffffff',
+      coords: [
+        [209, 187],
+        [289, 187],
+        [289, 250],
+        [209, 250],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Riverside A",
-      coords: [[16, 341], [179, 341], [179, 404], [16, 404]],
-      color: '#ffffff',
+      coords: [
+        [16, 341],
+        [179, 341],
+        [179, 404],
+        [16, 404],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Riverside B",
-      coords: [[16, 252], [180, 252], [180, 338], [16, 338]],
-      color: '#ffffff',
+      coords: [
+        [16, 252],
+        [180, 252],
+        [180, 338],
+        [16, 338],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Riverside C",
-      coords: [[16, 186], [179, 186], [179, 250], [16, 250]],
-      color: '#ffffff',
+      coords: [
+        [16, 186],
+        [179, 186],
+        [179, 250],
+        [16, 250],
+      ],
+      color: "#ffffff",
     },
     {
       name: "Sunrise",
-      coords: [[16, 11], [83, 11], [83, 79], [16, 79]],
-      color: '#ffffff',
+      coords: [
+        [16, 11],
+        [83, 11],
+        [83, 79],
+        [16, 79],
+      ],
+      color: "#ffffff",
     },
   ],
 ];

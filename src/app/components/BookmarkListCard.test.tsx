@@ -77,7 +77,9 @@ describe("BookmarkListCard", () => {
     expect(screen.getByText("Intro to Ham Radio")).toBeInTheDocument();
     expect(screen.getByText("Advanced Antennas")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /remove bookmark for intro to ham radio/i }),
+      screen.getByRole("button", {
+        name: /remove bookmark for intro to ham radio/i,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -132,7 +134,9 @@ describe("BookmarkListCard", () => {
       />,
     );
     fireEvent.click(
-      screen.getByRole("button", { name: /remove bookmark for intro to ham radio/i }),
+      screen.getByRole("button", {
+        name: /remove bookmark for intro to ham radio/i,
+      }),
     );
     expect(toggle).toHaveBeenCalledWith("s1");
   });

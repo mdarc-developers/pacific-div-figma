@@ -30,9 +30,15 @@ export function ProfilePage() {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
-  const [bookmarkedSessions, toggleBookmark, prevBookmarkedSessions] = useBookmarks(activeConference.id);
+  const [bookmarkedSessions, toggleBookmark, prevBookmarkedSessions] =
+    useBookmarks(activeConference.id);
   const [error, setError] = useState<string>("");
-  const [raffleTickets, addRaffleTicket, removeRaffleTicket, addRaffleTicketRange] = useRaffleTickets(activeConference.id);
+  const [
+    raffleTickets,
+    addRaffleTicket,
+    removeRaffleTicket,
+    addRaffleTicketRange,
+  ] = useRaffleTickets(activeConference.id);
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -103,7 +109,11 @@ export function ProfilePage() {
     <div className="max-w-lg space-y-4">
       <Toaster />
 
-      <ProfileHeaderCard user={user} initials={initials} onLogout={handleLogout} />
+      <ProfileHeaderCard
+        user={user}
+        initials={initials}
+        onLogout={handleLogout}
+      />
 
       <AccountCard
         user={user}

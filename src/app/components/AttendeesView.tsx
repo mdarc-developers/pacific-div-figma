@@ -8,7 +8,10 @@ import {
 } from "@/app/components/ui/tabs";
 import { ExternalLink, Send, User } from "lucide-react";
 import { UserProfile } from "@/types/conference";
-import { ATTENDEE_DATA, ATTENDEE_SUPPLEMENTAL_TOKEN } from "@/lib/userProfileData";
+import {
+  ATTENDEE_DATA,
+  ATTENDEE_SUPPLEMENTAL_TOKEN,
+} from "@/lib/userProfileData";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 import {
@@ -112,16 +115,12 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Derive category lists from UserProfile attributes
-  const speakers = attendees.filter(
-    (a) => a.sessions && a.sessions.length > 0,
-  );
+  const speakers = attendees.filter((a) => a.sessions && a.sessions.length > 0);
   const exhibitors = attendees.filter(
     (a) => a.exhibitors && a.exhibitors.length > 0,
   );
   // Users with any group membership are treated as organizers/staff
-  const organizers = attendees.filter(
-    (a) => a.groups && a.groups.length > 0,
-  );
+  const organizers = attendees.filter((a) => a.groups && a.groups.length > 0);
 
   // Build the list of visible category tabs (only show non-empty ones)
   const categoryTabs = (

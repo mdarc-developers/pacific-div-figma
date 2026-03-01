@@ -70,7 +70,9 @@ export function BookmarkListCard({
             {previous.length > 0 && (
               <>
                 {bookmarked.length > 0 && <Separator />}
-                <p className="text-xs text-muted-foreground">Previously bookmarked</p>
+                <p className="text-xs text-muted-foreground">
+                  Previously bookmarked
+                </p>
                 {previous.map((session) => (
                   <li
                     key={session.id}

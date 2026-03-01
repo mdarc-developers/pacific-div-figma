@@ -85,16 +85,17 @@ export interface Prize {
   votes?: number;
 }
 
-export interface PrizeWinner { // PrizeAwards? attributes of Prize? typically unidentified at first
+export interface PrizeWinner {
+  // PrizeAwards? attributes of Prize? typically unidentified at first
   id: string; // multiple ids for multiple prizes won
   prizeId: string[]; // I think just string
   winningTicket: string; // public
   winnerCallsign?: string; // not public
   winnerEmail?: string; // not public
   winnerName?: string; // not public
-  drawing?: string;  // award
-  notifiedAt?: string;  // award
-  claimedAt?: string;  // award
+  drawing?: string; // award
+  notifiedAt?: string; // award
+  claimedAt?: string; // award
   votes?: number;
 }
 
@@ -114,7 +115,7 @@ export interface UserProfile {
   raffleTickets?: string[];
   votes?: number; // an interesting popularity contest for Gordo then everyone else!
   exhibitors?: string[]; // employees or owners, possibly associated with multiple exhibitors
-                         // including Pacificon, MDARC, ARRL, a vendor, a nonprofit, etc.
+  // including Pacificon, MDARC, ARRL, a vendor, a nonprofit, etc.
   sessions?: string[]; // could be leading more than one session
   prizesDonated?: string[];
   prizeWinnerId?: string[];

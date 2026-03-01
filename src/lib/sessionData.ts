@@ -45,10 +45,9 @@ export const EXHIBITOR_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 // Override with supplemental session files (e.g. seapac-2026-sesssion-20260227.ts).
 // Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
 // multiple supplemental files exist for the same conference.
-const supplementalSessionModules = import.meta.glob(
-  "../data/*-session-*.ts",
-  { eager: true },
-);
+const supplementalSessionModules = import.meta.glob("../data/*-session-*.ts", {
+  eager: true,
+});
 Object.keys(supplementalSessionModules)
   .sort()
   .forEach((path) => {
@@ -82,7 +81,9 @@ Object.keys(supplementalExhibitorModules)
     const match = filename.match(/^(.+)-exhibitor-/);
     if (match) {
       const conferenceId = match[1];
-      const typedModule = supplementalExhibitorModules[path] as ConferenceModule;
+      const typedModule = supplementalExhibitorModules[
+        path
+      ] as ConferenceModule;
       if (typedModule.mapExhibitors) {
         EXHIBITOR_DATA[conferenceId] = typedModule.mapExhibitors;
         const token = filename.split("-").pop() ?? "";

@@ -8,7 +8,12 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/app/components/ui/tabs";
 import { MAX_RANGE_SIZE } from "@/app/hooks/useRaffleTickets";
 
 interface RaffleTicketsCardProps {
