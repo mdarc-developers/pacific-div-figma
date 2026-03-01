@@ -40,6 +40,7 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 
 // Track the newest supplemental file timestamp token per conference.
 export const SESSION_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
+export const EXHIBITOR_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 
 // Override with supplemental session files (e.g. seapac-2026-sesssion-20260227.ts).
 // Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
@@ -62,6 +63,34 @@ Object.keys(supplementalSessionModules)
         const token = filename.split("-").pop() ?? "";
         if (token && token > (SESSION_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
           SESSION_SUPPLEMENTAL_TOKEN[conferenceId] = token;
+        }
+      }
+    }
+  });
+
+// Override with supplemental exhibitor files (e.g. hamcation-2026-exhibitor-20260301.ts).
+// Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
+// multiple supplemental files exist for the same conference.
+const supplementalExhibitorModules = import.meta.glob(
+  "../data/*-exhibitor-*.ts",
+  { eager: true },
+);
+Object.keys(supplementalExhibitorModules)
+  .sort()
+  .forEach((path) => {
+    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
+    const match = filename.match(/^(.+)-exhibitor-/);
+    if (match) {
+      const conferenceId = match[1];
+      const typedModule = supplementalExhibitorModules[path] as ConferenceModule;
+      if (typedModule.mapExhibitors) {
+        EXHIBITOR_DATA[conferenceId] = typedModule.mapExhibitors;
+        const token = filename.split("-").pop() ?? "";
+        if (
+          token &&
+          token > (EXHIBITOR_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")
+        ) {
+          EXHIBITOR_SUPPLEMENTAL_TOKEN[conferenceId] = token;
         }
       }
     }

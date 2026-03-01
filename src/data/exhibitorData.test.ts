@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { mapExhibitors } from "./hamcation-2027";
+import { mapExhibitors as supplementalExhibitors } from "./hamcation-2026-exhibitor-20260301";
 import { Exhibitor } from "@/types/conference";
 
 // ── hamcation-2027 data shape ─────────────────────────────────────────────────
@@ -79,5 +80,72 @@ describe("EXHIBITOR_DATA lookup null-guard", () => {
     const exhibitors = dataWithEntry["hamcation-2027"]?.[1] ?? [];
     expect(exhibitors).toHaveLength(1);
     expect(exhibitors[0].id).toBe("test-ex");
+  });
+});
+
+// ── hamcation-2026 supplemental exhibitor file ────────────────────────────────
+// Guards the shape and presence of the supplemental exhibitor export that
+// overrides the exhibitor data embedded in hamcation-2026.ts when it exists.
+describe("hamcation-2026-exhibitor supplemental file", () => {
+  it("exports a [url, Exhibitor[]] tuple", () => {
+    const [url, exhibitors] = supplementalExhibitors;
+    expect(typeof url).toBe("string");
+    expect(url.length).toBeGreaterThan(0);
+    expect(Array.isArray(exhibitors)).toBe(true);
+  });
+
+  it("exports a non-empty Exhibitor array", () => {
+    const [, exhibitors] = supplementalExhibitors;
+    expect(exhibitors.length).toBeGreaterThan(0);
+  });
+
+  it("each exhibitor has required fields", () => {
+    const [, exhibitors] = supplementalExhibitors;
+    exhibitors.forEach((ex: Exhibitor) => {
+      expect(typeof ex.id).toBe("string");
+      expect(ex.id.length).toBeGreaterThan(0);
+      expect(typeof ex.name).toBe("string");
+      expect(ex.name.length).toBeGreaterThan(0);
+      expect(typeof ex.description).toBe("string");
+      expect(typeof ex.boothName).toBe("string");
+      expect(Array.isArray(ex.location)).toBe(true);
+      expect(ex.location.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("mapExhibitors URL (index 0) starts with /", () => {
+    const [url] = supplementalExhibitors;
+    expect(url.startsWith("/")).toBe(true);
+  });
+});
+
+// ── supplemental exhibitor override logic ─────────────────────────────────────
+describe("supplemental exhibitor override logic", () => {
+  it("supplemental exhibitors override main-file exhibitors for same conferenceId", () => {
+    const EXHIBITOR_DATA: Record<string, [string, Exhibitor[]]> = {
+      "hamcation-2026": [
+        "/assets/maps/hamcation-2026-north.png",
+        [
+          {
+            id: "old-ex",
+            name: "Old Exhibitor",
+            description: "Old",
+            boothName: "99",
+            location: [99],
+          },
+        ],
+      ],
+    };
+    const conferenceId = "hamcation-2026";
+    EXHIBITOR_DATA[conferenceId] = supplementalExhibitors;
+
+    expect(EXHIBITOR_DATA["hamcation-2026"]).toBe(supplementalExhibitors);
+    expect(
+      EXHIBITOR_DATA["hamcation-2026"][1].find((ex) => ex.id === "old-ex"),
+    ).toBeUndefined();
+    EXHIBITOR_DATA["hamcation-2026"][1].forEach((ex: Exhibitor) => {
+      expect(typeof ex.id).toBe("string");
+      expect(typeof ex.name).toBe("string");
+    });
   });
 });
