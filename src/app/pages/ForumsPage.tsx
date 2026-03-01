@@ -2,41 +2,9 @@ import { ScheduleView } from "@/app/components/ScheduleView";
 import { ForumsMapView } from "@/app/components/ForumsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
-import { MapImage, Room } from "@/types/conference";
+import { MapImage } from "@/types/conference";
 import { useBookmarks } from "@/app/hooks/useBookmarks";
-
-interface MapsModule {
-  conferenceMaps?: MapImage[];
-  [key: string]: unknown;
-}
-
-interface RoomModule {
-  mapRooms?: [string, Room[]];
-  [key: string]: unknown;
-}
-
-// Import all session data files at once using Vite's glob import
-// This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-// Process the modules into a lookup object
-const MAP_DATA: Record<string, MapImage[]> = {};
-const ROOM_DATA: Record<string, [string, Room[]]> = {};
-Object.entries(conferenceModules).forEach(([path, module]) => {
-  // Extract the conference ID from the file path
-  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
-  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
-  const typedMapModule = module as MapsModule;
-  const typedRoomModule = module as RoomModule;
-  if (typedMapModule.conferenceMaps) {
-    MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
-  }
-  if (typedRoomModule.mapRooms) {
-    ROOM_DATA[conferenceId] = typedRoomModule.mapRooms;
-  }
-});
+import { MAP_DATA, ROOM_DATA } from "@/lib/sessionData";
 
 export function ForumsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

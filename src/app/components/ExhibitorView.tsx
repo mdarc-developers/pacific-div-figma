@@ -19,6 +19,7 @@ import { Exhibitor } from "@/types/conference";
 //import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
+import { EXHIBITOR_DATA } from "@/lib/sessionData";
 
 interface ExhibitorViewProps {
   bookmarkedExhibitors?: string[];
@@ -134,26 +135,6 @@ function ExhibitorCard({
     </div>
   );
 }
-
-interface ExhibitorModule {
-  mapExhibitors?: [string, Exhibitor[]];
-  [key: string]: unknown;
-}
-
-// Import all session data files at once using Vite's glob import
-const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-// Process the modules into a lookup object
-const EXHIBITOR_DATA: Record<string, [string, Exhibitor[]]> = {};
-Object.entries(conferenceModules).forEach(([path, module]) => {
-  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
-  const typedModule = module as ExhibitorModule;
-  if (typedModule.mapExhibitors) {
-    EXHIBITOR_DATA[conferenceId] = typedModule.mapExhibitors;
-  }
-});
 
 export function ExhibitorView({
   bookmarkedExhibitors = [],

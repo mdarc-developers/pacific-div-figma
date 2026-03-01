@@ -3,50 +3,8 @@ import { ExhibitorView } from "@/app/components/ExhibitorView";
 import { ExhibitorsMapView } from "@/app/components/ExhibitorsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useBookmarks } from "@/app/hooks/useBookmarks";
-import { MapImage, Booth, Exhibitor } from "@/types/conference";
-
-interface MapsModule {
-  conferenceMaps?: MapImage[];
-  [key: string]: unknown;
-}
-
-interface BoothModule {
-  mapBooths?: [string, Booth[]];
-  [key: string]: unknown;
-}
-
-interface ExhibitorModule {
-  mapExhibitors?: [string, Exhibitor[]];
-  [key: string]: unknown;
-}
-
-// Import all session data files at once using Vite's glob import
-// This imports all files matching the pattern eagerly (at build time)
-const conferenceModules = import.meta.glob("../../data/*-20[0-9][0-9].ts", {
-  eager: true,
-});
-
-// Process the modules into a lookup object
-const MAP_DATA: Record<string, MapImage[]> = {};
-const BOOTH_DATA: Record<string, [string, Booth[]]> = {};
-const EXHIBITOR_DATA: Record<string, [string, Exhibitor[]]> = {};
-Object.entries(conferenceModules).forEach(([path, module]) => {
-  // Extract the conference ID from the file path
-  // e.g., "../../data/pacificon-2026.ts" -> "pacificon-2026"
-  const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
-  const typedMapModule = module as MapsModule;
-  const typedBoothModule = module as BoothModule;
-  const typedExhibitorModule = module as ExhibitorModule;
-  if (typedMapModule.conferenceMaps) {
-    MAP_DATA[conferenceId] = typedMapModule.conferenceMaps;
-  }
-  if (typedBoothModule.mapBooths) {
-    BOOTH_DATA[conferenceId] = typedBoothModule.mapBooths;
-  }
-  if (typedExhibitorModule.mapExhibitors) {
-    EXHIBITOR_DATA[conferenceId] = typedExhibitorModule.mapExhibitors;
-  }
-});
+import { MapImage } from "@/types/conference";
+import { MAP_DATA, BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
 export function ExhibitorsPage() {
   const [highlightedExhibitorId, setHighlightedExhibitorId] = useState<
