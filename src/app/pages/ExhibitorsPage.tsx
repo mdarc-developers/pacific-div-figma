@@ -22,10 +22,7 @@ export function ExhibitorsPage() {
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
   const exhibitorEntry = EXHIBITOR_DATA[activeConference.id];
   const mapExhibitors = exhibitorEntry ? exhibitorEntry[1] : [];
-  // Single-map assumption: always use one exhibitors map.
-  // TODO: restore multi-map detection (mapExhibitorsUrl array) when needed.
-  const numEmaps = 1;
-  // const numEmaps = activeConference.mapExhibitorsUrl.length || 0;
+  const numEmaps = activeConference.mapExhibitorBooths.length; // num Exhibitor map
 
   const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(
     () => {
@@ -48,7 +45,7 @@ export function ExhibitorsPage() {
       // return undefined;
     },
   );
-  // Multi-map state (disabled — single-map assumption):
+  // Multi-map state
   // const [multipleExhibitorMaps, setMultipleExhibitorMaps] = useState<MapImage[]>(() => {
   //   if (activeConference.mapExhibitorsUrl.length > 1) {
   //     return conferenceMaps.filter(m => activeConference.mapExhibitorsUrl.includes(m.url));
