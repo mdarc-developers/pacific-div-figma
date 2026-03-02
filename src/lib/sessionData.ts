@@ -1,6 +1,6 @@
 import { Session, MapImage, Room, Booth, Exhibitor } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
-import { resolveSessionEndTime, warnOutOfRangeSessions } from "@/lib/overrideUtils";
+import { resolveSessionEndTime, warnOutOfRangeSessions, warnEmptyMapData } from "@/lib/overrideUtils";
 import { allConferences } from "@/data/all-conferences";
 
 interface ConferenceModule {
@@ -189,3 +189,23 @@ Object.keys(supplementalExhibitorModules)
       }
     }
   });
+
+// Emit warnings for any map data that still has an empty array after all base
+// and supplemental files have been loaded.  Checking here (rather than inside
+// the loading loops above) avoids false positives when a base file ships a
+// placeholder empty array that a supplemental file later fills in.
+Object.entries(SESSION_DATA).forEach(([conferenceId, sessions]) => {
+  const url =
+    allConferences.find((c) => c.id === conferenceId)?.mapSessionRooms?.[0] ??
+    "";
+  warnEmptyMapData(conferenceId, "mapSessions", url, sessions);
+});
+Object.entries(ROOM_DATA).forEach(([conferenceId, [url, rooms]]) => {
+  warnEmptyMapData(conferenceId, "mapRooms", url, rooms);
+});
+Object.entries(BOOTH_DATA).forEach(([conferenceId, [url, booths]]) => {
+  warnEmptyMapData(conferenceId, "mapBooths", url, booths);
+});
+Object.entries(EXHIBITOR_DATA).forEach(([conferenceId, [url, exhibitors]]) => {
+  warnEmptyMapData(conferenceId, "mapExhibitors", url, exhibitors);
+});

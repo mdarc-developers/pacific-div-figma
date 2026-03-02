@@ -7,6 +7,7 @@ import {
   resolveSessionEndTime,
   isSessionWithinConference,
   warnOutOfRangeSessions,
+  warnEmptyMapData,
 } from "@/lib/overrideUtils";
 import { Session } from "@/types/conference";
 
@@ -487,6 +488,54 @@ describe("mapExhibitorBooths population", () => {
   confsWithoutExhibitorBooths.forEach((conf) => {
     it(`${conf.id}: mapExhibitorBooths is undefined (no exhibitors/booths data)`, () => {
       expect(conf.mapExhibitorBooths).toBeUndefined();
+    });
+  });
+});
+
+// ── warnEmptyMapData ──────────────────────────────────────────────────────────
+// Validates that warnEmptyMapData emits console.warn when the data array is
+// empty, and emits nothing when the array has at least one item.
+describe("warnEmptyMapData", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("emits console.warn when the items array is empty", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnEmptyMapData(
+      "test-conf",
+      "mapSessions",
+      "/assets/maps/test.png",
+      [],
+    );
+    expect(warnSpy).toHaveBeenCalledOnce();
+    expect(String(warnSpy.mock.calls[0][0])).toContain("[sessionData]");
+    expect(String(warnSpy.mock.calls[0][0])).toContain("test-conf");
+    expect(String(warnSpy.mock.calls[0][0])).toContain("mapSessions");
+    expect(String(warnSpy.mock.calls[0][0])).toContain("/assets/maps/test.png");
+  });
+
+  it("does not emit console.warn when the items array is non-empty", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnEmptyMapData("test-conf", "mapRooms", "/assets/maps/test.png", [
+      { name: "Room A" },
+    ]);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("emits a warning for each empty-array map type independently", () => {
+    const types = [
+      "mapSessions",
+      "mapRooms",
+      "mapBooths",
+      "mapExhibitors",
+    ] as const;
+    types.forEach((type) => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      warnEmptyMapData("conf-id", type, "/url", []);
+      expect(warnSpy).toHaveBeenCalledOnce();
+      expect(String(warnSpy.mock.calls[0][0])).toContain(type);
+      vi.restoreAllMocks();
     });
   });
 });

@@ -110,6 +110,29 @@ export function warnOutOfRangeSessions(
 }
 
 /**
+ * Emit a console warning when a map data array is empty for a given URL.
+ *
+ * This is intentionally non-fatal — the warning is informational and does
+ * not prevent the conference from being displayed.
+ *
+ * Examples:
+ *   warnEmptyMapData("seapac-2026", "mapSessions", "/assets/maps/seapac-forums.png", [])
+ *   → console.warn('[sessionData] "seapac-2026" mapSessions has an empty array for URL "/assets/maps/seapac-forums.png"')
+ */
+export function warnEmptyMapData(
+  conferenceId: string,
+  type: "mapSessions" | "mapRooms" | "mapBooths" | "mapExhibitors",
+  url: string,
+  items: unknown[],
+): void {
+  if (items.length === 0) {
+    console.warn(
+      `[sessionData] "${conferenceId}" ${type} has an empty array for URL "${url}"`,
+    );
+  }
+}
+
+/**
  * Return a human-readable full detail string for a supplemental-file timestamp
  * token, suitable for use in a tooltip.
  *
