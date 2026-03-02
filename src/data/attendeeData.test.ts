@@ -1,6 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { sampleAttendees } from "./quartzfest-2027-userprofile-20260301";
 import { UserProfile } from "@/types/conference";
+
+interface SupplementalAttendeeModule {
+  sampleAttendees?: UserProfile[];
+}
+
+// Supplemental userprofile files loaded via glob (mirrors the pattern in src/lib/userProfileData.ts)
+const supplementalAttendeeModules = import.meta.glob("./*-userprofile-*.ts", {
+  eager: true,
+}) as Record<string, SupplementalAttendeeModule>;
+
+// Resolve the specific supplemental attendees needed by the tests below
+const quartzfest2027ProfilePath = Object.keys(
+  supplementalAttendeeModules,
+).find((p) => p.includes("quartzfest-2027-userprofile-"));
+const sampleAttendees: UserProfile[] = quartzfest2027ProfilePath
+  ? (supplementalAttendeeModules[quartzfest2027ProfilePath].sampleAttendees ??
+    [])
+  : [];
 
 // ── quartzfest-2027 supplemental userprofile file ─────────────────────────────
 // Guards the shape and presence of the supplemental userprofile export that

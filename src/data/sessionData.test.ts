@@ -1,6 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { mapSessions } from "./seapac-2026-session-20260227";
-import { mapSessions as quartzfestSessions } from "./quartzfest-2027-session-20260218";
 import { allConferences } from "./all-conferences";
 import {
   formatUpdateToken,
@@ -9,6 +7,30 @@ import {
   isSessionWithinConference,
 } from "@/lib/overrideUtils";
 import { Session } from "@/types/conference";
+
+interface SupplementalSessionModule {
+  mapSessions?: [string, Session[]];
+}
+
+// Supplemental session files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
+const supplementalSessionModules = import.meta.glob("./*-session-*.ts", {
+  eager: true,
+}) as Record<string, SupplementalSessionModule>;
+
+// Resolve the specific supplemental session tuples needed by the tests below
+const seapacPath = Object.keys(supplementalSessionModules).find((p) =>
+  p.includes("seapac-2026-session-"),
+);
+const mapSessions: [string, Session[]] = seapacPath
+  ? (supplementalSessionModules[seapacPath].mapSessions ?? ["", []])
+  : ["", []];
+
+const quartzfestPath = Object.keys(supplementalSessionModules).find((p) =>
+  p.includes("quartzfest-2027-session-"),
+);
+const quartzfestSessions: [string, Session[]] = quartzfestPath
+  ? (supplementalSessionModules[quartzfestPath].mapSessions ?? ["", []])
+  : ["", []];
 
 // ── seapac-2026 supplemental session file ─────────────────────────────────────
 // Guards the shape and presence of the supplemental session export that overrides

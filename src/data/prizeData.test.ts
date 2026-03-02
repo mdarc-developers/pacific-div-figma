@@ -1,8 +1,39 @@
 import { describe, it, expect } from "vitest";
-import { samplePrizes } from "./yuma-2026-prize-20260227T132422";
-import { samplePrizeWinners } from "./yuma-2026-prizewinner-20260227T132422";
 import { formatUpdateToken } from "@/lib/overrideUtils";
 import { Prize, PrizeWinner } from "@/types/conference";
+
+interface SupplementalPrizeModule {
+  samplePrizes?: Prize[];
+}
+
+interface SupplementalPrizeWinnerModule {
+  samplePrizeWinners?: PrizeWinner[];
+}
+
+// Supplemental prize/prizewinner files loaded via glob (mirrors the pattern in src/lib/prizesData.ts)
+const supplementalPrizeModules = import.meta.glob("./*-prize-*.ts", {
+  eager: true,
+}) as Record<string, SupplementalPrizeModule>;
+
+const supplementalPrizeWinnerModules = import.meta.glob(
+  "./*-prizewinner-*.ts",
+  { eager: true },
+) as Record<string, SupplementalPrizeWinnerModule>;
+
+// Resolve the specific supplemental data needed by the tests below
+const yumaPrizePath = Object.keys(supplementalPrizeModules).find((p) =>
+  p.includes("yuma-2026-prize-"),
+);
+const samplePrizes: Prize[] = yumaPrizePath
+  ? (supplementalPrizeModules[yumaPrizePath].samplePrizes ?? [])
+  : [];
+
+const yumaWinnerPath = Object.keys(supplementalPrizeWinnerModules).find((p) =>
+  p.includes("yuma-2026-prizewinner-"),
+);
+const samplePrizeWinners: PrizeWinner[] = yumaWinnerPath
+  ? (supplementalPrizeWinnerModules[yumaWinnerPath].samplePrizeWinners ?? [])
+  : [];
 
 // ── yuma-2026 supplemental prize file ────────────────────────────────────────
 // These tests guard the shape and presence of the supplemental prize/prizewinner

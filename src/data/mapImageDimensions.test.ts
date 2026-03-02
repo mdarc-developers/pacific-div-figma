@@ -2,14 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { MapImage } from "@/types/conference";
-import { conferenceMaps as hamcation2026Maps } from "./hamcation-2026";
-import { conferenceMaps as hamcation2027Maps } from "./hamcation-2027";
-import { conferenceMaps as hamvention2026Maps } from "./hamvention-2026";
-import { conferenceMaps as huntsvilleHamfest2026Maps } from "./huntsville-2026";
-import { conferenceMaps as pacificon2026Maps } from "./pacificon-2026";
-import { conferenceMaps as quartzfest2027Maps } from "./quartzfest-2027";
-import { conferenceMaps as seapac2026Maps } from "./seapac-2026";
-import { conferenceMaps as yuma2026Maps } from "./yuma-2026";
+import { conferenceModules } from "@/lib/conferenceData";
 
 // Root of the Vite project — images live under public/ here
 const PROJECT_ROOT = resolve(__dirname, "../../");
@@ -68,16 +61,16 @@ function getImageDimensions(
   return null;
 }
 
-const allConferenceMaps: { label: string; maps: MapImage[] }[] = [
-  { label: "hamcation-2026", maps: hamcation2026Maps },
-  { label: "hamcation-2027", maps: hamcation2027Maps },
-  { label: "hamvention-2026", maps: hamvention2026Maps },
-  { label: "huntsville-hamfest-2026", maps: huntsvilleHamfest2026Maps },
-  { label: "pacificon-2026", maps: pacificon2026Maps },
-  { label: "quartzfest-2027", maps: quartzfest2027Maps },
-  { label: "seapac-2026", maps: seapac2026Maps },
-  { label: "yuma-2026", maps: yuma2026Maps },
-];
+interface ConferenceModule {
+  conferenceMaps?: MapImage[];
+}
+
+const allConferenceMaps: { label: string; maps: MapImage[] }[] = Object.entries(
+  conferenceModules,
+).map(([path, module]) => {
+  const label = path.split("/").pop()?.replace(".ts", "") ?? "";
+  return { label, maps: (module as ConferenceModule).conferenceMaps ?? [] };
+});
 
 describe("MapImage declared dimensions match actual image file dimensions", () => {
   for (const { label, maps } of allConferenceMaps) {

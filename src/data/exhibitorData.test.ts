@@ -1,7 +1,32 @@
 import { describe, it, expect } from "vitest";
-import { mapExhibitors } from "./hamcation-2027";
-import { mapExhibitors as supplementalExhibitors } from "./hamcation-2026-exhibitor-20260301";
 import { Exhibitor } from "@/types/conference";
+import { conferenceModules } from "@/lib/conferenceData";
+
+interface ConferenceModule {
+  mapExhibitors?: [string, Exhibitor[]];
+}
+
+// Supplemental exhibitor files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
+const supplementalExhibitorModules = import.meta.glob("./*-exhibitor-*.ts", {
+  eager: true,
+}) as Record<string, ConferenceModule>;
+
+// Resolve the specific modules needed by the tests below
+const hamcation2027Path = Object.keys(conferenceModules).find((p) =>
+  p.includes("hamcation-2027"),
+);
+const mapExhibitors: [string, Exhibitor[]] = hamcation2027Path
+  ? ((conferenceModules[hamcation2027Path] as ConferenceModule).mapExhibitors ??
+    ["", []])
+  : ["", []];
+
+const hamcation2026SupPath = Object.keys(supplementalExhibitorModules).find(
+  (p) => p.includes("hamcation-2026-exhibitor-"),
+);
+const supplementalExhibitors: [string, Exhibitor[]] = hamcation2026SupPath
+  ? (supplementalExhibitorModules[hamcation2026SupPath].mapExhibitors ??
+    ["", []])
+  : ["", []];
 
 // ── hamcation-2027 data shape ─────────────────────────────────────────────────
 // These tests guard the mapExhibitors export in hamcation-2027.ts.
