@@ -82,7 +82,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 // Sample user profiles — groups simulate Google Cloud Groups membership.
 // prize-admin group grants access to the prize management admin page.
-export const sampleUserProfiles: UserProfile[] = [
+export const mapUserProfiles: UserProfile[] = [
   {
     uid: "7dBAeZv7kJbVOI5A99Zol06dCTU2",
     email: "grantbow@gmail.com",

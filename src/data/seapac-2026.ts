@@ -203,7 +203,7 @@ export const conferenceMaps: MapImage[] = [
   },
 ];
 
-export const sampleUserProfiles: UserProfile[] = [
+export const mapUserProfiles: UserProfile[] = [
   {
     uid: "1",
     email: "test1test.com",

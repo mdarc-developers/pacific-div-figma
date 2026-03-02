@@ -1498,7 +1498,7 @@ export const conferenceMaps: MapImage[] = [
   },
 ];
 
-export const sampleUserProfiles: UserProfile[] = [
+export const mapUserProfiles: UserProfile[] = [
   {
     uid: "7dBAeZv7kJbVOI5A99Zol06dCTU2",
     email: "grantbow@gmail.com",
