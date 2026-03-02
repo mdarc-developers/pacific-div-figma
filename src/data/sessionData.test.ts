@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { allConferences } from "./all-conferences";
 import "@/lib/sessionData"; // ensure mapSessionRooms population side-effects run
 import {
@@ -6,6 +6,7 @@ import {
   formatUpdateTokenDetail,
   resolveSessionEndTime,
   isSessionWithinConference,
+  warnOutOfRangeSessions,
 } from "@/lib/overrideUtils";
 import { Session } from "@/types/conference";
 
@@ -342,7 +343,55 @@ describe("isSessionWithinConference", () => {
   });
 });
 
-// ── conference date-range checks for real session data ────────────────────────
+// ── warnOutOfRangeSessions ────────────────────────────────────────────────────
+// Validates that warnOutOfRangeSessions emits console.warn for sessions whose
+// dates fall outside the conference date range, and emits nothing for sessions
+// that are within range.
+describe("warnOutOfRangeSessions", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("emits console.warn for seapac-2026 sessions outside the conference date range", () => {
+    const seapac = allConferences.find((c) => c.id === "seapac-2026")!;
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnOutOfRangeSessions("seapac-2026", mapSessions[1], seapac);
+    expect(warnSpy).toHaveBeenCalled();
+    const messages = warnSpy.mock.calls.map((args) => String(args[0]));
+    expect(messages.every((m) => m.includes("[sessionData]"))).toBe(true);
+  });
+
+  it("emits console.warn for quartzfest-2027 sessions outside the conference date range", () => {
+    const qf = allConferences.find((c) => c.id === "quartzfest-2027")!;
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnOutOfRangeSessions("quartzfest-2027", quartzfestSessions[1], qf);
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it("does not emit console.warn when all sessions are within the conference date range", () => {
+    const conf = allConferences.find((c) => c.id === "seapac-2026")!;
+    const inRangeSessions = mapSessions[1].filter((s) =>
+      isSessionWithinConference(s, conf),
+    );
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnOutOfRangeSessions("seapac-2026", inRangeSessions, conf);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("warning message includes conference dates and session startTime", () => {
+    const seapac = allConferences.find((c) => c.id === "seapac-2026")!;
+    const outsideSessions = mapSessions[1].filter(
+      (s) => !isSessionWithinConference(s, seapac),
+    );
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnOutOfRangeSessions("seapac-2026", outsideSessions, seapac);
+    const firstCall = String(warnSpy.mock.calls[0][0]);
+    expect(firstCall).toContain(seapac.startDate);
+    expect(firstCall).toContain(seapac.endDate);
+    expect(firstCall).toContain("startTime=");
+  });
+});
+
 // These tests document that both the seapac-2026 and quartzfest-2027
 // supplemental files contain sessions whose dates do NOT match their
 // respective conference date ranges.  This is known bad data and these tests
