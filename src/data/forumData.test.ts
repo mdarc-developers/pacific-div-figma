@@ -128,8 +128,7 @@ describe("mapSessions URL matches mapRooms URL", () => {
   // Supplemental session files must also use the same URL as the base conference's mapRooms.
   Object.entries(supplementalSessionModules).forEach(([path, module]) => {
     const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
-    // The regex matches both "session" and "sesssion" (triple-s typo in first file).
-    const match = filename.match(/^(.+)-sess.*ion-/);
+    const match = filename.match(/^(.+)-session-/);
     if (!match || !module.mapSessions) return;
     const confId = match[1];
     const baseEntry = CONFERENCE_MODULES.find(([id]) => id === confId);

@@ -60,8 +60,7 @@ Object.keys(supplementalSessionModules)
   .sort()
   .forEach((path) => {
     const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
-    // The regex matches both "session" and "sesssion" (triple-s typo in first file).
-    const conferenceIdMatch = filename.match(/^(.+)-sess.*ion-/);
+    const conferenceIdMatch = filename.match(/^(.+)-session-/);
     if (conferenceIdMatch) {
       const conferenceId = conferenceIdMatch[1];
       const typedModule = supplementalSessionModules[path] as ConferenceModule;
