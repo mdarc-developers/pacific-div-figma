@@ -1,21 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { MapImage, Room, Session, Exhibitor, Booth } from "@/types/conference";
-
-// ── conference data files ────────────────────────────────────────────────────
-import * as yuma2026 from "./yuma-2026";
-import * as hamvention2026 from "./hamvention-2026";
-import * as pacificon2026 from "./pacificon-2026";
-import * as seapac2026 from "./seapac-2026";
-import * as huntsville2026 from "./huntsville-hamfest-2026";
-import * as hamcation2026 from "./hamcation-2026";
-import * as hamcation2027 from "./hamcation-2027";
-import * as quartzfest2027 from "./quartzfest-2027";
-import * as yuma2027 from "./yuma-2027";
-
-// ── supplemental data files ──────────────────────────────────────────────────
-import { mapSessions as seapacSupSessions } from "./seapac-2026-session-20260227";
-import { mapSessions as quartzfestSupSessions } from "./quartzfest-2027-session-20260218";
-import { mapExhibitors as hamcation2026SupExhibitors } from "./hamcation-2026-exhibitor-20260301";
+import { conferenceModules } from "@/lib/conferenceData";
 
 interface ConferenceModule {
   conferenceMaps?: MapImage[];
@@ -25,17 +10,25 @@ interface ConferenceModule {
   mapBooths?: [string, Booth[]];
 }
 
-const CONFERENCE_MODULES: [string, ConferenceModule][] = [
-  ["yuma-2026", yuma2026],
-  ["hamvention-2026", hamvention2026],
-  ["pacificon-2026", pacificon2026],
-  ["seapac-2026", seapac2026],
-  ["huntsville-hamfest-2026", huntsville2026],
-  ["hamcation-2026", hamcation2026],
-  ["hamcation-2027", hamcation2027],
-  ["quartzfest-2027", quartzfest2027],
-  ["yuma-2027", yuma2027],
-];
+// Derive the conference list from the glob-based registry in src/lib/conferenceData.ts
+const CONFERENCE_MODULES: [string, ConferenceModule][] = Object.entries(
+  conferenceModules,
+).map(([path, module]) => {
+  const confId = path.split("/").pop()?.replace(".ts", "") ?? "";
+  return [confId, module as ConferenceModule];
+});
+
+// Supplemental session files: URL must match the base conference's mapRooms URL.
+// Uses the same glob pattern as sessionData.ts.
+const supplementalSessionModules = import.meta.glob("./*-session-*.ts", {
+  eager: true,
+}) as Record<string, ConferenceModule>;
+
+// Supplemental exhibitor files: URL must match the base conference's mapBooths URL.
+// Uses the same glob pattern as sessionData.ts.
+const supplementalExhibitorModules = import.meta.glob("./*-exhibitor-*.ts", {
+  eager: true,
+}) as Record<string, ConferenceModule>;
 
 // ── conferenceMaps shape ──────────────────────────────────────────────────────
 describe("conferenceMaps export", () => {
@@ -132,12 +125,18 @@ describe("mapSessions URL matches mapRooms URL", () => {
     });
   });
 
-  it("seapac-2026-session supplemental: mapSessions URL matches seapac-2026 mapRooms URL", () => {
-    expect(seapacSupSessions[0]).toBe(seapac2026.mapRooms![0]);
-  });
-
-  it("quartzfest-2027-session supplemental: mapSessions URL matches quartzfest-2027 mapRooms URL", () => {
-    expect(quartzfestSupSessions[0]).toBe(quartzfest2027.mapRooms![0]);
+  // Supplemental session files must also use the same URL as the base conference's mapRooms.
+  Object.entries(supplementalSessionModules).forEach(([path, module]) => {
+    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
+    // The regex matches both "session" and "sesssion" (triple-s typo in first file).
+    const match = filename.match(/^(.+)-sess.*ion-/);
+    if (!match || !module.mapSessions) return;
+    const confId = match[1];
+    const baseEntry = CONFERENCE_MODULES.find(([id]) => id === confId);
+    if (!baseEntry?.[1]?.mapRooms) return;
+    it(`${filename}: mapSessions URL matches ${confId} mapRooms URL`, () => {
+      expect(module.mapSessions![0]).toBe(baseEntry[1].mapRooms![0]);
+    });
   });
 });
 
@@ -150,7 +149,16 @@ describe("mapExhibitors URL matches mapBooths URL", () => {
     });
   });
 
-  it("hamcation-2026-exhibitor supplemental: mapExhibitors URL matches hamcation-2026 mapBooths URL", () => {
-    expect(hamcation2026SupExhibitors[0]).toBe(hamcation2026.mapBooths![0]);
+  // Supplemental exhibitor files must also use the same URL as the base conference's mapBooths.
+  Object.entries(supplementalExhibitorModules).forEach(([path, module]) => {
+    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
+    const match = filename.match(/^(.+)-exhibitor-/);
+    if (!match || !module.mapExhibitors) return;
+    const confId = match[1];
+    const baseEntry = CONFERENCE_MODULES.find(([id]) => id === confId);
+    if (!baseEntry?.[1]?.mapBooths) return;
+    it(`${filename}: mapExhibitors URL matches ${confId} mapBooths URL`, () => {
+      expect(module.mapExhibitors![0]).toBe(baseEntry[1].mapBooths![0]);
+    });
   });
 });
