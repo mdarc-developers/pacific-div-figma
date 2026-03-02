@@ -3,10 +3,12 @@ import { ExhibitorView } from "@/app/components/ExhibitorView";
 import { ExhibitorsMapView } from "@/app/components/ExhibitorsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useBookmarks } from "@/app/hooks/useBookmarks";
+import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { MapImage } from "@/types/conference";
 import { MAP_DATA, BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
 export function ExhibitorsPage() {
+  const isMdarcDeveloper = useMdarcDeveloper();
   const [highlightedExhibitorId, setHighlightedExhibitorId] = useState<
     string | undefined
   >(undefined);
@@ -101,6 +103,14 @@ export function ExhibitorsPage() {
 
   return (
     <div className="block">
+      {isMdarcDeveloper && activeConference.mapExhibitorBooths && (
+        <div className="mb-4 p-3 rounded border border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600 text-xs font-mono text-yellow-900 dark:text-yellow-200">
+          <p className="font-semibold mb-1">Developer: mapExhibitorBooths</p>
+          <p>URL: {activeConference.mapExhibitorBooths[0]}</p>
+          <p>Exhibitors loaded: {String(activeConference.mapExhibitorBooths[1])}</p>
+          <p>Booths loaded: {String(activeConference.mapExhibitorBooths[2])}</p>
+        </div>
+      )}
       {numEmaps === 1 && (
         <ExhibitorsMapView
           exhibitorsMap={exhibitorsMap}
