@@ -34,15 +34,10 @@ export function ExhibitorsPage() {
       const boothMapUrl = boothEntry?.[0];
       if (!boothMapUrl) return undefined;
       return (
-        conferenceMaps.find((m) => m.url === boothMapUrl) || {
-          order: 1,
-          id: "map-0",
-          name: "No Exhibitors Map Found",
-          url: "/assets/maps/pacificon-exhibitors-2025.png",
-          origHeightNum: 256,
-          origWidthNum: 582,
-        }
+        conferenceMaps.find((m) => m.url === boothMapUrl) ||
+        undefined
       );
+        
       // Multi-map initialiser (disabled — single-map assumption):
       // if (activeConference.mapExhibitorsUrl.length === 1) {
       //   return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
