@@ -1,54 +1,6 @@
 import { Conference } from "@/types/conference";
 
 export const allConferences: Conference[] = [
-  //  {
-  //    id: 'hamcation-2026',
-  //    name: 'Hamcation 2026',
-  //    location: '4603 W Colonial Drive, Orlando, FL 32808',
-  //    venue: 'Central Florida Fairgrounds',
-  //    startDate: '2026-02-13',
-  //    endDate: '2026-02-15',
-  //    timezone: 'America/New_York',
-  //    primaryColor: '#000000',
-  //    secondaryColor: '#f97316',
-  //    conferenceWebsite: 'https://www.hamcation.com',
-  //    venuePhone: '407-385-3247',
-  //    venueGPS: '28.5556,-81.4402',
-  //    venueGridSquare: 'EL98gn',
-  //    venueWebsite: 'https://www.centralfloridafair.com/',
-  //    timezoneNumeric: '-0700', // DST, PDT ends early Nov
-  //    parkingWebsite: '',
-  //    icalUrl: '',
-  //    googlecalUrl: '',
-  //    contactEmail: '',
-  //    logoUrl: '/assets/maps/hamcation-2026-logo.png',
-  //    //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
-  //    //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
-  //  },
-  //  {
-  //    id: "yuma-2026",
-  //    name: "Yuma Hamfest 2026",
-  //    location: "2520 E 32nd St, Yuma, AZ 85365",
-  //    venue: "Yuma County Fairgrounds",
-  //    startDate: "2026-02-27",
-  //    endDate: "2026-02-28",
-  //    timezone: "America/Phoenix",
-  //    primaryColor: "#F5E556",
-  //    secondaryColor: "#253C61",
-  //    conferenceWebsite: "https://www.yumahamfest.com",
-  //    venuePhone: "(928) 726-4420",
-  //    venueGPS: "32.6707,-114.5943",
-  //    venueGridSquare: "DM22qq",
-  //    venueWebsite: "https://www.yumafair.com",
-  //    timezoneNumeric: "-0700", // does not observe DST
-  //    parkingWebsite: "https://www.yumahamfest.com/parking.html",
-  //    icalUrl: "",
-  //    googlecalUrl: "",
-  //    contactEmail: "info@yumahamfest.org",
-  //    logoUrl: "/assets/images/yuma-buzzard.webp",
-  //    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
-  //    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-  //  },
   {
     id: "hamvention-2026",
     name: "Hamvention 2026",
@@ -72,6 +24,8 @@ export const allConferences: Conference[] = [
     logoUrl: "/assets/images/hamvention_logo.png",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
   },
   {
     id: "seapac-2026",
@@ -94,6 +48,8 @@ export const allConferences: Conference[] = [
     googlecalUrl: "",
     contactEmail: "info@seapac.org",
     logoUrl: "/assets/images/seapac-logo.png",
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
   },
   {
     id: "huntsville-hamfest-2026",
@@ -116,6 +72,8 @@ export const allConferences: Conference[] = [
     googlecalUrl: "",
     contactEmail: "",
     logoUrl: "/assets/images/huntsville-logo.png",
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
   },
   {
     id: "pacificon-2026",
@@ -142,6 +100,8 @@ export const allConferences: Conference[] = [
     logoUrl: "/assets/images/pacificon-2026-logo-208-110.jpg",
     //mapSessionsUrl: '/assets/maps/pacificon-hotel-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
     //mapExhibitorsUrl: ['/assets/maps/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
   },
   {
     id: "quartzfest-2027",
@@ -166,6 +126,8 @@ Roadrunner Camping Area",
     googlecalUrl: "",
     contactEmail: "hkey073@gmail.com",
     logoUrl: "/assets/images/quartzfest-logo-w1000_h1000.webp",
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
   },
   {
     id: "hamcation-2027",
@@ -190,6 +152,8 @@ Roadrunner Camping Area",
     logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
   },
   {
     id: "yuma-2027",
@@ -214,5 +178,59 @@ Roadrunner Camping Area",
     logoUrl: "/assets/images/yuma-buzzard.webp",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
+  },
+  {
+    id: "yuma-2026",
+    name: "Yuma Hamfest 2026",
+    location: "2520 E 32nd St, Yuma, AZ 85365",
+    venue: "Yuma County Fairgrounds",
+    startDate: "2026-02-27",
+    endDate: "2026-02-28",
+    timezone: "America/Phoenix",
+    primaryColor: "#F5E556",
+    secondaryColor: "#253C61",
+    conferenceWebsite: "https://www.yumahamfest.com",
+    venuePhone: "(928) 726-4420",
+    venueGPS: "32.6707,-114.5943",
+    venueGridSquare: "DM22qq",
+    venueWebsite: "https://www.yumafair.com",
+    timezoneNumeric: "-0700", // does not observe DST
+    parkingWebsite: "https://www.yumahamfest.com/parking.html",
+    icalUrl: "",
+    googlecalUrl: "",
+    contactEmail: "info@yumahamfest.org",
+    logoUrl: "/assets/images/yuma-buzzard.webp",
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
+  },
+  {
+    id: 'hamcation-2026',
+    name: 'Hamcation 2026',
+    location: '4603 W Colonial Drive, Orlando, FL 32808',
+    venue: 'Central Florida Fairgrounds',
+    startDate: '2026-02-13',
+    endDate: '2026-02-15',
+    timezone: 'America/New_York',
+    primaryColor: '#000000',
+    secondaryColor: '#f97316',
+    conferenceWebsite: 'https://www.hamcation.com',
+    venuePhone: '407-385-3247',
+    venueGPS: '28.5556,-81.4402',
+    venueGridSquare: 'EL98gn',
+    venueWebsite: 'https://www.centralfloridafair.com/',
+    timezoneNumeric: '-0700', // DST, PDT ends early Nov
+    parkingWebsite: '',
+    icalUrl: '',
+    googlecalUrl: '',
+    contactEmail: '',
+    logoUrl: '/assets/maps/hamcation-2026-logo.png',
+    //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
+    //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean];
+    //mapExhibitorBooths?: [string, boolean, boolean];
   },
 ];
