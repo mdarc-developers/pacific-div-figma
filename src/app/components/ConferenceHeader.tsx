@@ -414,21 +414,20 @@ export function ConferenceHeader() {
                       {activeConference.venue}
                       <ExternalLink className="h-4 w-4" />
                     </a>
-                    ,&nbsp;{activeConference.location}
-                    &nbsp;&nbsp;
+                    {activeConference.location}
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
                       rel="noopener noreferrer"
                       target="_blank"
-                      className="flex items-center gap-2 hover:underline"
+                      className="items-center gap-2 hover:underline"
                       style={{ color: headerLinkColor }}
                     >
-                      <MapPin className="flex h-5 w-5" />
+                      <MapPin className="h-5 w-5" />
                       map
                       <ExternalLink className="h-4 w-4" />
                     </a>
                   </span>
-                  <Tooltip>
+                  <div><Tooltip>
                     <TooltipTrigger asChild>
                       <span title="GPS Coordinates">
                         {activeConference.venueGPS}
@@ -451,7 +450,7 @@ export function ConferenceHeader() {
                       </a>
                     </TooltipTrigger>
                     <TooltipContent>Maidenhead Gridsquare</TooltipContent>
-                  </Tooltip>
+                  </Tooltip></div>
                 </div>
               </div>
             </div>
