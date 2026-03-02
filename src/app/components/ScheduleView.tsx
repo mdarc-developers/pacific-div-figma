@@ -38,6 +38,10 @@ interface CalendarProps {
   startDate: string;
 }
 
+function isValidDateTimeString(s: string): boolean {
+  return s.length > 0 && !isNaN(new Date(s).getTime());
+}
+
 function formatSessionTime(
   timeString: string,
   tzString: string,
@@ -219,7 +223,9 @@ export function ScheduleView({
   const { setHighlightForumRoomName } = useSearch();
   const navigate = useNavigate();
   const location = useLocation();
-  const sessions = SESSION_DATA[activeConference.id] || [];
+  const sessions = (SESSION_DATA[activeConference.id] || []).filter((s) =>
+    isValidDateTimeString(s.startTime),
+  );
   const updateToken = SESSION_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedDay, setSelectedDay] = useState<string>("all");
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);

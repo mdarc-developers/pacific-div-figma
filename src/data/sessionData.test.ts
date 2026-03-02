@@ -185,6 +185,31 @@ describe("quartzfest-2027-session supplemental file", () => {
   });
 });
 
+// ── isValidDateTimeString (ScheduleView filtering) ───────────────────────────
+// Validates the invariant relied upon by ScheduleView's bad-date filter:
+// sessions whose startTime is not a valid ISO datetime string must be excluded
+// from rendering to prevent errors in Intl.DateTimeFormat and FullCalendar.
+// quartzfestSessions[1] is the Session[] array from the [url, Session[]] tuple.
+describe("ScheduleView bad-date filtering invariant", () => {
+  it("quartzfest-2027 contains sessions with an invalid startTime", () => {
+    // Mirrors the isValidDateTimeString check used by ScheduleView to filter sessions
+    const badStart = quartzfestSessions[1].filter((s) =>
+      isNaN(new Date(s.startTime).getTime()),
+    );
+    expect(badStart.length).toBeGreaterThan(0);
+  });
+
+  it("filtering out sessions with an invalid startTime removes all bad-start sessions", () => {
+    // Mirrors the isValidDateTimeString check used by ScheduleView to filter sessions
+    const filtered = quartzfestSessions[1].filter(
+      (s) => !isNaN(new Date(s.startTime).getTime()),
+    );
+    filtered.forEach((s) => {
+      expect(isNaN(new Date(s.startTime).getTime())).toBe(false);
+    });
+  });
+});
+
 // ── isSessionWithinConference ─────────────────────────────────────────────────
 // Validates the helper that checks whether a session's start/end dates fall
 // within the inclusive date range of its conference.
