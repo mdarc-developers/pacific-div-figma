@@ -3,7 +3,6 @@ import { conferenceModules } from "@/lib/conferenceData";
 
 interface ProfileModule {
   sampleUserProfiles?: UserProfile[];
-  sampleAttendees?: UserProfile[];
   [key: string]: unknown;
 }
 
@@ -21,8 +20,8 @@ export const ATTENDEE_DATA: Record<string, UserProfile[]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedModule = module as ProfileModule;
-  if (typedModule.sampleAttendees) {
-    ATTENDEE_DATA[conferenceId] = typedModule.sampleAttendees;
+  if (typedModule.sampleUserProfiles) {
+    ATTENDEE_DATA[conferenceId] = typedModule.sampleUserProfiles;
   }
 });
 
@@ -44,8 +43,8 @@ Object.keys(supplementalAttendeeModules)
     if (match) {
       const conferenceId = match[1];
       const typedModule = supplementalAttendeeModules[path] as ProfileModule;
-      if (typedModule.sampleAttendees) {
-        ATTENDEE_DATA[conferenceId] = typedModule.sampleAttendees;
+      if (typedModule.sampleUserProfiles) {
+        ATTENDEE_DATA[conferenceId] = typedModule.sampleUserProfiles;
         const token = filename.split("-").pop() ?? "";
         if (
           token &&

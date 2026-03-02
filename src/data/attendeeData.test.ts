@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { UserProfile } from "@/types/conference";
 
 interface SupplementalAttendeeModule {
-  sampleAttendees?: UserProfile[];
+  sampleUserProfiles?: UserProfile[];
 }
 
 // Supplemental userprofile files loaded via glob (mirrors the pattern in src/lib/userProfileData.ts)
@@ -14,22 +14,22 @@ const supplementalAttendeeModules = import.meta.glob("./*-userprofile-*.ts", {
 const quartzfest2027ProfilePath = Object.keys(
   supplementalAttendeeModules,
 ).find((p) => p.includes("quartzfest-2027-userprofile-"));
-const sampleAttendees: UserProfile[] = quartzfest2027ProfilePath
-  ? (supplementalAttendeeModules[quartzfest2027ProfilePath].sampleAttendees ??
+const sampleUserProfiles: UserProfile[] = quartzfest2027ProfilePath
+  ? (supplementalAttendeeModules[quartzfest2027ProfilePath].sampleUserProfiles ??
     [])
   : [];
 
 // ── quartzfest-2027 supplemental userprofile file ─────────────────────────────
 // Guards the shape and presence of the supplemental userprofile export that
-// overrides the sampleAttendees in quartzfest-2027.ts when it exists.
+// overrides the sampleUserProfiles in quartzfest-2027.ts when it exists.
 describe("quartzfest-2027-userprofile supplemental file", () => {
   it("exports a non-empty UserProfile array", () => {
-    expect(Array.isArray(sampleAttendees)).toBe(true);
-    expect(sampleAttendees.length).toBeGreaterThan(0);
+    expect(Array.isArray(sampleUserProfiles)).toBe(true);
+    expect(sampleUserProfiles.length).toBeGreaterThan(0);
   });
 
   it("each attendee has required fields", () => {
-    sampleAttendees.forEach((attendee: UserProfile) => {
+    sampleUserProfiles.forEach((attendee: UserProfile) => {
       expect(typeof attendee.uid).toBe("string");
       expect(attendee.uid.length).toBeGreaterThan(0);
       expect(typeof attendee.email).toBe("string");
@@ -57,9 +57,9 @@ describe("supplemental userprofile override logic", () => {
       ],
     };
     const conferenceId = "quartzfest-2027";
-    ATTENDEE_DATA[conferenceId] = sampleAttendees;
+    ATTENDEE_DATA[conferenceId] = sampleUserProfiles;
 
-    expect(ATTENDEE_DATA["quartzfest-2027"]).toBe(sampleAttendees);
+    expect(ATTENDEE_DATA["quartzfest-2027"]).toBe(sampleUserProfiles);
     expect(
       ATTENDEE_DATA["quartzfest-2027"].find((a) => a.uid === "old-1"),
     ).toBeUndefined();

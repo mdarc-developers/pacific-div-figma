@@ -2401,7 +2401,7 @@ export const conferenceMaps: MapImage[] = [
 //  phoneNumber?: string;
 //}
 
-export const sampleAttendees: UserProfile[] = [
+export const sampleUserProfiles: UserProfile[] = [
   {
     uid: "1",
     email: "test1test.com",

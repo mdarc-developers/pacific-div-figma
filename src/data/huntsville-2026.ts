@@ -179,7 +179,7 @@ export const conferenceMaps: MapImage[] = [
   },
 ];
 
-export const sampleAttendees: UserProfile[] = [
+export const sampleUserProfiles: UserProfile[] = [
   {
     uid: "1",
     email: "test1test.com",

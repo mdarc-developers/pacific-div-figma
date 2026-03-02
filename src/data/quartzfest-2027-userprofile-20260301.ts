@@ -4,7 +4,7 @@
 //
 import { UserProfile } from "@/types/conference.ts";
 
-export const sampleAttendees: UserProfile[] = [
+export const sampleUserProfiles: UserProfile[] = [
   {
     uid: "1",
     email: "",
