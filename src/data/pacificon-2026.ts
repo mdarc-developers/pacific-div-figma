@@ -101,7 +101,7 @@ export const sampleUserProfiles: UserProfile[] = [
     bookmarkedSessions: [],
     notificationsEnabled: true,
     smsNotifications: true,
-    groups: ["prize-admin"],
+    groups: ["prize-admin", "mdarc-developers"],
     displayName: "Grant B",
     callsign: "K6CBK",
   },
