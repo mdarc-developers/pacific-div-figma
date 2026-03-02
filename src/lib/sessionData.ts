@@ -1,6 +1,6 @@
 import { Session, MapImage, Room, Booth, Exhibitor } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
-import { resolveSessionEndTime } from "@/lib/overrideUtils";
+import { resolveSessionEndTime, warnOutOfRangeSessions } from "@/lib/overrideUtils";
 import { allConferences } from "@/data/all-conferences";
 
 interface ConferenceModule {
@@ -99,6 +99,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   if (typedModule.mapSessions) {
     SESSION_DATA[conferenceId] = normalizeSessions(typedModule.mapSessions[1]);
     updateMapSessionRooms(conferenceId, typedModule.mapSessions[0], "sessions");
+    const conf = allConferences.find((c) => c.id === conferenceId);
+    if (conf) warnOutOfRangeSessions(conferenceId, SESSION_DATA[conferenceId], conf);
   }
   if (typedModule.conferenceMaps) {
     MAP_DATA[conferenceId] = typedModule.conferenceMaps;
@@ -142,6 +144,8 @@ Object.keys(supplementalSessionModules)
       if (typedModule.mapSessions) {
         SESSION_DATA[conferenceId] = normalizeSessions(typedModule.mapSessions[1]);
         updateMapSessionRooms(conferenceId, typedModule.mapSessions[0], "sessions", true);
+        const conf = allConferences.find((c) => c.id === conferenceId);
+        if (conf) warnOutOfRangeSessions(conferenceId, SESSION_DATA[conferenceId], conf);
         const token = filename.split("-").pop() ?? "";
         if (token && token > (SESSION_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
           SESSION_SUPPLEMENTAL_TOKEN[conferenceId] = token;

@@ -87,6 +87,29 @@ export function isSessionWithinConference(
 }
 
 /**
+ * Emit a console warning for every session whose start or end date falls
+ * outside the inclusive date range of the given conference.
+ *
+ * This is intentionally non-fatal — the warning is informational and does
+ * not prevent the session from being displayed.
+ */
+export function warnOutOfRangeSessions(
+  conferenceId: string,
+  sessions: Session[],
+  conference: Conference,
+): void {
+  sessions.forEach((session) => {
+    if (!isSessionWithinConference(session, conference)) {
+      console.warn(
+        `[sessionData] Session "${session.id}" in "${conferenceId}" is outside conference dates` +
+          ` (${conference.startDate}–${conference.endDate}):` +
+          ` startTime=${session.startTime}`,
+      );
+    }
+  });
+}
+
+/**
  * Return a human-readable full detail string for a supplemental-file timestamp
  * token, suitable for use in a tooltip.
  *
