@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { allConferences } from "./all-conferences";
+import "@/lib/sessionData"; // ensure mapSessionRooms population side-effects run
 import {
   formatUpdateToken,
   formatUpdateTokenDetail,
@@ -372,5 +373,31 @@ describe("conference date-range checks for real session data", () => {
       (s) => !isSessionWithinConference(s, qf),
     );
     expect(outsideRange.length).toBeGreaterThan(0);
+  });
+});
+
+// ── mapSessionRooms population ────────────────────────────────────────────────
+// Verifies that sessionData.ts populates mapSessionRooms on Conference objects
+// in allConferences when base conference modules have both mapSessions and mapRooms.
+// The top-level `import "@/lib/sessionData"` at the top of this file triggers the
+// population side-effects; sessionData.ts mutates allConferences in-place so the
+// updated fields are visible through the same cached module instance.
+describe("mapSessionRooms population", () => {
+  // Every conference data file exports both mapSessions and mapRooms, so every
+  // conference in allConferences should have mapSessionRooms fully populated.
+  allConferences.forEach((conf) => {
+    it(`${conf.id}: mapSessionRooms is populated with a non-empty URL`, () => {
+      expect(conf.mapSessionRooms).toBeDefined();
+      expect(typeof conf.mapSessionRooms![0]).toBe("string");
+      expect(conf.mapSessionRooms![0].length).toBeGreaterThan(0);
+    });
+
+    it(`${conf.id}: mapSessionRooms[1] (sessions loaded) is true`, () => {
+      expect(conf.mapSessionRooms![1]).toBe(true);
+    });
+
+    it(`${conf.id}: mapSessionRooms[2] (rooms loaded) is true`, () => {
+      expect(conf.mapSessionRooms![2]).toBe(true);
+    });
   });
 });

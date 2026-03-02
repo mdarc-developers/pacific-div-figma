@@ -1,6 +1,7 @@
 import { Session, MapImage, Room, Booth, Exhibitor } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
 import { resolveSessionEndTime } from "@/lib/overrideUtils";
+import { allConferences } from "@/data/all-conferences";
 
 interface ConferenceModule {
   mapSessions?: [string, Session[]];
@@ -9,6 +10,39 @@ interface ConferenceModule {
   mapBooths?: [string, Booth[]];
   mapExhibitors?: [string, Exhibitor[]];
   [key: string]: unknown;
+}
+
+// Populate mapSessionRooms on the matching Conference object in allConferences.
+// type "sessions" updates the first boolean (mapSessions loaded);
+// type "rooms" updates the second boolean (mapRooms loaded).
+// Throws if the boolean being set is already true, unless isSupplemental is true
+// (supplemental files override the base data and do not trigger the duplicate check).
+function updateMapSessionRooms(
+  conferenceId: string,
+  url: string,
+  type: "sessions" | "rooms",
+  isSupplemental = false,
+): void {
+  const conf = allConferences.find((c) => c.id === conferenceId);
+  if (!conf) return;
+  if (!conf.mapSessionRooms || conf.mapSessionRooms[0] !== url) {
+    conf.mapSessionRooms = [url, false, false];
+  }
+  if (type === "sessions") {
+    if (conf.mapSessionRooms[1] && !isSupplemental) {
+      throw new Error(
+        `mapSessions already loaded for conference "${conferenceId}" URL "${url}"`,
+      );
+    }
+    conf.mapSessionRooms[1] = true;
+  } else {
+    if (conf.mapSessionRooms[2] && !isSupplemental) {
+      throw new Error(
+        `mapRooms already loaded for conference "${conferenceId}" URL "${url}"`,
+      );
+    }
+    conf.mapSessionRooms[2] = true;
+  }
 }
 
 // Process the modules into a lookup object
@@ -31,12 +65,14 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   const typedModule = module as ConferenceModule;
   if (typedModule.mapSessions) {
     SESSION_DATA[conferenceId] = normalizeSessions(typedModule.mapSessions[1]);
+    updateMapSessionRooms(conferenceId, typedModule.mapSessions[0], "sessions");
   }
   if (typedModule.conferenceMaps) {
     MAP_DATA[conferenceId] = typedModule.conferenceMaps;
   }
   if (typedModule.mapRooms) {
     ROOM_DATA[conferenceId] = typedModule.mapRooms;
+    updateMapSessionRooms(conferenceId, typedModule.mapRooms[0], "rooms");
   }
   if (typedModule.mapBooths) {
     BOOTH_DATA[conferenceId] = typedModule.mapBooths;
@@ -66,6 +102,7 @@ Object.keys(supplementalSessionModules)
       const typedModule = supplementalSessionModules[path] as ConferenceModule;
       if (typedModule.mapSessions) {
         SESSION_DATA[conferenceId] = normalizeSessions(typedModule.mapSessions[1]);
+        updateMapSessionRooms(conferenceId, typedModule.mapSessions[0], "sessions", true);
         const token = filename.split("-").pop() ?? "";
         if (token && token > (SESSION_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
           SESSION_SUPPLEMENTAL_TOKEN[conferenceId] = token;
