@@ -1,17 +1,33 @@
-import { useRef, useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { useRef, useEffect, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { ExternalLink, Send, User } from "lucide-react";
-import { UserProfile } from "@/types/conference";
+import {
+  Building2,
+  ExternalLink,
+  Info,
+  Mic,
+  Send,
+  Trophy,
+  User,
+} from "lucide-react";
+import { Session, Exhibitor, Prize, UserProfile } from "@/types/conference";
 import {
   ATTENDEE_DATA,
   ATTENDEE_SUPPLEMENTAL_TOKEN,
 } from "@/lib/userProfileData";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { PRIZE_DATA } from "@/lib/prizesData";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 import {
@@ -24,12 +40,25 @@ import {
   TooltipContent,
 } from "@/app/components/ui/tooltip";
 
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 interface AttendeeCardProps {
   attendee: UserProfile;
   isHighlighted: boolean;
+  sessionMap: Map<string, Session>;
+  exhibitorMap: Map<string, Exhibitor>;
+  prizeMap: Map<string, Prize>;
 }
 
-function AttendeeCard({ attendee, isHighlighted }: AttendeeCardProps) {
+function AttendeeCard({
+  attendee,
+  isHighlighted,
+  sessionMap,
+  exhibitorMap,
+  prizeMap,
+}: AttendeeCardProps) {
   const attendeeRef = useRef<HTMLDivElement>(null);
   //console.log(attendee);
 
@@ -61,6 +90,13 @@ function AttendeeCard({ attendee, isHighlighted }: AttendeeCardProps) {
   }
 
   if (attendee.displayName) {
+    const isSpeaker = attendee.sessions && attendee.sessions.length > 0;
+    const hasExhibitors = attendee.exhibitors && attendee.exhibitors.length > 0;
+    const hasPrizes =
+      attendee.prizesDonated && attendee.prizesDonated.length > 0;
+    const hasContent =
+      attendee.displayProfile || isSpeaker || hasExhibitors || hasPrizes;
+
     return (
       <div
         ref={attendeeRef}
@@ -74,29 +110,101 @@ function AttendeeCard({ attendee, isHighlighted }: AttendeeCardProps) {
         >
           <CardHeader>
             <div className="flex space-y-2 gap-2 justify-between items-start">
+              {isSpeaker && <Mic className="h-4 w-4" />}
               <User className="h-4 w-4" />
               <CardTitle className="flex text-lg mb-2 w-full gap-2 space-y-2">
                 {attendee.displayName}&nbsp;&nbsp;
                 {displayCallsign(attendee.callsign)}
               </CardTitle>
-              <span className="float-right items-center space-y-2 gap-2 text-gray-700 dark:text-gray-300">
-                <a href={`mailto:${attendee.email}`} className="flex">
-                  email&nbsp;
-                  <Send className="flex h-4 w-4" />
-                </a>
-              </span>
+              {isValidEmail(attendee.email) && (
+                <span className="float-right items-center space-y-2 gap-2 text-gray-700 dark:text-gray-300">
+                  <a href={`mailto:${attendee.email}`} className="flex">
+                    email&nbsp;
+                    <Send className="flex h-4 w-4" />
+                  </a>
+                </span>
+              )}
             </div>
           </CardHeader>
+          {hasContent && (
+            <CardContent>
+              {attendee.displayProfile && (
+                <div className="text-sm flex gap-2 text-gray-600 dark:text-gray-400 mb-3">
+                  <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                  <span>{attendee.displayProfile}</span>
+                </div>
+              )}
+              {isSpeaker && (
+                <div className="text-sm space-y-1 mb-2">
+                  <p className="font-semibold">Speaker</p>
+                  {attendee.sessions?.map((sessionId) => {
+                    const session = sessionMap.get(sessionId);
+                    return (
+                      <div
+                        key={sessionId}
+                        className="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                      >
+                        <Mic className="h-4 w-4" />
+                        <Link
+                          to={`/search?highlight=${sessionId}`}
+                          className="hover:underline"
+                        >
+                          {session ? session.title : sessionId}
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {hasExhibitors && (
+                <div className="text-sm space-y-1 mb-2">
+                  <p className="font-semibold">Exhibitor</p>
+                  {attendee.exhibitors?.map((exhibitorId) => {
+                    const exhibitor = exhibitorMap.get(exhibitorId);
+                    return (
+                      <div
+                        key={exhibitorId}
+                        className="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                      >
+                        <Building2 className="h-4 w-4" />
+                        <Link
+                          to={`/exhibitors#${exhibitorId}`}
+                          className="hover:underline"
+                        >
+                          {exhibitor ? exhibitor.name : exhibitorId}
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {hasPrizes && (
+                <div className="text-sm space-y-1">
+                  <p className="font-semibold">Donated Prizes</p>
+                  {attendee.prizesDonated?.map((prizeId) => {
+                    const prize = prizeMap.get(prizeId);
+                    return (
+                      <div
+                        key={prizeId}
+                        className="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                      >
+                        <Trophy className="h-4 w-4" />
+                        <Link
+                          to={`/prizes#prize-${prizeId}`}
+                          className="hover:underline"
+                        >
+                          {prize ? prize.name : prizeId}
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          )}
         </Card>
       </div>
     );
-    //     hover text? profiles waste a lot of vertical space
-    //<CardContent>
-    //  <div className="text-sm space-y-2 flex gap-2 text-gray-600 dark:text-gray-400 mb-3">
-    //    <Info className="h-4 w-4" />
-    //    {attendee.profile}<br/>
-    //  </div>
-    //</CardContent>
   } else {
     return "";
   }
@@ -113,6 +221,26 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const attendees = ATTENDEE_DATA[activeConference.id] || [];
   const updateToken = ATTENDEE_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
+  // Build lookup maps for sessions, exhibitors, and prizes (memoized per conference)
+  const sessionMap = useMemo(
+    () =>
+      new Map(
+        (SESSION_DATA[activeConference.id] || []).map((s) => [s.id, s]),
+      ),
+    [activeConference.id],
+  );
+  const exhibitorMap = useMemo(() => {
+    const entry = EXHIBITOR_DATA[activeConference.id];
+    return new Map((entry ? entry[1] : []).map((e) => [e.id, e]));
+  }, [activeConference.id]);
+  const prizeMap = useMemo(
+    () =>
+      new Map(
+        (PRIZE_DATA[activeConference.id] || []).map((p) => [p.id, p]),
+      ),
+    [activeConference.id],
+  );
 
   // Derive category lists from UserProfile attributes
   const speakers = attendees.filter((a) => a.sessions && a.sessions.length > 0);
@@ -133,19 +261,6 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
 
   const tabBg = blendWithWhite(activeConference.primaryColor);
   const tabText = contrastingColor(tabBg);
-
-  //export interface UserProfile {
-  //  uid: string;
-  //  email: string;
-  //  callsign?: string;
-  //  displayName?: string;
-  //  displayProfile?: string;
-  //  darkMode: boolean;
-  //  bookmarkedSessions: string[];
-  //  notificationsEnabled: boolean;
-  //  smsNotifications: boolean;
-  //  phoneNumber?: string;
-  //}
 
   return (
     <div className="w-full">
@@ -173,6 +288,9 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
               key={attendee.uid}
               attendee={attendee}
               isHighlighted={highlightAttendeeId === attendee.uid}
+              sessionMap={sessionMap}
+              exhibitorMap={exhibitorMap}
+              prizeMap={prizeMap}
             />
           ))}
         </TabsContent>
@@ -183,6 +301,9 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
                 key={attendee.uid}
                 attendee={attendee}
                 isHighlighted={highlightAttendeeId === attendee.uid}
+                sessionMap={sessionMap}
+                exhibitorMap={exhibitorMap}
+                prizeMap={prizeMap}
               />
             ))}
           </TabsContent>
