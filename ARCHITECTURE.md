@@ -37,78 +37,131 @@ The app is purpose-built for amateur radio (ham radio) ARRL Division conferences
 
 ### Notable dependencies _installed but not currently used_
 
-- `next-themes` for dark and light
+- `next-themes` — installed but **replaced** by the custom `ThemeContext` + `FirebaseThemeSync` pattern; may be removed in a future cleanup
 - Most of the Radix primitives beyond `tabs`, `accordion`, `toggle`, `toggle-group`, and `tooltip` have been scaffolded by the Figma-to-code export and are available for future features without requiring a new install.
 - `react-slick` for carousel
 - `react-responsive-masonry` for zooming
 - `recharts` charting for react
 - `react-hook-form` forms and validation library
+- `date-fns` date utilities
+- `@floating-ui/react` positioning engine for tooltips / popovers
+- `react-resizable-panels` resizable panel layout
 
 ---
 
 ## 3. Source Tree
 
 ```
-pacific-div-figma-main/
+pacific-div-figma/
 ├── .github/workflows/          # CI — Firebase deploy on merge & PR preview
 ├── public/                     # Static assets served verbatim
 │   ├── pacificon-2026.ics      # iCal calendar file for the conference
-│   ├── *map*.png / *.jpg       # 5 venue/event map images
+│   ├── settings/defaults.csv   # Default user settings seed (theme, etc.)
 │   └── 404.html
 ├── src/
-│   ├── main.tsx                # React entry — mounts AuthProvider → BrowserRouter → App
+│   ├── main.tsx                # React entry — mounts ThemeProvider → ConferenceProvider → AuthProvider → SearchProvider → BrowserRouter → App
 │   ├── app/
-│   │   ├── App.tsx             # Route table + persistent layout (Header, Nav, Footer)
+│   │   ├── App.tsx             # Route table + persistent layout (Header, SearchBar, Nav, Footer)
 │   │   ├── components/
-│   │   │   ├── ConferenceHeader.tsx   # Collapsible banner; dynamic brand color & contrast
+│   │   │   ├── AccountCard.tsx        # Profile: email verification & password reset actions
+│   │   │   ├── AdminCard.tsx          # Profile: admin link card (prize-admin only)
+│   │   │   ├── AlertsView.tsx         # Unauthenticated placeholder for Alerts tab
+│   │   │   ├── AttendeesView.tsx      # Attendee list display
+│   │   │   ├── BookmarkListCard.tsx   # Profile: bookmarked sessions list
 │   │   │   ├── ConferenceFooter.tsx   # Contact email + status notices
-│   │   │   ├── Navigation.tsx         # 4-tab nav bar (Maps, Schedule, Prizes, Profile)
-│   │   │   ├── ProtectedRoute.tsx     # HOC: redirects to /login when no auth user
-│   │   │   ├── ScheduleView.tsx       # Card list + FullCalendar; bookmark toggle
-│   │   │   ├── SearchBar.tsx          # Search planned
+│   │   │   ├── ConferenceHeader.tsx   # Collapsible banner; dynamic brand color & contrast
+│   │   │   ├── ExhibitorView.tsx      # Single exhibitor detail
+│   │   │   ├── ExhibitorsMapView.tsx  # Leaflet-based exhibitor booth map
+│   │   │   ├── FirebaseThemeSync.tsx  # Headless component: syncs ThemeContext ↔ Firestore
+│   │   │   ├── ForumsMapView.tsx      # Leaflet-based forum room map
 │   │   │   ├── MapsView.tsx           # Tabbed map viewer with ImageWithFallback
-│   │   │   ├── AlertsView.tsx         # Unauthenticated placeholder for Prizes tab
+│   │   │   ├── Navigation.tsx         # Tab bar (Maps, Schedule, Forums, Exhibitors, Prizes, …)
+│   │   │   ├── NotificationsCard.tsx  # Profile: notification toggle stubs
+│   │   │   ├── PacificonFloorMap.tsx  # SVG floor-map component for Pacificon
+│   │   │   ├── ProfileHeaderCard.tsx  # Profile: user avatar + name/callsign header
 │   │   │   ├── ProfileView.tsx        # Unauthenticated placeholder for Profile tab
+│   │   │   ├── PrizesAdminView.tsx    # Admin UI for managing prize winners
+│   │   │   ├── PrizesImageView.tsx    # Prize image carousel view
+│   │   │   ├── PrizesView.tsx         # Attendee-facing prize list + raffle ticket entry
+│   │   │   ├── ProtectedRoute.tsx     # HOC: redirects to /login when no auth user
+│   │   │   ├── RaffleTicketsCard.tsx  # Profile: raffle ticket management
+│   │   │   ├── ScheduleView.tsx       # Card list + FullCalendar; bookmark toggle
+│   │   │   ├── SearchBar.tsx          # Fuse.js search bar; highlights results via SearchContext
+│   │   │   ├── SettingsCard.tsx       # Profile: dark/light/system theme toggle
 │   │   │   ├── figma/
 │   │   │   │   └── ImageWithFallback.tsx  # <img> that swaps to an inline SVG on error
 │   │   │   └── ui/                    # shadcn-style Radix wrappers (tabs, card, badge, button, …)
 │   │   ├── contexts/
 │   │   │   ├── AuthContext.tsx        # React Context + Provider for Firebase Auth state
-│   │   │   ├── ThemeContext.tsx       # Theme Context + Provider for light/system/dark theme
-│   │   │   └── ConferenceContext.tsx  # Conference selection
+│   │   │   ├── ConferenceContext.tsx  # Conference selection; exposes activeConference + allConferencesList
+│   │   │   ├── SearchContext.tsx      # Highlight state for search results (session/exhibitor/forum)
+│   │   │   └── ThemeContext.tsx       # light/dark/system theme; persists to localStorage + Firestore
+│   │   ├── hooks/
+│   │   │   ├── useBookmarks.ts        # localStorage-backed bookmark toggle with prev-bookmark tracking
+│   │   │   ├── usePrizesAdmin.ts      # Returns true if current user is in "prize-admin" group
+│   │   │   └── useRaffleTickets.ts    # localStorage-backed raffle ticket list with range-add support
 │   │   └── pages/                     # Route-level containers; own state, delegate to Views
-│   │       ├── MapsPage.tsx           # renamed Venue
-│   │       ├── SchedulePage.tsx       # Owns bookmarkedSessions state
-│   │       ├── ForumsPage.tsx         # Focused on Forums and speakers
-│   │       ├── ExhibitorsPage.tsx     # Shows map, no list of vendors yet
-│   │       ├── AlertsPage.tsx         # Shows AlertsView when unauthed, email when authed
-│   │       ├── ProfilePage.tsx        # Full profile when authed; email verification & password reset
+│   │       ├── AlertsPage.tsx         # Shows AlertsView when unauthed, alert list when authed
+│   │       ├── AttendeesPage.tsx      # Shows AttendeesView
+│   │       ├── ExhibitorsPage.tsx     # Shows ExhibitorsMapView + ExhibitorView
+│   │       ├── ForumsPage.tsx         # Shows ForumsMapView + ScheduleView for forum sessions
 │   │       ├── LoginPage.tsx          # Email/password + Google sign-in; redirects on auth
+│   │       ├── MapsPage.tsx           # Venue maps via MapsView
+│   │       ├── PrizesAdminPage.tsx    # Admin prize management (prize-admin group only)
+│   │       ├── PrizesPage.tsx         # Attendee prize list + raffle ticket entry
+│   │       ├── ProfilePage.tsx        # Full profile when authed; email verification & password reset
+│   │       ├── SchedulePage.tsx       # Owns bookmarkedSessions state; renders ScheduleView
+│   │       ├── SearchPage.tsx         # ScheduleView filtered by search; scrolls to highlighted session
 │   │       └── SignUpPage.tsx         # Email/password + Google sign-up; client-side validation
 │   ├── data/
-│   │   ├── all-conferences.ts         # multi-conference
-│   │   ├── hamcation-2026.ts          # Feb Orlando, FL Hamcation data
-│   │   ├── hamvention-2026.ts         # May Dayton, OH Hamvention data
-│   │   ├── huntsville-hamfest-2026.ts # Aug Huntsville, AL Hamfest data
-│   │   ├── pacificon-2026.ts          # Oct San Ramon, CA Pacificon data
-│   │   └── hamcation-2027.ts          # Feb Orlando, FL Hamcation data
+│   │   ├── all-conferences.ts                  # Master list used by ConferenceContext
+│   │   ├── hamcation-2026.ts                   # Feb Orlando, FL — Hamcation 2026
+│   │   ├── hamcation-2026-exhibitor-*.ts        # Exhibitor override/supplemental data
+│   │   ├── hamcation-2027.ts                   # Feb Orlando, FL — Hamcation 2027
+│   │   ├── hamvention-2026.ts                  # May Dayton, OH — Hamvention 2026
+│   │   ├── huntsville-hamfest-2026.ts           # Aug Huntsville, AL — Hamfest 2026
+│   │   ├── pacificon-2026.ts                   # Oct San Ramon, CA — Pacificon 2026
+│   │   ├── pacificonData.ts                    # SVG booth/room data for PacificonFloorMap
+│   │   ├── quartzfest-2027.ts                  # Jan Quartzsite, AZ — Quartzfest 2027
+│   │   ├── quartzfest-2027-session-*.ts         # Session override/supplemental data
+│   │   ├── quartzfest-2027-userprofile-*.ts     # Attendee override/supplemental data
+│   │   ├── seapac-2026.ts                      # Jun Portland, OR — SeaPac 2026
+│   │   ├── seapac-2026-session-*.ts             # Session override/supplemental data
+│   │   ├── yuma-2026.ts                        # Feb Yuma, AZ — Yuma Hamfest 2026
+│   │   ├── yuma-2026-prize-*.ts                # Prize override/supplemental data
+│   │   ├── yuma-2026-prizewinner-*.ts           # Prize winner override/supplemental data
+│   │   ├── yuma-2027.ts                        # Feb Yuma, AZ — Yuma Hamfest 2027
+│   │   ├── extract-*.html                      # One-off data-extraction helper pages (not bundled)
+│   │   └── *.test.ts                           # Vitest unit tests for data integrity
 │   ├── lib/
-│   │   └── firebase.ts                # initializeApp; exports auth, db, storage singletons
+│   │   ├── colorUtils.ts      # contrastingColor() and related WCAG helpers
+│   │   ├── conferenceData.ts  # Vite glob import — loads all *-20XX.ts data files eagerly
+│   │   ├── firebase.ts        # initializeApp; exports auth, db, storage singletons
+│   │   ├── googleDrive.ts     # Helpers for Google Drive asset access (planned)
+│   │   ├── localStorage.ts    # loadFromStorage / saveToStorage generic helpers
+│   │   ├── overrideUtils.ts   # Merges supplemental/override data into base conference data
+│   │   ├── prizesData.ts      # Aggregates PRIZE_DATA and PRIZE_WINNER_DATA from all conference modules
+│   │   ├── sessionData.ts     # Aggregates SESSION_DATA, map images, rooms, booths, exhibitors
+│   │   └── userProfileData.ts # Aggregates ALL_USER_PROFILES and ATTENDEE_DATA
+│   ├── services/
+│   │   ├── searchService.ts       # Fuse.js search index; buildIndex / search / applyFilters
+│   │   └── userSettingsService.ts # getUserTheme / setUserTheme via Firestore userSettings collection
 │   ├── types/
-│   │   └── conference.ts              # All shared TypeScript interfaces (see §5)
+│   │   └── conference.ts          # All shared TypeScript interfaces (see §5)
 │   └── styles/
-│       ├── index.css                  # Import hub + Tailwind source directive
-│       ├── tailwind.css               # (currently empty — placeholder)
-│       ├── theme.css                  # CSS custom properties for light & dark, @theme inline mapping
-│       └── fonts.css                  # (currently empty — placeholder for custom fonts)
-├── vite.config.ts                     # Plugins (react, tailwindcss, eslint); @ alias → src/
-├── tsconfig.json                      # Strict, bundler module resolution, paths alias
-├── eslint.config.js                   # Lint config
-├── firebase.json                      # Hosting config; SPA rewrite rule
-├── .firebaserc                        # Points to project `pacific-div`
-├── .gitignore                         # Ignore files for git
-├── .webhintrc                         # no-inline-styles rule for conference header color
-└── package.json                       # Scripts: dev, build, deploy, lint
+│       ├── index.css              # Import hub + Tailwind source directive
+│       ├── tailwind.css           # (currently empty — placeholder)
+│       ├── theme.css              # CSS custom properties for light & dark, @theme inline mapping
+│       └── fonts.css              # (currently empty — placeholder for custom fonts)
+├── e2e/                           # Playwright end-to-end tests (*.spec.ts)
+├── vite.config.ts                 # Plugins (react, tailwindcss, eslint); @ alias → src/
+├── tsconfig.json                  # Strict, bundler module resolution, paths alias
+├── eslint.config.js               # Lint config
+├── firebase.json                  # Hosting config; SPA rewrite rule
+├── .firebaserc                    # Points to project `pacific-div`
+├── .gitignore
+├── .webhintrc                     # no-inline-styles rule for conference header color
+└── package.json                   # Scripts: dev, build, deploy, lint, test, etc.
 ```
 
 ---
@@ -116,33 +169,39 @@ pacific-div-figma-main/
 ## 4. Routing & Component Hierarchy
 
 ```
-<AuthProvider>                         # Firebase onAuthStateChanged listener
-<ConferenceProvider>                   # Conference selection
-  <BrowserRouter>
-    <App>
-      <ConferenceHeader />             # Always visible; collapsible
-        <ConferenceSelector />         # coming soon
-      <Navigation />                   # Always visible; 4-tab grid
-      <SearchPage>                     # search forums with <SearchBar>, should be SearchBarView?
-      <Routes>
-        /          → redirect → /maps
-        /maps      → <MapsPage>        # Venue, <MapsView>
-        /prizes    → <PrizesPage>      # Prizes, <PrizesView>
-        /attendees → <AttendeesPage>   # fellow Attendees, <AttendeesView>
-        /schedule  → <SchedulePage>    # <ScheduleView> + <Calendar>
-        /forums    → <ForumsPage>      # image + <ScheduleView> for now
-        /exhibitors→ <ExhibitorsPage>  # image, needs ExhibitorsView
-          /alerts    → <AlertsPage>      # <AlertsView>
-          /profile   → <ProfilePage>     # <ProfileView> | full profile, links to /login and /signup
+<ThemeProvider>                        # light/dark/system; persists to localStorage + Firestore
+<ConferenceProvider>                   # Conference selection; exposes activeConference
+  <AuthProvider>                       # Firebase onAuthStateChanged listener
+    <SearchProvider>                   # Highlight state for search result navigation
+      <BrowserRouter>
+        <App>
+          <FirebaseThemeSync />        # Headless: syncs theme ↔ Firestore on login/change
+          <ConferenceHeader />         # Always visible; collapsible
+            <ConferenceSelector />     # coming soon
+          <SearchBar />               # Always visible; Fuse.js search
+          <Navigation />              # Always visible; tab grid
+          <Routes>
+            /          → redirect → /schedule
+            /maps      → <MapsPage>        # Venue maps
+            /schedule  → <SchedulePage>    # <ScheduleView> + <Calendar>
+            /forums    → <ForumsPage>      # ForumsMapView + ScheduleView for forum sessions
+            /exhibitors→ <ExhibitorsPage>  # ExhibitorsMapView + ExhibitorView
+            /prizes    → <PrizesPage>      # Prize list + raffle ticket entry
+            /attendees → <AttendeesPage>   # Attendee list
+            /alerts    → <AlertsPage>      # <AlertsView> or alert list when authed
+            /profile   → <ProfilePage>     # <ProfileView> | full profile
             /login     → <LoginPage>
             /signup    → <SignUpPage>
-        *          → redirect → /404.html
-      <ConferenceFooter />             - Always visible
+            /search    → <SearchPage>      # ScheduleView scoped to search results
+            /admin/prizes → <PrizesAdminPage>  # Prize admin (prize-admin group only)
+            /pacificonfloormap → <PacificonFloorMap>  # SVG floor map
+            *          → redirect → /404.html
+          <ConferenceFooter />         # Always visible
 ```
 
 **Key routing decisions:**
 
-- The root `/` redirects to `/maps` (the default landing tab).
+- The root `/` redirects to `/schedule` (the default landing tab).
 - `/login` and `/signup` are **not** guarded; they self-redirect to `/profile` (or `/`) when a user is already authenticated via a `useEffect` watching `AuthContext.user`.
 - `ProtectedRoute` exists but is **not yet wired** into the route table. It is available for guarding future routes.
 - A catch-all `*` route redirects to the static `404.html` in `public/`.
@@ -155,11 +214,11 @@ All domain types live in a single file. Every interface carries a `conferenceId`
 
 ### Conference
 
-Core event metadata. `primaryColor` / `secondaryColor` drive the header banner. Times are stored as **local date strings** (no offset baked in); the companion fields `timezone` (`"America/Los_Angeles"`) and `timezoneNumeric` (`"-0700"`) are used at render time to produce correct locale-formatted output.
+Core event metadata. `primaryColor` / `secondaryColor` drive the header banner. Times are stored as **local date strings** (no offset baked in); the companion fields `timezone` (`"America/Los_Angeles"`) and `timezoneNumeric` (`"-0700"`) are used at render time to produce correct locale-formatted output. Optional `mapSessionRooms` and `mapExhibitorBooths` tuples flag which conferences have Leaflet-based room/booth maps.
 
 ### Session
 
-A single talk/event. `startTime` / `endTime` are ISO-style local strings (`"2026-10-16T09:00:00"`). `category` and optional `track` are used as badge labels on the schedule cards.
+A single talk/event. `startTime` / `endTime` are ISO-style local strings (`"2026-10-16T09:00:00"`). `category` and optional `track?: string[]` are used as badge labels on the schedule cards.
 
 ### MapImage
 
@@ -168,24 +227,35 @@ Venue, forum and exhibitor maps.
 `url` points to a `/public/` asset.
 `floor` is optional.
 
+### Booth
+
+A physical vendor or club booth on the floor map. `coords` is a polygon expressed as `[x, y]` pairs; `locationZone` identifies the hall section.
+
+### Exhibitor
+
+A vendor or club exhibitor. Links to one or more `Booth` entries via `boothName` / `location`. Optional `prizesDonated[]` connects to the prizes system.
+
+### Room
+
+A meeting or forum room on the floor map. `coords` is a polygon; `color` is the fill used on the map overlay.
+
 ### Prize / PrizeWinner
 
-Defined in the type system and in Firestore security rules but **not yet wired**. PrizeWinner includes `notifiedAt` / `claimedAt` timestamps for a notification lifecycle.
+`Prize` is a donatable item; `PrizeWinner` records who won and tracks the notification lifecycle via `notifiedAt` / `claimedAt` timestamps.
 
 ### UserProfile
 
-Extends Firebase Auth's `User` with app-specific fields: `callsign`, `darkMode`, `bookmarkedSessions[]`, notification toggles, SMS phone number.
+Extends Firebase Auth's `User` with app-specific fields: `callsign`, `darkMode`, `bookmarkedSessions[]`, notification toggles, SMS phone number, `raffleTickets[]`, `roles[]`, `groups[]`, and optional exhibitor/session/prize associations.
 
 ### Message
 
-** not yet wired ** A public-board or DM model. `isPublic` + optional `boardId` distinguish the two modes.
-`votes` supports an upvote pattern.
+A public-board or DM model. `isPublic` + optional `boardId` distinguish the two modes. `votes` supports an upvote pattern.
 
 ---
 
-## 6. Authentication Flow (`AuthContext`)
+## 6. Authentication Flow (`AuthContext`) & Theme
 
-`src/app/contexts/AuthContext.tsx` wraps the entire app and exposes four async actions plus the current `user` and a `loading` flag.
+`src/app/contexts/AuthContext.tsx` wraps the app and exposes four async actions plus the current `user` and a `loading` flag.
 
 ```
 Mount
@@ -201,7 +271,18 @@ logout()                       → signOut
 
 Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`import.meta.env.VITE_FIREBASE_*`), keeping secrets out of source.
 
-`db` (Firestore) and `storage` (Cloud Storage) are also initialized and exported from `firebase.ts` but **not yet consumed** anywhere in the app — they are placeholders for the data-layer migration described in §9.
+`db` (Firestore) and `storage` (Cloud Storage) are also initialized and exported from `firebase.ts`. Firestore is currently used for persisting theme preferences; Storage is a placeholder for future migrations.
+
+### Theme (`ThemeContext` + `FirebaseThemeSync`)
+
+`src/app/contexts/ThemeContext.tsx` provides a `theme` (`"light" | "dark" | "system"`), a `resolvedTheme`, and a `setTheme` setter. It:
+
+- Reads / writes `localStorage` for persistence across sessions.
+- Applies the `.dark` class to `<html>` and sets `colorScheme` when the resolved theme changes.
+- Responds to OS-level `prefers-color-scheme` changes while in `"system"` mode.
+- Syncs across browser tabs/windows via the `storage` event.
+
+`src/app/components/FirebaseThemeSync.tsx` is a headless React component mounted inside `<App>`. On user login it reads the saved theme from Firestore (`userSettings/{uid}`) and calls `setTheme`. On subsequent theme changes it writes the new value back to Firestore via `src/services/userSettingsService.ts`.
 
 ---
 
@@ -209,43 +290,78 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
 
 ### 7.1 Maps (`/maps`)
 
-- `MapsPage` loads `conferenceMaps` from each conference data file (via Vite glob import) and passes them to `MapsView`.
+- `MapsPage` loads `conferenceMaps` from the active conference data (via `SESSION_DATA` aggregated in `src/lib/sessionData.ts`) and passes them to `MapsView`.
 - `MapsView` renders a **Radix Tabs** component. Each tab shows one `<ImageWithFallback>` inside a `<Card>`.
 - Maps are sorted by their `order` field.
 - `ImageWithFallback` catches `onError` and replaces the broken image with a base64-encoded inline SVG placeholder, preserving the original URL as a `data-original-url` attribute for debugging.
 
 ### 7.2 Schedule (`/schedule`)
 
-- `SchedulePage` owns `bookmarkedSessions` state (array of session IDs) and passes a toggle callback down.
+- `SchedulePage` uses the `useBookmarks` hook (localStorage-backed) and passes toggle callbacks to `ScheduleView`.
 - `ScheduleView` does two things simultaneously:
   1. **Card list** — sessions grouped by date into collapsible day sections, filtered by a tab row (`All Days` / one tab per day). Each card shows title, category + track badges, description, time, room, speaker, and a bookmark icon.
   2. **FullCalendar** — a `timeGridThreeDay` view rendered below the card list. Events are mapped from sessions with the numeric timezone offset appended to produce correct absolute times.
 - Time formatting uses `Intl.DateTimeFormat` with the conference's IANA timezone string. Day numbers are extracted via `String.split('-')[2]` rather than `DateTimeFormat` to avoid a known cross-browser inconsistency noted in a code comment.
 
-### 7.3 Alert / Prize (`/alerts`)
+### 7.3 Forums (`/forums`)
+
+- `ForumsPage` shows a `ForumsMapView` (Leaflet-based room map) alongside a `ScheduleView` scoped to forum sessions.
+- Room names from the map can be highlighted via `SearchContext.highlightForumRoomName`.
+
+### 7.4 Exhibitors (`/exhibitors`)
+
+- `ExhibitorsPage` shows an `ExhibitorsMapView` (Leaflet-based booth map) and an `ExhibitorView` for detail.
+- Exhibitor booths can be highlighted via `SearchContext.highlightExhibitorId`.
+
+### 7.5 Prizes (`/prizes`)
+
+- `PrizesPage` renders `PrizesView`, which shows a list of prizes for the active conference from `PRIZE_DATA`.
+- Attendees can enter and manage their raffle tickets here.
+- `PrizesImageView` provides a scrollable image carousel of prize photos.
+
+### 7.6 Attendees (`/attendees`)
+
+- `AttendeesPage` renders `AttendeesView` with the list of attendees from `ATTENDEE_DATA`.
+
+### 7.7 Alert / Prize Notifications (`/alerts`)
 
 - When **not authenticated**: shows `AlertsView` — a static placeholder prompting the user to sign in.
-- When **authenticated**: currently only displays the user's email. This is explicitly a stub; the full prize-notification UI is planned (see §9).
+- When **authenticated**: currently displays a stub; the full prize-notification UI is planned (see §9).
 
-### 7.4 Profile (`/profile`)
+### 7.8 Profile (`/profile`)
 
 - When **not authenticated**: shows `ProfileView` — a static list of upcoming account features with a sign-in link.
-- When **authenticated**: `ProfilePage` renders every field from the Firebase `User` object (uid, email, displayName, photoURL, metadata). It also surfaces two Firebase Auth actions inline:
-  - **Send Verification Email** — calls `sendEmailVerification` and shows a Sonner toast.
-  - **Reset Password** — calls `sendPasswordResetEmail` and shows a Sonner toast.
-- Many profile fields (dark mode, SMS, messages, prizes won) are rendered as `<none yet>` stubs, mapping directly onto the `UserProfile` interface fields that will be populated once Firestore integration lands.
+- When **authenticated**: `ProfilePage` renders a series of cards:
+  - **ProfileHeaderCard** — user avatar, display name, callsign.
+  - **AccountCard** — uid, email, verification status; Send Verification Email / Reset Password via Sonner toasts.
+  - **SettingsCard** — light/dark/system theme toggle (wired to `ThemeContext`; persists via `FirebaseThemeSync`).
+  - **NotificationsCard** — SMS and email notification toggle stubs.
+  - **RaffleTicketsCard** — add/remove/range-add raffle ticket numbers (stored in `localStorage`).
+  - **BookmarkListCard** — list of bookmarked sessions for the active conference.
+  - **AdminCard** — visible only to users in the `prize-admin` group; links to `/admin/prizes`.
 
-### 7.5 Login (`/login`)
+### 7.9 Login (`/login`)
 
 - Email/password form + a Google sign-in button.
 - Redirects to `/profile` on successful auth via a `useEffect` watching `AuthContext.user`.
 - Links to `/signup` for first-time users.
 
-### 7.6 Sign Up (`/signup`)
+### 7.10 Sign Up (`/signup`)
 
 - Same dual-method pattern as login.
 - Client-side validation: passwords must match and be ≥ 6 characters.
 - Redirects to `/` on success.
+
+### 7.11 Search (`/search`)
+
+- `SearchPage` renders `ScheduleView` with all sessions from the active conference.
+- An optional `?highlight=<sessionId>` query param causes the page to scroll to and focus that session card.
+- Session search is powered by `SearchService` (Fuse.js) exposed via `SearchBar` and `SearchContext`.
+
+### 7.12 Admin — Prizes (`/admin/prizes`)
+
+- `PrizesAdminPage` is guarded: requires both authentication and membership in the `prize-admin` group (checked via `usePrizesAdmin`).
+- `PrizesAdminView` allows admins to assign winners to prizes and view winner lists.
 
 ---
 
@@ -257,13 +373,17 @@ Tailwind is configured entirely through the Vite plugin — there is no `tailwin
 
 `theme.css` defines a full set of CSS custom properties in `:root` (light) and `.dark` (dark mode), then maps them into Tailwind's design-token layer via `@theme inline`. This gives every shadcn `ui/` component access to tokens like `--color-card`, `--color-muted-foreground`, `--radius`, etc.
 
-A `@custom-variant dark` rule (`&:is(.dark *)`) enables dark-mode variants throughout the tree. Dark mode is **not yet togglable at runtime** — the `.dark` class would need to be added/removed on `<html>` (the `next-themes` package is installed but unused).
+A `@custom-variant dark` rule (`&:is(.dark *)`) enables dark-mode variants throughout the tree.
 
-### 8.2 Conference brand colour
+### 8.2 Dark mode toggle
 
-`ConferenceHeader` reads `conference.primaryColor` (default `#ff4e00`, "international orange") and applies it as the header background via an inline style. A `contrastingColor()` utility computes relative luminance and returns black or white for the text, ensuring WCAG-level contrast regardless of the brand colour.
+Dark mode is now **fully wired**. `ThemeContext` manages the `"light" | "dark" | "system"` state, applies the `.dark` class to `<html>`, and persists the selection to `localStorage`. The `SettingsCard` on the Profile page exposes the toggle to authenticated users. `FirebaseThemeSync` additionally reads and writes the preference to Firestore so it roams across devices.
 
-### 8.3 Base typography
+### 8.3 Conference brand colour
+
+`ConferenceHeader` reads `conference.primaryColor` (default `#ff4e00`, "international orange") and applies it as the header background via an inline style. A `contrastingColor()` utility (in `src/lib/colorUtils.ts`) computes relative luminance and returns black or white for the text, ensuring WCAG-level contrast regardless of the brand colour.
+
+### 8.4 Base typography
 
 `theme.css` sets default font sizes and weights for `h1`–`h4`, `label`, `button`, and `input` in `@layer base`, so Tailwind utility classes always win in specificity.
 
@@ -271,22 +391,22 @@ A `@custom-variant dark` rule (`&:is(.dark *)`) enables dark-mode variants throu
 
 ## 9. Planned / Stub Features (Roadmap)
 
-The codebase contains significant scaffolding for features that are **typed, documented in security rules, but not yet wired**. This section maps each stub to where it appears.
+The codebase contains significant scaffolding for features that are typed, documented in security rules, or partially implemented. This section maps each to its current state.
 
-| Feature                                     | Current State                                                                                          | Where to build                                                                                                                         |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **iOS and Android installable and web UIs** | web UI first. plan to use React Native expo.dev tool                                                   | implement using expo.dev                                                                                                               |
-| **Firestore data layer**                    | `db` exported from `firebase.ts`; collections + security rules fully documented in `FIREBASE_SETUP.md` | Replace hard-coded imports of `pacificon-sample.ts` with Firestore listeners. Each page currently pulls from the sample file directly. |
-| **Multi-conference selector**               | `Conference` interface has an `id` key; all child types carry `conferenceId`                           | Added a conference-picker component; uses swapped `<conference>.ts` for selected conference.                                           |
-| **Prize notifications**                     | `AlertsPage` stub; `Prize` + `PrizeWinner` types; Firestore rules for `prizes` / `prizeWinners`        | Build a prize-card list; add Firestore real-time listener on `prizeWinners` filtered by current user email/callsign.                   |
-| **Bookmark persistence**                    | `SchedulePage` owns in-memory `bookmarkedSessions[]`; `UserProfile.bookmarkedSessions` field exists    | Persist to Firestore `users/{uid}` on toggle; load on mount.                                                                           |
-| **Dark mode toggle**                        | `ProfilePage` renders `<none yet>`; `.dark` theme vars fully defined; `next-themes` installed          | Wire `next-themes`'s `useTheme` hook into a toggle on the Profile page.                                                                |
-| **SMS & email notification settings**       | Stub fields in ProfilePage; `UserProfile` interface has the toggles                                    | Add toggle switches; persist to Firestore. Notification dispatch via Cloud Functions (see FIREBASE_SETUP.md §9).                       |
-| **Messaging / forum board**                 | `Message` interface fully typed; Firestore rules written                                               | Build a message-board page; use Firestore real-time queries filtered by `isPublic` or current user.                                    |
-| **Admin interfaces**                        | `FIREBASE_SETUP.md` §8 outlines roles                                                                  | Add `isAdmin` / `adminRole` to user doc; create guarded admin pages for sessions, prizes, winners.                                     |
-| **Offline support**                         | Footer mentions "Offline capable planned"                                                              | Enable Firestore offline persistence; optionally add a Service Worker for asset caching.                                               |
-| **CSV data import/export**                  | `FIREBASE_SETUP.md` §7 describes the pattern                                                           | Cloud Function with papaparse CSV from Storage into Firestore; admin export endpoint.                                                  |
-| **Callsigns**                               | Verification mentioned in FIREBASE_SETUP.md                                                            | Planned, optional qrz.com API lookup on profile save.                                                                                  |
+| Feature                                     | Current State                                                                                                                        | Where to build                                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **iOS and Android installable and web UIs** | web UI first. plan to use React Native expo.dev tool                                                                                 | implement using expo.dev                                                                                                               |
+| **Firestore data layer**                    | `db` exported from `firebase.ts`; theme settings already read/written via `userSettingsService`; collections + security rules in `FIREBASE_SETUP.md` | Replace hard-coded conference data imports with Firestore listeners. `src/lib/conferenceData.ts` is the aggregation point. |
+| **Multi-conference selector**               | `ConferenceContext` exposes `allConferencesList` and `setActiveConference`; UI stub in `ConferenceHeader`                             | Add a visible conference-picker dropdown wired to `setActiveConference`.                                                               |
+| **Prize notifications**                     | `AlertsPage` stub; `Prize` + `PrizeWinner` types; `PrizesView` and `PrizesAdminView` implemented with sample data; Firestore rules for `prizes` / `prizeWinners` | Add Firestore real-time listener on `prizeWinners` filtered by current user email/callsign.                          |
+| **Bookmark persistence**                    | `useBookmarks` hook persists to `localStorage`; `UserProfile.bookmarkedSessions` field exists                                        | Persist to Firestore `users/{uid}` on toggle; load on mount (currently localStorage only).                                             |
+| **Dark mode toggle**                        | ✅ Implemented — `ThemeContext` + `SettingsCard` on Profile + `FirebaseThemeSync` for Firestore persistence                           | —                                                                                                                                      |
+| **SMS & email notification settings**       | Stub toggles in `NotificationsCard`; `UserProfile` interface has the fields                                                          | Persist toggles to Firestore. Notification dispatch via Cloud Functions (see FIREBASE_SETUP.md §9).                                    |
+| **Messaging / forum board**                 | `Message` interface fully typed; Firestore rules written                                                                             | Build a message-board page; use Firestore real-time queries filtered by `isPublic` or current user.                                    |
+| **Admin interfaces**                        | `PrizesAdminPage` + `PrizesAdminView` built for prize management; `usePrizesAdmin` hook checks group membership via sample data      | Wire group membership to Firestore / Cloud IAM; extend to session and attendee admin.                                                  |
+| **Offline support**                         | Footer mentions "Offline capable planned"                                                                                            | Enable Firestore offline persistence; optionally add a Service Worker for asset caching.                                               |
+| **CSV data import/export**                  | `FIREBASE_SETUP.md` §7 describes the pattern; `papaparse` installed                                                                  | Cloud Function with papaparse CSV from Storage into Firestore; admin export endpoint.                                                  |
+| **Callsigns**                               | Verification mentioned in FIREBASE_SETUP.md; `callsign` field on `UserProfile`                                                      | Planned, optional qrz.com API lookup on profile save.                                                                                  |
 
 ---
 
@@ -308,14 +428,22 @@ Both workflows use the `FirebaseExtended/action-hosting-deploy@v0` action and au
 ## 11. Environment & Local Development
 
 ```bash
-npm i              # install deps
-npm run dev        # Vite dev server (hot reload)
-npm run build      # production bundle → dist/
-npm run deploy     # firebase deploy (requires firebase CLI login)
-npm run lint       # eslint across all src files
+npm i                # install deps
+npm run dev          # Vite dev server (hot reload)
+npm run build        # production bundle → dist/
+npm run build:test   # production bundle with --mode test (stub Firebase keys OK)
+npm run preview      # serve dist/ locally at http://127.0.0.1:5173
+npm run deploy       # firebase deploy (requires firebase CLI login)
+npm run lint         # ESLint across all src files
+npm run indent       # Prettier format all files
+npm run test         # Vitest unit tests (run once)
+npm run testverbose  # Vitest unit tests with verbose reporter
+npm run test:e2e     # Playwright end-to-end tests (requires build first)
+npm run test:e2e:ui  # Playwright with interactive UI
+npm run testimagesizes  # Vitest run for map image dimension checks
 ```
 
-Firebase config values must be provided as environment variables prefixed `VITE_FIREBASE_*`. In local development these can live in a `.env` file at the project root (Vite loads it automatically); they are **not** committed (covered by `.gitignore`).
+Firebase config values must be provided as environment variables prefixed `VITE_FIREBASE_*`. In local development these can live in a `.env` file at the project root (Vite loads it automatically); they are **not** committed (covered by `.gitignore`). See `.env.example` for required keys.
 
 ---
 
@@ -323,33 +451,36 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 
 1. **Path alias.** All imports use `@/` which maps to `src/`. Both `vite.config.ts` (runtime) and `tsconfig.json` (editor/type-checking) declare this alias.
 
-2. **Page vs View split.** Every tab follows a two-layer pattern: a _Page_ component lives in `src/app/pages/` and owns route-level state (e.g., bookmark array, auth checks). It delegates all rendering to a _View_ component in `src/app/components/`. When adding new tabs, follow this pattern. This developed from the prototype and was needed when the routing pages were implemented.
+2. **Page vs View split.** Every tab follows a two-layer pattern: a _Page_ component lives in `src/app/pages/` and owns route-level state (e.g., bookmark array, auth checks). It delegates all rendering to a _View_ component in `src/app/components/`. When adding new tabs, follow this pattern.
 
 3. **Unauthenticated vs authenticated rendering.** `AlertsPage` and `ProfilePage` do **not** use `ProtectedRoute`. Instead they conditionally render a static "sign in" placeholder (the View) or the full authenticated UI directly in the Page. This is intentional — the tabs remain visible and informational even when logged out.
 
-4. **Hard-coded data is temporary.** `MapsPage` and `SchedulePage` import directly from `pacificon-sample.ts`. This is the single point to replace when Firestore integration lands. Do **not** add more direct sample-data imports elsewhere.
+4. **Conference data is aggregated, not hard-coded per-page.** `src/lib/conferenceData.ts` uses a Vite eager glob import to pull in every `*-20XX.ts` file from `src/data/`. Higher-level helpers (`sessionData.ts`, `prizesData.ts`, `userProfileData.ts`) aggregate across all loaded modules into typed lookup objects keyed by conference ID. Pages consume these helpers via `ConferenceContext.activeConference.id`. This pattern was chosen to keep per-page code simple, allow multiple conferences to coexist in one bundle, and provide a single replacement point for the future Firestore migration.
 
 5. **Timezone handling is tricky.** Session times are stored purposely without an offset (`"2026-10-16T09:00:00"`). At render time, `conference.timezoneNumeric` (e.g., `"-0700"`) is **concatenated** onto the string before passing to `new Date()` or FullCalendar. The IANA string (`conference.timezone`) is used separately for `Intl.DateTimeFormat`. Day-of-month is extracted via `split('-')[2]` rather than the formatter due to a noted cross-browser edge case.
 
-6. **shadcn UI components are wrappers.** Everything in `src/app/components/ui/` is a thin styled wrapper over a Radix primitive. Do not edit them directly unless there are bugs; treat them as a stable design-system layer. Fixes were installed for bugs in the CLI installed Button and Dialog files. These were reported months ago.
+6. **shadcn UI components are wrappers.** Everything in `src/app/components/ui/` is a thin styled wrapper over a Radix primitive. Do not edit them directly unless there are bugs; treat them as a stable design-system layer.
 
 7. **`ProtectedRoute` exists but is unused.** It is a ready-made HOC for guarding routes. Wire it in when features (e.g., messaging) require authentication.
 
 8. **Commented-out code is intentional scaffolding.** Blocks of commented code (in `App.tsx`, `ConferenceHeader.tsx`, `ProfilePage.tsx`, etc.) represent prior iterations or planned wiring. Do not remove them.
 
-## 13. How the sync works from /src/lib/firebase.ts
+9. **Search uses Fuse.js, not a backend.** `SearchService` in `src/services/searchService.ts` builds an in-memory Fuse.js index from the active conference sessions. `SearchBar` queries this service and writes highlight IDs into `SearchContext`, which `ScheduleView` and the map views consume to scroll/highlight matching items.
 
-1. On mount, the hook fetches `public/settings/defaults.csv` (bundled by
-   Vite/CRA, served as a static asset). It parses every row into a `uid → UserSettings` map.
+10. **Bookmarks and raffle tickets use localStorage.** `useBookmarks` and `useRaffleTickets` both store data in `localStorage` keyed by conference ID. They reload automatically when `activeConference` changes. Firestore persistence is planned but not yet wired.
 
-2. It checks Firestore at `userSettings/{uid}`. If a doc already exists, that's
-   the source of truth. If not, it seeds Firestore from the CSV row for that
-   uid (or from empty defaults if the uid isn't in the CSV).
+## 13. How Firestore settings sync works
 
-3. An `onSnapshot` listener keeps the local React state in sync in real time —
-   so changes from another tab or device propagate instantly.
+Theme preference is the first user setting persisted to Firestore. The flow is:
 
-4. Every toggle / input change calls `updateDoc` on Firestore; the listener
-   pushes the result back into state automatically.
+1. On user **login**, `FirebaseThemeSync` (mounted inside `<App>`) calls `getUserTheme(uid)` from `src/services/userSettingsService.ts`, which reads `userSettings/{uid}.theme` from Firestore.
 
-5. Firestore security rule suggestion: only each user can read/write their own doc
+2. If a saved theme is found, it calls `ThemeContext.setTheme()` to apply it immediately — and sets a flag to suppress the echoed write-back that would otherwise follow.
+
+3. On any subsequent **theme change** (user picks light/dark/system in `SettingsCard`), `FirebaseThemeSync` detects the change and calls `setUserTheme(uid, theme)`, which writes `{ theme }` (merge) to `userSettings/{uid}`.
+
+4. On **logout**, `FirebaseThemeSync` clears its loaded-uid ref so that the next login re-reads Firestore rather than assuming the cached value.
+
+5. Firestore security rule: each user can only read and write their own `userSettings/{uid}` document.
+
+The same `userSettings` collection is the intended home for future user preferences (notification toggles, etc.) once those stubs are wired up.
