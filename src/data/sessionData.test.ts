@@ -401,3 +401,43 @@ describe("mapSessionRooms population", () => {
     });
   });
 });
+
+// ── mapExhibitorBooths population ─────────────────────────────────────────────
+// Verifies that sessionData.ts populates mapExhibitorBooths on Conference objects
+// in allConferences when base conference modules have both mapExhibitors and mapBooths.
+// The top-level `import "@/lib/sessionData"` at the top of this file triggers the
+// population side-effects; sessionData.ts mutates allConferences in-place so the
+// updated fields are visible through the same cached module instance.
+describe("mapExhibitorBooths population", () => {
+  // Conferences that export both mapExhibitors and mapBooths should have
+  // mapExhibitorBooths fully populated; conferences with neither (e.g. quartzfest)
+  // should leave mapExhibitorBooths undefined.
+  const confsWithExhibitorBooths = allConferences.filter(
+    (conf) => conf.mapExhibitorBooths !== undefined,
+  );
+  const confsWithoutExhibitorBooths = allConferences.filter(
+    (conf) => conf.mapExhibitorBooths === undefined,
+  );
+
+  confsWithExhibitorBooths.forEach((conf) => {
+    it(`${conf.id}: mapExhibitorBooths is populated with a non-empty URL`, () => {
+      expect(conf.mapExhibitorBooths).toBeDefined();
+      expect(typeof conf.mapExhibitorBooths![0]).toBe("string");
+      expect(conf.mapExhibitorBooths![0].length).toBeGreaterThan(0);
+    });
+
+    it(`${conf.id}: mapExhibitorBooths[1] (exhibitors loaded) is true`, () => {
+      expect(conf.mapExhibitorBooths![1]).toBe(true);
+    });
+
+    it(`${conf.id}: mapExhibitorBooths[2] (booths loaded) is true`, () => {
+      expect(conf.mapExhibitorBooths![2]).toBe(true);
+    });
+  });
+
+  confsWithoutExhibitorBooths.forEach((conf) => {
+    it(`${conf.id}: mapExhibitorBooths is undefined (no exhibitors/booths data)`, () => {
+      expect(conf.mapExhibitorBooths).toBeUndefined();
+    });
+  });
+});
