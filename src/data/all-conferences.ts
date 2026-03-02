@@ -111,7 +111,7 @@ export const allConferences: Conference[] = [
       "BLM La Posa LTVA,\
 Roadrunner Camping Area",
     startDate: "2027-01-17",
-    endDate: "2027-01-23",
+    endDate: "2027-01-23", // seven days, not two or three
     timezone: "America/Phoenix",
     primaryColor: "#53DEBF",
     secondaryColor: "#f97316",
@@ -134,8 +134,8 @@ Roadrunner Camping Area",
     name: "Hamcation 2027",
     location: "4603 W Colonial Drive, Orlando, FL 32808",
     venue: "Central Florida Fairgrounds",
-    startDate: "2027-02-13",
-    endDate: "2027-02-15",
+    startDate: "2027-02-12",
+    endDate: "2027-02-14",
     timezone: "America/New_York",
     primaryColor: "#000000",
     secondaryColor: "#f97316",
@@ -227,7 +227,7 @@ Roadrunner Camping Area",
     icalUrl: '',
     googlecalUrl: '',
     contactEmail: '',
-    logoUrl: '/assets/maps/hamcation-2026-logo.png',
+    logoUrl: '/assets/images/hamcation-2026-logo.png',
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];

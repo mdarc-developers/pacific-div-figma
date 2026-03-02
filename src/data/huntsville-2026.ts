@@ -68,9 +68,8 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 export const mapExhibitors: [string, Exhibitor[]] = [
   "/assets/maps/hamfest-layout-2026.png",
-  [
-    // must match mapBooths URL
-  ],
+  // must match mapBooths URL
+  [],
 ];
 
 export const mapBooths: [string, Booth[]] = [
