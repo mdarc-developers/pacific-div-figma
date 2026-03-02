@@ -45,6 +45,39 @@ function updateMapSessionRooms(
   }
 }
 
+// Populate mapExhibitorBooths on the matching Conference object in allConferences.
+// type "exhibitors" updates the first boolean (mapExhibitors loaded);
+// type "booths" updates the second boolean (mapBooths loaded).
+// Throws if the boolean being set is already true, unless isSupplemental is true
+// (supplemental files override the base data and do not trigger the duplicate check).
+function updateMapExhibitorBooths(
+  conferenceId: string,
+  url: string,
+  type: "exhibitors" | "booths",
+  isSupplemental = false,
+): void {
+  const conf = allConferences.find((c) => c.id === conferenceId);
+  if (!conf) return;
+  if (!conf.mapExhibitorBooths || conf.mapExhibitorBooths[0] !== url) {
+    conf.mapExhibitorBooths = [url, false, false];
+  }
+  if (type === "exhibitors") {
+    if (conf.mapExhibitorBooths[1] && !isSupplemental) {
+      throw new Error(
+        `mapExhibitors already loaded for conference "${conferenceId}" URL "${url}"`,
+      );
+    }
+    conf.mapExhibitorBooths[1] = true;
+  } else {
+    if (conf.mapExhibitorBooths[2] && !isSupplemental) {
+      throw new Error(
+        `mapBooths already loaded for conference "${conferenceId}" URL "${url}"`,
+      );
+    }
+    conf.mapExhibitorBooths[2] = true;
+  }
+}
+
 // Process the modules into a lookup object
 function normalizeSessions(sessions: Session[]): Session[] {
   return sessions.map((s) => ({
@@ -76,9 +109,15 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   }
   if (typedModule.mapBooths) {
     BOOTH_DATA[conferenceId] = typedModule.mapBooths;
+    updateMapExhibitorBooths(conferenceId, typedModule.mapBooths[0], "booths");
   }
   if (typedModule.mapExhibitors) {
     EXHIBITOR_DATA[conferenceId] = typedModule.mapExhibitors;
+    updateMapExhibitorBooths(
+      conferenceId,
+      typedModule.mapExhibitors[0],
+      "exhibitors",
+    );
   }
 });
 
@@ -130,6 +169,12 @@ Object.keys(supplementalExhibitorModules)
       ] as ConferenceModule;
       if (typedModule.mapExhibitors) {
         EXHIBITOR_DATA[conferenceId] = typedModule.mapExhibitors;
+        updateMapExhibitorBooths(
+          conferenceId,
+          typedModule.mapExhibitors[0],
+          "exhibitors",
+          true,
+        );
         const token = filename.split("-").pop() ?? "";
         if (
           token &&
