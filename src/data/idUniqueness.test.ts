@@ -15,7 +15,7 @@ import * as yuma2026 from "./yuma-2026";
 import * as hamvention2026 from "./hamvention-2026";
 import * as pacificon2026 from "./pacificon-2026";
 import * as seapac2026 from "./seapac-2026";
-import * as huntsville2026 from "./huntsville-hamfest-2026";
+import * as huntsville2026 from "./huntsville-2026";
 import * as hamcation2026 from "./hamcation-2026";
 import * as hamcation2027 from "./hamcation-2027";
 import * as quartzfest2027 from "./quartzfest-2027";
@@ -54,7 +54,7 @@ const CONFERENCE_MODULES: [string, ConferenceModule][] = [
   ["hamvention-2026", hamvention2026],
   ["pacificon-2026", pacificon2026],
   ["seapac-2026", seapac2026],
-  ["huntsville-hamfest-2026", huntsville2026],
+  ["huntsville-2026", huntsville2026],
   ["hamcation-2026", hamcation2026],
   ["hamcation-2027", hamcation2027],
   ["quartzfest-2027", quartzfest2027],

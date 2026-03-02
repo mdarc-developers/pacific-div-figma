@@ -5,7 +5,7 @@ import { MapImage } from "@/types/conference";
 import { conferenceMaps as hamcation2026Maps } from "./hamcation-2026";
 import { conferenceMaps as hamcation2027Maps } from "./hamcation-2027";
 import { conferenceMaps as hamvention2026Maps } from "./hamvention-2026";
-import { conferenceMaps as huntsvilleHamfest2026Maps } from "./huntsville-hamfest-2026";
+import { conferenceMaps as huntsvilleHamfest2026Maps } from "./huntsville-2026";
 import { conferenceMaps as pacificon2026Maps } from "./pacificon-2026";
 import { conferenceMaps as quartzfest2027Maps } from "./quartzfest-2027";
 import { conferenceMaps as seapac2026Maps } from "./seapac-2026";
