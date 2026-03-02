@@ -101,7 +101,6 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
     updateMapSessionRooms(conferenceId, typedModule.mapSessions[0], "sessions");
     const conf = allConferences.find((c) => c.id === conferenceId);
     if (conf) warnOutOfRangeSessions(conferenceId, SESSION_DATA[conferenceId], conf);
-    warnEmptyMapData(conferenceId, "mapSessions", typedModule.mapSessions[0], typedModule.mapSessions[1]);
   }
   if (typedModule.conferenceMaps) {
     MAP_DATA[conferenceId] = typedModule.conferenceMaps;
@@ -109,12 +108,10 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
   if (typedModule.mapRooms) {
     ROOM_DATA[conferenceId] = typedModule.mapRooms;
     updateMapSessionRooms(conferenceId, typedModule.mapRooms[0], "rooms");
-    warnEmptyMapData(conferenceId, "mapRooms", typedModule.mapRooms[0], typedModule.mapRooms[1]);
   }
   if (typedModule.mapBooths) {
     BOOTH_DATA[conferenceId] = typedModule.mapBooths;
     updateMapExhibitorBooths(conferenceId, typedModule.mapBooths[0], "booths");
-    warnEmptyMapData(conferenceId, "mapBooths", typedModule.mapBooths[0], typedModule.mapBooths[1]);
   }
   if (typedModule.mapExhibitors) {
     EXHIBITOR_DATA[conferenceId] = typedModule.mapExhibitors;
@@ -123,7 +120,6 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
       typedModule.mapExhibitors[0],
       "exhibitors",
     );
-    warnEmptyMapData(conferenceId, "mapExhibitors", typedModule.mapExhibitors[0], typedModule.mapExhibitors[1]);
   }
 });
 
@@ -150,7 +146,6 @@ Object.keys(supplementalSessionModules)
         updateMapSessionRooms(conferenceId, typedModule.mapSessions[0], "sessions", true);
         const conf = allConferences.find((c) => c.id === conferenceId);
         if (conf) warnOutOfRangeSessions(conferenceId, SESSION_DATA[conferenceId], conf);
-        warnEmptyMapData(conferenceId, "mapSessions", typedModule.mapSessions[0], typedModule.mapSessions[1]);
         const token = filename.split("-").pop() ?? "";
         if (token && token > (SESSION_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
           SESSION_SUPPLEMENTAL_TOKEN[conferenceId] = token;
@@ -184,7 +179,6 @@ Object.keys(supplementalExhibitorModules)
           "exhibitors",
           true,
         );
-        warnEmptyMapData(conferenceId, "mapExhibitors", typedModule.mapExhibitors[0], typedModule.mapExhibitors[1]);
         const token = filename.split("-").pop() ?? "";
         if (
           token &&
@@ -195,3 +189,23 @@ Object.keys(supplementalExhibitorModules)
       }
     }
   });
+
+// Emit warnings for any map data that still has an empty array after all base
+// and supplemental files have been loaded.  Checking here (rather than inside
+// the loading loops above) avoids false positives when a base file ships a
+// placeholder empty array that a supplemental file later fills in.
+Object.entries(SESSION_DATA).forEach(([conferenceId, sessions]) => {
+  const url =
+    allConferences.find((c) => c.id === conferenceId)?.mapSessionRooms?.[0] ??
+    "";
+  warnEmptyMapData(conferenceId, "mapSessions", url, sessions);
+});
+Object.entries(ROOM_DATA).forEach(([conferenceId, [url, rooms]]) => {
+  warnEmptyMapData(conferenceId, "mapRooms", url, rooms);
+});
+Object.entries(BOOTH_DATA).forEach(([conferenceId, [url, booths]]) => {
+  warnEmptyMapData(conferenceId, "mapBooths", url, booths);
+});
+Object.entries(EXHIBITOR_DATA).forEach(([conferenceId, [url, exhibitors]]) => {
+  warnEmptyMapData(conferenceId, "mapExhibitors", url, exhibitors);
+});
