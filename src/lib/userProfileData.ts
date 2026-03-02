@@ -2,16 +2,16 @@ import { UserProfile } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
 
 interface ProfileModule {
-  sampleUserProfiles?: UserProfile[];
+  mapUserProfiles?: UserProfile[];
   [key: string]: unknown;
 }
 
-// Collect all sampleUserProfiles exports from every conference data file.
+// Collect all mapUserProfiles exports from every conference data file.
 export const ALL_USER_PROFILES: UserProfile[] = [];
 Object.values(conferenceModules).forEach((module) => {
   const typedModule = module as ProfileModule;
-  if (typedModule.sampleUserProfiles) {
-    ALL_USER_PROFILES.push(...typedModule.sampleUserProfiles);
+  if (typedModule.mapUserProfiles) {
+    ALL_USER_PROFILES.push(...typedModule.mapUserProfiles);
   }
 });
 
@@ -20,8 +20,8 @@ export const ATTENDEE_DATA: Record<string, UserProfile[]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
   const typedModule = module as ProfileModule;
-  if (typedModule.sampleUserProfiles) {
-    ATTENDEE_DATA[conferenceId] = typedModule.sampleUserProfiles;
+  if (typedModule.mapUserProfiles) {
+    ATTENDEE_DATA[conferenceId] = typedModule.mapUserProfiles;
   }
 });
 
@@ -43,8 +43,8 @@ Object.keys(supplementalAttendeeModules)
     if (match) {
       const conferenceId = match[1];
       const typedModule = supplementalAttendeeModules[path] as ProfileModule;
-      if (typedModule.sampleUserProfiles) {
-        ATTENDEE_DATA[conferenceId] = typedModule.sampleUserProfiles;
+      if (typedModule.mapUserProfiles) {
+        ATTENDEE_DATA[conferenceId] = typedModule.mapUserProfiles;
         const token = filename.split("-").pop() ?? "";
         if (
           token &&

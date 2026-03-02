@@ -4,7 +4,7 @@
 //
 import { UserProfile } from "@/types/conference.ts";
 
-export const sampleUserProfiles: UserProfile[] = [
+export const mapUserProfiles: UserProfile[] = [
   {
     uid: "1",
     email: "",

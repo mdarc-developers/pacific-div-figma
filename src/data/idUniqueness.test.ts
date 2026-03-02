@@ -30,7 +30,7 @@ interface ConferenceModule {
   mapRooms?: [string, Room[]];
   mapSessions?: [string, Session[]];
   conferenceMaps?: MapImage[];
-  sampleUserProfiles?: UserProfile[];
+  mapUserProfiles?: UserProfile[];
 }
 
 // Derive the conference list from the glob-based registry in src/lib/conferenceData.ts
@@ -185,7 +185,7 @@ describe("mapimage id uniqueness", () => {
 describe("userprofile uid uniqueness", () => {
   CONFERENCE_MODULES.forEach(([confId, mod]) => {
     it(`${confId}: userprofile uids are unique`, () => {
-      const attendees = mod.sampleUserProfiles ?? [];
+      const attendees = mod.mapUserProfiles ?? [];
       const uids = attendees.map((u) => u.uid);
       expect(
         findDuplicates(uids),
@@ -196,9 +196,9 @@ describe("userprofile uid uniqueness", () => {
 
   Object.entries(supplementalAttendeeModules).forEach(([path, module]) => {
     const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
-    if (!module.sampleUserProfiles) return;
+    if (!module.mapUserProfiles) return;
     it(`${filename} supplemental: userprofile uids are unique`, () => {
-      const uids = module.sampleUserProfiles!.map((a: UserProfile) => a.uid);
+      const uids = module.mapUserProfiles!.map((a: UserProfile) => a.uid);
       expect(findDuplicates(uids)).toEqual([]);
     });
   });
