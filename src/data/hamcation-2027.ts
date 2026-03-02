@@ -67,24 +67,13 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapBooths: [string, Booth[]] = [
-  "/assets/maps/hamcation-2026-pavilion.png",
+  "/assets/maps/hamcation-2026-north.png",
   // must match mapExhibitors URL
-  [
-    {
-      id: 1,
-      coords: [
-        [1, 3],
-        [57, 3],
-        [57, 90],
-        [1, 90],
-      ], // Bottom Left
-      locationZone: "b",
-    },
-  ],
+  [],
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/assets/maps/hamcation-2026-pavilion.png",
+  "/assets/maps/hamcation-2026-north.png",
   // must match mapBooths URL
   [
     {
@@ -398,5 +387,16 @@ export const sampleAttendees: UserProfile[] = [
     bookmarkedSessions: [],
     notificationsEnabled: false,
     smsNotifications: false,
+  },
+  {
+    uid: "2JjLExoVgiVdblnPFUVX1YJzqdA2",
+    email: "grantbow@mdarc.org",
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: true,
+    smsNotifications: true,
+    groups: ["prize-admin", "mdarc-developers"],
+    displayName: "Grant B",
+    callsign: "K6CBK",
   },
 ];
