@@ -20,13 +20,13 @@ export function ExhibitorsMapView({
 }: ExhibitorsMapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletRef = useRef<L.Map | null>(null);
-  const polygonsRef = useRef<Map<number | string, L.Polygon>>(new Map());
+  const polygonsRef = useRef<Map<number, L.Polygon>>(new Map());
   const highlightedExhibitorIdRef = useRef<string | undefined>(undefined);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [pdfHeight, setPdfHeight] = useState<number>(0);
 
   const boothToName = useMemo(() => {
-    const map = new Map<number | string, Exhibitor>();
+    const map = new Map<number, Exhibitor>();
     for (const ex of mapExhibitors) {
       for (const boo in ex.location) {
         map.set(ex.location[boo], ex);
