@@ -59,7 +59,7 @@ export function ForumsMapView({
     return () => resizObs.disconnect();
   }, [forumMap]); // Re-run when forumMap changes so aspect ratio stays correct
 
-  // Leaflet forumMap initialisation — runs once on mount
+  // Leaflet forumMap initialisation — re-runs whenever forumMap changes
   useEffect(() => {
     if (!mapRef.current || !forumMap) return;
 
@@ -125,7 +125,7 @@ export function ForumsMapView({
       leafletRef.current = null;
       polygonRefs.current.clear();
     };
-  }, []); // Empty dependency array ensures this runs once when mounted
+  }, [forumMap]); // Re-run when forumMap changes so polygons match the active map image
 
   // Highlight and zoom to the room when highlightForumRoomName changes
   useEffect(() => {
