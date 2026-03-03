@@ -103,6 +103,7 @@ export function ForumsMapView({
     // Small delay ensures container has rendered with correct dimensions before fit
     setTimeout(() => leafletMap.invalidateSize(), 100);
 
+    polygonRefs.current.clear();
     forumRooms.forEach((forumRoom) => {
       const polygon = L.polygon(forumRoom.coords as [number, number][], {
         color: forumRoom.color,
