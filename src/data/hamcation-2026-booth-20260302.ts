@@ -4,7 +4,7 @@ export const mapBooths: [string, Booth[]] = [
   "/assets/maps/hamcation-2026-eastwest.png",
   [
     {
-      id: "001",
+      id: 101,
       coords: [
         [296, 8],
         [328, 8],
@@ -14,7 +14,7 @@ export const mapBooths: [string, Booth[]] = [
       locationZone: "eastwest",
     },
     {
-      id: "002",
+      id: 102,
       coords: [
         [295, 41],
         [328, 41],
@@ -24,7 +24,7 @@ export const mapBooths: [string, Booth[]] = [
       locationZone: "eastwest",
     },
     {
-      id: "003",
+      id: 103,
       coords: [
         [295, 74],
         [328, 74],

@@ -239,7 +239,31 @@ describe("exhibitor location IDs exist in URL-matched booth map (advisory)", () 
   });
 });
 
-// ── Runtime fallback: mismatched exhibitor URL still maps to correct booths ───
+// ── hamcation-2026 multi-map: north-hall booth IDs match exhibitor locations ──
+// Verifies that all exhibitor location IDs in the north-hall exhibitor file
+// have a corresponding booth with the same numeric ID in the north-hall booth
+// map so that ExhibitorsMapView can highlight booths for each exhibitor.
+describe("hamcation-2026 multi-map: north-hall booth IDs match exhibitor locations", () => {
+  it("every hamcation-2026 exhibitor location ID exists in the north-hall booth map", () => {
+    const boothEntries = BOOTH_DATA["hamcation-2026"] ?? [];
+    const exhibitorEntry = EXHIBITOR_DATA["hamcation-2026"];
+    expect(exhibitorEntry).toBeDefined();
+
+    const [exhibitorUrl, exhibitors] = exhibitorEntry!;
+    const northHall = boothEntries.find(([url]) => url === exhibitorUrl);
+    expect(northHall).toBeDefined();
+
+    const boothIds = new Set(northHall![1].map((b) => b.id));
+    exhibitors.forEach((ex) => {
+      ex.location.forEach((loc) => {
+        expect(
+          boothIds.has(loc),
+          `exhibitor "${ex.id}" location ${loc} has no matching booth in "${exhibitorUrl}"`,
+        ).toBe(true);
+      });
+    });
+  });
+});
 // Verifies the ExhibitorsPage multi-map fallback logic: exhibitors whose
 // mapExhibitors URL does not match a booth map URL are still matched to the
 // correct booth map if their location IDs appear in that map's Booth[].
