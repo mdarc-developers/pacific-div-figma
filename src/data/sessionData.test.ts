@@ -435,19 +435,42 @@ describe("conference date-range checks for real session data", () => {
 describe("mapSessionRooms population", () => {
   // Every conference data file exports both mapSessions and mapRooms, so every
   // conference in allConferences should have mapSessionRooms fully populated.
-  allConferences.forEach((conf) => {
-    it(`${conf.id}: mapSessionRooms is populated with a non-empty URL`, () => {
-      expect(conf.mapSessionRooms).toBeDefined();
-      expect(typeof conf.mapSessionRooms![0]).toBe("string");
-      expect(conf.mapSessionRooms![0].length).toBeGreaterThan(0);
+  const confsWithSessionRooms = allConferences.filter(
+    (conf) => conf.mapSessionRooms !== undefined,
+  );
+  const confsWithoutSessionRooms = allConferences.filter(
+    (conf) => conf.mapSessionRooms === undefined,
+  );
+
+  confsWithSessionRooms.forEach((conf) => {
+    it(`${conf.id}: mapSessionRooms is a non-empty array of tuples`, () => {
+      expect(Array.isArray(conf.mapSessionRooms)).toBe(true);
+      expect(conf.mapSessionRooms!.length).toBeGreaterThan(0);
     });
 
-    it(`${conf.id}: mapSessionRooms[1] (sessions loaded) is true`, () => {
-      expect(conf.mapSessionRooms![1]).toBe(true);
+    it(`${conf.id}: each mapSessionRooms entry has a non-empty URL`, () => {
+      conf.mapSessionRooms!.forEach((entry) => {
+        expect(typeof entry[0]).toBe("string");
+        expect(entry[0].length).toBeGreaterThan(0);
+      });
     });
 
-    it(`${conf.id}: mapSessionRooms[2] (rooms loaded) is true`, () => {
-      expect(conf.mapSessionRooms![2]).toBe(true);
+    it(`${conf.id}: each mapSessionRooms entry has sessions loaded = true`, () => {
+      conf.mapSessionRooms!.forEach((entry) => {
+        expect(entry[1]).toBe(true);
+      });
+    });
+
+    it(`${conf.id}: each mapSessionRooms entry has rooms loaded = true`, () => {
+      conf.mapSessionRooms!.forEach((entry) => {
+        expect(entry[2]).toBe(true);
+      });
+    });
+  });
+
+  confsWithoutSessionRooms.forEach((conf) => {
+    it(`${conf.id}: mapSessionRooms is undefined (no sessions/rooms data)`, () => {
+      expect(conf.mapSessionRooms).toBeUndefined();
     });
   });
 });
