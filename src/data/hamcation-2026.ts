@@ -209,7 +209,7 @@ export const mapSessions: [string, Session[]] = [
       description:
         "Hear from Floridas Statewide Interoperability Coordinator (SWIC) and from Floridas ESF2 team on the year in review for Floridas AUXCOMM program, ICT Communications updates, exercise and training opportunities and presentation of Flroidas annual AUXCOMM Service Award",
       speaker: ["Roger Lord (FDEM SWIC)", "David Byrun (FL AUXCOMM)"],
-      location: "Pavillion Tent 1",
+      location: "Pavilion Tent 1",
       startTime: "2026-02-13T09:15:00",
       endTime: "2026-02-13T10:15:00",
       category: "Forums`",
@@ -220,7 +220,7 @@ export const mapSessions: [string, Session[]] = [
       title: "Getting Started in QRP",
       description: "Steve has been a ham for more than five decades...",
       speaker: ["Steve Hudson, AA4BW"],
-      location: "Pavillion Tent 3",
+      location: "Pavilion Tent 3",
       startTime: "2026-02-13T09:15:00",
       endTime: "2026-02-13T10:15:00",
       category: "Forums`",
@@ -233,7 +233,7 @@ export const mapSessions: [string, Session[]] = [
       description:
         "Gary from trueladderline.com, will discuss the high efficiency HF multi-band antenna model and methods of lightning protection for it.",
       speaker: ["Gary Baker, K7EMF"],
-      location: "Pavillion Tent 2",
+      location: "Pavilion Tent 2",
       startTime: "2026-02-13T09:15:00",
       endTime: "2026-02-13T10:15:00",
       category: "Forums`",

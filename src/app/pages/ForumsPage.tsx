@@ -50,6 +50,7 @@ export function ForumsPage() {
       {numSRurls > 1 &&
         roomEntry.map(([roomUrl, mapRoomArray]) => {
           const mapImg = conferenceMaps.find((m) => m.url === roomUrl);
+          //console.log("mapRoomArray: %s", JSON.stringify(mapRoomArray));
           return (
             <ForumsMapView
               key={roomUrl}
