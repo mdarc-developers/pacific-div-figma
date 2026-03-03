@@ -39,6 +39,7 @@ export function ForumsPage() {
       )}
       {numSRurls === 1 && (
         <ForumsMapView
+          key={roomEntry[0]?.[0]}
           forumMap={conferenceMaps.find(
               (m) => m.url === roomEntry[0]?.[0]
           )}
