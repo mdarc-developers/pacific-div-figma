@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { allConferences } from "./all-conferences";
-import "@/lib/sessionData"; // ensure mapSessionRooms population side-effects run
+import { BOOTH_DATA } from "@/lib/sessionData"; // ensure side-effects run and export BOOTH_DATA
 import {
   formatUpdateToken,
   formatUpdateTokenDetail,
@@ -9,16 +9,25 @@ import {
   warnOutOfRangeSessions,
   warnEmptyMapData,
 } from "@/lib/overrideUtils";
-import { Session } from "@/types/conference";
+import { Session, Booth } from "@/types/conference";
 
 interface SupplementalSessionModule {
   mapSessions?: [string, Session[]];
+}
+
+interface SupplementalBoothModule {
+  mapBooths?: [string, Booth[]];
 }
 
 // Supplemental session files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
 const supplementalSessionModules = import.meta.glob("./*-session-*.ts", {
   eager: true,
 }) as Record<string, SupplementalSessionModule>;
+
+// Supplemental booth files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
+const supplementalBoothModules = import.meta.glob("./*-booth-*.ts", {
+  eager: true,
+}) as Record<string, SupplementalBoothModule>;
 
 // Resolve the specific supplemental session tuples needed by the tests below
 const seapacPath = Object.keys(supplementalSessionModules).find((p) =>
@@ -33,6 +42,14 @@ const quartzfestPath = Object.keys(supplementalSessionModules).find((p) =>
 );
 const quartzfestSessions: [string, Session[]] = quartzfestPath
   ? (supplementalSessionModules[quartzfestPath].mapSessions ?? ["", []])
+  : ["", []];
+
+// Resolve the hamcation-2026 supplemental booth tuple for booth-specific tests
+const hamcation2026BoothPath = Object.keys(supplementalBoothModules).find((p) =>
+  p.includes("hamcation-2026-booth-"),
+);
+const supplementalBooths: [string, Booth[]] = hamcation2026BoothPath
+  ? (supplementalBoothModules[hamcation2026BoothPath].mapBooths ?? ["", []])
   : ["", []];
 
 // ── seapac-2026 supplemental session file ─────────────────────────────────────
@@ -505,9 +522,9 @@ describe("mapExhibitorBooths population", () => {
       });
     });
 
-    it(`${conf.id}: each mapExhibitorBooths entry has exhibitors loaded = true`, () => {
+    it(`${conf.id}: each mapExhibitorBooths entry has at least booths or exhibitors loaded`, () => {
       conf.mapExhibitorBooths!.forEach((entry) => {
-        expect(entry[1]).toBe(true);
+        expect(entry[1] || entry[2]).toBe(true);
       });
     });
 
@@ -564,6 +581,61 @@ describe("warnEmptyMapData", () => {
       expect(warnSpy).toHaveBeenCalledOnce();
       expect(String(warnSpy.mock.calls[0][0])).toContain(type);
       vi.restoreAllMocks();
+    });
+  });
+});
+
+// ── hamcation-2026-booth supplemental file ────────────────────────────────────
+// Guards the shape and presence of the supplemental booth export that adds a
+// second map URL (eastwest hall) to hamcation-2026's booth data.
+describe("hamcation-2026-booth supplemental file", () => {
+  it("exports a [url, Booth[]] tuple", () => {
+    const [url, booths] = supplementalBooths;
+    expect(typeof url).toBe("string");
+    expect(url.length).toBeGreaterThan(0);
+    expect(Array.isArray(booths)).toBe(true);
+  });
+
+  it("exports a non-empty Booth array", () => {
+    const [, booths] = supplementalBooths;
+    expect(booths.length).toBeGreaterThan(0);
+  });
+
+  it("each booth has coords", () => {
+    const [, booths] = supplementalBooths;
+    booths.forEach((booth) => {
+      expect(Array.isArray(booth.coords)).toBe(true);
+      expect(booth.coords.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("mapBooths URL (index 0) starts with /", () => {
+    const [url] = supplementalBooths;
+    expect(url.startsWith("/")).toBe(true);
+  });
+});
+
+// ── BOOTH_DATA multi-entry (hamcation-2026) ───────────────────────────────────
+// Verifies that sessionData.ts accumulates multiple booth entries for conferences
+// that have both a base booth file and one or more supplemental booth files.
+describe("BOOTH_DATA multi-entry (hamcation-2026)", () => {
+  it("hamcation-2026 BOOTH_DATA has two entries", () => {
+    const entries = BOOTH_DATA["hamcation-2026"];
+    expect(Array.isArray(entries)).toBe(true);
+    expect(entries.length).toBe(2);
+  });
+
+  it("hamcation-2026 BOOTH_DATA entries have distinct URLs", () => {
+    const entries = BOOTH_DATA["hamcation-2026"];
+    const urls = entries.map((e) => e[0]);
+    expect(new Set(urls).size).toBe(2);
+  });
+
+  it("hamcation-2026 BOOTH_DATA entries each have a non-empty Booth array", () => {
+    const entries = BOOTH_DATA["hamcation-2026"];
+    entries.forEach(([url, booths]) => {
+      expect(url.startsWith("/")).toBe(true);
+      expect(booths.length).toBeGreaterThan(0);
     });
   });
 });

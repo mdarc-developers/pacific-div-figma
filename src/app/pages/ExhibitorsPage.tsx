@@ -20,8 +20,7 @@ export function ExhibitorsPage() {
     "exhibitor_bookmarks_",
   );
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
-  const boothEntry = BOOTH_DATA[activeConference.id];
-  const exhibitorBooths = boothEntry ? boothEntry[1] : [];
+  const boothEntries = BOOTH_DATA[activeConference.id] ?? [];
   const exhibitorEntry = EXHIBITOR_DATA[activeConference.id];
   const mapExhibitors = exhibitorEntry ? exhibitorEntry[1] : [];
   const numEmaps = activeConference.mapExhibitorBooths?.length ?? 0; // num Exhibitor map
@@ -30,7 +29,7 @@ export function ExhibitorsPage() {
     () => {
       // Single-map assumption: always pick the map whose URL matches mapBooths[0].
       // TODO: restore `activeConference.mapExhibitorsUrl.length === 1` guard when multi-map is re-enabled.
-      const boothMapUrl = boothEntry?.[0];
+      const boothMapUrl = boothEntries[0]?.[0];
       if (!boothMapUrl) return undefined;
       return conferenceMaps.find((m) => m.url === boothMapUrl) || undefined;
 
@@ -60,7 +59,7 @@ export function ExhibitorsPage() {
   useEffect(() => {
     // Single-map assumption: always refresh exhibitorsMap from mapBooths URL.
     // TODO: restore numEmaps > 1 branch when multi-map is re-enabled.
-    const boothMapUrl = BOOTH_DATA[activeConference.id]?.[0];
+    const boothMapUrl = BOOTH_DATA[activeConference.id]?.[0]?.[0];
     setExhibitorsMap(
       boothMapUrl
         ? conferenceMaps.find((m) => m.url === boothMapUrl) || {
@@ -118,12 +117,31 @@ export function ExhibitorsPage() {
       {numEmaps === 1 && (
         <ExhibitorsMapView
           exhibitorsMap={exhibitorsMap}
-          exhibitorBooths={exhibitorBooths}
+          exhibitorBooths={boothEntries[0]?.[1] ?? []}
           mapExhibitors={mapExhibitors}
           highlightedExhibitorId={highlightedExhibitorId}
           onHighlightChange={setHighlightedExhibitorId}
         />
       )}
+      {numEmaps > 1 &&
+        boothEntries.map(([boothUrl, booths]) => {
+          const mapImg = conferenceMaps.find((m) => m.url === boothUrl);
+          // EXHIBITOR_DATA holds at most one [url, Exhibitor[]] tuple per conference.
+          // Match exhibitors to this booth map by URL; if none match (e.g. a supplemental
+          // booth-only file whose vendors aren't assigned yet), fall back to an empty array.
+          const exhibitors =
+            exhibitorEntry?.[0] === boothUrl ? exhibitorEntry[1] : [];
+          return (
+            <ExhibitorsMapView
+              key={boothUrl}
+              exhibitorsMap={mapImg}
+              exhibitorBooths={booths}
+              mapExhibitors={exhibitors}
+              highlightedExhibitorId={highlightedExhibitorId}
+              onHighlightChange={setHighlightedExhibitorId}
+            />
+          );
+        })}
       <ExhibitorView
         bookmarkedExhibitors={bookmarkedExhibitors}
         onToggleBookmark={handleToggleBookmark}

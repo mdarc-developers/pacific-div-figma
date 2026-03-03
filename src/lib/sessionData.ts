@@ -105,7 +105,10 @@ export const MAP_DATA: Record<string, MapImage[]> = {};
 // ROOM_DATA, BOOTH_DATA, and EXHIBITOR_DATA use [mapUrl, items[]] tuples so that
 // each entry knows which MapImage URL the overlays should be rendered on top of.
 export const ROOM_DATA: Record<string, [string, Room[]]> = {};
-export const BOOTH_DATA: Record<string, [string, Booth[]]> = {};
+// BOOTH_DATA holds an array of [mapUrl, booths] tuples per conference so that
+// multiple booth files (e.g. a base file + a supplemental file with a different
+// map URL) can all be rendered side-by-side on their respective map images.
+export const BOOTH_DATA: Record<string, [string, Booth[]][]> = {};
 export const EXHIBITOR_DATA: Record<string, [string, Exhibitor[]]> = {};
 Object.entries(conferenceModules).forEach(([path, module]) => {
   const conferenceId = path.split("/").pop()?.replace(".ts", "") || "";
@@ -125,7 +128,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
     updateMapSessionRooms(conferenceId, typedModule.mapRooms[0], "rooms");
   }
   if (typedModule.mapBooths) {
-    BOOTH_DATA[conferenceId] = typedModule.mapBooths;
+    if (!BOOTH_DATA[conferenceId]) BOOTH_DATA[conferenceId] = [];
+    BOOTH_DATA[conferenceId].push(typedModule.mapBooths);
     updateMapExhibitorBooths(conferenceId, typedModule.mapBooths[0], "booths");
   }
   if (typedModule.mapExhibitors) {
@@ -141,6 +145,7 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 // Track the newest supplemental file timestamp token per conference.
 export const SESSION_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 export const EXHIBITOR_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
+export const BOOTH_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 
 // Override with supplemental session files (e.g. seapac-2026-sesssion-20260227.ts).
 // Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
@@ -217,6 +222,39 @@ Object.keys(supplementalExhibitorModules)
     }
   });
 
+// Load supplemental booth files (e.g. hamcation-2026-booth-20260302.ts).
+// These may use a different map URL than the base conference file — each is
+// appended to BOOTH_DATA as a new [url, booths] tuple so that all booth maps
+// are rendered side-by-side.  Sorting ensures the most-recent timestamp wins
+// when multiple supplemental files target the same conference + URL.
+const supplementalBoothModules = import.meta.glob("../data/*-booth-*.ts", {
+  eager: true,
+});
+Object.keys(supplementalBoothModules)
+  .sort()
+  .forEach((path) => {
+    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
+    const match = filename.match(/^(.+)-booth-/);
+    if (match) {
+      const conferenceId = match[1];
+      const typedModule = supplementalBoothModules[path] as ConferenceModule;
+      if (typedModule.mapBooths) {
+        if (!BOOTH_DATA[conferenceId]) BOOTH_DATA[conferenceId] = [];
+        BOOTH_DATA[conferenceId].push(typedModule.mapBooths);
+        updateMapExhibitorBooths(
+          conferenceId,
+          typedModule.mapBooths[0],
+          "booths",
+          true,
+        );
+        const token = filename.split("-").pop() ?? "";
+        if (token && token > (BOOTH_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
+          BOOTH_SUPPLEMENTAL_TOKEN[conferenceId] = token;
+        }
+      }
+    }
+  });
+
 // Emit warnings for any map data that still has an empty array after all base
 // and supplemental files have been loaded.  Checking here (rather than inside
 // the loading loops above) avoids false positives when a base file ships a
@@ -229,8 +267,10 @@ Object.entries(SESSION_DATA).forEach(([conferenceId, sessions]) => {
 Object.entries(ROOM_DATA).forEach(([conferenceId, [url, rooms]]) => {
   warnEmptyMapData(conferenceId, "mapRooms", url, rooms);
 });
-Object.entries(BOOTH_DATA).forEach(([conferenceId, [url, booths]]) => {
-  warnEmptyMapData(conferenceId, "mapBooths", url, booths);
+Object.entries(BOOTH_DATA).forEach(([conferenceId, entries]) => {
+  entries.forEach(([url, booths]) => {
+    warnEmptyMapData(conferenceId, "mapBooths", url, booths);
+  });
 });
 Object.entries(EXHIBITOR_DATA).forEach(([conferenceId, [url, exhibitors]]) => {
   warnEmptyMapData(conferenceId, "mapExhibitors", url, exhibitors);
