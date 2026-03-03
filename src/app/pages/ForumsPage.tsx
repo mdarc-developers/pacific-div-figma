@@ -44,13 +44,13 @@ export function ForumsPage() {
         />
       )}
       {numRmaps > 1 &&
-        roomEntries.map(([roomUrl, rooms]) => {
+        roomEntries.map(([roomUrl, mapRoomList]) => {
           const mapImg = conferenceMaps.find((m) => m.url === roomUrl);
           return (
             <ForumsMapView
               key={roomUrl}
               forumMap={mapImg}
-              forumRooms={rooms}
+              forumRooms={mapRoomList}
               highlightForumRoomName={highlightForumRoomName}
             />
           );
