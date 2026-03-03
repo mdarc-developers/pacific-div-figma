@@ -16,8 +16,9 @@ export function ForumsPage() {
     activeConference.id,
   );
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
-  const roomEntries = ROOM_DATA[activeConference.id] ?? [];
-  const numRmaps = activeConference.mapSessionRooms?.length ?? 0;
+  const roomEntry = ROOM_DATA[activeConference.id] ?? []; // url and Room[]
+  //const roomArray = roomEntry ? roomEntry[1] : []; // Room[]
+  const numSRurls = activeConference.mapSessionRooms?.length ?? 0; // num Session Room urls
 
   return (
     <div className="block">
@@ -36,21 +37,23 @@ export function ForumsPage() {
           ))}
         </div>
       )}
-      {numRmaps === 1 && (
+      {numSRurls === 1 && (
         <ForumsMapView
-          forumMap={conferenceMaps.find((m) => m.url === roomEntries[0]?.[0])}
-          forumRooms={roomEntries[0]?.[1] ?? []}
+          forumMap={conferenceMaps.find(
+              (m) => m.url === roomEntry[0]?.[0]
+          )}
+          forumRooms={roomEntry[0]?.[1] ?? []}
           highlightForumRoomName={highlightForumRoomName}
         />
       )}
-      {numRmaps > 1 &&
-        roomEntries.map(([roomUrl, mapRoomList]) => {
+      {numSRurls > 1 &&
+        roomEntry.map(([roomUrl, mapRoomArray]) => {
           const mapImg = conferenceMaps.find((m) => m.url === roomUrl);
           return (
             <ForumsMapView
               key={roomUrl}
               forumMap={mapImg}
-              forumRooms={mapRoomList}
+              forumRooms={mapRoomArray}
               highlightForumRoomName={highlightForumRoomName}
             />
           );

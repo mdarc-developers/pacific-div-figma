@@ -19,10 +19,10 @@ export function ExhibitorsPage() {
     "exhibitor_bookmarks_",
   );
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
-  const boothEntries = BOOTH_DATA[activeConference.id] ?? [];
-  const exhibitorEntry = EXHIBITOR_DATA[activeConference.id];
-  const mapExhibitors = exhibitorEntry ? exhibitorEntry[1] : [];
-  const numEmaps = activeConference.mapExhibitorBooths?.length ?? 0;
+  const boothEntry = BOOTH_DATA[activeConference.id] ?? []; // url and Booth[]
+  const exhibitorEntry = EXHIBITOR_DATA[activeConference.id]; // url and Exhibitor[]
+  const exhibitorArray = exhibitorEntry ? exhibitorEntry[1] : []; // Exhibitor[]
+  const numEBurls = activeConference.mapExhibitorBooths?.length ?? 0; // num of Exhibitor Booth image urls
 
   const handleLocationClick = (exhibitorId: string) => {
     setHighlightedExhibitorId(exhibitorId);
@@ -45,26 +45,26 @@ export function ExhibitorsPage() {
           ))}
         </div>
       )}
-      {numEmaps === 1 && (
+      {numEBurls === 1 && (
         <ExhibitorsMapView
           exhibitorsMap={conferenceMaps.find(
-            (m) => m.url === boothEntries[0]?.[0],
+            (m) => m.url === boothEntry[0]?.[0],
           )}
-          exhibitorBooths={boothEntries[0]?.[1] ?? []}
-          mapExhibitors={mapExhibitors}
+          exhibitorBooths={boothEntry[0]?.[1] ?? []}
+          mapExhibitors={exhibitorArray}
           highlightedExhibitorId={highlightedExhibitorId}
           onHighlightChange={setHighlightedExhibitorId}
         />
       )}
-      {numEmaps > 1 &&
-        boothEntries.map(([boothUrl, booths]) => {
+      {numEBurls > 1 &&
+        boothEntry.map(([boothUrl, booths]) => {
           const mapImg = conferenceMaps.find((m) => m.url === boothUrl);
-          // EXHIBITOR_DATA holds at most one [url, Exhibitor[]] tuple per conference.
+          // EXHIBITOR_DATA holds possibly multiple [url, Exhibitor[]] tuple per conference.
           // Primary match: exhibitors whose declared URL matches this booth map URL.
           // Fallback: if the URL doesn't match (e.g. a supplemental exhibitor file whose
-          // mapExhibitors URL was not updated after a booth reassignment), include any
-          // exhibitor whose location IDs are present in this booth map and warn so data
-          // editors know to fix the mismatch.
+          //   mapExhibitors URL was not updated after a booth reassignment), include any
+          //   exhibitor whose location IDs are present in this booth map and warn so data
+          //   editors know to fix the mismatch.
           const exhibitors = (() => {
             if (exhibitorEntry?.[0] === boothUrl) return exhibitorEntry[1];
             if (!exhibitorEntry) return [];
