@@ -21,7 +21,7 @@ export interface Conference {
   logoUrl: string;
   votes?: number;
   mapSessionRooms?: [string, boolean, boolean];
-  mapExhibitorBooths?: [string, boolean, boolean];
+  mapExhibitorBooths?: [string, boolean, boolean][];
 }
 
 export interface MapImage {
