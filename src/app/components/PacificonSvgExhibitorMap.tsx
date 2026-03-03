@@ -9,7 +9,7 @@ import {
   MAP_WIDTH,
   MAP_HEIGHT,
   type Booth,
-} from "@/data/pacificonData";
+} from "@/data/pacificonSvgExhibitorMapData";
 
 // ── BoothLabel ────────────────────────────────────────────────────────────────
 function BoothLabel({ booth }: { booth: Booth }) {
