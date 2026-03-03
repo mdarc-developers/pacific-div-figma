@@ -613,6 +613,13 @@ describe("hamcation-2026-booth supplemental file", () => {
     const [url] = supplementalBooths;
     expect(url.startsWith("/")).toBe(true);
   });
+
+  it("each booth id is a number (not a string)", () => {
+    const [, booths] = supplementalBooths;
+    booths.forEach((booth) => {
+      expect(typeof booth.id).toBe("number");
+    });
+  });
 });
 
 // ── BOOTH_DATA multi-entry (hamcation-2026) ───────────────────────────────────

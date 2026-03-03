@@ -240,9 +240,6 @@ describe("exhibitor location IDs exist in URL-matched booth map (advisory)", () 
 });
 
 // ── Runtime fallback: mismatched exhibitor URL still maps to correct booths ───
-// Verifies the ExhibitorsPage multi-map fallback logic: exhibitors whose
-// mapExhibitors URL does not match a booth map URL are still matched to the
-// correct booth map if their location IDs appear in that map's Booth[].
 describe("multi-map fallback: exhibitors matched by location when URL mismatches", () => {
   it("returns exhibitors whose location IDs are in the booth map even if URL differs", () => {
     const exhibitorUrl = "/assets/maps/north.png";
