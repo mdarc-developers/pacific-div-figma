@@ -1,4 +1,4 @@
-// PacificonFloorMap.tsx
+// PacificonSvgExhibitorMap.tsx
 import React, { useState } from "react";
 import {
   BOOTHS,
@@ -245,7 +245,7 @@ interface TT {
   sy: number;
 }
 
-export function PacificonFloorMap() {
+export function PacificonSvgExhibitorMap() {
   const [tip, setTip] = useState<TT | null>(null);
   const [sel, setSel] = useState<string | null>(null);
 
