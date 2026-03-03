@@ -127,10 +127,27 @@ export function ExhibitorsPage() {
         boothEntries.map(([boothUrl, booths]) => {
           const mapImg = conferenceMaps.find((m) => m.url === boothUrl);
           // EXHIBITOR_DATA holds at most one [url, Exhibitor[]] tuple per conference.
-          // Match exhibitors to this booth map by URL; if none match (e.g. a supplemental
-          // booth-only file whose vendors aren't assigned yet), fall back to an empty array.
-          const exhibitors =
-            exhibitorEntry?.[0] === boothUrl ? exhibitorEntry[1] : [];
+          // Primary match: exhibitors whose declared URL matches this booth map URL.
+          // Fallback: if the URL doesn't match (e.g. a supplemental exhibitor file whose
+          // mapExhibitors URL was not updated after a booth reassignment), include any
+          // exhibitor whose location IDs are present in this booth map and warn so data
+          // editors know to fix the mismatch.
+          const exhibitors = (() => {
+            if (exhibitorEntry?.[0] === boothUrl) return exhibitorEntry[1];
+            if (!exhibitorEntry) return [];
+            const boothIds = new Set(booths.map((b) => b.id));
+            const fallback = exhibitorEntry[1].filter((ex) =>
+              ex.location.some((loc) => boothIds.has(loc)),
+            );
+            if (fallback.length > 0) {
+              console.warn(
+                `[ExhibitorsPage] ${fallback.length} exhibitor(s) have locations in booth map "${boothUrl}" ` +
+                  `but mapExhibitors URL is "${exhibitorEntry[0]}". ` +
+                  `Update the mapExhibitors URL (or booth assignments) to fix this mismatch.`,
+              );
+            }
+            return fallback;
+          })();
           return (
             <ExhibitorsMapView
               key={boothUrl}

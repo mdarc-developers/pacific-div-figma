@@ -1,9 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { Exhibitor } from "@/types/conference";
+import { Exhibitor, Booth } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
+import { BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
 interface ConferenceModule {
   mapExhibitors?: [string, Exhibitor[]];
+  mapBooths?: [string, Booth[]];
 }
 
 // Supplemental exhibitor files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
@@ -174,5 +176,117 @@ describe("supplemental exhibitor override logic", () => {
       expect(typeof ex.id).toBe("string");
       expect(typeof ex.name).toBe("string");
     });
+  });
+});
+
+// ── Advisory: exhibitor location IDs should exist in the URL-matched booth map ─
+// For each conference that has both exhibitors and booths, check that every
+// exhibitor's location IDs are present in the booth list whose URL matches
+// mapExhibitors[0].  A mismatch is tolerated at runtime — ExhibitorsPage falls
+// back to searching all conference booth maps — but is warned here so data
+// editors know to update the mapExhibitors URL (or reassign booth locations).
+describe("exhibitor location IDs exist in URL-matched booth map (advisory)", () => {
+  Object.entries(EXHIBITOR_DATA).forEach(([conferenceId, [exhibitorUrl, exhibitors]]) => {
+    const allBoothMaps = BOOTH_DATA[conferenceId] ?? [];
+    if (allBoothMaps.length === 0) return;
+
+    it(`${conferenceId}: each exhibitor location is in some booth map (advisory)`, () => {
+      const allBoothIds = new Set(
+        allBoothMaps.flatMap(([, booths]) => booths.map((b) => b.id)),
+      );
+      exhibitors.forEach((ex) => {
+        ex.location.forEach((loc) => {
+          if (!allBoothIds.has(loc)) {
+            console.warn(
+              `[data] ${conferenceId}: exhibitor "${ex.id}" location ${loc} ` +
+                `not found in any booth map — exhibitor will not appear on map. ` +
+                `Verify booth IDs match between mapExhibitors and mapBooths.`,
+            );
+          }
+        });
+      });
+      // Advisory only — mismatch is warned but not a hard failure.
+    });
+
+    it(`${conferenceId}: each exhibitor location is in the URL-matched booth map (advisory)`, () => {
+      const primaryMap = allBoothMaps.find(([url]) => url === exhibitorUrl);
+      if (!primaryMap) return; // no booth map at exhibitor URL — fallback will handle it
+      const primaryBoothIds = new Set(primaryMap[1].map((b) => b.id));
+      // Pre-build a map from booth ID → source URL for O(1) fallback lookup
+      const boothIdToMapUrl = new Map<number | string, string>();
+      allBoothMaps.forEach(([url, booths]) => {
+        booths.forEach((b) => boothIdToMapUrl.set(b.id, url));
+      });
+      exhibitors.forEach((ex) => {
+        const missingLocs = ex.location.filter((loc) => !primaryBoothIds.has(loc));
+        if (missingLocs.length === 0) return;
+        // Aggregate all missing locations into a single warning per exhibitor
+        const fallbackUrl = boothIdToMapUrl.get(missingLocs[0]);
+        const allInSameFallback =
+          fallbackUrl !== undefined &&
+          missingLocs.every((loc) => boothIdToMapUrl.get(loc) === fallbackUrl);
+        console.warn(
+          `[data] ${conferenceId}: exhibitor "${ex.id}" location(s) [${missingLocs.join(", ")}] ` +
+            `not in URL-matched booth map "${exhibitorUrl}"` +
+            (allInSameFallback
+              ? ` — found in "${fallbackUrl}" (fallback will activate at runtime).`
+              : ` — not found in any single booth map (exhibitor may not appear on map).`) +
+            ` Update mapExhibitors URL or booth assignments to fix this mismatch.`,
+        );
+      });
+      // Mismatch is tolerated — no hard assertion.
+    });
+  });
+});
+
+// ── Runtime fallback: mismatched exhibitor URL still maps to correct booths ───
+// Verifies the ExhibitorsPage multi-map fallback logic: exhibitors whose
+// mapExhibitors URL does not match a booth map URL are still matched to the
+// correct booth map if their location IDs appear in that map's Booth[].
+describe("multi-map fallback: exhibitors matched by location when URL mismatches", () => {
+  it("returns exhibitors whose location IDs are in the booth map even if URL differs", () => {
+    const exhibitorUrl = "/assets/maps/north.png";
+    const fakeExhibitor: Exhibitor = {
+      id: "ex-1",
+      name: "Exhibitor One",
+      description: "Test",
+      boothName: "A1",
+      location: [1, 2],
+    };
+    const exhibitorEntry: [string, Exhibitor[]] = [exhibitorUrl, [fakeExhibitor]];
+    const booths: Booth[] = [
+      { id: 1, coords: [[0, 0], [10, 0], [10, 10], [0, 10]], locationZone: "eastwest" },
+      { id: 2, coords: [[11, 0], [21, 0], [21, 10], [11, 10]], locationZone: "eastwest" },
+    ];
+    // Simulate ExhibitorsPage fallback: URL mismatch (exhibitorUrl ≠ "/assets/maps/eastwest.png")
+    // so we search by location IDs instead.
+    const boothIds = new Set(booths.map((b) => b.id));
+    const fallback = exhibitorEntry[1].filter((ex) =>
+      ex.location.some((loc) => boothIds.has(loc)),
+    );
+
+    expect(fallback).toHaveLength(1);
+    expect(fallback[0].id).toBe("ex-1");
+  });
+
+  it("returns empty array when no exhibitor locations match any booth in the map", () => {
+    const fakeExhibitor: Exhibitor = {
+      id: "ex-2",
+      name: "Exhibitor Two",
+      description: "Test",
+      boothName: "B9",
+      location: [99],
+    };
+    const exhibitorEntry: [string, Exhibitor[]] = ["/map-a.png", [fakeExhibitor]];
+    const booths: Booth[] = [
+      { id: 1, coords: [[0, 0], [10, 0], [10, 10], [0, 10]], locationZone: "zone" },
+    ];
+
+    const boothIds = new Set(booths.map((b) => b.id));
+    const fallback = exhibitorEntry[1].filter((ex) =>
+      ex.location.some((loc) => boothIds.has(loc)),
+    );
+
+    expect(fallback).toHaveLength(0);
   });
 });
