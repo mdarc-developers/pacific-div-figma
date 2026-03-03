@@ -5,7 +5,7 @@ import { BOOTH_DATA } from "@/lib/sessionData";
 
 export function Navigation() {
   const { activeConference } = useConference();
-  const hasBooths = !!BOOTH_DATA[activeConference.id];
+  const hasBooths = (BOOTH_DATA[activeConference.id]?.length ?? 0) > 0;
 
   const navItems = [
     { to: "/schedule", icon: Calendar, label: "Schedule" },
