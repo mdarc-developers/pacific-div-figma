@@ -77,7 +77,7 @@ pacific-div-figma/
 │   │   │   ├── MapsView.tsx           # Tabbed map viewer with ImageWithFallback
 │   │   │   ├── Navigation.tsx         # Tab bar (Maps, Schedule, Forums, Exhibitors, Prizes, …)
 │   │   │   ├── NotificationsCard.tsx  # Profile: notification toggle stubs
-│   │   │   ├── PacificonFloorMap.tsx  # SVG floor-map component for Pacificon
+│   │   │   ├── PacificonSvgExhibitorMap.tsx  # SVG floor-map component for Pacificon
 │   │   │   ├── ProfileHeaderCard.tsx  # Profile: user avatar + name/callsign header
 │   │   │   ├── ProfileView.tsx        # Unauthenticated placeholder for Profile tab
 │   │   │   ├── PrizesAdminView.tsx    # Admin UI for managing prize winners
@@ -121,7 +121,7 @@ pacific-div-figma/
 │   │   ├── hamvention-2026.ts                  # May Dayton, OH — Hamvention 2026
 │   │   ├── huntsville-hamfest-2026.ts           # Aug Huntsville, AL — Hamfest 2026
 │   │   ├── pacificon-2026.ts                   # Oct San Ramon, CA — Pacificon 2026
-│   │   ├── pacificonData.ts                    # SVG booth/room data for PacificonFloorMap
+│   │   ├── pacificonSvgExhibitorMapData.ts                    # SVG booth/room data for PacificonSvgExhibitorMap
 │   │   ├── quartzfest-2027.ts                  # Jan Quartzsite, AZ — Quartzfest 2027
 │   │   ├── quartzfest-2027-session-*.ts         # Session override/supplemental data
 │   │   ├── quartzfest-2027-userprofile-*.ts     # Attendee override/supplemental data
@@ -194,7 +194,7 @@ pacific-div-figma/
             /signup    → <SignUpPage>
             /search    → <SearchPage>      # ScheduleView scoped to search results
             /admin/prizes → <PrizesAdminPage>  # Prize admin (prize-admin group only)
-            /pacificonfloormap → <PacificonFloorMap>  # SVG floor map
+            /pacificonfloormap → <PacificonSvgExhibitorMap>  # SVG floor map
             *          → redirect → /404.html
           <ConferenceFooter />         # Always visible
 ```
