@@ -141,7 +141,7 @@ pacific-div-figma/
 │   │   ├── localStorage.ts    # loadFromStorage / saveToStorage generic helpers
 │   │   ├── overrideUtils.ts   # Merges supplemental/override data into base conference data
 │   │   ├── prizesData.ts      # Aggregates PRIZE_DATA and PRIZE_WINNER_DATA from all conference modules
-│   │   ├── sessionData.ts     # Aggregates SESSION_DATA, map images, rooms, booths, exhibitors
+│   │   ├── sessionData.ts     # Aggregates SESSION_DATA, map images, rooms, booths, exhibitors; populates mapSessionRooms / mapExhibitorBooths on Conference objects as a side effect
 │   │   └── userProfileData.ts # Aggregates ALL_USER_PROFILES and ATTENDEE_DATA
 │   ├── services/
 │   │   ├── searchService.ts       # Fuse.js search index; buildIndex / search / applyFilters
@@ -214,7 +214,11 @@ All domain types live in a single file. Every interface carries a `conferenceId`
 
 ### Conference
 
-Core event metadata. `primaryColor` / `secondaryColor` drive the header banner. Times are stored as **local date strings** (no offset baked in); the companion fields `timezone` (`"America/Los_Angeles"`) and `timezoneNumeric` (`"-0700"`) are used at render time to produce correct locale-formatted output. Optional `mapSessionRooms` and `mapExhibitorBooths` arrays of tuples flag which conferences have Leaflet-based room/booth maps.
+Core event metadata. `primaryColor` / `secondaryColor` drive the header banner. Times are stored as **local date strings** (no offset baked in); the companion fields `timezone` (`"America/Los_Angeles"`) and `timezoneNumeric` (`"-0700"`) are used at render time to produce correct locale-formatted output.
+
+`mapSessionRooms?: [string, boolean, boolean][]` — Each tuple is `[mapImageUrl, sessionsLoaded, roomsLoaded]`. `sessionsLoaded` is `true` when a conference module exports `mapSessions`; `roomsLoaded` is `true` when it exports `mapRooms`. The array is populated as a side effect by `updateMapSessionRooms()` in `src/lib/sessionData.ts` during module load. Its presence (and length) indicates that a Leaflet-based room/session map is available for the conference.
+
+`mapExhibitorBooths?: [string, boolean, boolean][]` — Each tuple is `[mapImageUrl, exhibitorsLoaded, boothsLoaded]`. `exhibitorsLoaded` is `true` when a conference module exports `mapExhibitors`; `boothsLoaded` is `true` when it exports `mapBooths`. The array is populated as a side effect by `updateMapExhibitorBooths()` in `src/lib/sessionData.ts` during module load. `ExhibitorsPage` reads `activeConference.mapExhibitorBooths?.length` (as `numEmaps`) and only renders `ExhibitorsMapView` when `numEmaps === 1`.
 
 ### Session
 
@@ -306,11 +310,16 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
 ### 7.3 Forums (`/forums`)
 
 - `ForumsPage` shows a `ForumsMapView` (Leaflet-based room map) alongside a `ScheduleView` scoped to forum sessions.
+- The forum map URL and room overlays are sourced from `ROOM_DATA[activeConference.id]` (a `[mapImageUrl, Room[]]` tuple exported by the conference module as `mapRooms`). The matching `MapImage` is resolved from `MAP_DATA` by URL; a hard-coded fallback is used when no match is found.
+- `mapSessionRooms` on the active `Conference` object tracks whether both `mapSessions` and `mapRooms` have been loaded for each map URL; it is populated by `sessionData.ts` as a side effect and is visible in the developer debug panel on `ForumsPage` when the `mdarc-developer` role is active.
 - Room names from the map can be highlighted via `SearchContext.highlightForumRoomName`.
 
 ### 7.4 Exhibitors (`/exhibitors`)
 
 - `ExhibitorsPage` shows an `ExhibitorsMapView` (Leaflet-based booth map) and an `ExhibitorView` for detail.
+- The booth map URL and booth overlays are sourced from `BOOTH_DATA[activeConference.id]` (a `[mapImageUrl, Booth[]]` tuple exported by the conference module as `mapBooths`). Exhibitor data comes from `EXHIBITOR_DATA[activeConference.id]`.
+- `ExhibitorsPage` reads `activeConference.mapExhibitorBooths?.length` as `numEmaps` and only renders `ExhibitorsMapView` when `numEmaps === 1` (single-map assumption). Multi-map support is scaffolded but currently disabled behind comments.
+- `mapExhibitorBooths` on the active `Conference` object is populated by `sessionData.ts` as a side effect (via `updateMapExhibitorBooths()`). A developer debug panel displaying the tuples is rendered when the `mdarc-developer` role is active.
 - Exhibitor booths can be highlighted via `SearchContext.highlightExhibitorId`.
 
 ### 7.5 Prizes (`/prizes`)
@@ -468,6 +477,8 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 9. **Search uses Fuse.js, not a backend.** `SearchService` in `src/services/searchService.ts` builds an in-memory Fuse.js index from the active conference sessions. `SearchBar` queries this service and writes highlight IDs into `SearchContext`, which `ScheduleView` and the map views consume to scroll/highlight matching items.
 
 10. **Bookmarks and raffle tickets use localStorage.** `useBookmarks` and `useRaffleTickets` both store data in `localStorage` keyed by conference ID. They reload automatically when `activeConference` changes. Firestore persistence is planned but not yet wired.
+
+11. **`mapSessionRooms` and `mapExhibitorBooths` are populated as module-load side effects.** `src/lib/sessionData.ts` mutates the matching `Conference` objects in `allConferences` in-place when it processes each loaded conference module. `updateMapSessionRooms()` is called whenever `mapSessions` or `mapRooms` is found in a module; `updateMapExhibitorBooths()` is called whenever `mapExhibitors` or `mapBooths` is found. Both functions are idempotent for supplemental files (the `isSupplemental` flag bypasses the duplicate-load guard). Because both functions mutate the shared `allConferences` array, the populated fields are immediately visible to any consumer that imports `allConferences` after `sessionData.ts` has been imported (e.g., test files that `import "@/lib/sessionData"` at the top to trigger the side effects).
 
 ## 13. How Firestore settings sync works
 
