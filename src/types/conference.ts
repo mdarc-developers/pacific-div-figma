@@ -35,7 +35,7 @@ export interface MapImage {
 }
 
 export interface Booth {
-  id: number;
+  id: number | string;
   coords: [number, number][];
   locationZone: string;
 }
