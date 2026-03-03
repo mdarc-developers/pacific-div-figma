@@ -72,7 +72,7 @@ export function MapsView() {
 
   const sortedMaps = [...maps].sort((a, b) => a.order - b.order);
 
-  const forumsMapUrl = ROOM_DATA[activeConference.id]?.[0];
+  const forumsMapUrl = ROOM_DATA[activeConference.id]?.[0]?.[0];
   const exhibitorsMapUrl = EXHIBITOR_DATA[activeConference.id]?.[0];
 
   function getMapDestination(map: MapImage): string | null {

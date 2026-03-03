@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { allConferences } from "./all-conferences";
-import { BOOTH_DATA } from "@/lib/sessionData"; // ensure side-effects run and export BOOTH_DATA
+import { BOOTH_DATA, ROOM_DATA } from "@/lib/sessionData"; // ensure side-effects run and export BOOTH_DATA
 import {
   formatUpdateToken,
   formatUpdateTokenDetail,
@@ -472,9 +472,9 @@ describe("mapSessionRooms population", () => {
       });
     });
 
-    it(`${conf.id}: each mapSessionRooms entry has sessions loaded = true`, () => {
+    it(`${conf.id}: each mapSessionRooms entry has at least sessions or rooms loaded`, () => {
       conf.mapSessionRooms!.forEach((entry) => {
-        expect(entry[1]).toBe(true);
+        expect(entry[1] || entry[2]).toBe(true);
       });
     });
 
@@ -643,6 +643,32 @@ describe("BOOTH_DATA multi-entry (hamcation-2026)", () => {
     entries.forEach(([url, booths]) => {
       expect(url.startsWith("/")).toBe(true);
       expect(booths.length).toBeGreaterThan(0);
+    });
+  });
+});
+
+// ── ROOM_DATA multi-entry (pacificon-2026) ────────────────────────────────────
+// Verifies that sessionData.ts accumulates multiple room entries for conferences
+// that have both a base room (mapRooms in pacificon-2026.ts) and one or more
+// supplemental room files (e.g. pacificon-2026-room-20260302.ts).
+describe("ROOM_DATA multi-entry (pacificon-2026)", () => {
+  it("pacificon-2026 ROOM_DATA has two entries", () => {
+    const entries = ROOM_DATA["pacificon-2026"];
+    expect(Array.isArray(entries)).toBe(true);
+    expect(entries.length).toBe(2);
+  });
+
+  it("pacificon-2026 ROOM_DATA entries have distinct URLs", () => {
+    const entries = ROOM_DATA["pacificon-2026"];
+    const urls = entries.map((e) => e[0]);
+    expect(new Set(urls).size).toBe(2);
+  });
+
+  it("pacificon-2026 ROOM_DATA entries each have a non-empty Room array", () => {
+    const entries = ROOM_DATA["pacificon-2026"];
+    entries.forEach(([url, rooms]) => {
+      expect(url.startsWith("/")).toBe(true);
+      expect(rooms.length).toBeGreaterThan(0);
     });
   });
 });

@@ -104,7 +104,10 @@ export const SESSION_DATA: Record<string, Session[]> = {};
 export const MAP_DATA: Record<string, MapImage[]> = {};
 // ROOM_DATA, BOOTH_DATA, and EXHIBITOR_DATA use [mapUrl, items[]] tuples so that
 // each entry knows which MapImage URL the overlays should be rendered on top of.
-export const ROOM_DATA: Record<string, [string, Room[]]> = {};
+// ROOM_DATA holds an array of [mapUrl, rooms] tuples per conference so that
+// multiple room files (e.g. a base file + a supplemental file with a different
+// map URL) can all be rendered side-by-side on their respective map images.
+export const ROOM_DATA: Record<string, [string, Room[]][]> = {};
 // BOOTH_DATA holds an array of [mapUrl, booths] tuples per conference so that
 // multiple booth files (e.g. a base file + a supplemental file with a different
 // map URL) can all be rendered side-by-side on their respective map images.
@@ -124,7 +127,8 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
     MAP_DATA[conferenceId] = typedModule.conferenceMaps;
   }
   if (typedModule.mapRooms) {
-    ROOM_DATA[conferenceId] = typedModule.mapRooms;
+    if (!ROOM_DATA[conferenceId]) ROOM_DATA[conferenceId] = [];
+    ROOM_DATA[conferenceId].push(typedModule.mapRooms);
     updateMapSessionRooms(conferenceId, typedModule.mapRooms[0], "rooms");
   }
   if (typedModule.mapBooths) {
@@ -146,6 +150,7 @@ Object.entries(conferenceModules).forEach(([path, module]) => {
 export const SESSION_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 export const EXHIBITOR_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 export const BOOTH_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
+export const ROOM_SUPPLEMENTAL_TOKEN: Record<string, string> = {};
 
 // Override with supplemental session files (e.g. seapac-2026-sesssion-20260227.ts).
 // Sorting paths ensures the alphabetically last (= most recent timestamp) wins when
@@ -255,6 +260,39 @@ Object.keys(supplementalBoothModules)
     }
   });
 
+// Load supplemental room files (e.g. pacificon-2026-room-20260302.ts).
+// These may use a different map URL than the base conference file — each is
+// appended to ROOM_DATA as a new [url, rooms] tuple so that all room maps
+// are rendered side-by-side.  Sorting ensures the most-recent timestamp wins
+// when multiple supplemental files target the same conference + URL.
+const supplementalRoomModules = import.meta.glob("../data/*-room-*.ts", {
+  eager: true,
+});
+Object.keys(supplementalRoomModules)
+  .sort()
+  .forEach((path) => {
+    const filename = path.split("/").pop()?.replace(".ts", "") ?? "";
+    const match = filename.match(/^(.+)-room-/);
+    if (match) {
+      const conferenceId = match[1];
+      const typedModule = supplementalRoomModules[path] as ConferenceModule;
+      if (typedModule.mapRooms) {
+        if (!ROOM_DATA[conferenceId]) ROOM_DATA[conferenceId] = [];
+        ROOM_DATA[conferenceId].push(typedModule.mapRooms);
+        updateMapSessionRooms(
+          conferenceId,
+          typedModule.mapRooms[0],
+          "rooms",
+          true,
+        );
+        const token = filename.split("-").pop() ?? "";
+        if (token && token > (ROOM_SUPPLEMENTAL_TOKEN[conferenceId] ?? "")) {
+          ROOM_SUPPLEMENTAL_TOKEN[conferenceId] = token;
+        }
+      }
+    }
+  });
+
 // Emit warnings for any map data that still has an empty array after all base
 // and supplemental files have been loaded.  Checking here (rather than inside
 // the loading loops above) avoids false positives when a base file ships a
@@ -264,8 +302,10 @@ Object.entries(SESSION_DATA).forEach(([conferenceId, sessions]) => {
   const url = conf?.mapSessionRooms?.find((t) => t[1])?.[0] ?? "";
   warnEmptyMapData(conferenceId, "mapSessions", url, sessions);
 });
-Object.entries(ROOM_DATA).forEach(([conferenceId, [url, rooms]]) => {
-  warnEmptyMapData(conferenceId, "mapRooms", url, rooms);
+Object.entries(ROOM_DATA).forEach(([conferenceId, entries]) => {
+  entries.forEach(([url, rooms]) => {
+    warnEmptyMapData(conferenceId, "mapRooms", url, rooms);
+  });
 });
 Object.entries(BOOTH_DATA).forEach(([conferenceId, entries]) => {
   entries.forEach(([url, booths]) => {

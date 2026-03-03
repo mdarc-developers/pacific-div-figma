@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { MapImage, Room } from "@/types/conference";
 
 interface ForumsMapViewProps {
-  forumMap: MapImage;
+  forumMap: MapImage | undefined;
   forumRooms: Room[];
   highlightForumRoomName: string | null | undefined;
 }
@@ -25,7 +25,7 @@ export function ForumsMapView({
   }
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !forumMap) return;
 
     const setHeight = () => {
       if (!mapRef.current) return;
@@ -61,7 +61,7 @@ export function ForumsMapView({
 
   // Leaflet forumMap initialisation — runs once on mount
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !forumMap) return;
 
     // Initialize forumMap instance
     const leafletMap = L.map(mapRef.current, {
@@ -142,6 +142,8 @@ export function ForumsMapView({
       }
     });
   }, [highlightForumRoomName]);
+
+  if (!forumMap) return null;
 
   return (
     /*
