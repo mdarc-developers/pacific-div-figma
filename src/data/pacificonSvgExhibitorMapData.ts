@@ -1,4 +1,4 @@
-// pacificonData.ts
+// pacificonSvgExhibitorMapData.ts
 // ─────────────────────────────────────────────────────────────────────────────
 // ALL coordinates were derived by pixel-measuring the original 1280×1702 image,
 // then scaling to a 1000×1633 SVG canvas at 0.6353 px/unit so ALL 5 booth
