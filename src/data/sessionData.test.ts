@@ -470,18 +470,28 @@ describe("mapExhibitorBooths population", () => {
   );
 
   confsWithExhibitorBooths.forEach((conf) => {
-    it(`${conf.id}: mapExhibitorBooths is populated with a non-empty URL`, () => {
-      expect(conf.mapExhibitorBooths).toBeDefined();
-      expect(typeof conf.mapExhibitorBooths![0]).toBe("string");
-      expect(conf.mapExhibitorBooths![0].length).toBeGreaterThan(0);
+    it(`${conf.id}: mapExhibitorBooths is a non-empty array of tuples`, () => {
+      expect(Array.isArray(conf.mapExhibitorBooths)).toBe(true);
+      expect(conf.mapExhibitorBooths!.length).toBeGreaterThan(0);
     });
 
-    it(`${conf.id}: mapExhibitorBooths[1] (exhibitors loaded) is true`, () => {
-      expect(conf.mapExhibitorBooths![1]).toBe(true);
+    it(`${conf.id}: each mapExhibitorBooths entry has a non-empty URL`, () => {
+      conf.mapExhibitorBooths!.forEach((entry) => {
+        expect(typeof entry[0]).toBe("string");
+        expect(entry[0].length).toBeGreaterThan(0);
+      });
     });
 
-    it(`${conf.id}: mapExhibitorBooths[2] (booths loaded) is true`, () => {
-      expect(conf.mapExhibitorBooths![2]).toBe(true);
+    it(`${conf.id}: each mapExhibitorBooths entry has exhibitors loaded = true`, () => {
+      conf.mapExhibitorBooths!.forEach((entry) => {
+        expect(entry[1]).toBe(true);
+      });
+    });
+
+    it(`${conf.id}: each mapExhibitorBooths entry has booths loaded = true`, () => {
+      conf.mapExhibitorBooths!.forEach((entry) => {
+        expect(entry[2]).toBe(true);
+      });
     });
   });
 

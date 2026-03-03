@@ -24,7 +24,7 @@ export function ExhibitorsPage() {
   const exhibitorBooths = boothEntry ? boothEntry[1] : [];
   const exhibitorEntry = EXHIBITOR_DATA[activeConference.id];
   const mapExhibitors = exhibitorEntry ? exhibitorEntry[1] : [];
-  const numEmaps = activeConference.mapExhibitorBooths.length; // num Exhibitor map
+  const numEmaps = activeConference.mapExhibitorBooths?.length ?? 0; // num Exhibitor map
 
   const [exhibitorsMap, setExhibitorsMap] = useState<MapImage | undefined>(
     () => {
@@ -106,9 +106,13 @@ export function ExhibitorsPage() {
       {isMdarcDeveloper && activeConference.mapExhibitorBooths && (
         <div className="mb-4 p-3 rounded border border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600 text-xs font-mono text-yellow-900 dark:text-yellow-200">
           <p className="font-semibold mb-1">Developer: mapExhibitorBooths</p>
-          <p>URL: {activeConference.mapExhibitorBooths[0]}</p>
-          <p>Exhibitors loaded: {String(activeConference.mapExhibitorBooths[1])}</p>
-          <p>Booths loaded: {String(activeConference.mapExhibitorBooths[2])}</p>
+          {activeConference.mapExhibitorBooths.map((entry) => (
+            <div key={entry[0]}>
+              <p>URL: {entry[0]}</p>
+              <p>Exhibitors loaded: {String(entry[1])}</p>
+              <p>Booths loaded: {String(entry[2])}</p>
+            </div>
+          ))}
         </div>
       )}
       {numEmaps === 1 && (

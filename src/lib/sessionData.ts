@@ -58,23 +58,28 @@ function updateMapExhibitorBooths(
 ): void {
   const conf = allConferences.find((c) => c.id === conferenceId);
   if (!conf) return;
-  if (!conf.mapExhibitorBooths || conf.mapExhibitorBooths[0] !== url) {
-    conf.mapExhibitorBooths = [url, false, false];
+  if (!conf.mapExhibitorBooths) {
+    conf.mapExhibitorBooths = [];
+  }
+  let entry = conf.mapExhibitorBooths.find((t) => t[0] === url);
+  if (!entry) {
+    entry = [url, false, false];
+    conf.mapExhibitorBooths.push(entry);
   }
   if (type === "exhibitors") {
-    if (conf.mapExhibitorBooths[1] && !isSupplemental) {
+    if (entry[1] && !isSupplemental) {
       throw new Error(
         `mapExhibitors already loaded for conference "${conferenceId}" URL "${url}"`,
       );
     }
-    conf.mapExhibitorBooths[1] = true;
+    entry[1] = true;
   } else {
-    if (conf.mapExhibitorBooths[2] && !isSupplemental) {
+    if (entry[2] && !isSupplemental) {
       throw new Error(
         `mapBooths already loaded for conference "${conferenceId}" URL "${url}"`,
       );
     }
-    conf.mapExhibitorBooths[2] = true;
+    entry[2] = true;
   }
 }
 
