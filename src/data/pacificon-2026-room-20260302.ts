@@ -1,6 +1,4 @@
-import {
-  Room,
-} from "@/types/conference";
+import { Room } from "@/types/conference";
 
 export const mapRooms: [string, Room[]] = [
   "/assets/maps/pacificon-hotel-2025.jpg",
@@ -160,4 +158,3 @@ export const mapRooms: [string, Room[]] = [
     },
   ],
 ];
-

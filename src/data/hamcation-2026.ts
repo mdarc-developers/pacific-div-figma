@@ -72,13 +72,23 @@ export const mapBooths: [string, Booth[]] = [
   [
     {
       id: 182,
-      coords: [[412, 194], [493, 194], [493, 273], [412, 273]],
-      locationZone: 'north',
+      coords: [
+        [412, 194],
+        [493, 194],
+        [493, 273],
+        [412, 273],
+      ],
+      locationZone: "north",
     },
     {
       id: 183,
-      coords: [[412, 275], [493, 275], [493, 353], [412, 353]],
-      locationZone: 'north',
+      coords: [
+        [412, 275],
+        [493, 275],
+        [493, 353],
+        [412, 353],
+      ],
+      locationZone: "north",
     },
   ],
 ];

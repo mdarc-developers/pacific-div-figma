@@ -1472,7 +1472,8 @@ export const mapSessions: [string, Session[]] = [
   "/assets/maps/yuma_map_2026-01-06_160549-1.png",
   // must match mapRooms URL
   // Source: https://www.yumahamfest.com/seminars.html (extracted 2026-02-25)
-  [       // moved to -session- file
+  [
+    // moved to -session- file
   ],
 ];
 

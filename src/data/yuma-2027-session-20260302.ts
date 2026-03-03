@@ -2,9 +2,7 @@
 //
 // sed 's/2026-02-28/2027-02-27/g; s/2026-02-27/2027-02-26/g' yuma-2027-session-x.ts > yuma-2027-session-20260302.ts
 //
-import {
-  Session,
-} from "@/types/conference";
+import { Session } from "@/types/conference";
 
 export const mapSessions: [string, Session[]] = [
   "/assets/maps/yuma_map_2026-01-06_160549-1.png",
@@ -274,4 +272,3 @@ export const mapSessions: [string, Session[]] = [
     },
   ],
 ];
-

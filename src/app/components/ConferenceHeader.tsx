@@ -427,30 +427,32 @@ export function ConferenceHeader() {
                       <ExternalLink className="h-4 w-4" />
                     </a>
                   </span>
-                  <div><Tooltip>
-                    <TooltipTrigger asChild>
-                      <span title="GPS Coordinates">
-                        {activeConference.venueGPS}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>GPS Coordinates</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <a
-                        //href={`https://www.levinecentral.com/ham/grid_square.php?Grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
-                        href={`https://www.karhukoti.com/maidenhead-grid-square-locator/?grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                        className="hover:underline"
-                        style={{ color: headerLinkColor }}
-                        title="Maidenhead Gridsquare"
-                      >
-                        {activeConference.venueGridSquare}
-                      </a>
-                    </TooltipTrigger>
-                    <TooltipContent>Maidenhead Gridsquare</TooltipContent>
-                  </Tooltip></div>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span title="GPS Coordinates">
+                          {activeConference.venueGPS}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>GPS Coordinates</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <a
+                          //href={`https://www.levinecentral.com/ham/grid_square.php?Grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
+                          href={`https://www.karhukoti.com/maidenhead-grid-square-locator/?grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          className="hover:underline"
+                          style={{ color: headerLinkColor }}
+                          title="Maidenhead Gridsquare"
+                        >
+                          {activeConference.venueGridSquare}
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>Maidenhead Gridsquare</TooltipContent>
+                    </Tooltip>
+                  </div>
                 </div>
               </div>
             </div>

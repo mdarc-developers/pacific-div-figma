@@ -11,9 +11,9 @@ const supplementalAttendeeModules = import.meta.glob("./*-userprofile-*.ts", {
 }) as Record<string, SupplementalAttendeeModule>;
 
 // Resolve the specific supplemental attendees needed by the tests below
-const quartzfest2027ProfilePath = Object.keys(
-  supplementalAttendeeModules,
-).find((p) => p.includes("quartzfest-2027-userprofile-"));
+const quartzfest2027ProfilePath = Object.keys(supplementalAttendeeModules).find(
+  (p) => p.includes("quartzfest-2027-userprofile-"),
+);
 const mapUserProfiles: UserProfile[] = quartzfest2027ProfilePath
   ? (supplementalAttendeeModules[quartzfest2027ProfilePath].mapUserProfiles ??
     [])

@@ -32,11 +32,8 @@ export function ExhibitorsPage() {
       // TODO: restore `activeConference.mapExhibitorsUrl.length === 1` guard when multi-map is re-enabled.
       const boothMapUrl = boothEntry?.[0];
       if (!boothMapUrl) return undefined;
-      return (
-        conferenceMaps.find((m) => m.url === boothMapUrl) ||
-        undefined
-      );
-        
+      return conferenceMaps.find((m) => m.url === boothMapUrl) || undefined;
+
       // Multi-map initialiser (disabled — single-map assumption):
       // if (activeConference.mapExhibitorsUrl.length === 1) {
       //   return conferenceMaps.find(m => activeConference.mapExhibitorsUrl.includes(m.url)) || {
@@ -105,7 +102,10 @@ export function ExhibitorsPage() {
     <div className="block">
       {isMdarcDeveloper && activeConference.mapExhibitorBooths && (
         <div className="mb-4 p-3 rounded border border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600 text-xs font-mono text-yellow-900 dark:text-yellow-200">
-          <p className="font-semibold mb-1">Developer: mapExhibitorBooths length {activeConference.mapExhibitorBooths.length}</p>
+          <p className="font-semibold mb-1">
+            Developer: mapExhibitorBooths length{" "}
+            {activeConference.mapExhibitorBooths.length}
+          </p>
           {activeConference.mapExhibitorBooths.map((entry) => (
             <div key={entry[0]}>
               <p>URL: {entry[0]}</p>

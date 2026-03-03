@@ -225,9 +225,7 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   // Build lookup maps for sessions, exhibitors, and prizes (memoized per conference)
   const sessionMap = useMemo(
     () =>
-      new Map(
-        (SESSION_DATA[activeConference.id] || []).map((s) => [s.id, s]),
-      ),
+      new Map((SESSION_DATA[activeConference.id] || []).map((s) => [s.id, s])),
     [activeConference.id],
   );
   const exhibitorMap = useMemo(() => {
@@ -236,9 +234,7 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   }, [activeConference.id]);
   const prizeMap = useMemo(
     () =>
-      new Map(
-        (PRIZE_DATA[activeConference.id] || []).map((p) => [p.id, p]),
-      ),
+      new Map((PRIZE_DATA[activeConference.id] || []).map((p) => [p.id, p])),
     [activeConference.id],
   );
 

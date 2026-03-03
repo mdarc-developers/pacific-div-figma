@@ -3009,4 +3009,3 @@ export const conferenceMaps: MapImage[] = [
     origWidthNum: 582,
   },
 ];
-

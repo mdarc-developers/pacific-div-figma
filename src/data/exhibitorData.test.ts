@@ -16,16 +16,18 @@ const hamcation2027Path = Object.keys(conferenceModules).find((p) =>
   p.includes("hamcation-2027"),
 );
 const mapExhibitors: [string, Exhibitor[]] = hamcation2027Path
-  ? ((conferenceModules[hamcation2027Path] as ConferenceModule).mapExhibitors ??
-    ["", []])
+  ? ((conferenceModules[hamcation2027Path] as ConferenceModule)
+      .mapExhibitors ?? ["", []])
   : ["", []];
 
 const hamcation2026SupPath = Object.keys(supplementalExhibitorModules).find(
   (p) => p.includes("hamcation-2026-exhibitor-"),
 );
 const supplementalExhibitors: [string, Exhibitor[]] = hamcation2026SupPath
-  ? (supplementalExhibitorModules[hamcation2026SupPath].mapExhibitors ??
-    ["", []])
+  ? (supplementalExhibitorModules[hamcation2026SupPath].mapExhibitors ?? [
+      "",
+      [],
+    ])
   : ["", []];
 
 // ── hamcation-2027 data shape ─────────────────────────────────────────────────

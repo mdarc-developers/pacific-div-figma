@@ -1,6 +1,4 @@
-import {
-  Session,
-} from "@/types/conference";
+import { Session } from "@/types/conference";
 
 export const mapSessions: [string, Session[]] = [
   "/assets/maps/yuma_map_2026-01-06_160549-1.png",
@@ -270,4 +268,3 @@ export const mapSessions: [string, Session[]] = [
     },
   ],
 ];
-

@@ -535,12 +535,7 @@ describe("warnEmptyMapData", () => {
 
   it("emits console.warn when the items array is empty", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    warnEmptyMapData(
-      "test-conf",
-      "mapSessions",
-      "/assets/maps/test.png",
-      [],
-    );
+    warnEmptyMapData("test-conf", "mapSessions", "/assets/maps/test.png", []);
     expect(warnSpy).toHaveBeenCalledOnce();
     expect(String(warnSpy.mock.calls[0][0])).toContain("[sessionData]");
     expect(String(warnSpy.mock.calls[0][0])).toContain("test-conf");
