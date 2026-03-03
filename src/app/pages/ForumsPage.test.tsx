@@ -128,3 +128,85 @@ describe("forumMap selection", () => {
     expect(selected).toBeUndefined();
   });
 });
+
+// ── multi-map roomEntries iteration ──────────────────────────────────────────
+describe("multi-map roomEntries iteration", () => {
+  const forumsMap: MapImage = {
+    id: "map-forum",
+    name: "Forums",
+    url: "/assets/maps/pacificon-forums-2025.jpg",
+    order: 3,
+    origHeightNum: 256,
+    origWidthNum: 582,
+  };
+
+  const hotelMap: MapImage = {
+    id: "map-hotel",
+    name: "Hotel",
+    url: "/assets/maps/pacificon-hotel-2025.jpg",
+    order: 1,
+    origHeightNum: 1201,
+    origWidthNum: 983,
+  };
+
+  const forumsRooms: Room[] = [
+    {
+      name: "Salon E",
+      coords: [
+        [55, 310],
+        [215, 310],
+        [215, 413],
+        [55, 413],
+      ],
+      color: "#3B82F6",
+    },
+  ];
+
+  const hotelRooms: Room[] = [
+    {
+      name: "Registration",
+      coords: [
+        [1, 3],
+        [57, 3],
+        [57, 90],
+        [1, 90],
+      ],
+      color: "#10B981",
+    },
+  ];
+
+  const roomEntries: [string, Room[]][] = [
+    [forumsMap.url, forumsRooms],
+    [hotelMap.url, hotelRooms],
+  ];
+
+  const maps: MapImage[] = [forumsMap, hotelMap];
+
+  it("each roomUrl resolves to its own distinct mapRoomList", () => {
+    roomEntries.forEach(([roomUrl, mapRoomList]) => {
+      const mapImg = maps.find((m) => m.url === roomUrl);
+      expect(mapImg).toBeDefined();
+      if (roomUrl === forumsMap.url) {
+        expect(mapImg?.id).toBe("map-forum");
+        expect(mapRoomList).toBe(forumsRooms);
+      } else {
+        expect(mapImg?.id).toBe("map-hotel");
+        expect(mapRoomList).toBe(hotelRooms);
+      }
+    });
+  });
+
+  it("forums roomUrl does not receive hotel rooms", () => {
+    const [forumsUrl, forumsMapRoomList] = roomEntries[0];
+    expect(forumsUrl).toBe(forumsMap.url);
+    expect(forumsMapRoomList).not.toBe(hotelRooms);
+    expect(forumsMapRoomList[0].name).toBe("Salon E");
+  });
+
+  it("hotel roomUrl does not receive forums rooms", () => {
+    const [hotelUrl, hotelMapRoomList] = roomEntries[1];
+    expect(hotelUrl).toBe(hotelMap.url);
+    expect(hotelMapRoomList).not.toBe(forumsRooms);
+    expect(hotelMapRoomList[0].name).toBe("Registration");
+  });
+});
