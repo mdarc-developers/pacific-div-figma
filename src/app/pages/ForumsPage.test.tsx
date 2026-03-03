@@ -5,6 +5,11 @@ import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { MapImage, Room } from "@/types/conference";
 
+// ── Mock useMdarcDeveloper so it doesn't pull in Firebase ─────────────────────
+vi.mock("@/app/hooks/useMdarcDeveloper", () => ({
+  useMdarcDeveloper: () => false,
+}));
+
 // ── Mock Leaflet ─────────────────────────────────────────────────────────────
 const mockLeafletMap = {
   on: vi.fn(),
@@ -66,17 +71,8 @@ describe("ForumsPage", () => {
   });
 });
 
-// ── forumMap fallback logic ───────────────────────────────────────────────────
-describe("forumMap fallback selection", () => {
-  const fallbackMap: MapImage = {
-    id: "map-0",
-    name: "noForumMapFound",
-    url: "/assets/maps/pacificon-forums-2025.jpg",
-    order: 6,
-    origHeightNum: 256,
-    origWidthNum: 582,
-  };
-
+// ── forumMap selection logic ──────────────────────────────────────────────────
+describe("forumMap selection", () => {
   const forumsMap: MapImage = {
     id: "map-forum",
     name: "Forums",
@@ -113,24 +109,22 @@ describe("forumMap fallback selection", () => {
 
   it("selects the map whose URL matches the mapRooms URL", () => {
     const maps: MapImage[] = [hotelMap, forumsMap];
-    const [forumMapUrl] = roomEntry;
-    const selected = maps.find((m) => m.url === forumMapUrl) ?? fallbackMap;
-    expect(selected.id).toBe("map-forum");
+    const [roomUrl] = roomEntry;
+    const selected = maps.find((m) => m.url === roomUrl);
+    expect(selected?.id).toBe("map-forum");
   });
 
-  it("falls back to default map when no conferenceMaps entry matches", () => {
+  it("returns undefined when no conferenceMaps entry matches the URL", () => {
     const maps: MapImage[] = [hotelMap]; // forumsMap is absent
-    const [forumMapUrl] = roomEntry;
-    const selected = maps.find((m) => m.url === forumMapUrl) ?? fallbackMap;
-    expect(selected.id).toBe("map-0");
-    expect(selected.origHeightNum).toBe(256);
-    expect(selected.origWidthNum).toBe(582);
+    const [roomUrl] = roomEntry;
+    const selected = maps.find((m) => m.url === roomUrl);
+    expect(selected).toBeUndefined();
   });
 
-  it("falls back when conferenceMaps is empty", () => {
+  it("returns undefined when conferenceMaps is empty", () => {
     const maps: MapImage[] = [];
-    const [forumMapUrl] = roomEntry;
-    const selected = maps.find((m) => m.url === forumMapUrl) ?? fallbackMap;
-    expect(selected).toEqual(fallbackMap);
+    const [roomUrl] = roomEntry;
+    const selected = maps.find((m) => m.url === roomUrl);
+    expect(selected).toBeUndefined();
   });
 });
