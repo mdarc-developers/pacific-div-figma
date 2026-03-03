@@ -174,6 +174,9 @@
             image
           </li>
           <li>
+		  LocationZone is <strong>hard coded</strong>. Tool needs field update or edit each time.
+	  </li>
+          <li>
             Click "Clear Last Point" to undo, or "Reset Booth" to start over
           </li>
           <li>Copy the generated code from the output section</li>
@@ -420,7 +423,7 @@
         });
 
         const coordString = coords.map((c) => `[${c[0]}, ${c[1]}]`).join(", ");
-        const outputText = `\n  {\n    id: ${boothName},\n    coords: [${coordString}],\n    locationZone: \'lobby\',\n  },\n\n`;
+        const outputText = `    {\n      id: \'${boothName}\',\n      coords: [${coordString}],\n      locationZone: \'eastwest\',\n    },\n`;
 
         output.textContent = outputText;
 

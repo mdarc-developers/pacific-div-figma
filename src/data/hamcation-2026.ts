@@ -69,7 +69,18 @@ export const samplePrizeWinners: PrizeWinner[] = [
 export const mapBooths: [string, Booth[]] = [
   "/assets/maps/hamcation-2026-north.png",
   // must match mapExhibitors URL
-  [],
+  [
+    {
+      id: 182,
+      coords: [[412, 194], [493, 194], [493, 273], [412, 273]],
+      locationZone: 'north',
+    },
+    {
+      id: 183,
+      coords: [[412, 275], [493, 275], [493, 353], [412, 353]],
+      locationZone: 'north',
+    },
+  ],
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [

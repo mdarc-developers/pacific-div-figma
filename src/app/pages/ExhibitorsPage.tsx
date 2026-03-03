@@ -105,7 +105,7 @@ export function ExhibitorsPage() {
     <div className="block">
       {isMdarcDeveloper && activeConference.mapExhibitorBooths && (
         <div className="mb-4 p-3 rounded border border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600 text-xs font-mono text-yellow-900 dark:text-yellow-200">
-          <p className="font-semibold mb-1">Developer: mapExhibitorBooths</p>
+          <p className="font-semibold mb-1">Developer: mapExhibitorBooths length {activeConference.mapExhibitorBooths.length}</p>
           {activeConference.mapExhibitorBooths.map((entry) => (
             <div key={entry[0]}>
               <p>URL: {entry[0]}</p>
