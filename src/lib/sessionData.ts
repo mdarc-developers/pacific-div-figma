@@ -25,23 +25,28 @@ function updateMapSessionRooms(
 ): void {
   const conf = allConferences.find((c) => c.id === conferenceId);
   if (!conf) return;
-  if (!conf.mapSessionRooms || conf.mapSessionRooms[0] !== url) {
-    conf.mapSessionRooms = [url, false, false];
+  if (!conf.mapSessionRooms) {
+    conf.mapSessionRooms = [];
+  }
+  let entry = conf.mapSessionRooms.find((t) => t[0] === url);
+  if (!entry) {
+    entry = [url, false, false];
+    conf.mapSessionRooms.push(entry);
   }
   if (type === "sessions") {
-    if (conf.mapSessionRooms[1] && !isSupplemental) {
+    if (entry[1] && !isSupplemental) {
       throw new Error(
         `mapSessions already loaded for conference "${conferenceId}" URL "${url}"`,
       );
     }
-    conf.mapSessionRooms[1] = true;
+    entry[1] = true;
   } else {
-    if (conf.mapSessionRooms[2] && !isSupplemental) {
+    if (entry[2] && !isSupplemental) {
       throw new Error(
         `mapRooms already loaded for conference "${conferenceId}" URL "${url}"`,
       );
     }
-    conf.mapSessionRooms[2] = true;
+    entry[2] = true;
   }
 }
 
@@ -200,9 +205,8 @@ Object.keys(supplementalExhibitorModules)
 // the loading loops above) avoids false positives when a base file ships a
 // placeholder empty array that a supplemental file later fills in.
 Object.entries(SESSION_DATA).forEach(([conferenceId, sessions]) => {
-  const url =
-    allConferences.find((c) => c.id === conferenceId)?.mapSessionRooms?.[0] ??
-    "";
+  const conf = allConferences.find((c) => c.id === conferenceId);
+  const url = conf?.mapSessionRooms?.find((t) => t[1])?.[0] ?? "";
   warnEmptyMapData(conferenceId, "mapSessions", url, sessions);
 });
 Object.entries(ROOM_DATA).forEach(([conferenceId, [url, rooms]]) => {

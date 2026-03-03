@@ -214,7 +214,7 @@ All domain types live in a single file. Every interface carries a `conferenceId`
 
 ### Conference
 
-Core event metadata. `primaryColor` / `secondaryColor` drive the header banner. Times are stored as **local date strings** (no offset baked in); the companion fields `timezone` (`"America/Los_Angeles"`) and `timezoneNumeric` (`"-0700"`) are used at render time to produce correct locale-formatted output. Optional `mapSessionRooms` and `mapExhibitorBooths` tuples flag which conferences have Leaflet-based room/booth maps.
+Core event metadata. `primaryColor` / `secondaryColor` drive the header banner. Times are stored as **local date strings** (no offset baked in); the companion fields `timezone` (`"America/Los_Angeles"`) and `timezoneNumeric` (`"-0700"`) are used at render time to produce correct locale-formatted output. Optional `mapSessionRooms` and `mapExhibitorBooths` arrays of tuples flag which conferences have Leaflet-based room/booth maps.
 
 ### Session
 

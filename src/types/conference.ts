@@ -20,7 +20,7 @@ export interface Conference {
   contactEmail: string;
   logoUrl: string;
   votes?: number;
-  mapSessionRooms?: [string, boolean, boolean];
+  mapSessionRooms?: [string, boolean, boolean][];
   mapExhibitorBooths?: [string, boolean, boolean][];
 }
 
