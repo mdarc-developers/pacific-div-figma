@@ -17,7 +17,7 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({
   onSelectSession,
   onSearch,
-  placeholderProp = "Search forums...",
+  placeholderProp = "Search schedule...",
   //placeholder="Search speakers, forums, events, exhibitors..."
   classNameProp = "",
 }) => {
