@@ -82,10 +82,10 @@ export const mapRooms: [string, Room[]] = [
     },
     {
       name: "Salon E", // new
-      coords: [[913, 302],
-        [966, 302],
-        [966, 385],
-        [913, 385]
+      coords: [[968, 608],
+        [1030, 608],
+        [1030, 712],
+        [968, 712]
       ],
       color: "#3B82F6",
     },
