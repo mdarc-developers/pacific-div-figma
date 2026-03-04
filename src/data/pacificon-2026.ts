@@ -3003,6 +3003,7 @@ export const conferenceMaps: MapImage[] = [
     id: "map-6",
     name: "Forums",
     url: "/assets/maps/pacificon-forums-2025.jpg",
+    category: "Forums",
     //floor: '2',
     order: 6,
     origHeightNum: 256,

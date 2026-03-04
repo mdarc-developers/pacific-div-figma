@@ -32,6 +32,7 @@ export interface MapImage {
   order: number;
   origWidthNum?: number;
   origHeightNum?: number;
+  category?: string[];
 }
 
 export interface Booth {
