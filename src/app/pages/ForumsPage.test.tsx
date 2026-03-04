@@ -168,9 +168,9 @@ describe("ForumsPage", () => {
     expect(capturedTrackFilter).toBeUndefined();
   });
 
-  it("does not render category filter panel when isMdarcDeveloper is false", () => {
+  it("renders category filter panel for all users when forumTracks exist", () => {
     renderForumsPage();
-    expect(screen.queryByText("Filter by category:")).toBeNull();
+    expect(screen.getByText("Filter by category:")).toBeInTheDocument();
   });
 });
 
