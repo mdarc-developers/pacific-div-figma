@@ -201,6 +201,7 @@ interface ScheduleViewProps {
   bookmarkedSessions?: string[];
   onToggleBookmark?: (sessionId: string) => void;
   highlightSessionId?: string;
+  categoryFilter?: string;
 }
 
 // Returns true if the session is currently happening or starts within the next 2 hours
@@ -216,6 +217,7 @@ export function ScheduleView({
   bookmarkedSessions = [],
   onToggleBookmark,
   highlightSessionId,
+  categoryFilter,
 }: ScheduleViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
@@ -224,7 +226,10 @@ export function ScheduleView({
   const navigate = useNavigate();
   const location = useLocation();
   const sessions = (SESSION_DATA[activeConference.id] || []).filter((s) =>
-    isValidDateTimeString(s.startTime),
+    isValidDateTimeString(s.startTime) &&
+    // When categoryFilter is set, only sessions whose category matches (case-insensitive) are included.
+    // Sessions without a category are intentionally excluded when filtering.
+    (!categoryFilter || s.category?.toLowerCase() === categoryFilter.toLowerCase()),
   );
   const updateToken = SESSION_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedDay, setSelectedDay] = useState<string>("all");

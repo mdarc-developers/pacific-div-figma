@@ -35,8 +35,12 @@ vi.mock("leaflet", () => ({
 }));
 
 // ── Mock ScheduleView ─────────────────────────────────────────────────────────
+let capturedCategoryFilter: string | undefined;
 vi.mock("@/app/components/ScheduleView", () => ({
-  ScheduleView: () => <div data-testid="schedule-view" />,
+  ScheduleView: ({ categoryFilter }: { categoryFilter?: string }) => {
+    capturedCategoryFilter = categoryFilter;
+    return <div data-testid="schedule-view" />;
+  },
 }));
 
 // Static import — vi.mock calls above are hoisted before this by Vitest
@@ -68,6 +72,12 @@ describe("ForumsPage", () => {
   it("renders ScheduleView", () => {
     renderForumsPage();
     expect(screen.getByTestId("schedule-view")).toBeInTheDocument();
+  });
+
+  it("passes categoryFilter='forums' to ScheduleView", () => {
+    capturedCategoryFilter = undefined;
+    renderForumsPage();
+    expect(capturedCategoryFilter).toBe("forums");
   });
 });
 

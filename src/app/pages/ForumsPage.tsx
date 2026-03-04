@@ -63,6 +63,7 @@ export function ForumsPage() {
       <ScheduleView
         bookmarkedSessions={bookmarkedSessions}
         onToggleBookmark={handleToggleBookmark}
+        categoryFilter="forums"
       />
     </div>
   );
