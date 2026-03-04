@@ -57,6 +57,16 @@ vi.mock("@/lib/sessionData", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/sessionData")>();
   return {
     ...original,
+    // Add category to the hamvention forums map so developer panel tests can
+    // verify that JSON.stringify(mapImg?.category) is rendered correctly.
+    MAP_DATA: {
+      ...original.MAP_DATA,
+      "hamvention-2026": (original.MAP_DATA["hamvention-2026"] ?? []).map((m) =>
+        m.url === "/assets/maps/hamvention-forums-2026-2.png"
+          ? { ...m, category: ["Forums"] }
+          : m,
+      ),
+    },
     SESSION_DATA: {
       ...original.SESSION_DATA,
       // Override hamvention-2026 (default conference) with tracked forum sessions
@@ -437,5 +447,26 @@ describe("isMdarcDeveloper category filter panel", () => {
     expect(capturedTrackFilter).toBe("Digital");
     fireEvent.click(screen.getByRole("button", { name: "All" }));
     expect(capturedTrackFilter).toBeUndefined();
+  });
+});
+
+// ── isMdarcDeveloper developer panel counter and categories ───────────────────
+describe("isMdarcDeveloper developer panel counter and categories", () => {
+  beforeEach(() => {
+    mockUseMdarcDeveloper.mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    mockUseMdarcDeveloper.mockReturnValue(false);
+  });
+
+  it("renders a counter starting at #1 before the URL", () => {
+    renderForumsPage();
+    expect(screen.getByText(/#1 URL:/)).toBeInTheDocument();
+  });
+
+  it("renders JSON-stringified category from the matching MapImage", () => {
+    renderForumsPage();
+    expect(screen.getByText(/Categories:.*\["Forums"\]/)).toBeInTheDocument();
   });
 });

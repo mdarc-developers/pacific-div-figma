@@ -41,13 +41,17 @@ export function ForumsPage() {
             Developer: mapSessionRooms length{" "}
             {activeConference.mapSessionRooms.length}
           </p>
-          {activeConference.mapSessionRooms.map((entry) => (
-            <div key={entry[0]}>
-              <p>URL: {entry[0]}</p>
-              <p>Sessions loaded: {String(entry[1])}</p>
-              <p>Rooms loaded: {String(entry[2])}</p>
-            </div>
-          ))}
+          {activeConference.mapSessionRooms.map((entry, index) => {
+            const mapImg = conferenceMaps.find((m) => m.url === entry[0]);
+            return (
+              <div key={entry[0]}>
+                <p>#{index + 1} URL: {entry[0]}</p>
+                <p>Sessions loaded: {String(entry[1])}</p>
+                <p>Rooms loaded: {String(entry[2])}</p>
+                <p>Categories: {JSON.stringify(mapImg?.category)}</p>
+              </div>
+            );
+          })}
         </div>
       )}
       {numSRurls === 1 && (
