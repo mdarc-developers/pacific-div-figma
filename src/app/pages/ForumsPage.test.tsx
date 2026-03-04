@@ -139,6 +139,83 @@ describe("forumMap selection", () => {
   });
 });
 
+// ── multi-map Forums category filter ─────────────────────────────────────────
+describe("multi-map Forums category filter (numSRurls > 1)", () => {
+  const forumsMap: MapImage = {
+    id: "map-forum",
+    name: "Forums",
+    url: "/assets/maps/pacificon-forums-2025.jpg",
+    order: 3,
+    origHeightNum: 256,
+    origWidthNum: 582,
+    category: ["Forums"],
+  };
+
+  const hotelMap: MapImage = {
+    id: "map-hotel",
+    name: "Hotel",
+    url: "/assets/maps/pacificon-hotel-2025.jpg",
+    order: 1,
+    origHeightNum: 1201,
+    origWidthNum: 983,
+    category: ["Hotel"],
+  };
+
+  const noCategoryMap: MapImage = {
+    id: "map-nocategory",
+    name: "Uncategorised",
+    url: "/assets/maps/pacificon-other-2025.jpg",
+    order: 2,
+    origHeightNum: 500,
+    origWidthNum: 500,
+  };
+
+  const maps: MapImage[] = [forumsMap, hotelMap, noCategoryMap];
+
+  const roomEntries: [string, Room[]][] = [
+    [forumsMap.url, []],
+    [hotelMap.url, []],
+    [noCategoryMap.url, []],
+  ];
+
+  it("only includes entries whose MapImage has category 'Forums'", () => {
+    const filtered = roomEntries.filter(([roomUrl]) => {
+      const mapImg = maps.find((m) => m.url === roomUrl);
+      return mapImg?.category?.includes("Forums");
+    });
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0][0]).toBe(forumsMap.url);
+  });
+
+  it("excludes entries whose MapImage category does not include 'Forums'", () => {
+    const filtered = roomEntries.filter(([roomUrl]) => {
+      const mapImg = maps.find((m) => m.url === roomUrl);
+      return mapImg?.category?.includes("Forums");
+    });
+    const urls = filtered.map(([url]) => url);
+    expect(urls).not.toContain(hotelMap.url);
+    expect(urls).not.toContain(noCategoryMap.url);
+  });
+
+  it("excludes entries whose MapImage has no category array", () => {
+    const filtered = roomEntries.filter(([roomUrl]) => {
+      const mapImg = maps.find((m) => m.url === roomUrl);
+      return mapImg?.category?.includes("Forums");
+    });
+    const urls = filtered.map(([url]) => url);
+    expect(urls).not.toContain(noCategoryMap.url);
+  });
+
+  it("returns empty when no MapImage has category 'Forums'", () => {
+    const nonForumsMaps: MapImage[] = [hotelMap, noCategoryMap];
+    const filtered = roomEntries.filter(([roomUrl]) => {
+      const mapImg = nonForumsMaps.find((m) => m.url === roomUrl);
+      return mapImg?.category?.includes("Forums");
+    });
+    expect(filtered).toHaveLength(0);
+  });
+});
+
 // ── multi-map roomEntries iteration ──────────────────────────────────────────
 describe("multi-map roomEntries iteration", () => {
   const forumsMap: MapImage = {
