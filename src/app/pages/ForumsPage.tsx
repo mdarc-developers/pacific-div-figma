@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { ScheduleView } from "@/app/components/ScheduleView";
 import { ForumsMapView } from "@/app/components/ForumsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
 import { useBookmarks } from "@/app/hooks/useBookmarks";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
-import { MAP_DATA, ROOM_DATA } from "@/lib/sessionData";
+import { MAP_DATA, ROOM_DATA, SESSION_DATA } from "@/lib/sessionData";
 
 export function ForumsPage() {
   const isMdarcDeveloper = useMdarcDeveloper();
@@ -15,10 +16,22 @@ export function ForumsPage() {
   const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(
     activeConference.id,
   );
+  const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const roomEntry = ROOM_DATA[activeConference.id] ?? []; // url and Room[]
   //const roomArray = roomEntry ? roomEntry[1] : []; // Room[]
   const numSRurls = activeConference.mapSessionRooms?.length ?? 0; // num Session Room urls
+
+  // Collect unique track values from forum sessions for category filtering
+  const forumTracks = isMdarcDeveloper
+    ? [
+        ...new Set(
+          (SESSION_DATA[activeConference.id] || [])
+            .filter((s) => s.category?.toLowerCase() === "forums")
+            .flatMap((s) => s.track ?? []),
+        ),
+      ].sort()
+    : [];
 
   return (
     <div className="block">
@@ -61,10 +74,33 @@ export function ForumsPage() {
             />,
           ];
         })}
+      {isMdarcDeveloper && forumTracks.length > 0 && (
+        <div className="mb-4 p-3 rounded border border-blue-400 bg-blue-50 dark:bg-blue-950 dark:border-blue-600 text-xs text-blue-900 dark:text-blue-200">
+          <p className="font-semibold mb-2">Filter by category:</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className={`px-2 py-1 rounded border text-xs font-medium transition-colors ${selectedTrack === null ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-blue-900 border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-800"}`}
+              onClick={() => setSelectedTrack(null)}
+            >
+              All
+            </button>
+            {forumTracks.map((track) => (
+              <button
+                key={track}
+                className={`px-2 py-1 rounded border text-xs font-medium transition-colors ${selectedTrack === track ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-blue-900 border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-800"}`}
+                onClick={() => setSelectedTrack(selectedTrack === track ? null : track)}
+              >
+                {track}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <ScheduleView
         bookmarkedSessions={bookmarkedSessions}
         onToggleBookmark={handleToggleBookmark}
         categoryFilter="forums"
+        trackFilter={selectedTrack ?? undefined}
       />
     </div>
   );

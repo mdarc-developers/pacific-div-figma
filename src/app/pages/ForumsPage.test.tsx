@@ -1,13 +1,14 @@
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { MapImage, Room } from "@/types/conference";
 
 // ── Mock useMdarcDeveloper so it doesn't pull in Firebase ─────────────────────
+const mockUseMdarcDeveloper = vi.fn(() => false);
 vi.mock("@/app/hooks/useMdarcDeveloper", () => ({
-  useMdarcDeveloper: () => false,
+  useMdarcDeveloper: () => mockUseMdarcDeveloper(),
 }));
 
 // ── Mock Leaflet ─────────────────────────────────────────────────────────────
@@ -36,12 +37,79 @@ vi.mock("leaflet", () => ({
 
 // ── Mock ScheduleView ─────────────────────────────────────────────────────────
 let capturedCategoryFilter: string | undefined;
+let capturedTrackFilter: string | undefined;
 vi.mock("@/app/components/ScheduleView", () => ({
-  ScheduleView: ({ categoryFilter }: { categoryFilter?: string }) => {
+  ScheduleView: ({
+    categoryFilter,
+    trackFilter,
+  }: {
+    categoryFilter?: string;
+    trackFilter?: string;
+  }) => {
     capturedCategoryFilter = categoryFilter;
+    capturedTrackFilter = trackFilter;
     return <div data-testid="schedule-view" />;
   },
 }));
+
+// ── Mock SESSION_DATA so category filter tests are deterministic ──────────────
+vi.mock("@/lib/sessionData", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/sessionData")>();
+  return {
+    ...original,
+    SESSION_DATA: {
+      ...original.SESSION_DATA,
+      // Override hamvention-2026 (default conference) with tracked forum sessions
+      // so isMdarcDeveloper category filter tests are deterministic.
+      "hamvention-2026": [
+        {
+          id: "test-s1",
+          title: "Test Forum Digital",
+          description: "",
+          speaker: [],
+          location: "Room A",
+          startTime: "2026-05-15T09:00:00",
+          endTime: "2026-05-15T10:00:00",
+          category: "Forums",
+          track: ["Digital"],
+        },
+        {
+          id: "test-s2",
+          title: "Test Forum QRP",
+          description: "",
+          speaker: [],
+          location: "Room A",
+          startTime: "2026-05-15T09:00:00",
+          endTime: "2026-05-15T10:00:00",
+          category: "Forums",
+          track: ["QRP"],
+        },
+        {
+          id: "test-s3",
+          title: "Test Forum AI",
+          description: "",
+          speaker: [],
+          location: "Room B",
+          startTime: "2026-05-16T09:00:00",
+          endTime: "2026-05-16T10:00:00",
+          category: "Forums",
+          track: ["Digital", "AI"],
+        },
+        {
+          id: "test-s4",
+          title: "Test Event",
+          description: "",
+          speaker: [],
+          location: "Room C",
+          startTime: "2026-05-15T09:00:00",
+          endTime: "2026-05-15T10:00:00",
+          category: "Events",
+          track: [],
+        },
+      ],
+    },
+  };
+});
 
 // Static import — vi.mock calls above are hoisted before this by Vitest
 import { ForumsPage } from "@/app/pages/ForumsPage";
@@ -59,6 +127,10 @@ function renderForumsPage() {
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 describe("ForumsPage", () => {
+  beforeEach(() => {
+    mockUseMdarcDeveloper.mockReturnValue(false);
+  });
+
   it("renders without crashing", () => {
     expect(() => renderForumsPage()).not.toThrow();
   });
@@ -78,6 +150,17 @@ describe("ForumsPage", () => {
     capturedCategoryFilter = undefined;
     renderForumsPage();
     expect(capturedCategoryFilter).toBe("forums");
+  });
+
+  it("does not pass trackFilter to ScheduleView when no track is selected", () => {
+    capturedTrackFilter = undefined;
+    renderForumsPage();
+    expect(capturedTrackFilter).toBeUndefined();
+  });
+
+  it("does not render category filter panel when isMdarcDeveloper is false", () => {
+    renderForumsPage();
+    expect(screen.queryByText("Filter by category:")).toBeNull();
   });
 });
 
@@ -295,5 +378,64 @@ describe("multi-map roomEntries iteration", () => {
     expect(hotelUrl).toBe(hotelMap.url);
     expect(hotelMapRoomList).not.toBe(forumsRooms);
     expect(hotelMapRoomList[0].name).toBe("Registration");
+  });
+});
+
+// ── isMdarcDeveloper category filter panel ───────────────────────────────────
+describe("isMdarcDeveloper category filter panel", () => {
+  beforeEach(() => {
+    mockUseMdarcDeveloper.mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    mockUseMdarcDeveloper.mockReturnValue(false);
+  });
+
+  it("renders category filter panel when isMdarcDeveloper is true and tracks exist", () => {
+    renderForumsPage();
+    expect(screen.queryByText("Filter by category:")).not.toBeNull();
+  });
+
+  it("renders an 'All' button in the category filter panel", () => {
+    renderForumsPage();
+    expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
+  });
+
+  it("does not pass trackFilter when 'All' is selected (default)", () => {
+    capturedTrackFilter = "something";
+    renderForumsPage();
+    expect(capturedTrackFilter).toBeUndefined();
+  });
+
+  it("passes trackFilter to ScheduleView when a track button is clicked", () => {
+    renderForumsPage();
+    const digitalBtn = screen.getByRole("button", { name: "Digital" });
+    fireEvent.click(digitalBtn);
+    expect(capturedTrackFilter).toBe("Digital");
+  });
+
+  it("clears trackFilter when the active track is clicked again", () => {
+    renderForumsPage();
+    const digitalBtn = screen.getByRole("button", { name: "Digital" });
+    fireEvent.click(digitalBtn);
+    expect(capturedTrackFilter).toBe("Digital");
+    fireEvent.click(digitalBtn);
+    expect(capturedTrackFilter).toBeUndefined();
+  });
+
+  it("changes trackFilter when a different track is selected", () => {
+    renderForumsPage();
+    fireEvent.click(screen.getByRole("button", { name: "Digital" }));
+    expect(capturedTrackFilter).toBe("Digital");
+    fireEvent.click(screen.getByRole("button", { name: "QRP" }));
+    expect(capturedTrackFilter).toBe("QRP");
+  });
+
+  it("clicking 'All' clears the trackFilter", () => {
+    renderForumsPage();
+    fireEvent.click(screen.getByRole("button", { name: "Digital" }));
+    expect(capturedTrackFilter).toBe("Digital");
+    fireEvent.click(screen.getByRole("button", { name: "All" }));
+    expect(capturedTrackFilter).toBeUndefined();
   });
 });
