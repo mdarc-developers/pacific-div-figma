@@ -1,11 +1,12 @@
 import {
-  Session,
-  MapImage,
-  Room,
-  Exhibitor,
   Booth,
+  Exhibitor,
+  MapImage,
+  Message,
   Prize,
   PrizeWinner,
+  Room,
+  Session,
   UserProfile,
 } from "@/types/conference";
 
@@ -3011,3 +3012,26 @@ export const conferenceMaps: MapImage[] = [
     origWidthNum: 582,
   },
 ];
+
+//export interface Message {
+//  id: string;
+//  createdAt: string;
+//  from: string; // user id or callsign
+//  to?: string; // optional for public messages
+//  isPublic: boolean;
+//  content: string;
+//  boardId?: string; // for public board messages
+//  votes?: number;
+//}
+export const attendeeMessages: Message[] = [
+  {
+    id: "one",
+    createdAt: "20260304 T 11:09:01",
+    from: "me",
+    isPublic: true,
+    content: "I think www.pacificon.org is great. What do you think?",
+    boardId: "board1",
+    votes: 0,
+  },
+];
+
