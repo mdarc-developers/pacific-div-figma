@@ -102,50 +102,50 @@ export const mapRooms: [string, Room[]] = [
     {
       name: "VBC Room 2",
       coords: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
+        [11, 12],
+        [13, 14],
+        [15, 16],
+        [17, 18],
       ],
       color: "#2A9D8F", // Teal
     },
     {
       name: "Embassy Redstone",
       coords: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
+        [21, 22],
+        [23, 24],
+        [25, 26],
+        [27, 28],
       ],
       color: "#E9C46A", // yellow
     },
     {
       name: "Embassy BigSpringD",
       coords: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
+        [31, 32],
+        [33, 34],
+        [35, 36],
+        [37, 38],
       ],
       color: "#457B9D", // steel blue
     },
     {
       name: "Embassy Madison",
       coords: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
+        [41, 42],
+        [43, 44],
+        [45, 46],
+        [47, 48],
       ],
       color: "#F4A261", // Orange
     },
     {
       name: "Embassy 4",
       coords: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
+        [51, 52],
+        [53, 54],
+        [55, 56],
+        [57, 58],
       ],
       color: "#6A4C93", // Purple
     },
