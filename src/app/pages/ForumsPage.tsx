@@ -23,15 +23,13 @@ export function ForumsPage() {
   const numSRurls = activeConference.mapSessionRooms?.length ?? 0; // num Session Room urls
 
   // Collect unique track values from forum sessions for category filtering
-  const forumTracks = isMdarcDeveloper
-    ? [
-        ...new Set(
-          (SESSION_DATA[activeConference.id] || [])
-            .filter((s) => s.category?.toLowerCase() === "forums")
-            .flatMap((s) => s.track ?? []),
-        ),
-      ].sort()
-    : [];
+  const forumTracks = [
+    ...new Set(
+      (SESSION_DATA[activeConference.id] || [])
+        .filter((s) => s.category?.toLowerCase() === "forums")
+        .flatMap((s) => s.track ?? []),
+    ),
+  ].sort();
 
   return (
     <div className="block">
@@ -78,7 +76,7 @@ export function ForumsPage() {
             />,
           ];
         })}
-      {isMdarcDeveloper && forumTracks.length > 0 && (
+      {forumTracks.length > 0 && (
         <div className="mb-4 p-3 rounded border border-blue-400 bg-blue-50 dark:bg-blue-950 dark:border-blue-600 text-xs text-blue-900 dark:text-blue-200">
           <p className="font-semibold mb-2">Filter by category:</p>
           <div className="flex flex-wrap gap-2">
