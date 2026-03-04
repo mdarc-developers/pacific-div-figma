@@ -91,63 +91,21 @@ export const mapRooms: [string, Room[]] = [
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
       name: "VBC Room 1",
-      coords: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
+      coords: [[305, 260],
+        [478, 260],
+        [478, 484],
+        [305, 484]
       ],
       color: "#E63946", //Red
     },
     {
       name: "VBC Room 2",
-      coords: [
-        [11, 12],
-        [13, 14],
-        [15, 16],
-        [17, 18],
+      coords: [[0, 673],
+        [77, 673],
+        [77, 882],
+        [0, 882]
       ],
       color: "#2A9D8F", // Teal
-    },
-    {
-      name: "Embassy Redstone",
-      coords: [
-        [21, 22],
-        [23, 24],
-        [25, 26],
-        [27, 28],
-      ],
-      color: "#E9C46A", // yellow
-    },
-    {
-      name: "Embassy BigSpringD",
-      coords: [
-        [31, 32],
-        [33, 34],
-        [35, 36],
-        [37, 38],
-      ],
-      color: "#457B9D", // steel blue
-    },
-    {
-      name: "Embassy Madison",
-      coords: [
-        [41, 42],
-        [43, 44],
-        [45, 46],
-        [47, 48],
-      ],
-      color: "#F4A261", // Orange
-    },
-    {
-      name: "Embassy 4",
-      coords: [
-        [51, 52],
-        [53, 54],
-        [55, 56],
-        [57, 58],
-      ],
-      color: "#6A4C93", // Purple
     },
   ],
 ];
@@ -166,16 +124,24 @@ export const conferenceMaps: MapImage[] = [
     url: "/assets/maps/hamfest-layout-2026.png", // for Booth[]
     //floor: '2',
     order: 2,
-    origHeightNum: 1687,
     origWidthNum: 2560,
+    origHeightNum: 1687,
   },
   {
     id: "map-3",
     name: "Parking",
     url: "/assets/maps/hamfest-parking-map-20260101.jpg",
     order: 3,
-    origHeightNum: 837,
     origWidthNum: 839,
+    origHeightNum: 837,
+  },
+  {
+    id: "map-4",
+    name: "Embassy Suites",
+    url: "/assets/maps/huntsville-embassysuites.png",
+    order: 4,
+    origWidthNum: 523,
+    origHeightNum: 263,
   },
 ];
 
