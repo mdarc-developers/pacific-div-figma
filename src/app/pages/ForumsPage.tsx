@@ -48,17 +48,18 @@ export function ForumsPage() {
         />
       )}
       {numSRurls > 1 &&
-        roomEntry.map(([roomUrl, mapRoomArray]) => {
+        roomEntry.flatMap(([roomUrl, mapRoomArray]) => {
           const mapImg = conferenceMaps.find((m) => m.url === roomUrl);
           //console.log("mapRoomArray: %s", JSON.stringify(mapRoomArray));
-          return (
+          if (!mapImg?.category?.includes("Forums")) return [];
+          return [
             <ForumsMapView
               key={roomUrl}
               forumMap={mapImg}
               forumRooms={mapRoomArray}
               highlightForumRoomName={highlightForumRoomName}
-            />
-          );
+            />,
+          ];
         })}
       <ScheduleView
         bookmarkedSessions={bookmarkedSessions}
