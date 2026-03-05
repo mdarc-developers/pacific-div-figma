@@ -54,7 +54,7 @@ export function buildRawMessage(
     "",
     htmlBody,
   ];
-  const message = messageParts.join("\n");
+  const message = messageParts.join("\r\n");
   return Buffer.from(message)
     .toString("base64")
     .replace(/\+/g, "-")

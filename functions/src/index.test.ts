@@ -29,6 +29,23 @@ describe("buildRawMessage", () => {
     expect(decoded).toContain("Subject: Hello Subject");
     expect(decoded).toContain("<p>body</p>");
   });
+
+  it("uses CRLF line endings as required by RFC 2822", () => {
+    const raw = buildRawMessage(
+      "from@example.com",
+      "to@example.com",
+      "Test Subject",
+      "<p>body</p>",
+    );
+    const decoded = Buffer.from(
+      raw.replace(/-/g, "+").replace(/_/g, "/"),
+      "base64",
+    ).toString("utf-8");
+    // RFC 2822 requires CRLF (\r\n) line endings between headers and between
+    // the header block and the body. The Gmail API sends this as a raw RFC 2822
+    // message, so non-compliant line endings can cause delivery failures.
+    expect(decoded).toContain("Subject: Test Subject\r\n\r\n<p>body</p>");
+  });
 });
 
 describe("buildWelcomeEmailHtml", () => {

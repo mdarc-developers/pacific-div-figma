@@ -52,6 +52,6 @@ export default defineConfig({
     setupFiles: ["./src/test-setup.ts"],
     // Exclude Playwright e2e specs — they use a different test runner
     // Exclude compiled Cloud Functions output (CommonJS) — functions tests run via `cd functions && npm test`
-    exclude: ["**/node_modules/**", "**/dist/**", "e2e/**", "functions/lib/**"],
+    exclude: ["**/node_modules/**", "**/dist/**", "e2e/**", "functions/**"],
   },
 });
