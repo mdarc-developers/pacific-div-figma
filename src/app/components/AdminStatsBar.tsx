@@ -23,8 +23,12 @@ export function AdminStatsBar() {
           </span>
         )}
         {!loading && error && (
-          <span data-testid="admin-stats-error" className="text-red-600 dark:text-red-400">
-            error
+          <span
+            data-testid="admin-stats-error"
+            className="text-red-600 dark:text-red-400"
+            title={error}
+          >
+            {error}
           </span>
         )}
         {!loading && !error && (
