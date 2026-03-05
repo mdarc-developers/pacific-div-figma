@@ -48,6 +48,16 @@ export default function App() {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/admin/prizes" element={<PrizesAdminPage />} />
+          <Route path="/privacy" 
+            element={() => { window.location.href = '/privacy.html';
+              return null; // Route component must return something, null is fine here
+            }}
+          />
+          <Route path="/terms-of-service" 
+            element={() => { window.location.href = '/terms-of-service.html';
+              return null; // Route component must return something, null is fine here
+            }}
+          />
           <Route path="/pacificonfloormap" element={<PacificonSvgExhibitorMap />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>
