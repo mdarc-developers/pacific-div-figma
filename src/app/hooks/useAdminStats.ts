@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getCountFromServer } from "firebase/firestore";
+import { collection, getCountFromServer, doc, getDoc } from "firebase/firestore";
 
 export interface AdminStats {
   userProfileCount: number | null;
+  signupCount: number | null;
   loading: boolean;
   error: string | null;
 }
 
 /**
  * Fetches aggregate admin statistics from Firestore.
- * Currently returns the number of documents in the `users` collection,
- * which represents the number of users who have created a Firebase profile.
+ * Returns:
+ *   - userProfileCount: live count of documents in the `users` collection
+ *   - signupCount: cumulative counter maintained by the `incrementSignupCounter`
+ *     Cloud Function (stored at `stats/signupCounter`)
  */
 export function useAdminStats(): AdminStats {
   const [userProfileCount, setUserProfileCount] = useState<number | null>(null);
+  const [signupCount, setSignupCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,10 +27,19 @@ export function useAdminStats(): AdminStats {
     setLoading(true);
     setError(null);
 
-    getCountFromServer(collection(db, "users"))
-      .then((snapshot) => {
+    Promise.all([
+      getCountFromServer(collection(db, "users")),
+      getDoc(doc(db, "stats", "signupCounter")),
+    ])
+      .then(([usersSnapshot, counterSnapshot]) => {
         if (!cancelled) {
-          setUserProfileCount(snapshot.data().count);
+          setUserProfileCount(usersSnapshot.data().count);
+          const data = counterSnapshot.data();
+          setSignupCount(
+            counterSnapshot.exists() && typeof data?.count === "number"
+              ? data.count
+              : null,
+          );
           setLoading(false);
         }
       })
@@ -42,5 +55,5 @@ export function useAdminStats(): AdminStats {
     };
   }, []);
 
-  return { userProfileCount, loading, error };
+  return { userProfileCount, signupCount, loading, error };
 }

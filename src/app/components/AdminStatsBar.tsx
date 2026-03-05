@@ -1,4 +1,4 @@
-import { Users } from "lucide-react";
+import { Users, UserPlus } from "lucide-react";
 import { useAdminStats } from "@/app/hooks/useAdminStats";
 
 /**
@@ -7,7 +7,7 @@ import { useAdminStats } from "@/app/hooks/useAdminStats";
  * developers can quickly see live data metrics.
  */
 export function AdminStatsBar() {
-  const { userProfileCount, loading, error } = useAdminStats();
+  const { userProfileCount, signupCount, loading, error } = useAdminStats();
 
   return (
     <div
@@ -37,6 +37,18 @@ export function AdminStatsBar() {
           </span>
         )}
       </span>
+      {!loading && !error && (
+        <span
+          className="flex items-center gap-1.5"
+          title="Cumulative signup count maintained by cloud function"
+        >
+          <UserPlus className="h-3.5 w-3.5" aria-hidden="true" />
+          Signups:&nbsp;
+          <span data-testid="admin-stats-signup-count" className="font-bold">
+            {signupCount ?? 0}
+          </span>
+        </span>
+      )}
     </div>
   );
 }
