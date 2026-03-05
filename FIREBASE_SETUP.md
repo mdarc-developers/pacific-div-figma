@@ -226,7 +226,7 @@ that fires on every new user registration and sends a welcome email via the
 **Gmail API** authenticated through `google-auth-library`.
 
 The function is implemented as a **Cloud Functions v2 blocking function**
-(`beforeUserCreated` from `firebase-functions/v2/identity`). It runs on Node.js 22
+(`beforeUserCreated` from `firebase-functions/v2/identity`). It runs on Node.js 24
 and uses the Compute Engine default service account, which exists in all GCP projects
 that have Cloud Functions v2 enabled — no App Engine setup required.
 
