@@ -219,7 +219,69 @@ To enable the admin interfaces for Forums Chair and Prizes Chair:
 2. Create admin pages that check user roles
 3. Build forms for adding/editing sessions, prizes, and winners
 
-## 9. Notifications
+## 9. Cloud Functions — Welcome Email
+
+The `functions/` directory contains a Firebase Cloud Function (`sendWelcomeEmail`)
+that fires on every new user registration (`auth.user().onCreate`) and sends a
+welcome email via the **Gmail API** authenticated through `google-auth-library`.
+
+### Prerequisites
+
+1. **Enable the Gmail API** in your Google Cloud project:
+   [https://console.cloud.google.com/apis/library/gmail.googleapis.com](https://console.cloud.google.com/apis/library/gmail.googleapis.com)
+
+2. **Create a service account** in IAM & Admin → Service Accounts:
+   - Grant it no GCP roles (it only needs Gmail delegation)
+   - Download the JSON key file
+
+3. **Enable domain-wide delegation** on the service account:
+   - In the service account settings, enable "Enable G Suite domain-wide delegation"
+   - Note the OAuth 2 client ID shown
+
+4. **Authorize the scope** in Google Workspace Admin:
+   - Go to Security → API Controls → Domain-wide Delegation
+   - Add the client ID and scope `https://www.googleapis.com/auth/gmail.send`
+
+5. **The sender address** must be a real Google Workspace / Gmail account that the
+   service account is delegating on behalf of.
+
+### Deploy the function
+
+```bash
+# Install dependencies
+cd functions && npm install
+
+# Build TypeScript
+npm run build
+
+# Store secrets in Firebase Secret Manager (replace values with your own)
+firebase functions:secrets:set GMAIL_SERVICE_ACCOUNT_JSON
+# Paste the contents of your service-account-key.json when prompted
+
+firebase functions:secrets:set GMAIL_SENDER_EMAIL
+# Enter the sender email address (e.g. no-reply@yourdomain.com) when prompted
+
+# Deploy only the functions
+firebase deploy --only functions
+```
+
+### Local development
+
+```bash
+# Run functions tests
+cd functions && npm test
+
+# Use the Firebase Emulator Suite for local testing
+firebase emulators:start --only functions,auth
+```
+
+### How it works
+
+The function (`functions/src/index.ts`) uses `google-auth-library`'s `JWT` client
+to impersonate the sender address via service-account domain-wide delegation, then
+calls `gmail.users.messages.send` to deliver the welcome email.
+
+## 10. Notifications
 
 ### Email Notifications
 
