@@ -222,8 +222,13 @@ To enable the admin interfaces for Forums Chair and Prizes Chair:
 ## 9. Cloud Functions — Welcome Email
 
 The `functions/` directory contains a Firebase Cloud Function (`sendWelcomeEmail`)
-that fires on every new user registration (`auth.user().onCreate`) and sends a
-welcome email via the **Gmail API** authenticated through `google-auth-library`.
+that fires on every new user registration and sends a welcome email via the
+**Gmail API** authenticated through `google-auth-library`.
+
+The function is implemented as a **Cloud Functions v2 blocking function**
+(`beforeUserCreated` from `firebase-functions/v2/identity`). It runs on Node.js 22
+and uses the Compute Engine default service account, which exists in all GCP projects
+that have Cloud Functions v2 enabled — no App Engine setup required.
 
 ### Prerequisites
 
@@ -280,6 +285,9 @@ firebase emulators:start --only functions,auth
 The function (`functions/src/index.ts`) uses `google-auth-library`'s `JWT` client
 to impersonate the sender address via service-account domain-wide delegation, then
 calls `gmail.users.messages.send` to deliver the welcome email.
+
+Because it is a v2 blocking function, email delivery failures are caught and logged
+without blocking user registration.
 
 ## 10. Notifications
 

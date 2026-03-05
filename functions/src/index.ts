@@ -1,5 +1,5 @@
-import * as functionsV1 from "firebase-functions/v1";
-import * as functions from "firebase-functions";
+import { beforeUserCreated } from "firebase-functions/v2/identity";
+import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { google } from "googleapis";
@@ -125,6 +125,10 @@ export function buildWelcomeEmailHtml(
  * Sends a welcome email to a newly registered user via the Gmail API,
  * authenticated with a service account using google-auth-library.
  *
+ * This is a Cloud Functions v2 blocking function that fires before the user
+ * record is written to Firebase Auth. It never throws, so user registration
+ * always succeeds even if email delivery fails.
+ *
  * Required Firebase Secrets (set with firebase functions:secrets:set):
  *   GMAIL_SERVICE_ACCOUNT_JSON  — JSON key file for the service account
  *   GMAIL_SENDER_EMAIL          — The "From" address (must match the delegated user)
@@ -132,16 +136,15 @@ export function buildWelcomeEmailHtml(
  * The service account must have domain-wide delegation enabled and the
  * scope https://www.googleapis.com/auth/gmail.send granted.
  */
-export const sendWelcomeEmail = functionsV1
-  .runWith({ secrets: [gmailServiceAccountJson, gmailSenderEmail] })
-  .auth.user()
-  .onCreate(async (user) => {
-    const { email, displayName } = user;
+export const sendWelcomeEmail = beforeUserCreated(
+  { secrets: [gmailServiceAccountJson, gmailSenderEmail] },
+  async (event) => {
+    const email = event.data?.email;
+    const displayName = event.data?.displayName;
+    const uid = event.data?.uid;
 
     if (!email) {
-      functions.logger.info("sendWelcomeEmail: user has no email, skipping", {
-        uid: user.uid,
-      });
+      logger.info("sendWelcomeEmail: user has no email, skipping", { uid });
       return;
     }
 
@@ -149,7 +152,7 @@ export const sendWelcomeEmail = functionsV1
     const senderEmail = gmailSenderEmail.value();
 
     if (!serviceAccountJson || !senderEmail) {
-      functions.logger.error(
+      logger.error(
         "sendWelcomeEmail: GMAIL_SERVICE_ACCOUNT_JSON and GMAIL_SENDER_EMAIL secrets must be set. " +
           "Run: firebase functions:secrets:set GMAIL_SERVICE_ACCOUNT_JSON and GMAIL_SENDER_EMAIL",
       );
@@ -160,7 +163,7 @@ export const sendWelcomeEmail = functionsV1
     try {
       credentials = JSON.parse(serviceAccountJson) as Record<string, unknown>;
     } catch (err) {
-      functions.logger.error(
+      logger.error(
         "sendWelcomeEmail: failed to parse GMAIL_SERVICE_ACCOUNT_JSON",
         err,
       );
@@ -187,14 +190,13 @@ export const sendWelcomeEmail = functionsV1
         userId: "me",
         requestBody: { raw },
       });
-      functions.logger.info("sendWelcomeEmail: welcome email sent", {
-        uid: user.uid,
-        email,
-      });
+      logger.info("sendWelcomeEmail: welcome email sent", { uid, email });
     } catch (err) {
-      functions.logger.error(
-        "sendWelcomeEmail: failed to send welcome email",
-        { uid: user.uid, email, err },
-      );
+      logger.error("sendWelcomeEmail: failed to send welcome email", {
+        uid,
+        email,
+        err,
+      });
     }
-  });
+  },
+);
