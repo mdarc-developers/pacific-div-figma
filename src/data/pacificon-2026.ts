@@ -2738,7 +2738,7 @@ export const mapSessions: [string, Session[]] = [
       endTime: "2026-10-17T16:50:00",
       url: "https://www.arrleb.org",
       category: "Forums",
-      track: ["EmComm", "ARRLEB"],
+      track: ["EmComm", "Sec EB"],
     },
     {
       id: "saturday-summits-on-the-air-the-what-how",
