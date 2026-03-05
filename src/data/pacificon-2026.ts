@@ -2972,8 +2972,8 @@ export const conferenceMaps: MapImage[] = [
     category: "Schedule",
     //floor: '1',
     order: 1,
-    origHeightNum: 1201,
     origWidthNum: 983,
+    origHeightNum: 1201,
   },
   {
     id: "map-2",
@@ -2981,8 +2981,8 @@ export const conferenceMaps: MapImage[] = [
     url: "/assets/maps/pacificon-exhibitors-2025.png",
     //floor: '2',
     order: 2,
-    origHeightNum: 1702,
     origWidthNum: 1280,
+    origHeightNum: 1702,
   },
   //{
   //  id: 'map-3',
@@ -3008,8 +3008,18 @@ export const conferenceMaps: MapImage[] = [
     category: "Forums",
     //floor: '2',
     order: 6,
-    origHeightNum: 256,
     origWidthNum: 582,
+    origHeightNum: 256,
+  },
+  {
+    id: "map-7",
+    name: "Satellite",
+    url: "/assets/maps/pacificon-satellite-20260305.png",
+    category: "Satellite",
+    //floor: '2',
+    order: 7,
+    origWidthNum: 753,
+    origHeightNum: 697,
   },
 ];
 
