@@ -11,7 +11,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "vitest run"
+    "test": "vitest run --config vitest.config.ts"
   },
   "engines": {
     "node": "24"
