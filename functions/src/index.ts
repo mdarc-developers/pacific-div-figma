@@ -1,6 +1,6 @@
 import { beforeUserCreated } from "firebase-functions/v2/identity";
 import { logger } from "firebase-functions";
-import { defineSecret } from "firebase-functions/params";
+import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { google } from "googleapis";
 import { JWT } from "google-auth-library";
@@ -14,6 +14,27 @@ admin.initializeApp();
 //               firebase functions:secrets:set GMAIL_SENDER_EMAIL
 const gmailServiceAccountJson = defineSecret("GMAIL_SERVICE_ACCOUNT_JSON");
 const gmailSenderEmail = defineSecret("GMAIL_SENDER_EMAIL");
+
+// The runtime service account for this v2 Cloud Function.
+// Firebase CLI defaults to the legacy App Engine SA (project-id@appspot.gserviceaccount.com)
+// when granting Secret Manager access for blocking functions, but that SA no longer exists.
+// Explicitly set FUNCTION_SERVICE_ACCOUNT to the Compute Engine default SA:
+//   {project-number}-compute@developer.gserviceaccount.com
+// Find your project number at: https://console.cloud.google.com/iam-admin/settings
+// Set in functions/.env:  FUNCTION_SERVICE_ACCOUNT=…-compute@developer.gserviceaccount.com
+const functionServiceAccount = defineString("FUNCTION_SERVICE_ACCOUNT", {
+  description:
+    "Runtime service account for the sendWelcomeEmail Cloud Function v2. " +
+    "Use the Compute Engine default SA: {project-number}-compute@developer.gserviceaccount.com. " +
+    "Find your project number at https://console.cloud.google.com/iam-admin/settings",
+  input: {
+    text: {
+      validationRegex: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+      validationErrorMessage:
+        "Must be a valid service account email, e.g. 123456789-compute@developer.gserviceaccount.com",
+    },
+  },
+});
 
 /**
  * Encodes a raw email message as a base64url string for the Gmail API.
@@ -137,7 +158,10 @@ export function buildWelcomeEmailHtml(
  * scope https://www.googleapis.com/auth/gmail.send granted.
  */
 export const sendWelcomeEmail = beforeUserCreated(
-  { secrets: [gmailServiceAccountJson, gmailSenderEmail] },
+  {
+    secrets: [gmailServiceAccountJson, gmailSenderEmail],
+    serviceAccount: functionServiceAccount,
+  },
   async (event) => {
     const email = event.data?.email;
     const displayName = event.data?.displayName;
