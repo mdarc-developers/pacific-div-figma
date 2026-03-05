@@ -8,6 +8,8 @@ import { FirebaseThemeSync } from "@/app/components/FirebaseThemeSync";
 //import { ScheduleView } from '@/app/components/ScheduleView';
 //import { MapsView } from '@/app/components/MapsView';
 import { ConferenceHeader } from "@/app/components/ConferenceHeader";
+import { AdminStatsBar } from "@/app/components/AdminStatsBar";
+import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { ConferenceFooter } from "@/app/components/ConferenceFooter";
 import { MapsPage } from "@/app/pages/MapsPage";
 import { PrizesPage } from "@/app/pages/PrizesPage";
@@ -26,10 +28,12 @@ import { PrivacyPage } from "@/app/pages/PrivacyPage";
 import { TermsOfServicePage } from "@/app/pages/TermsOfServicePage";
 
 export default function App() {
+  const isMdarcDeveloper = useMdarcDeveloper();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <FirebaseThemeSync />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {isMdarcDeveloper && <AdminStatsBar />}
         <ConferenceHeader />
 
         <SearchBar />
