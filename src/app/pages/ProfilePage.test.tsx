@@ -63,7 +63,7 @@ describe("ProfilePage (unauthenticated)", () => {
 
   it("shows the sign-in prompt when not logged in", () => {
     renderProfilePage();
-    expect(screen.getByText(/sign in/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
   });
 
   it("shows the account features heading", () => {
