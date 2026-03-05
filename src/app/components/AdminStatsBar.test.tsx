@@ -65,5 +65,12 @@ describe("AdminStatsBar", () => {
     });
     render(<AdminStatsBar />);
     expect(screen.getByTestId("admin-stats-error")).toBeInTheDocument();
+    expect(screen.getByTestId("admin-stats-error")).toHaveTextContent(
+      "Permission denied",
+    );
+    expect(screen.getByTestId("admin-stats-error")).toHaveAttribute(
+      "title",
+      "Permission denied",
+    );
   });
 });
