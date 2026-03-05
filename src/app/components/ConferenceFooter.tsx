@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useConference } from "@/app/contexts/ConferenceContext";
 
 export function ConferenceFooter() {
@@ -38,6 +39,21 @@ export function ConferenceFooter() {
           </a>
         </p>
         <p className="mt-2">Built for offline use</p>
+        <p className="mt-2">
+          <Link
+            to="/privacy"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Privacy Policy
+          </Link>
+          {" · "}
+          <Link
+            to="/terms-of-service"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Terms of Use
+          </Link>
+        </p>
         {formattedDate && (
           <p className="mt-2">
             <span title={buildTooltip} className="cursor-default">

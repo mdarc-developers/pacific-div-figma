@@ -9,14 +9,6 @@
     ],
     "rewrites": [
       {
-        "source": "/privacy",
-        "destination": "/privacy.html"
-      },
-      {
-        "source": "/terms-of-service",
-        "destination": "/terms-of-service.html"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }
