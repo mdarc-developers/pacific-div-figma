@@ -1,4 +1,3 @@
-import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { SearchBar } from "@/app/components/SearchBar";
 import { Navigation } from "@/app/components/Navigation";
@@ -23,6 +22,8 @@ import { SignUpPage } from "@/app/pages/SignUpPage";
 import { SearchPage } from "@/app/pages/SearchPage";
 import { PrizesAdminPage } from "@/app/pages/PrizesAdminPage";
 import { PacificonSvgExhibitorMap } from "@/app/components/PacificonSvgExhibitorMap";
+import { PrivacyPage } from "@/app/pages/PrivacyPage";
+import { TermsOfServicePage } from "@/app/pages/TermsOfServicePage";
 
 export default function App() {
   return (
@@ -48,16 +49,8 @@ export default function App() {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/admin/prizes" element={<PrizesAdminPage />} />
-          <Route path="/privacy" 
-            element={() => { window.location.href = '/privacy.html';
-              return null; // Route component must return something, null is fine here
-            }}
-          />
-          <Route path="/terms-of-service" 
-            element={() => { window.location.href = '/terms-of-service.html';
-              return null; // Route component must return something, null is fine here
-            }}
-          />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="/pacificonfloormap" element={<PacificonSvgExhibitorMap />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>

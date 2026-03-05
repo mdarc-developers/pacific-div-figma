@@ -113,3 +113,23 @@ test.describe("Exhibitors page", () => {
     await expect(page.locator("body")).toBeAttached();
   });
 });
+
+test.describe("Privacy and Terms pages", () => {
+  test("/privacy renders the Privacy Policy inside the app", async ({
+    page,
+  }) => {
+    await page.goto("/privacy");
+    await expect(page).toHaveURL(/\/privacy/);
+    await expect(page.locator("body")).toContainText("Privacy Policy");
+    await expect(page.locator("body")).toContainText("Personal Information We Collect");
+  });
+
+  test("/terms-of-service renders the Terms of Use inside the app", async ({
+    page,
+  }) => {
+    await page.goto("/terms-of-service");
+    await expect(page).toHaveURL(/\/terms-of-service/);
+    await expect(page.locator("body")).toContainText("Terms of Use");
+    await expect(page.locator("body")).toContainText("Prohibited Uses");
+  });
+});
