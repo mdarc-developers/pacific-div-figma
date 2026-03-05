@@ -1,10 +1,19 @@
 import * as functionsV1 from "firebase-functions/v1";
 import * as functions from "firebase-functions";
+import { defineSecret } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { google } from "googleapis";
 import { JWT } from "google-auth-library";
 
 admin.initializeApp();
+
+// Declare secrets using firebase-functions/params (replaces the deprecated
+// functions.config() / Cloud Runtime Config approach).
+// Values are stored in Firebase Secret Manager and injected at runtime.
+// To provision: firebase functions:secrets:set GMAIL_SERVICE_ACCOUNT_JSON
+//               firebase functions:secrets:set GMAIL_SENDER_EMAIL
+const gmailServiceAccountJson = defineSecret("GMAIL_SERVICE_ACCOUNT_JSON");
+const gmailSenderEmail = defineSecret("GMAIL_SENDER_EMAIL");
 
 /**
  * Encodes a raw email message as a base64url string for the Gmail API.
@@ -124,7 +133,7 @@ export function buildWelcomeEmailHtml(
  * scope https://www.googleapis.com/auth/gmail.send granted.
  */
 export const sendWelcomeEmail = functionsV1
-  .runWith({ secrets: ["GMAIL_SERVICE_ACCOUNT_JSON", "GMAIL_SENDER_EMAIL"] })
+  .runWith({ secrets: [gmailServiceAccountJson, gmailSenderEmail] })
   .auth.user()
   .onCreate(async (user) => {
     const { email, displayName } = user;
@@ -136,8 +145,8 @@ export const sendWelcomeEmail = functionsV1
       return;
     }
 
-    const serviceAccountJson = process.env.GMAIL_SERVICE_ACCOUNT_JSON;
-    const senderEmail = process.env.GMAIL_SENDER_EMAIL;
+    const serviceAccountJson = gmailServiceAccountJson.value();
+    const senderEmail = gmailSenderEmail.value();
 
     if (!serviceAccountJson || !senderEmail) {
       functions.logger.error(
