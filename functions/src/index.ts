@@ -1,4 +1,5 @@
 import { beforeUserCreated } from "firebase-functions/v2/identity";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { logger } from "firebase-functions";
 import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
@@ -219,6 +220,42 @@ export const sendWelcomeEmail = beforeUserCreated(
       logger.error("sendWelcomeEmail: failed to send welcome email", {
         uid,
         email,
+        err,
+      });
+    }
+  },
+);
+
+/**
+ * Increments the signup counter in `stats/signupCounter` whenever a new
+ * document is written to the `users/{uid}` collection.
+ *
+ * The counter document lives at:
+ *   Firestore → stats → signupCounter → { count: <number> }
+ *
+ * Using FieldValue.increment with merge:true is self-initializing: on the
+ * very first signup the document is created with count:1; subsequent writes
+ * atomically increment the existing value.  No manual Firestore initialization
+ * is required before deployment.
+ */
+export const incrementSignupCounter = onDocumentCreated(
+  "users/{uid}",
+  async (event) => {
+    const uid = event.params.uid;
+    const counterRef = admin
+      .firestore()
+      .collection("stats")
+      .doc("signupCounter");
+
+    try {
+      await counterRef.set(
+        { count: admin.firestore.FieldValue.increment(1) },
+        { merge: true },
+      );
+      logger.info("incrementSignupCounter: counter incremented", { uid });
+    } catch (err) {
+      logger.error("incrementSignupCounter: failed to increment counter", {
+        uid,
         err,
       });
     }

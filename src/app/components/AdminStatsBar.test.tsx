@@ -20,6 +20,7 @@ describe("AdminStatsBar", () => {
   it("renders the banner element", () => {
     mockUseAdminStats.mockReturnValue({
       userProfileCount: 42,
+      signupCount: 50,
       loading: false,
       error: null,
     });
@@ -30,6 +31,7 @@ describe("AdminStatsBar", () => {
   it("shows 'loading…' while data is being fetched", () => {
     mockUseAdminStats.mockReturnValue({
       userProfileCount: null,
+      signupCount: null,
       loading: true,
       error: null,
     });
@@ -40,6 +42,7 @@ describe("AdminStatsBar", () => {
   it("shows the user profile count when loaded", () => {
     mockUseAdminStats.mockReturnValue({
       userProfileCount: 7,
+      signupCount: 10,
       loading: false,
       error: null,
     });
@@ -50,6 +53,7 @@ describe("AdminStatsBar", () => {
   it("shows 0 when userProfileCount is null after loading", () => {
     mockUseAdminStats.mockReturnValue({
       userProfileCount: null,
+      signupCount: null,
       loading: false,
       error: null,
     });
@@ -60,6 +64,7 @@ describe("AdminStatsBar", () => {
   it("shows error indicator on fetch failure", () => {
     mockUseAdminStats.mockReturnValue({
       userProfileCount: null,
+      signupCount: null,
       loading: false,
       error: "Permission denied",
     });
@@ -72,5 +77,44 @@ describe("AdminStatsBar", () => {
       "title",
       "Permission denied",
     );
+  });
+
+  it("shows the signup count from the cloud function counter", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: 7,
+      signupCount: 15,
+      loading: false,
+      error: null,
+    });
+    render(<AdminStatsBar />);
+    expect(screen.getByTestId("admin-stats-signup-count")).toHaveTextContent(
+      "15",
+    );
+  });
+
+  it("shows 0 for signup count when signupCount is null after loading", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: 3,
+      signupCount: null,
+      loading: false,
+      error: null,
+    });
+    render(<AdminStatsBar />);
+    expect(screen.getByTestId("admin-stats-signup-count")).toHaveTextContent(
+      "0",
+    );
+  });
+
+  it("hides signup count while loading", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: null,
+      signupCount: null,
+      loading: true,
+      error: null,
+    });
+    render(<AdminStatsBar />);
+    expect(
+      screen.queryByTestId("admin-stats-signup-count"),
+    ).not.toBeInTheDocument();
   });
 });
