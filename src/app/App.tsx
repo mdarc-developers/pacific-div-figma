@@ -24,6 +24,13 @@ import { SearchPage } from "@/app/pages/SearchPage";
 import { PrizesAdminPage } from "@/app/pages/PrizesAdminPage";
 import { PacificonSvgExhibitorMap } from "@/app/components/PacificonSvgExhibitorMap";
 
+function StaticRedirect({ to }: { to: string }) {
+  React.useEffect(() => {
+    window.location.replace(to);
+  }, [to]);
+  return null;
+}
+
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -48,16 +55,8 @@ export default function App() {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/admin/prizes" element={<PrizesAdminPage />} />
-          <Route path="/privacy" 
-            element={() => { window.location.href = '/privacy.html';
-              return null; // Route component must return something, null is fine here
-            }}
-          />
-          <Route path="/terms-of-service" 
-            element={() => { window.location.href = '/terms-of-service.html';
-              return null; // Route component must return something, null is fine here
-            }}
-          />
+          <Route path="/privacy" element={<StaticRedirect to="/privacy.html" />} />
+          <Route path="/terms-of-service" element={<StaticRedirect to="/terms-of-service.html" />} />
           <Route path="/pacificonfloormap" element={<PacificonSvgExhibitorMap />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>

@@ -113,3 +113,17 @@ test.describe("Exhibitors page", () => {
     await expect(page.locator("body")).toBeAttached();
   });
 });
+
+test.describe("Static pages", () => {
+  test("/privacy serves the Privacy Policy page", async ({ page }) => {
+    await page.goto("/privacy");
+    await expect(page).toHaveURL(/\/privacy/);
+    await expect(page.locator("body")).toContainText("Privacy Policy");
+  });
+
+  test("/terms-of-service serves the Terms of Use page", async ({ page }) => {
+    await page.goto("/terms-of-service");
+    await expect(page).toHaveURL(/\/terms-of-service/);
+    await expect(page.locator("body")).toContainText("Terms of Use");
+  });
+});
