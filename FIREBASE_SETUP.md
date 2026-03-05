@@ -252,6 +252,35 @@ that have Cloud Functions v2 enabled — no App Engine setup required.
 
 ### Deploy the function
 
+#### 1. Configure the runtime service account
+
+Firebase CLI defaults to the legacy App Engine service account
+(`project-id@appspot.gserviceaccount.com`) when it grants Secret Manager IAM
+access for blocking functions.  That account does **not** exist in projects
+that never enabled App Engine, which causes deployment to fail with:
+
+```
+Error: … Service account pacific-div@appspot.gserviceaccount.com does not exist.
+```
+
+Override this by setting the `FUNCTION_SERVICE_ACCOUNT` deployment parameter to
+the **Compute Engine default service account** for your project.
+
+1. Find your **project number** at
+   <https://console.cloud.google.com/iam-admin/settings>.
+2. Copy `functions/.env.example` to `functions/.env` and substitute your
+   project number:
+
+   ```bash
+   cp functions/.env.example functions/.env
+   # Edit functions/.env:
+   #   FUNCTION_SERVICE_ACCOUNT=<PROJECT_NUMBER>-compute@developer.gserviceaccount.com
+   ```
+
+   The `functions/.env` file is git-ignored — never commit it.
+
+#### 2. Store secrets and deploy
+
 ```bash
 # Install dependencies
 cd functions && npm install
