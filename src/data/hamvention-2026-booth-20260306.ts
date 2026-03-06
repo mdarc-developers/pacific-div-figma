@@ -21,9 +21,12 @@ import {
   SVG_URL,
   HAMVENTION_BUILDING1_BOOTHS,
 } from "@/data/hamvention-2026-svgbooth-20260305";
-import { convertSvgBoothsToBooth } from "@/data/extract-hamvention-svgbooth-to-booth";
 
 export const mapBooths: [string, Booth[]] = [
   SVG_URL,
-  convertSvgBoothsToBooth(HAMVENTION_BUILDING1_BOOTHS, "building-1"),
+  HAMVENTION_BUILDING1_BOOTHS.map((b) => ({
+    id: b.boothNum,
+    coords: b.coords,
+    locationZone: "building-1",
+  })) as Booth[],
 ];
