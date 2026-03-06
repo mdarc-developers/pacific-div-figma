@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildRawMessage, buildWelcomeEmailHtml } from "./index";
+import { buildRawMessage, buildWelcomeEmailHtml } from "./welcomeEmail";
 
 describe("buildRawMessage", () => {
   it("returns a base64url encoded string", () => {
