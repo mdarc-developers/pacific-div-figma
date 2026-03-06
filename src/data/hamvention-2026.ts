@@ -2390,7 +2390,7 @@ export const conferenceMaps: MapImage[] = [
   },
   {
     id: "map-3",
-    name: "Exhibitors — Building 1 Maxim",
+    name: "Building 1 Maxim",
     url: "/assets/maps/hamvention-2026-building-1-maxim.svg", // for Booth[] (SVG interactive map)
     order: 3,
     origHeightNum: 816,
@@ -2398,7 +2398,7 @@ export const conferenceMaps: MapImage[] = [
   },
   {
     id: "map-4",
-    name: "Exhibitors — Building 2 Tesla",
+    name: "Building 2 Tesla",
     url: "/assets/maps/hamvention-2026-building-2-tesla.svg", // for Booth[] (SVG interactive map)
     order: 3,
     origHeightNum: 816,
@@ -2406,7 +2406,7 @@ export const conferenceMaps: MapImage[] = [
   },
   {
     id: "map-5",
-    name: "Exhibitors — Building 3 Marconi",
+    name: "Building 3 Marconi",
     url: "/assets/maps/hamvention-2026-building-3-marconi.svg", // for Booth[] (SVG interactive map)
     order: 4,
     origHeightNum: 816,
@@ -2414,7 +2414,7 @@ export const conferenceMaps: MapImage[] = [
   },
   {
     id: "map-6",
-    name: "Exhibitors — Building 4 Volta",
+    name: "Building 4 Volta",
     url: "/assets/maps/hamvention-2026-building-4-volta.svg", // for Booth[] (SVG interactive map)
     order: 5,
     origHeightNum: 816,
@@ -2422,7 +2422,7 @@ export const conferenceMaps: MapImage[] = [
   },
   {
     id: "map-7",
-    name: "Exhibitors — Building 5 Hertz",
+    name: "Building 5 Hertz",
     url: "/assets/maps/hamvention-2026-building-5-hertz.svg", // for Booth[] (SVG interactive map)
     order: 6,
     origHeightNum: 816,
