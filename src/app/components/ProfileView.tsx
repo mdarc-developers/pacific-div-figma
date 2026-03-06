@@ -6,7 +6,7 @@ import { Separator } from "@/app/components/ui/separator";
 
 export function ProfileView() {
   return (
-    <Card className="max-w-lg">
+    <Card className="max-w-lg mx-auto">
       <CardContent className="pt-6 pb-6 flex flex-col items-center text-center gap-4">
         <User className="h-16 w-16 text-muted-foreground" />
         <div>
