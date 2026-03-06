@@ -26,6 +26,7 @@ import { PrizesAdminPage } from "@/app/pages/PrizesAdminPage";
 import { PacificonSvgExhibitorMap } from "@/app/components/PacificonSvgExhibitorMap";
 import { PrivacyPage } from "@/app/pages/PrivacyPage";
 import { TermsOfServicePage } from "@/app/pages/TermsOfServicePage";
+import { ConferenceRedirectPage } from "@/app/pages/ConferenceRedirectPage";
 
 export default function App() {
   const isMdarcDeveloper = useMdarcDeveloper();
@@ -56,6 +57,9 @@ export default function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="/pacificonfloormap" element={<PacificonSvgExhibitorMap />} />
+          {/* Conference slug redirect — must stay AFTER all static routes.
+              Any new static single-segment routes (e.g. /about) must be added ABOVE this line. */}
+          <Route path="/:conferenceSlug" element={<ConferenceRedirectPage />} />
           <Route path="*" element={<Navigate to="/404.html" replace />} />
         </Routes>
 
