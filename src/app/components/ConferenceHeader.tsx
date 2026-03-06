@@ -76,6 +76,72 @@ export function ConferenceHeader() {
   const headerTextColor = contrastingColor(activeConference.primaryColor);
   const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
 
+  const venueWebsiteDisplay = (iurl: string) => {
+    if (!iurl || iurl === "") return "";
+    else
+      return (
+                    <a
+                      href={iurl}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      className="flex items-center gap-2 hover:underline"
+                      style={{ color: headerLinkColor }}
+                    >
+                      {activeConference.venue}
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+      );
+  };
+
+  const conferenceProgramUrlDisplay = (iurl: string, linkcolor: string) => {
+    if (!iurl || iurl === "") return "";
+    else
+      return (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span title="Conference Program PDF">
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+        <a
+          href={iurl}
+          download
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 hover:underline"
+          style={{ color: {linkcolor} }}
+        >
+          program
+          <ExternalLink className="h-4 w-4" />
+        </a>
+                      </TooltipContent>
+                    </Tooltip>
+      );
+  };
+  
+  const conferenceAppPageUrlDisplay = (iurl: string, linkcolor: string) => {
+    if (!iurl || iurl === "") return "";
+    else
+      return (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span title="Conference app">
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+        <a
+          href={iurl}
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 hover:underline"
+          style={{ color: {linkcolor} }}
+        >
+          app
+          <ExternalLink className="h-4 w-4" />
+        </a>
+                      </TooltipContent>
+                    </Tooltip>
+      );
+  };
+  
   const icalUrlDisplay = (iurl: string) => {
     if (!iurl || iurl === "") return "";
     else
@@ -173,6 +239,7 @@ export function ConferenceHeader() {
                 <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">
                   {activeConference.name}
                   &nbsp;&nbsp;
+
                   <a
                     href={activeConference.conferenceWebsite}
                     target="_blank"
@@ -183,6 +250,7 @@ export function ConferenceHeader() {
                     website
                     <ExternalLink className="h-4 w-4" />
                   </a>
+
                 </h1>
               </div>
               {activeConference.logoUrl && !isHeaderCollapsed ? (
@@ -278,6 +346,8 @@ export function ConferenceHeader() {
                       </TooltipTrigger>
                       <TooltipContent>Maidenhead Gridsquare</TooltipContent>
                     </Tooltip>
+                    {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
+                    {conferenceProgramUrlDisplay(activeConference.conferenceProgramUrl, headerLinkColor)}
                   </div>
                 </div>
               </div>

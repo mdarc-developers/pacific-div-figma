@@ -26,6 +26,8 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    conferenceProgramUrl: "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf",
+    conferenceAppPageUrl: "https://hamvention.org/getconnected/",
   },
   {
     id: "seapac-2026",
@@ -102,6 +104,8 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    conferenceProgramUrl: "https://drive.google.com/file/d/1TlaEhDC0xvCEiQgJc5QUYApp0WIpHvNm/view", // broadsheet for us
+    conferenceAppPageUrl: "https://www.pacificon.org/app/",
   },
   {
     id: "quartzfest-2027",
@@ -154,6 +158,8 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    conferenceProgramUrl: "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
+    conferenceAppPageUrl: "https://www.hamcation.com/app/",
   },
   {
     id: "yuma-2027",
@@ -233,5 +239,7 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    conferenceProgramUrl: "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
+    conferenceAppPageUrl: "https://www.hamcation.com/app/",
   },
 ];
