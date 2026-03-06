@@ -210,18 +210,19 @@ export function ExhibitorsMapView({
 
   const endsWithPdf = exhibitorsMap.url.endsWith(".pdf");
   if (endsWithPdf) {
+    // A PDF with no interactive booth overlays is a static reference document.
+    // It is already viewable on the Maps page; don't render it here alongside
+    // an interactive SVG or image map.
+    if (exhibitorBooths.length === 0) return null;
     return (
       <>
         <div className="w-full" ref={pdfRef}>
           <iframe
-            title="Exhibitors Map"
+            title={exhibitorsMap.name}
             src={exhibitorsMap.url}
             className="w-full"
             style={{ height: pdfHeight > 0 ? `${pdfHeight}px` : "100vh" }}
-          >
-            Your browser does not support iframes.{" "}
-            <a href={exhibitorsMap.url}>Download the PDF</a> instead.
-          </iframe>
+          />
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
           {exhibitorsMap.name}
