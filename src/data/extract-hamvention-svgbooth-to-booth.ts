@@ -2,14 +2,16 @@
 //
 // Tool: converts SvgBooth[] data into Booth[] TypeScript source.
 //
-// Usage (run as a script):
-//   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts > src/data/hamvention-2026-booth-<date>.ts
+// must change import and several hard coded variables at the bottom
+//
+// Usage ( edit with hamvention-2026-svgbooth-building-1-maxim-<date>.ts
+//         run as a script );
+//
+//   npx tsx extract-hamvention-svgbooth-to-booth.ts > src/data/hamvention-2026-booth-<date>.ts
 //
 // The generated file is a static data module ready to be checked in.
 // It exports `mapBooths: [string, Booth[]]` — the same shape used by
 // the conferenceData loader in src/lib/conferenceData.ts.
-//
-// must change import and several hard coded variables at the bottom
 //
 
 import {
