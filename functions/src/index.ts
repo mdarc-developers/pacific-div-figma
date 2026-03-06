@@ -1,7 +1,7 @@
 import { beforeUserCreated } from "firebase-functions/v2/identity";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { logger } from "firebase-functions";
-import { onrequest } from "firebase-functions/https";
+//import { onRequest } from "firebase-functions/https";
 import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { google } from "googleapis";
