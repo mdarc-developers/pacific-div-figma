@@ -8,12 +8,15 @@
 // The generated file is a static data module ready to be checked in.
 // It exports `mapBooths: [string, Booth[]]` — the same shape used by
 // the conferenceData loader in src/lib/conferenceData.ts.
+//
+// must change import and several hard coded variables at the bottom
+//
 
 import {
-  HAMVENTION_BUILDING1_BOOTHS,
+  HAMVENTION_2026_BUILDING_1_MAXIM_BOOTHS,
   SVG_URL,
   type SvgBooth,
-} from "./hamvention-2026-svgbooth-20260305";
+} from "./hamvention-2026-svgbooth-building-1-maxim-20260305.ts";
 import type { Booth } from "@/types/conference";
 
 /**
@@ -73,13 +76,13 @@ const isMain =
 
 if (isMain) {
   const booths = convertSvgBoothsToBooth(
-    HAMVENTION_BUILDING1_BOOTHS,
+    HAMVENTION_2026_BUILDING_1_MAXIM_BOOTHS,
     "building-1",
   );
   const code = generateBoothTsCode(
     SVG_URL,
     booths,
-    "hamvention-2026-svgbooth-20260305.ts / HAMVENTION_BUILDING1_BOOTHS",
+    "hamvention-2026-building-1-maxim.svg / HAMVENTION_2026_BUILDING_1_MAXIM_BOOTHS",
   );
   process.stdout.write(code);
 }
