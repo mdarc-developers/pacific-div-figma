@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 //import { Conference } from '@/types/conference';
-import { User } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 
@@ -66,7 +66,7 @@ export function SignUpPage() {
 
   return (
     <div className="signup-container bg-white dark:bg-gray-800 rounded-lg p-8 text-center max-w-lg mx-auto space-y-4">
-      <User className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+      <UserPlus className="h-16 w-16 mx-auto mb-4 text-gray-400" />
       {signedUp ? (
         <div className="flex flex-col gap-3 max-w-sm mx-auto">
           <h2 className="text-xl font-semibold mb-2">Account Created!</h2>
