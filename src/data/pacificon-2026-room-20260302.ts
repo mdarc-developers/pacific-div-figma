@@ -72,7 +72,7 @@ export const mapRooms: [string, Room[]] = [
       color: "#10B981",
     },
     {
-      name: "Salon 2 (75)", // new
+      name: "Salon 2", // new
       coords: [[912, 302],
         [967, 302],
         [967, 385],
@@ -117,7 +117,7 @@ export const mapRooms: [string, Room[]] = [
       color: "#F59E0B",
     },
     {
-      name: "Salons E,F,G,H (300)", // new
+      name: "Salons E,F,G,H", // new
       coords: [[969, 608],
         [1123, 608],
         [1123, 784],
@@ -126,7 +126,7 @@ export const mapRooms: [string, Room[]] = [
       color: "#F59E0B",
     },
     {
-      name: "Pleasanton,Danville (100)", // new
+      name: "Pleasanton,Danville", // new
       coords: [[1046, 816],
         [1165, 816],
         [1165, 875],

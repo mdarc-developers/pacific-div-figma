@@ -10,7 +10,7 @@ export function AlertsPage() {
     return <AlertsView />; //  not logged in
   }
   return (
-    <div className="profile-container">
+    <div className="profile-container max-w-lg mx-auto space-y-4">
       <div className="profile-info">
         <div className="profile-field">
           <label>Email:</label> {user.email}

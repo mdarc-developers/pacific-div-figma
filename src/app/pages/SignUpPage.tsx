@@ -65,7 +65,7 @@ export function SignUpPage() {
   };
 
   return (
-    <div className="signup-container bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
+    <div className="signup-container bg-white dark:bg-gray-800 rounded-lg p-8 text-center max-w-lg mx-auto space-y-4">
       <User className="h-16 w-16 mx-auto mb-4 text-gray-400" />
       {signedUp ? (
         <div className="flex flex-col gap-3 max-w-sm mx-auto">

@@ -65,7 +65,7 @@ export const LoginPage = () => {
   return (
     <div className="login-container bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
       <User className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-      <form onSubmit={handleSignInSubmit} className="flex flex-col gap-3 max-w-sm mx-auto">
+      <form onSubmit={handleSignInSubmit} className="flex flex-col gap-3 max-w-lg mx-auto space-y-4">
         <h2 className="text-xl font-semibold mb-2">Login</h2>
         {error && <div className="error">{error}</div>}
         <Input

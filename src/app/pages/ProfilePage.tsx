@@ -106,7 +106,7 @@ export function ProfilePage() {
     : (user.email?.[0] ?? "?").toUpperCase();
 
   return (
-    <div className="max-w-lg space-y-4">
+    <div className="max-w-lg mx-auto space-y-4">
       <Toaster />
 
       <ProfileHeaderCard

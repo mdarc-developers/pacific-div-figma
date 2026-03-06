@@ -59,10 +59,10 @@ export function buildWelcomeEmailHtml(
           <tr>
             <td style="background-color:#1a3a5c;padding:32px 40px;text-align:center;">
               <h1 style="color:#ffffff;margin:0;font-size:24px;letter-spacing:1px;">
-                Amateur Radio Attendee App
+                AttendeeApp
               </h1>
               <p style="color:#a8c4e0;margin:8px 0 0;font-size:14px;">
-                for Conferences
+                an amateur radio companion for conventioneers
               </p>
             </td>
           </tr>
@@ -70,7 +70,7 @@ export function buildWelcomeEmailHtml(
             <td style="padding:40px;">
               <h2 style="color:#1a3a5c;margin:0 0 16px;">Welcome, ${name}!</h2>
               <p style="color:#444444;font-size:15px;line-height:1.6;margin:0 0 16px;">
-                Thank you for registering to use the conference companion attendee App.
+                Thank you for registering your profile.
                 We're looking forward to seeing you at an amateur radio conference soon!
               </p>
               <p style="color:#444444;font-size:15px;line-height:1.6;margin:0 0 16px;">
