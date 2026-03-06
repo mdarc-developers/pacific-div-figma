@@ -599,15 +599,33 @@
     reader.readAsText(file);
   }
 
+  function parseTransformAttr(str) {
+    if (!str) return null;
+    let m = str.match(/matrix\(\s*([^)]+)\)/);
+    if (m) {
+      const vals = m[1].trim().split(/[\s,]+/).map(Number);
+      if (vals.length === 6 && vals.every(v => !isNaN(v))) return vals;
+    }
+    m = str.match(/translate\(\s*([^)]+)\)/);
+    if (m) {
+      const parts = m[1].trim().split(/[\s,]+/).map(Number);
+      const tx = isNaN(parts[0]) ? 0 : parts[0];
+      const ty = isNaN(parts[1]) ? 0 : parts[1];
+      return [1, 0, 0, 1, tx, ty];
+    }
+    return null;
+  }
+
   function autoDetectMatrix(doc) {
-    const paths = doc.querySelectorAll('path');
-    for (const p of paths) {
-      const t = p.getAttribute('transform') || '';
-      const m = t.match(/matrix\(([^)]+)\)/);
-      if (m) {
-        const vals = m[1].split(',').map(Number);
-        if (vals.length === 6) return vals;
-      }
+    // Check path and shape elements first (prefer per-element matrix over translate)
+    for (const el of doc.querySelectorAll('path,rect,polygon,polyline,circle,ellipse')) {
+      const mx = parseTransformAttr(el.getAttribute('transform') || '');
+      if (mx) return mx;
+    }
+    // Fall back to group-level transforms
+    for (const el of doc.querySelectorAll('g')) {
+      const mx = parseTransformAttr(el.getAttribute('transform') || '');
+      if (mx) return mx;
     }
     return null;
   }
@@ -633,25 +651,80 @@
   }
 
   function parsePath(d) {
-    // Parse relative/absolute m + relative deltas for parallelogram-style paths
+    // Parse SVG path commands: M/m/L/l/H/h/V/v/C/c/S/s/Q/q/T/t/A/a/Z/z
+    // For curves, only the endpoint is recorded (sufficient for booth corner extraction)
     const points = [];
     let cx = 0, cy = 0;
-    // Tokenize
-    const tokens = d.trim().replace(/([MmZzLlHhVvCcSsQqTtAa])/g, ' $1 ').trim().split(/\s+/);
+    // Normalize: add spaces around commands, replace commas with spaces
+    const tokens = d.trim()
+      .replace(/([MmZzLlHhVvCcSsQqTtAa])/g, ' $1 ')
+      .replace(/,/g, ' ')
+      .trim()
+      .split(/\s+/)
+      .filter(t => t !== '');
     let i = 0;
-    let cmd = '';
+    let cmd = 'M';
     while (i < tokens.length) {
       const t = tokens[i];
-      if (/^[MmZzLlHhVvCcSsQqTtAa]$/.test(t)) {
-        cmd = t; i++; continue;
+      if (/^[MmZzLlHhVvCcSsQqTtAa]$/.test(t)) { cmd = t; i++; continue; }
+      if (cmd === 'Z' || cmd === 'z') { i++; continue; }
+      const v = parseFloat(t);
+      if (isNaN(v)) { i++; continue; }
+      // Single-value commands
+      if (cmd === 'H') { cx = v; points.push([cx, cy]); i++; continue; }
+      if (cmd === 'h') { cx += v; points.push([cx, cy]); i++; continue; }
+      if (cmd === 'V') { cy = v; points.push([cx, cy]); i++; continue; }
+      if (cmd === 'v') { cy += v; points.push([cx, cy]); i++; continue; }
+      // All remaining commands need a second value
+      if (i + 1 >= tokens.length) break;
+      const v2 = parseFloat(tokens[i + 1]);
+      if (isNaN(v2)) { i++; continue; }
+      // SVG spec: after M/m, subsequent coordinate pairs are treated as implicit L/l
+      if (cmd === 'M') { cx = v; cy = v2; points.push([cx, cy]); cmd = 'L'; i += 2; continue; }
+      if (cmd === 'm') { cx += v; cy += v2; points.push([cx, cy]); cmd = 'l'; i += 2; continue; }
+      if (cmd === 'L') { cx = v; cy = v2; points.push([cx, cy]); i += 2; continue; }
+      if (cmd === 'l') { cx += v; cy += v2; points.push([cx, cy]); i += 2; continue; }
+      if (cmd === 'T') { cx = v; cy = v2; points.push([cx, cy]); i += 2; continue; }
+      if (cmd === 't') { cx += v; cy += v2; points.push([cx, cy]); i += 2; continue; }
+      // Cubic bezier C/c: 3 pairs (6 numbers); endpoint is 3rd pair
+      if (cmd === 'C' || cmd === 'c') {
+        if (i + 5 >= tokens.length) { i++; continue; }
+        const ex = parseFloat(tokens[i + 4]), ey = parseFloat(tokens[i + 5]);
+        if (!isNaN(ex) && !isNaN(ey)) {
+          if (cmd === 'C') { cx = ex; cy = ey; } else { cx += ex; cy += ey; }
+          points.push([cx, cy]);
+        }
+        i += 6; continue;
       }
-      if (t === '') { i++; continue; }
-      if (t.includes(',')) {
-        const [dx, dy] = t.split(',').map(Number);
-        if (cmd === 'M') { cx = dx; cy = dy; points.push([cx, cy]); }
-        else if (cmd === 'm') { cx += dx; cy += dy; points.push([cx, cy]); }
-        else if (cmd === 'L') { cx = dx; cy = dy; points.push([cx, cy]); }
-        else if (cmd === 'l') { cx += dx; cy += dy; points.push([cx, cy]); }
+      // Smooth cubic S/s: 2 pairs (4 numbers); endpoint is 2nd pair
+      if (cmd === 'S' || cmd === 's') {
+        if (i + 3 >= tokens.length) { i++; continue; }
+        const ex = parseFloat(tokens[i + 2]), ey = parseFloat(tokens[i + 3]);
+        if (!isNaN(ex) && !isNaN(ey)) {
+          if (cmd === 'S') { cx = ex; cy = ey; } else { cx += ex; cy += ey; }
+          points.push([cx, cy]);
+        }
+        i += 4; continue;
+      }
+      // Quadratic bezier Q/q: 2 pairs (4 numbers); endpoint is 2nd pair
+      if (cmd === 'Q' || cmd === 'q') {
+        if (i + 3 >= tokens.length) { i++; continue; }
+        const ex = parseFloat(tokens[i + 2]), ey = parseFloat(tokens[i + 3]);
+        if (!isNaN(ex) && !isNaN(ey)) {
+          if (cmd === 'Q') { cx = ex; cy = ey; } else { cx += ex; cy += ey; }
+          points.push([cx, cy]);
+        }
+        i += 4; continue;
+      }
+      // Arc A/a: 7 params (rx ry x-rot large-arc sweep x y); endpoint is last pair
+      if (cmd === 'A' || cmd === 'a') {
+        if (i + 6 >= tokens.length) { i++; continue; }
+        const ex = parseFloat(tokens[i + 5]), ey = parseFloat(tokens[i + 6]);
+        if (!isNaN(ex) && !isNaN(ey)) {
+          if (cmd === 'A') { cx = ex; cy = ey; } else { cx += ex; cy += ey; }
+          points.push([cx, cy]);
+        }
+        i += 7; continue;
       }
       i++;
     }
@@ -667,33 +740,96 @@
     return c.toLowerCase().replace(/\s/g,'');
   }
 
+  function elementMatchesColor(el, targetColor) {
+    const style = (el.getAttribute('style') || '').toLowerCase().replace(/\s/g, '');
+    const fill = normalizeColor(el.getAttribute('fill') || '');
+    return style.includes('fill:' + targetColor) || fill === targetColor;
+  }
+
+  function getElementPoints(el) {
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'path') {
+      return parsePath(el.getAttribute('d') || '');
+    }
+    if (tag === 'rect') {
+      const x = parseFloat(el.getAttribute('x') || '0');
+      const y = parseFloat(el.getAttribute('y') || '0');
+      const w = parseFloat(el.getAttribute('width') || '0');
+      const h = parseFloat(el.getAttribute('height') || '0');
+      if (isNaN(x) || isNaN(y) || w <= 0 || h <= 0) return [];
+      return [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
+    }
+    if (tag === 'polygon' || tag === 'polyline') {
+      const raw = (el.getAttribute('points') || '').trim()
+        .replace(/,/g, ' ').split(/\s+/).filter(Boolean);
+      const pts = [];
+      for (let i = 0; i + 1 < raw.length; i += 2) {
+        const px = parseFloat(raw[i]), py = parseFloat(raw[i + 1]);
+        if (!isNaN(px) && !isNaN(py)) pts.push([px, py]);
+      }
+      return pts;
+    }
+    return [];
+  }
+
+  function multiplyMatrix(a, b) {
+    // Compose two SVG matrices [a,b,c,d,e,f] (column-major 3×3 affine)
+    return [
+      a[0]*b[0] + a[2]*b[1],
+      a[1]*b[0] + a[3]*b[1],
+      a[0]*b[2] + a[2]*b[3],
+      a[1]*b[2] + a[3]*b[3],
+      a[0]*b[4] + a[2]*b[5] + a[4],
+      a[1]*b[4] + a[3]*b[5] + a[5]
+    ];
+  }
+
+  function getEffectiveMatrix(el, globalMx) {
+    // Use element's own transform if it has one (do not compose with ancestors
+    // so that group-level positioning offsets are intentionally excluded, matching
+    // the expected coordinate space for booth data)
+    const own = parseTransformAttr(el.getAttribute('transform') || '');
+    if (own) return own;
+    // Walk up the ancestor chain composing all g-level transforms
+    const ancestorMxs = [];
+    let parent = el.parentElement;
+    while (parent && parent.tagName.toLowerCase() !== 'svg') {
+      const pm = parseTransformAttr(parent.getAttribute('transform') || '');
+      if (pm) ancestorMxs.push(pm);
+      parent = parent.parentElement;
+    }
+    if (ancestorMxs.length === 0) return globalMx;
+    // Compose ancestor matrices innermost-first (child before parent)
+    let composed = ancestorMxs[0];
+    for (let i = 1; i < ancestorMxs.length; i++) {
+      composed = multiplyMatrix(ancestorMxs[i], composed);
+    }
+    return composed;
+  }
+
   function runExtraction() {
     if (!svgDoc) return;
     const targetColor = normalizeColor(fillColorInput.value);
     const mx = getMatrix();
 
-    const paths = svgDoc.querySelectorAll('path');
+    const elements = svgDoc.querySelectorAll('path,rect,polygon,polyline');
     extractedBooths = [];
     let idx = 1;
 
-    for (const p of paths) {
-      const style = p.getAttribute('style') || '';
-      const fill = p.getAttribute('fill') || '';
-      // Check fill color in style or fill attribute
-      const hasFill = style.includes('fill:' + targetColor) || normalizeColor(fill) === targetColor;
-      if (!hasFill) continue;
+    for (const el of elements) {
+      if (!elementMatchesColor(el, targetColor)) continue;
 
-      const d = p.getAttribute('d') || '';
-      const pts = parsePath(d);
+      const pts = getElementPoints(el);
       if (pts.length < 2) continue;
 
+      const elMx = getEffectiveMatrix(el, mx);
       const [rcx, rcy] = centroid(pts);
-      const [scx, scy] = applyMatrix(mx, rcx, rcy);
-      const corners = pts.map(([x,y]) => applyMatrix(mx, x, y));
+      const [scx, scy] = applyMatrix(elMx, rcx, rcy);
+      const corners = pts.map(([x, y]) => applyMatrix(elMx, x, y));
 
       const booth = {
         booth_num: idx++,
-        path_id: p.getAttribute('id') || '',
+        path_id: el.getAttribute('id') || '',
         center_svg_x: scx,
         center_svg_y: scy,
         raw_cx: parseFloat(rcx.toFixed(2)),
@@ -837,18 +973,17 @@
     ctx.fillStyle = '#18181c';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw all paths as outlines for context
-    const allPaths = doc.querySelectorAll('path');
+    // Draw all shapes as outlines for context
     ctx.strokeStyle = '#2a2a32';
     ctx.lineWidth = 0.5;
-    for (const p of allPaths) {
-      const d = p.getAttribute('d') || '';
-      const pts = parsePath(d);
+    for (const el of doc.querySelectorAll('path,rect,polygon,polyline')) {
+      const elMx = getEffectiveMatrix(el, mx);
+      const pts = getElementPoints(el);
       if (pts.length < 2) continue;
-      const transformed = pts.map(([x,y]) => applyMatrix(mx, x, y));
+      const transformed = pts.map(([x, y]) => applyMatrix(elMx, x, y));
       ctx.beginPath();
       ctx.moveTo(transformed[0][0]*scale, transformed[0][1]*scale);
-      for (let i=1;i<transformed.length;i++) ctx.lineTo(transformed[i][0]*scale, transformed[i][1]*scale);
+      for (let i = 1; i < transformed.length; i++) ctx.lineTo(transformed[i][0]*scale, transformed[i][1]*scale);
       ctx.closePath();
       ctx.stroke();
     }
