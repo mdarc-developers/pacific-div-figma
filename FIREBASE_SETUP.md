@@ -172,7 +172,6 @@ collections and their access patterns are:
 | `conferences`, `sessions`, `maps` | Public | Admin (`isAdmin` field) |
 | `users/{uid}` | Own doc only (`get`) | Own doc only |
 | `users` (list/count) | mdarc-developers only | — |
-| `userSettings/{uid}` | Own doc only | Own doc only |
 | `groups/{groupId}` | Any authenticated user | Admin SDK only |
 | `stats/{document}` | mdarc-developers only | Cloud Functions only |
 | `prizes` | Public | Admin (`isAdmin` field) |

@@ -286,7 +286,7 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
 - Responds to OS-level `prefers-color-scheme` changes while in `"system"` mode.
 - Syncs across browser tabs/windows via the `storage` event.
 
-`src/app/components/FirebaseThemeSync.tsx` is a headless React component mounted inside `<App>`. On user login it reads the saved theme from Firestore (`userSettings/{uid}`) and calls `setTheme`. On subsequent theme changes it writes the new value back to Firestore via `src/services/userSettingsService.ts`.
+`src/app/components/FirebaseThemeSync.tsx` is a headless React component mounted inside `<App>`. On user login it reads the saved theme from Firestore (`users/{uid}`) and calls `setTheme`. On subsequent theme changes it writes the new value back to Firestore via `src/services/userSettingsService.ts`.
 
 ---
 
@@ -484,14 +484,14 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 
 Theme preference is the first user setting persisted to Firestore. The flow is:
 
-1. On user **login**, `FirebaseThemeSync` (mounted inside `<App>`) calls `getUserTheme(uid)` from `src/services/userSettingsService.ts`, which reads `userSettings/{uid}.theme` from Firestore.
+1. On user **login**, `FirebaseThemeSync` (mounted inside `<App>`) calls `getUserTheme(uid)` from `src/services/userSettingsService.ts`, which reads `users/{uid}.theme` from Firestore.
 
 2. If a saved theme is found, it calls `ThemeContext.setTheme()` to apply it immediately — and sets a flag to suppress the echoed write-back that would otherwise follow.
 
-3. On any subsequent **theme change** (user picks light/dark/system in `SettingsCard`), `FirebaseThemeSync` detects the change and calls `setUserTheme(uid, theme)`, which writes `{ theme }` (merge) to `userSettings/{uid}`.
+3. On any subsequent **theme change** (user picks light/dark/system in `SettingsCard`), `FirebaseThemeSync` detects the change and calls `setUserTheme(uid, theme)`, which writes `{ theme }` (merge) to `users/{uid}`.
 
 4. On **logout**, `FirebaseThemeSync` clears its loaded-uid ref so that the next login re-reads Firestore rather than assuming the cached value.
 
-5. Firestore security rule: each user can only read and write their own `userSettings/{uid}` document.
+5. Firestore security rule: each user can only read and write their own `users/{uid}` document.
 
-The same `userSettings` collection is the intended home for future user preferences (notification toggles, etc.) once those stubs are wired up.
+The `users` collection is the single source of truth for all user data — profile fields, preferences (theme, notification toggles, etc.), and bookmarks.
