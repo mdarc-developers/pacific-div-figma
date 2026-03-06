@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 //import { auth } from '../../lib/firebase';
-import { Conference } from "@/types/conference";
+import { Conference, ConferenceListItem } from "@/types/conference";
 import { allConferences } from "@/data/all-conferences";
 
 const CONFERENCE_STORAGE_KEY = "activeConference";
 
 interface ConferenceContextType {
   activeConference: Conference;
-  allConferencesList: Conference[];
+  allConferencesList: ConferenceListItem[];
   setActiveConference: (conference: Conference) => void;
 }
 
@@ -19,13 +19,14 @@ function readStoredConference(): Conference {
   try {
     const id = localStorage.getItem(CONFERENCE_STORAGE_KEY);
     if (id) {
-      const found = allConferences.find((c) => c.id === id);
-      if (found) return found;
+      const found = allConferences.find((c) => c.id === id && c.id !== "---");
+      if (found) return found as Conference;
     }
   } catch {
     // ignore
   }
-  return allConferences[0];
+  const first = allConferences.find((c) => c.id !== "---");
+  return first as Conference;
 }
 
 export const useConference = () => {

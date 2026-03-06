@@ -1,6 +1,6 @@
-import { Conference } from "@/types/conference";
+import { ConferenceListItem } from "@/types/conference";
 
-export const allConferences: Conference[] = [
+export const allConferences: ConferenceListItem[] = [
   {
     id: "hamvention-2026",
     name: "Hamvention 2026",
@@ -181,7 +181,7 @@ Roadrunner Camping Area",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
   },
-  {id:"---"},
+  { id: "---" },
   {
     id: "yuma-2026",
     name: "Yuma Hamfest 2026",

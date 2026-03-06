@@ -1,3 +1,6 @@
+export type ConferenceSeparator = { id: "---" };
+export type ConferenceListItem = Conference | ConferenceSeparator;
+
 export interface Conference {
   id: string;
   name: string;
