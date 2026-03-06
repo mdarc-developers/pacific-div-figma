@@ -80,6 +80,9 @@ export function ExhibitorsMapViewSvg({
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<DragState | null>(null);
   const pinchDistRef = useRef<number | null>(null);
+  // Tracks whether the pointer actually moved during a drag so that a
+  // mouseup-then-click sequence does not accidentally toggle a booth.
+  const hasDraggedRef = useRef(false);
   // Keep a ref that always reflects the latest vb for use inside event handlers
   const vbRef = useRef<ViewBox>(vb);
 
@@ -148,6 +151,7 @@ export function ExhibitorsMapViewSvg({
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const ds = dragRef.current;
     if (!ds) return;
+    hasDraggedRef.current = true;
     const dx = (e.clientX - ds.clientX) * ds.scaleX;
     const dy = (e.clientY - ds.clientY) * ds.scaleY;
     const cur = vbRef.current;
@@ -227,7 +231,10 @@ export function ExhibitorsMapViewSvg({
   };
 
   const handleClick = (booth: SvgBooth) => {
-    if (dragRef.current) return; // ignore click at end of drag
+    if (hasDraggedRef.current) {
+      hasDraggedRef.current = false;
+      return; // ignore click at end of a pan gesture
+    }
     const ex = boothToExhibitor.get(booth.boothNum);
     if (!ex) return;
     onHighlightChange(
@@ -344,6 +351,7 @@ export function ExhibitorsMapViewSvg({
               stroke={hasExhibitor ? "#1e40af" : "#aaa"}
               strokeWidth={isHighlighted ? 2 : hasExhibitor ? 1.2 : 0.6}
               strokeOpacity={hasExhibitor ? 0.7 : 0.3}
+              vectorEffect="non-scaling-stroke"
               style={{ cursor: hasExhibitor ? "pointer" : "default" }}
               onMouseEnter={(e) => handleMouseEnter(booth, e)}
               onMouseLeave={() => setTip(null)}
