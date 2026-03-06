@@ -81,8 +81,8 @@ export const samplePrizeWinners: PrizeWinner[] = [
   },
 ];
 
-// Sample user profiles — groups simulate Google Cloud Groups membership.
-// prize-admin group grants access to the prize management admin page.
+// Sample user profiles for Pacificon 2026.
+// prize-admin group access is managed via the Firebase groups/prize-admin document.
 export const mapUserProfiles: UserProfile[] = [
   {
     uid: "7dBAeZv7kJbVOI5A99Zol06dCTU2",
@@ -91,7 +91,6 @@ export const mapUserProfiles: UserProfile[] = [
     bookmarkedSessions: [],
     notificationsEnabled: true,
     smsNotifications: true,
-    groups: ["prize-admin"],
     displayName: "Grant B",
     callsign: "K6CBK",
   },
@@ -102,7 +101,6 @@ export const mapUserProfiles: UserProfile[] = [
     bookmarkedSessions: [],
     notificationsEnabled: true,
     smsNotifications: true,
-    groups: ["prize-admin", "mdarc-developers"],
     displayName: "Grant B",
     callsign: "K6CBK",
   },

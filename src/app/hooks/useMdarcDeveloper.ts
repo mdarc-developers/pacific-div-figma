@@ -1,17 +1,45 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { ALL_USER_PROFILES } from "@/lib/userProfileData";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 /**
- * Returns true when the currently authenticated user's email matches a sample
- * UserProfile that belongs to the "mdarc-developers" group.
+ * Returns true when the currently authenticated user's UID is listed in the
+ * `groups/mdarc-developers` Firestore document's `members` map.
  *
- * This simulates a Google Cloud Groups permission check.  When the app is
- * eventually wired to Firestore / Cloud IAM the lookup here can be replaced
- * with a real profile fetch without changing any of the calling components.
+ * Reads: groups/mdarc-developers → { members: { [uid]: true } }
+ * See FIREBASE_SETUP.md §5a for how to create this document.
  */
 export function useMdarcDeveloper(): boolean {
   const { user } = useAuth();
-  if (!user?.email) return false;
-  const profile = ALL_USER_PROFILES.find((p) => p.email === user.email);
-  return profile?.groups?.includes("mdarc-developers") ?? false;
+  const [isMdarcDeveloper, setIsMdarcDeveloper] = useState(false);
+
+  useEffect(() => {
+    if (!user?.uid) {
+      setIsMdarcDeveloper(false);
+      return;
+    }
+
+    let cancelled = false;
+    getDoc(doc(db, "groups", "mdarc-developers"))
+      .then((snap) => {
+        if (cancelled) return;
+        const members = snap.data()?.members as
+          | Record<string, boolean>
+          | undefined;
+        setIsMdarcDeveloper(members?.[user.uid] === true);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("useMdarcDeveloper: failed to read groups/mdarc-developers", err);
+          setIsMdarcDeveloper(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.uid]);
+
+  return isMdarcDeveloper;
 }

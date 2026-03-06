@@ -243,15 +243,12 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const exhibitors = attendees.filter(
     (a) => a.exhibitors && a.exhibitors.length > 0,
   );
-  // Users with any group membership are treated as organizers/staff
-  const organizers = attendees.filter((a) => a.groups && a.groups.length > 0);
 
   // Build the list of visible category tabs (only show non-empty ones)
   const categoryTabs = (
     [
       { key: "speakers", label: "Speakers", list: speakers },
       { key: "exhibitors", label: "Exhibitors", list: exhibitors },
-      { key: "organizers", label: "Organizers", list: organizers },
     ] as { key: string; label: string; list: UserProfile[] }[]
   ).filter((cat) => cat.list.length > 0);
 

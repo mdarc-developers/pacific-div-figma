@@ -416,7 +416,6 @@ export const mapUserProfiles: UserProfile[] = [
     bookmarkedSessions: [],
     notificationsEnabled: true,
     smsNotifications: true,
-    groups: ["prize-admin", "mdarc-developers"],
     displayName: "Grant B",
     callsign: "K6CBK",
   },

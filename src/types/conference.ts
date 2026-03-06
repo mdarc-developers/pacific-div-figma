@@ -110,7 +110,6 @@ export interface UserProfile {
   notificationsEnabled: boolean;
   smsNotifications: boolean;
   roles?: string[];
-  groups?: string[];
   callsign?: string;
   displayName?: string; // for exhibitors, speakers or anyone
   displayProfile?: string; // like a public QRZ text for display, also speaker bio - should not be empty for speakers
