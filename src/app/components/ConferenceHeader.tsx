@@ -272,12 +272,12 @@ export function ConferenceHeader() {
                           return (
                             <Card
                               key={`separator-${index}`}
-                              className="border-0 shadow-md pointer-events-none"
+                              className="border-0 shadow-lg pointer-events-none"
                               style={{ backgroundColor: activeConference.primaryColor }}
                             >
-                              <CardContent className="px-4 py-1">
+                              <CardContent className="px-4 py-4">
                                 <hr className="border-t-2" style={{ borderColor: contrastingColor(activeConference.primaryColor) }} />
-                                <hr className="border-t-2 mt-1" style={{ borderColor: contrastingColor(activeConference.primaryColor) }} />
+                                <hr className="border-t-2 mt-3" style={{ borderColor: contrastingColor(activeConference.primaryColor) }} />
                               </CardContent>
                             </Card>
                           );
