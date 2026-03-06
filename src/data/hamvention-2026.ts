@@ -78,7 +78,8 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapExhibitors: [string, Exhibitor[]] = [
-  "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
+  //"/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
+  "/assets/maps/hamvention-2026-building-1-maxim.svg",
   // must match mapBooths URL
   [
     //export interface Exhibitor {
@@ -1523,12 +1524,13 @@ export const mapExhibitors: [string, Exhibitor[]] = [
   ],
 ];
 
-export const mapBooths: [string, Booth[]] = [
-  "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
-  //"/assets/maps/hamvention-forums-2026-2.png",
-  // must match mapExhibitors URL
-  [],
-];
+// PDF with Booth[] not working yet so comment it out
+//export const mapBooths: [string, Booth[]] = [
+//  "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
+//  //"/assets/maps/hamvention-forums-2026-2.png",
+//  // must match mapExhibitors URL
+//  [],
+//];
 
 // Define your room polygons here
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
