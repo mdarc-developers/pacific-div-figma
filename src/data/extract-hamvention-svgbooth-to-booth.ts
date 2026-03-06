@@ -9,7 +9,6 @@
 // It exports `mapBooths: [string, Booth[]]` — the same shape used by
 // the conferenceData loader in src/lib/conferenceData.ts.
 
-import { fileURLToPath } from "node:url";
 import {
   HAMVENTION_BUILDING1_BOOTHS,
   SVG_URL,
@@ -62,12 +61,15 @@ export const mapBooths: [string, Booth[]] = [
 }
 
 // Detect whether this module is the direct entry point.
-// fileURLToPath converts the `file://` URL to a platform path for comparison
-// with process.argv[1] (the script path supplied by Node.js / tsx).
+// Compare the pathname of import.meta.url (e.g. /path/to/file.ts) against
+// process.argv[1] (the script path supplied by Node.js / tsx).
+// Using new URL() instead of fileURLToPath avoids a node:url dependency that
+// breaks when this module is bundled for the browser.
 const isMain =
   typeof process !== "undefined" &&
   Array.isArray(process.argv) &&
-  fileURLToPath(import.meta.url) === process.argv[1];
+  process.argv.length > 1 &&
+  new URL(import.meta.url).pathname === process.argv[1];
 
 if (isMain) {
   const booths = convertSvgBoothsToBooth(
