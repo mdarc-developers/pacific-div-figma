@@ -97,7 +97,7 @@ export function ConferenceHeader() {
   const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
 
   const icalUrlDisplay = (iurl: string) => {
-    if (iurl === "") return "";
+    if (!iurl || iurl === "") return "";
     else
       return (
         <a
@@ -113,7 +113,7 @@ export function ConferenceHeader() {
       );
   };
   const googlecalUrlDisplay = (gurl: string) => {
-    if (gurl === "") return "";
+    if (!gurl || gurl === "") return "";
     else
       return (
         <a href={gurl} rel="noopener noreferrer" target="_blank">
