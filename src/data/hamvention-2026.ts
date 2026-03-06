@@ -2370,29 +2370,37 @@ export const mapSessions: [string, Session[]] = [
 export const conferenceMaps: MapImage[] = [
   {
     id: "map-1",
-    name: "Exhibitors — Building 1 (Maxim)",
-    url: "/assets/maps/hamvention-2026-building-1-maxim.svg", // for Booth[] (SVG interactive map)
-    order: 1,
-    origHeightNum: 816,
-    origWidthNum: 1056,
-  },
-  {
-    id: "map-2",
     name: "Exhibitors",
     url: "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf", // for Booth[]
     //floor: '2',
-    order: 2,
+    order: 1,
     origHeightNum: 745,
     origWidthNum: 961,
   },
   {
-    id: "map-3",
+    id: "map-2",
     name: "Forums",
     url: "/assets/maps/hamvention-forums-2026-2.png", // for Booth[]
     //floor: '2',
     order: 3,
     origHeightNum: 710,
     origWidthNum: 953,
+  },
+  {
+    id: "map-3",
+    name: "Exhibitors — Building 1 Maxim",
+    url: "/assets/maps/hamvention-2026-building-1-maxim.svg", // for Booth[] (SVG interactive map)
+    order: 3,
+    origHeightNum: 816,
+    origWidthNum: 1056,
+  },
+  {
+    id: "map-4",
+    name: "Exhibitors — Building 2 Tesla",
+    url: "/assets/maps/hamvention-2026-building-2-tesla.svg", // for Booth[] (SVG interactive map)
+    order: 3,
+    origHeightNum: 816,
+    origWidthNum: 1056,
   },
 ];
 
