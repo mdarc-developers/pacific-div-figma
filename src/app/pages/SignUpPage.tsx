@@ -17,15 +17,16 @@ export function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [signedUp, setSignedUp] = useState(false);
   const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect if already logged in (but not right after sign-up — let user see the confirmation)
   useEffect(() => {
-    if (user) {
+    if (user && !signedUp) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [user, navigate, signedUp]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +43,7 @@ export function SignUpPage() {
       setError("");
       setLoading(true);
       await signUp(email, password);
-      // Navigation handled by useEffect when user state updates
+      setSignedUp(true);
     } catch (err: unknown) {
       setError(getErrorMessage(err) || "Failed to create an account");
     } finally {
@@ -66,6 +67,18 @@ export function SignUpPage() {
   return (
     <div className="signup-container bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
       <User className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+      {signedUp ? (
+        <div className="flex flex-col gap-3 max-w-sm mx-auto">
+          <h2 className="text-xl font-semibold mb-2">Account Created!</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Your account has been created. Check your email inbox for a welcome
+            message, then click below to get started.
+          </p>
+          <Button className="w-full mt-2" onClick={() => navigate("/")}>
+            Continue to App
+          </Button>
+        </div>
+      ) : (
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-sm mx-auto">
         <h2 className="text-xl font-semibold mb-2">Sign Up</h2>
         {error && <div className="error">{error}</div>}
@@ -120,7 +133,8 @@ export function SignUpPage() {
             Log in
           </Link>
         </p>
-      </form>
+        </form>
+      )}
     </div>
   );
 }
