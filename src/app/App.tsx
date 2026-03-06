@@ -8,6 +8,7 @@ import { FirebaseThemeSync } from "@/app/components/FirebaseThemeSync";
 //import { ScheduleView } from '@/app/components/ScheduleView';
 //import { MapsView } from '@/app/components/MapsView';
 import { ConferenceHeader } from "@/app/components/ConferenceHeader";
+import { ConferenceHeaderErrorBoundary } from "@/app/components/ConferenceHeaderErrorBoundary";
 import { AdminStatsBar } from "@/app/components/AdminStatsBar";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { ConferenceFooter } from "@/app/components/ConferenceFooter";
@@ -35,7 +36,9 @@ export default function App() {
       <FirebaseThemeSync />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {isMdarcDeveloper && <AdminStatsBar />}
-        <ConferenceHeader />
+        <ConferenceHeaderErrorBoundary>
+          <ConferenceHeader />
+        </ConferenceHeaderErrorBoundary>
 
         <SearchBar />
         <Navigation />
