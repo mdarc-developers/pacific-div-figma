@@ -1,14 +1,14 @@
 // extract-hamvention-svgbooth-to-booth.ts
 //
-// Tool: converts SvgBooth CSV data (from extract-booth-from-svg.html) into
+// Tool: converts SvgBooth[] data (from extract-booth-from-svg.html) into
 //       a ready-to-check-in Booth[] TypeScript source module.
 //
 // Usage (run as a script):
 //   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts \
-//     --input  <csv-file>   CSV produced by extract-booth-from-svg.html
-//     --building <zone>     location zone label (e.g. "building-1")
-//     --svg-url <url>       SVG asset URL (e.g. /assets/maps/foo.svg)
-//     [-v | --verbose]      print debug info to stderr
+//     [-i | --input ]  <csv-file>   CSV produced by extract-booth-from-svg.html
+//     --building <zone>             location zone label (e.g. "building-1")
+//     --svg-url <url>               SVG asset URL (e.g. /assets/maps/foo.svg)
+//     [-v | --verbose]              print debug info to stderr
 //
 // Output is written to stdout; redirect to a dated data file:
 //   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts \
@@ -19,6 +19,8 @@
 //
 // The generated file exports `mapBooths: [string, Booth[]]` — the same shape
 // used by the conferenceData loader in src/lib/conferenceData.ts.
+//
+// must change import and several hard coded variables at the bottom
 
 import { readFileSync } from "node:fs";
 import type { Booth } from "@/types/conference";
@@ -211,7 +213,7 @@ if (isMain) {
   if (!inputFile || !building || !svgUrl) {
     process.stderr.write(
       `Usage: npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts \\\n` +
-        `  --input <csv-file> --building <zone> --svg-url <url> [-v]\n\n` +
+        `  -i, --input <csv-file> --building <zone> --svg-url <url> [-v]\n\n` +
         `  --input <csv-file>   CSV produced by extract-booth-from-svg.html\n` +
         `  --building <zone>    Location zone label (e.g. "building-1")\n` +
         `  --svg-url <url>      SVG asset URL (e.g. /assets/maps/foo.svg)\n` +
