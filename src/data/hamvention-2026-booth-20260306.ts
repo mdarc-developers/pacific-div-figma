@@ -10,7 +10,11 @@
 // whenever the map URL matches the SVG_URL below.
 //
 // To regenerate this file run:
-//   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts > src/data/hamvention-2026-booth-<date>.ts
+//   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts \
+//     --input public/assets/maps/hamvention-2026-building-1-maxim-coords.csv \
+//     --building building-1 \
+//     --svg-url /assets/maps/hamvention-2026-building-1-maxim.svg \
+//     > src/data/hamvention-2026-booth-building-1-$(date +%Y%m%d).ts
 
 import type { Booth } from "@/types/conference";
 import {

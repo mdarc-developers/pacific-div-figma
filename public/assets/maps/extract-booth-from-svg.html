@@ -880,11 +880,23 @@
   }
 
   // --- RENDER CSV ---
+  // Columns match the SvgBooth interface consumed by extract-hamvention-svgbooth-to-booth.ts:
+  //   booth_num       — sequential index (edit in a spreadsheet to assign real booth numbers)
+  //   path_id         — SVG element id (if any)
+  //   center_svg_x/y  — centroid in SVG coordinate space
+  //   svgPoints       — corner points as "x,y x,y …" (y from top)
+  //   coords          — corner points as [[y_bottom,x],…] JSON array (y from bottom)
   function buildCSV() {
-    const rows = ['booth_num,path_id,center_svg_x,center_svg_y,raw_cx,raw_cy,corners'];
+    const H = svgHeight;
+    const rows = ['booth_num,path_id,center_svg_x,center_svg_y,svgPoints,coords'];
     for (const b of extractedBooths) {
-      const corners = '[' + b.corners.map(c => `(${c[0]}, ${c[1]})`).join(', ') + ']';
-      rows.push(`${b.booth_num},${b.path_id},${b.center_svg_x},${b.center_svg_y},${b.raw_cx},${b.raw_cy},"${corners}"`);
+      const svgPoints = b.corners.map(c => `${c[0]},${c[1]}`).join(' ');
+      const coordPairs = b.corners.map(c => {
+        const yBottom = parseFloat((H - c[1]).toFixed(2));
+        return `[${yBottom},${c[0]}]`;
+      });
+      const coords = '[' + coordPairs.join(',') + ']';
+      rows.push(`${b.booth_num},${b.path_id},${b.center_svg_x},${b.center_svg_y},"${svgPoints}","${coords}"`);
     }
     return rows.join('\n');
   }
