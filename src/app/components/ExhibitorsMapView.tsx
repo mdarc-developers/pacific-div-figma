@@ -9,7 +9,7 @@ import {
   SVG_WIDTH as HAMVENTION_B1_SVG_WIDTH,
   SVG_HEIGHT as HAMVENTION_B1_SVG_HEIGHT,
   type SvgBooth,
-} from "@/data/hamventionSvgExhibitorMapData";
+} from "@/data/hamvention-2026-svgbooth-20260305";
 
 /** Registry mapping each SVG floor-plan URL to its booth polygon data. */
 const SVG_MAP_REGISTRY = new Map<

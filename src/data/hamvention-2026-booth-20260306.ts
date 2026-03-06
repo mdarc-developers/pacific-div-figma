@@ -16,7 +16,7 @@ import type { Booth } from "@/types/conference";
 import {
   SVG_URL,
   HAMVENTION_BUILDING1_BOOTHS,
-} from "@/data/hamventionSvgExhibitorMapData";
+} from "@/data/hamvention-2026-svgbooth-20260305";
 import { convertSvgBoothsToBooth } from "@/data/extract-hamvention-svgbooth-to-booth";
 
 export const mapBooths: [string, Booth[]] = [

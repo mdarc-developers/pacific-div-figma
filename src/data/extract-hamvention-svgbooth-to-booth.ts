@@ -14,7 +14,7 @@ import {
   HAMVENTION_BUILDING1_BOOTHS,
   SVG_URL,
   type SvgBooth,
-} from "./hamventionSvgExhibitorMapData";
+} from "./hamvention-2026-svgbooth-20260305";
 import type { Booth } from "@/types/conference";
 
 /**
@@ -77,7 +77,7 @@ if (isMain) {
   const code = generateBoothTsCode(
     SVG_URL,
     booths,
-    "hamventionSvgExhibitorMapData.ts / HAMVENTION_BUILDING1_BOOTHS",
+    "hamvention-2026-svgbooth-20260305.ts / HAMVENTION_BUILDING1_BOOTHS",
   );
   process.stdout.write(code);
 }

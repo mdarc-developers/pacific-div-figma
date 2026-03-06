@@ -3,7 +3,7 @@
 // Renders an arbitrary SVG floor-plan with interactive booth polygon overlays.
 // Supports mouse-wheel zoom, click-drag pan, and touch pinch-to-zoom / drag.
 import React, { useRef, useState } from "react";
-import type { SvgBooth } from "@/data/hamventionSvgExhibitorMapData";
+import type { SvgBooth } from "@/data/hamvention-2026-svgbooth-20260305";
 import type { Exhibitor } from "@/types/conference";
 
 export interface ExhibitorsMapViewSvgProps {
