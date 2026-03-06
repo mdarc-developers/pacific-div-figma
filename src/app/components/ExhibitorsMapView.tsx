@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapImage, Booth, Exhibitor } from "@/types/conference";
+import { HamventionSvgExhibitorMap } from "@/app/components/HamventionSvgExhibitorMap";
+import { SVG_URL as HAMVENTION_B1_SVG_URL } from "@/data/hamventionSvgExhibitorMapData";
 
 interface ExhibitorsMapViewProps {
   exhibitorsMap: MapImage | undefined;
@@ -189,6 +191,22 @@ export function ExhibitorsMapView({
   }, [highlightedExhibitorId, boothToName]);
 
   if (!exhibitorsMap) return null;
+
+  // SVG maps: render using dedicated SVG component (no Leaflet)
+  if (exhibitorsMap.url === HAMVENTION_B1_SVG_URL) {
+    return (
+      <>
+        <HamventionSvgExhibitorMap
+          mapExhibitors={mapExhibitors}
+          highlightedExhibitorId={highlightedExhibitorId}
+          onHighlightChange={onHighlightChange}
+        />
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
+          {exhibitorsMap.name}
+        </p>
+      </>
+    );
+  }
 
   const endsWithPdf = exhibitorsMap.url.endsWith(".pdf");
   if (endsWithPdf) {

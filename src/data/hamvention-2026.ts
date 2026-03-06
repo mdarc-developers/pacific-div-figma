@@ -2369,6 +2369,14 @@ export const mapSessions: [string, Session[]] = [
 // map images - in production these may be bundled images
 export const conferenceMaps: MapImage[] = [
   {
+    id: "map-1",
+    name: "Exhibitors — Building 1 (Maxim)",
+    url: "/assets/maps/hamvention-2026-building-1-maxim.svg", // for Booth[] (SVG interactive map)
+    order: 1,
+    origHeightNum: 816,
+    origWidthNum: 1056,
+  },
+  {
     id: "map-2",
     name: "Exhibitors",
     url: "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf", // for Booth[]
