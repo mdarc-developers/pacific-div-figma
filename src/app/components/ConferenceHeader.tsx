@@ -390,6 +390,7 @@ export function ConferenceHeader() {
                     <Moon className="h-4 w-4" />
                   </ToggleGroupItem>
                 </ToggleGroup>
+                {/* Conference Selector (bottom) */}
               </div>
             </div>
 
