@@ -66,17 +66,17 @@ export const samplePrizeWinners: PrizeWinner[] = [
   },
 ];
 
-export const mapExhibitors: [string, Exhibitor[]] = [
-  "/assets/maps/hamfest-layout-2026.png",
-  // must match mapBooths URL
-  [],
-];
+//export const mapExhibitors: [string, Exhibitor[]] = [
+//  "/assets/maps/hamfest-layout-2026.png",
+//  // must match mapBooths URL
+//  [],
+//];
 
-export const mapBooths: [string, Booth[]] = [
-  "/assets/maps/hamfest-layout-2026.png",
-  // must match mapExhibitors URL
-  [],
-];
+//export const mapBooths: [string, Booth[]] = [
+//  "/assets/maps/hamfest-layout-2026.png",
+//  // must match mapExhibitors URL
+//  [],
+//];
 
 // Define your room polygons here
 // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
@@ -110,11 +110,11 @@ export const mapRooms: [string, Room[]] = [
   ],
 ];
 
-export const mapSessions: [string, Session[]] = [
-  "/assets/maps/hamfest-layout-2026.png",
-  // must match mapRooms URL
-  [],
-];
+//export const mapSessions: [string, Session[]] = [
+//  "/assets/maps/hamfest-layout-2026.png",
+//  // must match mapRooms URL
+//  [],
+//];
 
 // map images - in production these may be bundled images
 export const conferenceMaps: MapImage[] = [
