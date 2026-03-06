@@ -2,8 +2,29 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapImage, Booth, Exhibitor } from "@/types/conference";
-import { HamventionSvgExhibitorMap } from "@/app/components/HamventionSvgExhibitorMap";
-import { SVG_URL as HAMVENTION_B1_SVG_URL } from "@/data/hamventionSvgExhibitorMapData";
+import { ExhibitorsMapViewSvg } from "@/app/components/ExhibitorsMapViewSvg";
+import {
+  HAMVENTION_BUILDING1_BOOTHS,
+  SVG_URL as HAMVENTION_B1_SVG_URL,
+  SVG_WIDTH as HAMVENTION_B1_SVG_WIDTH,
+  SVG_HEIGHT as HAMVENTION_B1_SVG_HEIGHT,
+  type SvgBooth,
+} from "@/data/hamventionSvgExhibitorMapData";
+
+/** Registry mapping each SVG floor-plan URL to its booth polygon data. */
+const SVG_MAP_REGISTRY = new Map<
+  string,
+  { booths: SvgBooth[]; svgWidth: number; svgHeight: number }
+>([
+  [
+    HAMVENTION_B1_SVG_URL,
+    {
+      booths: HAMVENTION_BUILDING1_BOOTHS,
+      svgWidth: HAMVENTION_B1_SVG_WIDTH,
+      svgHeight: HAMVENTION_B1_SVG_HEIGHT,
+    },
+  ],
+]);
 
 interface ExhibitorsMapViewProps {
   exhibitorsMap: MapImage | undefined;
@@ -192,11 +213,16 @@ export function ExhibitorsMapView({
 
   if (!exhibitorsMap) return null;
 
-  // SVG maps: render using dedicated SVG component (no Leaflet)
-  if (exhibitorsMap.url === HAMVENTION_B1_SVG_URL) {
+  // SVG maps: render using generic SVG component (no Leaflet) when booth data is registered
+  const svgData = SVG_MAP_REGISTRY.get(exhibitorsMap.url);
+  if (svgData) {
     return (
       <>
-        <HamventionSvgExhibitorMap
+        <ExhibitorsMapViewSvg
+          svgBooths={svgData.booths}
+          svgUrl={exhibitorsMap.url}
+          svgWidth={svgData.svgWidth}
+          svgHeight={svgData.svgHeight}
           mapExhibitors={mapExhibitors}
           highlightedExhibitorId={highlightedExhibitorId}
           onHighlightChange={onHighlightChange}

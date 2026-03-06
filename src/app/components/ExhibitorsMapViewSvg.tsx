@@ -1,18 +1,20 @@
-// HamventionSvgExhibitorMap.tsx
-// Renders the Hamvention Building 1 exhibitor map using the extracted SVG directly.
-// Booth polygons from the CSV data are overlaid as interactive SVG elements.
+// ExhibitorsMapViewSvg.tsx
+// Generic SVG exhibitor map component.
+// Renders an arbitrary SVG floor-plan with interactive booth polygon overlays.
 // Supports mouse-wheel zoom, click-drag pan, and touch pinch-to-zoom / drag.
 import React, { useRef, useState } from "react";
-import {
-  HAMVENTION_BUILDING1_BOOTHS,
-  SVG_WIDTH,
-  SVG_HEIGHT,
-  SVG_URL,
-  type SvgBooth,
-} from "@/data/hamventionSvgExhibitorMapData";
+import type { SvgBooth } from "@/data/hamventionSvgExhibitorMapData";
 import type { Exhibitor } from "@/types/conference";
 
-interface HamventionSvgExhibitorMapProps {
+export interface ExhibitorsMapViewSvgProps {
+  /** SVG booth polygons extracted from the floor-plan */
+  svgBooths: SvgBooth[];
+  /** URL of the SVG background image */
+  svgUrl: string;
+  /** Natural width of the SVG canvas */
+  svgWidth: number;
+  /** Natural height of the SVG canvas */
+  svgHeight: number;
   mapExhibitors: Exhibitor[];
   highlightedExhibitorId: string | undefined;
   onHighlightChange: (id: string | undefined) => void;
@@ -40,7 +42,6 @@ interface DragState {
   scaleY: number;
 }
 
-const MIN_VB_WIDTH = SVG_WIDTH / 10; // maximum 10× zoom
 const ZOOM_FACTOR_IN = 0.75;
 const ZOOM_FACTOR_OUT = 1 / ZOOM_FACTOR_IN;
 
@@ -48,25 +49,31 @@ function clamp(val: number, min: number, max: number) {
   return Math.max(min, Math.min(max, val));
 }
 
-function constrainVb(vb: ViewBox): ViewBox {
-  const w = clamp(vb.w, MIN_VB_WIDTH, SVG_WIDTH);
-  const h = (w / SVG_WIDTH) * SVG_HEIGHT;
-  const x = clamp(vb.x, 0, SVG_WIDTH - w);
-  const y = clamp(vb.y, 0, SVG_HEIGHT - h);
-  return { x, y, w, h };
-}
-
-export function HamventionSvgExhibitorMap({
+export function ExhibitorsMapViewSvg({
+  svgBooths,
+  svgUrl,
+  svgWidth,
+  svgHeight,
   mapExhibitors,
   highlightedExhibitorId,
   onHighlightChange,
-}: HamventionSvgExhibitorMapProps) {
+}: ExhibitorsMapViewSvgProps) {
+  const minVbWidth = svgWidth / 10; // maximum 10× zoom
+
+  function constrainVb(vb: ViewBox): ViewBox {
+    const w = clamp(vb.w, minVbWidth, svgWidth);
+    const h = (w / svgWidth) * svgHeight;
+    const x = clamp(vb.x, 0, svgWidth - w);
+    const y = clamp(vb.y, 0, svgHeight - h);
+    return { x, y, w, h };
+  }
+
   const [tip, setTip] = useState<Tooltip | null>(null);
   const [vb, setVb] = useState<ViewBox>({
     x: 0,
     y: 0,
-    w: SVG_WIDTH,
-    h: SVG_HEIGHT,
+    w: svgWidth,
+    h: svgHeight,
   });
   const [isPanning, setIsPanning] = useState(false);
 
@@ -84,8 +91,8 @@ export function HamventionSvgExhibitorMap({
 
   function zoomAround(factor: number, svgCx: number, svgCy: number) {
     const prev = vbRef.current;
-    const newW = clamp(prev.w * factor, MIN_VB_WIDTH, SVG_WIDTH);
-    const newH = (newW / SVG_WIDTH) * SVG_HEIGHT;
+    const newW = clamp(prev.w * factor, minVbWidth, svgWidth);
+    const newH = (newW / svgWidth) * svgHeight;
     applyVb({
       x: svgCx - (svgCx - prev.x) * (newW / prev.w),
       y: svgCy - (svgCy - prev.y) * (newH / prev.h),
@@ -237,14 +244,14 @@ export function HamventionSvgExhibitorMap({
     zoomAround(ZOOM_FACTOR_OUT, cur.x + cur.w / 2, cur.y + cur.h / 2);
   };
   const handleResetZoom = () =>
-    applyVb({ x: 0, y: 0, w: SVG_WIDTH, h: SVG_HEIGHT });
+    applyVb({ x: 0, y: 0, w: svgWidth, h: svgHeight });
 
   const handleSvgMouseLeave = () => {
     setTip(null);
     stopMouseDrag();
   };
 
-  const isZoomed = vb.w < SVG_WIDTH;
+  const isZoomed = vb.w < svgWidth;
 
   return (
     <div style={{ position: "relative", fontFamily: "Arial, sans-serif" }}>
@@ -316,15 +323,15 @@ export function HamventionSvgExhibitorMap({
       >
         {/* Building layout SVG as background */}
         <image
-          href={SVG_URL}
+          href={svgUrl}
           x={0}
           y={0}
-          width={SVG_WIDTH}
-          height={SVG_HEIGHT}
+          width={svgWidth}
+          height={svgHeight}
         />
 
         {/* Booth polygon overlays */}
-        {HAMVENTION_BUILDING1_BOOTHS.map((booth) => {
+        {svgBooths.map((booth) => {
           const ex = boothToExhibitor.get(booth.boothNum);
           const isHighlighted = ex !== undefined && ex.id === highlightedExhibitorId;
           const hasExhibitor = ex !== undefined;

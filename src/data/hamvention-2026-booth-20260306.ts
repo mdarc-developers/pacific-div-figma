@@ -6,20 +6,20 @@
 // determined by geometric analysis of the polygon positions in the SVG.
 // coords: [[y_bottom, x], ...] — y measured from the bottom of the SVG canvas (height 816).
 //
-// The ExhibitorsMapView renders this map using HamventionSvgExhibitorMap (pure SVG, no Leaflet)
+// The ExhibitorsMapView renders this map using ExhibitorsMapViewSvg (pure SVG, no Leaflet)
 // whenever the map URL matches the SVG_URL below.
+//
+// To regenerate this file run:
+//   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts > src/data/hamvention-2026-booth-<date>.ts
 
-import { Booth } from "@/types/conference";
+import type { Booth } from "@/types/conference";
 import {
   SVG_URL,
   HAMVENTION_BUILDING1_BOOTHS,
 } from "@/data/hamventionSvgExhibitorMapData";
+import { convertSvgBoothsToBooth } from "@/data/extract-hamvention-svgbooth-to-booth";
 
 export const mapBooths: [string, Booth[]] = [
   SVG_URL,
-  HAMVENTION_BUILDING1_BOOTHS.map((b) => ({
-    id: b.boothNum,
-    coords: b.coords,
-    locationZone: "building-1",
-  })),
+  convertSvgBoothsToBooth(HAMVENTION_BUILDING1_BOOTHS, "building-1"),
 ];
