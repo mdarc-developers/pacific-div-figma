@@ -15,6 +15,15 @@ export interface AdminStats {
  *   - userProfileCount: live count of documents in the `users` collection
  *   - signupCount: cumulative counter maintained by the `incrementSignupCounter`
  *     Cloud Function (stored at `stats/signupCounter`)
+ *
+ * Requires the requesting user to be listed in the `groups/mdarc-developers`
+ * Firestore document (members map) and for the `stats` collection to be
+ * readable by mdarc-developers.  See FIREBASE_SETUP.md §5 for the required
+ * Firestore security rules and the `groups/mdarc-developers` setup.
+ *
+ * Uses Promise.allSettled so a failure in one query does not prevent the
+ * other from succeeding.  If only the signupCounter read fails, signupCount
+ * is silently left as null.  If the users count query fails, `error` is set.
  */
 export function useAdminStats(): AdminStats {
   const [userProfileCount, setUserProfileCount] = useState<number | null>(null);
@@ -27,28 +36,32 @@ export function useAdminStats(): AdminStats {
     setLoading(true);
     setError(null);
 
-    Promise.all([
+    Promise.allSettled([
       getCountFromServer(collection(db, "users")),
       getDoc(doc(db, "stats", "signupCounter")),
-    ])
-      .then(([usersSnapshot, counterSnapshot]) => {
-        if (!cancelled) {
-          setUserProfileCount(usersSnapshot.data().count);
-          const data = counterSnapshot.data();
-          setSignupCount(
-            counterSnapshot.exists() && typeof data?.count === "number"
-              ? data.count
-              : null,
-          );
-          setLoading(false);
-        }
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Failed to load stats");
-          setLoading(false);
-        }
-      });
+    ]).then(([usersResult, counterResult]) => {
+      if (cancelled) return;
+
+      if (usersResult.status === "fulfilled") {
+        setUserProfileCount(usersResult.value.data().count);
+      } else {
+        const err = usersResult.reason;
+        setError(err instanceof Error ? err.message : "Failed to load stats");
+      }
+
+      if (counterResult.status === "fulfilled") {
+        const data = counterResult.value.data();
+        setSignupCount(
+          counterResult.value.exists() && typeof data?.count === "number"
+            ? data.count
+            : null,
+        );
+      }
+      // If counterResult failed, signupCount stays null — this is acceptable
+      // since signupCount is a secondary metric.
+
+      setLoading(false);
+    });
 
     return () => {
       cancelled = true;

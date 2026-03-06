@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: returns true when the authenticated user is listed in the
+    // groups/mdarc-developers document.  That document must be created via the
+    // Firebase Console or admin SDK with the structure:
+    //   { members: { "<uid>": true, "<uid2>": true, ... } }
+    // See FIREBASE_SETUP.md §5 for setup instructions.
+    // A single get() is used; if the document does not exist, get() returns
+    // null and the expression safely evaluates to false (access denied).
+    function isMdarcDeveloper() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/groups/mdarc-developers).data.members.get(request.auth.uid, false) == true;
+    }
+
+    // ── Conferences, Sessions, Maps — public read ─────────────────────────
+    match /conferences/{conferenceId} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /sessions/{sessionId} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /maps/{mapId} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // ── Users — own doc only; mdarc-developers may list/count the collection
+    match /users/{userId} {
+      allow get: if request.auth != null && request.auth.uid == userId;
+      allow list: if isMdarcDeveloper();
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── User settings (theme, etc.) — own doc only ───────────────────────
+    match /userSettings/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── Groups — readable by authenticated users; written via admin SDK only
+    match /groups/{groupId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // ── Stats — readable by mdarc-developers; written via Cloud Functions only
+    match /stats/{document} {
+      allow read: if isMdarcDeveloper();
+      allow write: if false;
+    }
+
+    // ── Prizes — public read; admin write ─────────────────────────────────
+    match /prizes/{prizeId} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // ── Prize winners — own wins or admin ────────────────────────────────
+    match /prizeWinners/{winnerId} {
+      allow read: if request.auth != null
+        && (resource.data.winnerEmail == request.auth.token.email
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+      allow write: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // ── Messages ──────────────────────────────────────────────────────────
+    match /messages/{messageId} {
+      allow read: if resource.data.isPublic == true
+        || (request.auth != null
+          && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid));
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && resource.data.from == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.from == request.auth.uid;
+    }
+  }
+}

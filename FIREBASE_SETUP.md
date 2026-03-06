@@ -120,58 +120,64 @@ Create these collections in Firestore:
 
 ## 5. Configure Firestore Security Rules
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Allow read access to all conferences, sessions, and maps
-    match /conferences/{conferenceId} {
-      allow read: if true;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
+The security rules live in `firestore.rules` in the repository root and are
+deployed automatically by `firebase deploy`.  The rules reference a
+`groups/mdarc-developers` document to identify privileged developer accounts
+(see §5a below).
 
-    match /sessions/{sessionId} {
-      allow read: if true;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
+To deploy rules only:
 
-    match /maps/{mapId} {
-      allow read: if true;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
+```bash
+firebase deploy --only firestore:rules
+```
 
-    // Users can read and write their own profile
-    match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
+### 5a. Set up the `groups/mdarc-developers` document
 
-    // Public read for prizes
-    match /prizes/{prizeId} {
-      allow read: if true;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
+The `AdminStatsBar` component (shown above `ConferenceHeader` for mdarc-developer
+users) reads the count of user profiles and the signup counter from Firestore.
+The security rules grant these read permissions to users listed in the
+`groups/mdarc-developers` Firestore document.
 
-    // Prize winners can only see their own wins
-    match /prizeWinners/{winnerId} {
-      allow read: if request.auth != null &&
-        (resource.data.winnerEmail == request.auth.token.email ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
+**Create this document once** in the Firebase Console or via admin SDK:
 
-    // Messages
-    match /messages/{messageId} {
-      allow read: if resource.data.isPublic == true ||
-        (request.auth != null &&
-         (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid));
-      allow create: if request.auth != null;
-      allow update: if request.auth != null && resource.data.from == request.auth.uid;
-      allow delete: if request.auth != null && resource.data.from == request.auth.uid;
-    }
+- **Collection**: `groups`
+- **Document ID**: `mdarc-developers`
+- **Field**: `members` (Map)
+  - Each key is a Firebase Auth UID; each value is `true`
+
+Example document structure:
+
+```json
+{
+  "members": {
+    "UID_OF_DEVELOPER_1": true,
+    "UID_OF_DEVELOPER_2": true
   }
 }
 ```
+
+To find a user's UID: Firebase Console → Authentication → Users → copy UID.
+
+> **Note**: The `groups` collection is readable by any authenticated user but
+> writable only via the Firebase Admin SDK (Cloud Functions).  Never store
+> sensitive data in a group document — only UID membership flags.
+
+### 5b. Full rules reference
+
+The canonical rules are in `firestore.rules`.  For reference, the key
+collections and their access patterns are:
+
+| Collection | Read | Write |
+|---|---|---|
+| `conferences`, `sessions`, `maps` | Public | Admin (`isAdmin` field) |
+| `users/{uid}` | Own doc only (`get`) | Own doc only |
+| `users` (list/count) | mdarc-developers only | — |
+| `userSettings/{uid}` | Own doc only | Own doc only |
+| `groups/{groupId}` | Any authenticated user | Admin SDK only |
+| `stats/{document}` | mdarc-developers only | Cloud Functions only |
+| `prizes` | Public | Admin (`isAdmin` field) |
+| `prizeWinners` | Own wins or admin | Admin (`isAdmin` field) |
+| `messages` | Public messages or sender/recipient | Any authenticated user (own) |
 
 ## 6. Storage Rules
 
