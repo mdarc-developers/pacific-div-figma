@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVG Booth Extractor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e10;
+    --surface: #18181c;
+    --border: #2a2a32;
+    --accent: #00f400;
+    --accent-dim: #00f40022;
+    --accent2: #f4c800;
+    --text: #e8e8ec;
+    --muted: #6b6b80;
+    --danger: #ff4466;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow-x: hidden;
+  }
+
+  header {
+    padding: 28px 40px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+  }
+
+  header span {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    height: calc(100vh - 73px);
+  }
+
+  /* LEFT PANEL */
+  .panel {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .drop-zone {
+    margin: 24px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    background: transparent;
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .drop-zone input {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+
+  .drop-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+    color: var(--muted);
+  }
+
+  .drop-zone p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .drop-zone p strong {
+    color: var(--accent);
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+
+  /* SETTINGS */
+  .settings {
+    padding: 0 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .settings-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .field label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .field input, .field select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+
+  .color-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .color-swatch {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  /* STATUS */
+  .status-bar {
+    margin: 0 24px 16px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    display: none;
+  }
+
+  .status-bar.info { background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent); display: block; }
+  .status-bar.error { background: #ff446618; border: 1px solid var(--danger); color: var(--danger); display: block; }
+
+  /* ACTIONS */
+  .actions {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+    padding-bottom: 24px;
+  }
+
+  button {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    font-weight: 500;
+  }
+  .btn-primary:hover { background: #00dd00; }
+  .btn-primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+  .btn-secondary:disabled { color: var(--muted); cursor: not-allowed; opacity: 0.5; }
+
+  /* RIGHT PANEL */
+  .results {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .results-header {
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .results-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .badge {
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    border-radius: 99px;
+    letter-spacing: 0.05em;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .tab {
+    padding: 10px 24px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content { display: none; flex: 1; overflow: auto; }
+  .tab-content.active { display: flex; flex-direction: column; }
+
+  /* TABLE */
+  .table-wrap { overflow: auto; flex: 1; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+
+  th {
+    text-align: left;
+    padding: 10px 16px;
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  tr:hover td { background: var(--surface); }
+
+  .td-id { color: var(--muted); }
+  .td-num { color: var(--accent2); font-weight: 500; }
+  .td-coord { color: var(--accent); }
+
+  /* RAW */
+  pre {
+    padding: 24px 28px;
+    font-size: 0.72rem;
+    line-height: 1.7;
+    color: var(--text);
+    overflow: auto;
+    flex: 1;
+    background: var(--bg);
+    white-space: pre;
+  }
+
+  /* PREVIEW */
+  .preview-wrap {
+    flex: 1;
+    overflow: auto;
+    padding: 24px 28px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  #preview-canvas {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-width: 100%;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 3rem; opacity: 0.3; }
+  .empty p { font-size: 0.8rem; }
+
+  /* SEPARATOR */
+  .sep {
+    height: 1px;
+    background: var(--border);
+    margin: 0 24px 16px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SVG Booth Extractor</h1>
+  <span>floor plan coordinate tool</span>
+</header>
+
+<main>
+  <!-- LEFT PANEL -->
+  <div class="panel">
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".svg" />
+      <span class="drop-icon">⬡</span>
+      <p><strong>Drop SVG file here</strong>click to browse</p>
+    </div>
+
+    <div class="settings">
+      <div class="settings-title">Detection Settings</div>
+
+      <div class="field">
+        <label>Booth fill color (hex)</label>
+        <div class="color-row">
+          <div class="color-swatch" id="colorSwatch" style="background:#00f400"></div>
+          <input type="text" id="fillColor" value="#00f400" placeholder="#00f400" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>SVG transform matrix</label>
+        <select id="transformMode">
+          <option value="auto">Auto-detect from file</option>
+          <option value="identity">None (identity)</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="field" id="customMatrixField" style="display:none">
+        <label>Matrix values [a,b,c,d,e,f]</label>
+        <input type="text" id="customMatrix" value="0,0.08,0.08,0,0,0" placeholder="0,0.08,0.08,0,0,0" />
+      </div>
+
+      <div class="field">
+        <label>Output coordinate space</label>
+        <select id="coordSpace">
+          <option value="svg">SVG canvas (transformed)</option>
+          <option value="raw">Raw path coordinates</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div id="statusBar" class="status-bar"></div>
+
+    <div class="actions">
+      <button class="btn-primary" id="extractBtn" disabled>Extract Booth Coordinates</button>
+      <button class="btn-secondary" id="downloadCsvBtn" disabled>↓ Download CSV</button>
+      <button class="btn-secondary" id="downloadJsonBtn" disabled>↓ Download JSON</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="results">
+    <div class="results-header">
+      <h2>Results</h2>
+      <span class="badge" id="countBadge">0 booths</span>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="table">Table</div>
+      <div class="tab" data-tab="preview">Preview</div>
+      <div class="tab" data-tab="csv">CSV</div>
+      <div class="tab" data-tab="json">JSON</div>
+    </div>
+
+    <div class="tab-content active" id="tab-table">
+      <div class="empty" id="emptyState">
+        <div class="empty-icon">⬡</div>
+        <p>Load an SVG to extract booth coordinates</p>
+      </div>
+      <div class="table-wrap" id="tableWrap" style="display:none">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Path ID</th>
+              <th>Center X</th>
+              <th>Center Y</th>
+              <th>Raw CX</th>
+              <th>Raw CY</th>
+              <th>Vertices</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-preview">
+      <div class="preview-wrap">
+        <canvas id="preview-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-csv">
+      <pre id="csvOutput">// CSV output will appear here</pre>
+    </div>
+
+    <div class="tab-content" id="tab-json">
+      <pre id="jsonOutput">// JSON output will appear here</pre>
+    </div>
+  </div>
+</main>
+
+<script>
+  let svgDoc = null;
+  let extractedBooths = [];
+  let detectedMatrix = null;
+
+  // --- UI WIRING ---
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const fillColorInput = document.getElementById('fillColor');
+  const colorSwatch = document.getElementById('colorSwatch');
+  const transformMode = document.getElementById('transformMode');
+  const customMatrixField = document.getElementById('customMatrixField');
+  const coordSpace = document.getElementById('coordSpace');
+  const extractBtn = document.getElementById('extractBtn');
+  const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+  const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+  const statusBar = document.getElementById('statusBar');
+  const countBadge = document.getElementById('countBadge');
+
+  // Color swatch sync
+  fillColorInput.addEventListener('input', () => {
+    colorSwatch.style.background = fillColorInput.value;
+  });
+  colorSwatch.addEventListener('click', () => {
+    const picker = document.createElement('input');
+    picker.type = 'color';
+    picker.value = fillColorInput.value;
+    picker.addEventListener('input', () => {
+      fillColorInput.value = picker.value;
+      colorSwatch.style.background = picker.value;
+    });
+    picker.click();
+  });
+
+  transformMode.addEventListener('change', () => {
+    customMatrixField.style.display = transformMode.value === 'custom' ? '' : 'none';
+  });
+
+  // Drag & drop
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) loadFile(file);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) loadFile(fileInput.files[0]);
+  });
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  extractBtn.addEventListener('click', runExtraction);
+  downloadCsvBtn.addEventListener('click', () => downloadFile(buildCSV(), 'booth_coordinates.csv', 'text/csv'));
+  downloadJsonBtn.addEventListener('click', () => downloadFile(JSON.stringify(extractedBooths, null, 2), 'booth_coordinates.json', 'application/json'));
+
+  // --- FILE LOADING ---
+  function loadFile(file) {
+    if (!file.name.endsWith('.svg')) {
+      showStatus('Please load an SVG file.', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const parser = new DOMParser();
+      svgDoc = parser.parseFromString(e.target.result, 'image/svg+xml');
+      const err = svgDoc.querySelector('parsererror');
+      if (err) {
+        showStatus('SVG parse error: ' + err.textContent.slice(0, 80), 'error');
+        return;
+      }
+      // Auto-detect transform
+      detectedMatrix = autoDetectMatrix(svgDoc);
+      const matrixStr = detectedMatrix ? detectedMatrix.join(',') : 'none';
+      showStatus(`Loaded: ${file.name} — transform detected: [${matrixStr}]`, 'info');
+      extractBtn.disabled = false;
+      dropZone.querySelector('p').innerHTML = `<strong>${file.name}</strong>ready to extract`;
+    };
+    reader.readAsText(file);
+  }
+
+  function autoDetectMatrix(doc) {
+    const paths = doc.querySelectorAll('path');
+    for (const p of paths) {
+      const t = p.getAttribute('transform') || '';
+      const m = t.match(/matrix\(([^)]+)\)/);
+      if (m) {
+        const vals = m[1].split(',').map(Number);
+        if (vals.length === 6) return vals;
+      }
+    }
+    return null;
+  }
+
+  // --- EXTRACTION ---
+  function getMatrix() {
+    const mode = transformMode.value;
+    if (mode === 'identity') return [1,0,0,1,0,0];
+    if (mode === 'custom') {
+      const vals = document.getElementById('customMatrix').value.split(',').map(Number);
+      return vals.length === 6 ? vals : [1,0,0,1,0,0];
+    }
+    // auto
+    return detectedMatrix || [1,0,0,1,0,0];
+  }
+
+  function applyMatrix(mx, x, y) {
+    const [a,b,c,d,e,f] = mx;
+    return [
+      parseFloat((a*x + c*y + e).toFixed(3)),
+      parseFloat((b*x + d*y + f).toFixed(3))
+    ];
+  }
+
+  function parsePath(d) {
+    // Parse relative/absolute m + relative deltas for parallelogram-style paths
+    const points = [];
+    let cx = 0, cy = 0;
+    // Tokenize
+    const tokens = d.trim().replace(/([MmZzLlHhVvCcSsQqTtAa])/g, ' $1 ').trim().split(/\s+/);
+    let i = 0;
+    let cmd = '';
+    while (i < tokens.length) {
+      const t = tokens[i];
+      if (/^[MmZzLlHhVvCcSsQqTtAa]$/.test(t)) {
+        cmd = t; i++; continue;
+      }
+      if (t === '') { i++; continue; }
+      if (t.includes(',')) {
+        const [dx, dy] = t.split(',').map(Number);
+        if (cmd === 'M') { cx = dx; cy = dy; points.push([cx, cy]); }
+        else if (cmd === 'm') { cx += dx; cy += dy; points.push([cx, cy]); }
+        else if (cmd === 'L') { cx = dx; cy = dy; points.push([cx, cy]); }
+        else if (cmd === 'l') { cx += dx; cy += dy; points.push([cx, cy]); }
+      }
+      i++;
+    }
+    return points;
+  }
+
+  function centroid(points) {
+    const n = points.length;
+    return [points.reduce((s,p)=>s+p[0],0)/n, points.reduce((s,p)=>s+p[1],0)/n];
+  }
+
+  function normalizeColor(c) {
+    return c.toLowerCase().replace(/\s/g,'');
+  }
+
+  function runExtraction() {
+    if (!svgDoc) return;
+    const targetColor = normalizeColor(fillColorInput.value);
+    const mx = getMatrix();
+    const space = coordSpace.value;
+
+    const paths = svgDoc.querySelectorAll('path');
+    extractedBooths = [];
+    let idx = 1;
+
+    for (const p of paths) {
+      const style = p.getAttribute('style') || '';
+      const fill = p.getAttribute('fill') || '';
+      // Check fill color in style or fill attribute
+      const hasFill = style.includes('fill:' + targetColor) || normalizeColor(fill) === targetColor;
+      if (!hasFill) continue;
+
+      const d = p.getAttribute('d') || '';
+      const pts = parsePath(d);
+      if (pts.length < 2) continue;
+
+      const [rcx, rcy] = centroid(pts);
+      const [scx, scy] = applyMatrix(mx, rcx, rcy);
+      const corners = pts.map(([x,y]) => applyMatrix(mx, x, y));
+
+      const booth = {
+        booth_num: idx++,
+        path_id: p.getAttribute('id') || '',
+        center_svg_x: scx,
+        center_svg_y: scy,
+        raw_cx: parseFloat(rcx.toFixed(2)),
+        raw_cy: parseFloat(rcy.toFixed(2)),
+        corners: corners
+      };
+      extractedBooths.push(booth);
+    }
+
+    if (extractedBooths.length === 0) {
+      showStatus(`No paths found with fill color ${targetColor}. Try adjusting the color setting.`, 'error');
+      return;
+    }
+
+    showStatus(`Extracted ${extractedBooths.length} booths successfully.`, 'info');
+    countBadge.textContent = `${extractedBooths.length} booths`;
+    downloadCsvBtn.disabled = false;
+    downloadJsonBtn.disabled = false;
+
+    renderTable();
+    renderCSV();
+    renderJSON();
+    renderPreview(svgDoc, extractedBooths, mx);
+  }
+
+  // --- RENDER TABLE ---
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('tableWrap').style.display = '';
+
+    for (const b of extractedBooths) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="td-num">${b.booth_num}</td>
+        <td class="td-id">${b.path_id}</td>
+        <td class="td-coord">${b.center_svg_x}</td>
+        <td class="td-coord">${b.center_svg_y}</td>
+        <td>${b.raw_cx}</td>
+        <td>${b.raw_cy}</td>
+        <td class="td-id">${b.corners.length} pts</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // --- RENDER CSV ---
+  function buildCSV() {
+    const rows = ['booth_num,path_id,center_svg_x,center_svg_y,raw_cx,raw_cy,corners'];
+    for (const b of extractedBooths) {
+      const corners = b.corners.map(c => `(${c[0]},${c[1]})`).join(' ');
+      rows.push(`${b.booth_num},${b.path_id},${b.center_svg_x},${b.center_svg_y},${b.raw_cx},${b.raw_cy},"${corners}"`);
+    }
+    return rows.join('\n');
+  }
+
+  function renderCSV() {
+    document.getElementById('csvOutput').textContent = buildCSV();
+  }
+
+  function renderJSON() {
+    document.getElementById('jsonOutput').textContent = JSON.stringify(extractedBooths, null, 2);
+  }
+
+  // --- PREVIEW ---
+  function renderPreview(doc, booths, mx) {
+    const canvas = document.getElementById('preview-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Get SVG dimensions
+    const svgEl = doc.querySelector('svg');
+    const W = parseFloat(svgEl.getAttribute('width')) || 1056;
+    const H = parseFloat(svgEl.getAttribute('height')) || 816;
+
+    const scale = Math.min(900/W, 700/H);
+    canvas.width = W * scale;
+    canvas.height = H * scale;
+
+    ctx.fillStyle = '#18181c';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw all paths as outlines for context
+    const allPaths = doc.querySelectorAll('path');
+    ctx.strokeStyle = '#2a2a32';
+    ctx.lineWidth = 0.5;
+    for (const p of allPaths) {
+      const d = p.getAttribute('d') || '';
+      const pts = parsePath(d);
+      if (pts.length < 2) continue;
+      const transformed = pts.map(([x,y]) => applyMatrix(mx, x, y));
+      ctx.beginPath();
+      ctx.moveTo(transformed[0][0]*scale, transformed[0][1]*scale);
+      for (let i=1;i<transformed.length;i++) ctx.lineTo(transformed[i][0]*scale, transformed[i][1]*scale);
+      ctx.closePath();
+      ctx.stroke();
+    }
+
+    // Draw booths
+    for (const b of booths) {
+      const corners = b.corners;
+      if (corners.length < 2) continue;
+      ctx.beginPath();
+      ctx.moveTo(corners[0][0]*scale, corners[0][1]*scale);
+      for (let i=1;i<corners.length;i++) ctx.lineTo(corners[i][0]*scale, corners[i][1]*scale);
+      ctx.closePath();
+      ctx.fillStyle = '#00f40055';
+      ctx.strokeStyle = '#00f400';
+      ctx.lineWidth = 1;
+      ctx.fill();
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = '#00f400';
+      ctx.font = `${Math.max(6, 7*scale)}px "DM Mono", monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(b.booth_num, b.center_svg_x*scale, b.center_svg_y*scale);
+    }
+  }
+
+  // --- UTILS ---
+  function showStatus(msg, type) {
+    statusBar.textContent = msg;
+    statusBar.className = 'status-bar ' + type;
+  }
+
+  function downloadFile(content, filename, mime) {
+    const blob = new Blob([content], { type: mime });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+  }
+</script>
+</body>
+</html>

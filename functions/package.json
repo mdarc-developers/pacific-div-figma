@@ -4,6 +4,8 @@
   "description": "Firebase Cloud Functions for the Pacific Division Conference App",
   "main": "lib/index.js",
   "scripts": {
+    "fbf": "npm install firebase-functions@latest firebase-admin@latest --save",
+    "fbt": "npm install -g firebase-tools",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
