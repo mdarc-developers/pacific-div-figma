@@ -267,7 +267,21 @@ export function ConferenceHeader() {
                     </DialogHeader>
 
                     <div className="space-y-4 mt-4">
-                      {allConferencesList.map((conference) => {
+                      {allConferencesList.map((conference, index) => {
+                        if (conference.id === "---") {
+                          return (
+                            <Card
+                              key={`separator-${index}`}
+                              className="border-0 shadow-none pointer-events-none"
+                            >
+                              <CardContent className="px-4 py-1">
+                                <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
+                                <hr className="border-t-2 border-gray-300 dark:border-gray-600 mt-1" />
+                              </CardContent>
+                            </Card>
+                          );
+                        }
+
                         const isActive = conference.id === activeConference.id;
                         const upcoming = isUpcoming(conference);
                         //const upcoming = true;
