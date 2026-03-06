@@ -409,12 +409,8 @@
       </div>
 
       <div class="field">
-        <label>Output coordinate space</label>
-        <select id="coordSpace">
-          <option value="svg">SVG canvas (transformed)</option>
-          <option value="raw">Raw path coordinates</option>
-          <option value="both">Both</option>
-        </select>
+        <label>SVG URL path (for TypeScript output)</label>
+        <input type="text" id="svgUrlPath" value="/assets/maps/" placeholder="/assets/maps/filename.svg" />
       </div>
     </div>
 
@@ -426,6 +422,7 @@
       <button class="btn-primary" id="extractBtn" disabled>Extract Booth Coordinates</button>
       <button class="btn-secondary" id="downloadCsvBtn" disabled>↓ Download CSV</button>
       <button class="btn-secondary" id="downloadJsonBtn" disabled>↓ Download JSON</button>
+      <button class="btn-secondary" id="downloadTsBtn" disabled>↓ Download TypeScript</button>
     </div>
   </div>
 
@@ -441,6 +438,7 @@
       <div class="tab" data-tab="preview">Preview</div>
       <div class="tab" data-tab="csv">CSV</div>
       <div class="tab" data-tab="json">JSON</div>
+      <div class="tab" data-tab="ts">TypeScript</div>
     </div>
 
     <div class="tab-content active" id="tab-table">
@@ -479,6 +477,10 @@
     <div class="tab-content" id="tab-json">
       <pre id="jsonOutput">// JSON output will appear here</pre>
     </div>
+
+    <div class="tab-content" id="tab-ts">
+      <pre id="tsOutput">// TypeScript output will appear here</pre>
+    </div>
   </div>
 </main>
 
@@ -486,6 +488,9 @@
   let svgDoc = null;
   let extractedBooths = [];
   let detectedMatrix = null;
+  let loadedFileName = '';
+  let svgWidth = 1056;
+  let svgHeight = 816;
 
   // --- UI WIRING ---
   const dropZone = document.getElementById('dropZone');
@@ -494,10 +499,11 @@
   const colorSwatch = document.getElementById('colorSwatch');
   const transformMode = document.getElementById('transformMode');
   const customMatrixField = document.getElementById('customMatrixField');
-  const coordSpace = document.getElementById('coordSpace');
+  const svgUrlPath = document.getElementById('svgUrlPath');
   const extractBtn = document.getElementById('extractBtn');
   const downloadCsvBtn = document.getElementById('downloadCsvBtn');
   const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+  const downloadTsBtn = document.getElementById('downloadTsBtn');
   const statusBar = document.getElementById('statusBar');
   const countBadge = document.getElementById('countBadge');
 
@@ -544,8 +550,18 @@
   });
 
   extractBtn.addEventListener('click', runExtraction);
-  downloadCsvBtn.addEventListener('click', () => downloadFile(buildCSV(), 'booth_coordinates.csv', 'text/csv'));
-  downloadJsonBtn.addEventListener('click', () => downloadFile(JSON.stringify(extractedBooths, null, 2), 'booth_coordinates.json', 'application/json'));
+  downloadCsvBtn.addEventListener('click', () => {
+    const fname = loadedFileName.replace(/\.svg$/i, '-coords.csv');
+    downloadFile(buildCSV(), fname || 'booth_coordinates.csv', 'text/csv');
+  });
+  downloadJsonBtn.addEventListener('click', () => {
+    const fname = loadedFileName.replace(/\.svg$/i, '-coords.json');
+    downloadFile(JSON.stringify(extractedBooths, null, 2), fname || 'booth_coordinates.json', 'application/json');
+  });
+  downloadTsBtn.addEventListener('click', () => {
+    const fname = loadedFileName.replace(/\.svg$/i, '-map-data.ts');
+    downloadFile(buildTypeScript(), fname || 'svgExhibitorMapData.ts', 'text/plain');
+  });
 
   // --- FILE LOADING ---
   function loadFile(file) {
@@ -562,12 +578,23 @@
         showStatus('SVG parse error: ' + err.textContent.slice(0, 80), 'error');
         return;
       }
+      // Capture filename and SVG dimensions
+      loadedFileName = file.name;
+      const svgEl = svgDoc.querySelector('svg');
+      svgWidth = parseFloat(svgEl?.getAttribute('width') || '1056');
+      svgHeight = parseFloat(svgEl?.getAttribute('height') || '816');
+      // Auto-populate SVG URL path field
+      const currentUrl = svgUrlPath.value.trim();
+      if (!currentUrl.endsWith('.svg')) {
+        const base = currentUrl.endsWith('/') ? currentUrl : currentUrl + '/';
+        svgUrlPath.value = base + file.name;
+      }
       // Auto-detect transform
       detectedMatrix = autoDetectMatrix(svgDoc);
       const matrixStr = detectedMatrix ? detectedMatrix.join(',') : 'none';
-      showStatus(`Loaded: ${file.name} — transform detected: [${matrixStr}]`, 'info');
+      showStatus(`Loaded: ${file.name} (${svgWidth}×${svgHeight}) — transform: [${matrixStr}]`, 'info');
       extractBtn.disabled = false;
-      dropZone.querySelector('p').innerHTML = `<strong>${file.name}</strong>ready to extract`;
+      dropZone.querySelector('p').innerHTML = `<strong>${file.name}</strong> ${svgWidth}×${svgHeight} ready to extract`;
     };
     reader.readAsText(file);
   }
@@ -644,7 +671,6 @@
     if (!svgDoc) return;
     const targetColor = normalizeColor(fillColorInput.value);
     const mx = getMatrix();
-    const space = coordSpace.value;
 
     const paths = svgDoc.querySelectorAll('path');
     extractedBooths = [];
@@ -686,10 +712,12 @@
     countBadge.textContent = `${extractedBooths.length} booths`;
     downloadCsvBtn.disabled = false;
     downloadJsonBtn.disabled = false;
+    downloadTsBtn.disabled = false;
 
     renderTable();
     renderCSV();
     renderJSON();
+    renderTypeScript();
     renderPreview(svgDoc, extractedBooths, mx);
   }
 
@@ -719,7 +747,7 @@
   function buildCSV() {
     const rows = ['booth_num,path_id,center_svg_x,center_svg_y,raw_cx,raw_cy,corners'];
     for (const b of extractedBooths) {
-      const corners = b.corners.map(c => `(${c[0]},${c[1]})`).join(' ');
+      const corners = '[' + b.corners.map(c => `(${c[0]}, ${c[1]})`).join(', ') + ']';
       rows.push(`${b.booth_num},${b.path_id},${b.center_svg_x},${b.center_svg_y},${b.raw_cx},${b.raw_cy},"${corners}"`);
     }
     return rows.join('\n');
@@ -731,6 +759,65 @@
 
   function renderJSON() {
     document.getElementById('jsonOutput').textContent = JSON.stringify(extractedBooths, null, 2);
+  }
+
+  // --- RENDER TYPESCRIPT ---
+  function buildTypeScript() {
+    if (extractedBooths.length === 0) return '// No booths extracted yet.';
+
+    const W = svgWidth;
+    const H = svgHeight;
+    const fname = loadedFileName || 'extracted.svg';
+    const urlVal = svgUrlPath ? svgUrlPath.value.trim() : '/assets/maps/' + fname;
+    const exportBaseName = fname
+      .replace(/\.svg$/i, '')
+      .replace(/[^a-zA-Z0-9]+/g, '_')
+      .toUpperCase();
+    const exportName = exportBaseName + '_BOOTHS';
+
+    const lines = [
+      `// Auto-generated from ${fname}`,
+      `// SVG source: ${fname} (viewBox 0 0 ${W} ${H})`,
+      `//`,
+      `// svgPoints: polygon corners as "x,y" pairs for direct SVG rendering (y from top)`,
+      `// coords: polygon corners as [y_bottom, x] pairs for Booth[] (y from bottom, y = SVG_HEIGHT - svg_y)`,
+      ``,
+      `export const SVG_WIDTH = ${W};`,
+      `export const SVG_HEIGHT = ${H};`,
+      `export const SVG_URL = "${urlVal}";`,
+      ``,
+      `export interface SvgBooth {`,
+      `  /** Booth number as shown on the exhibitor map */`,
+      `  boothNum: number;`,
+      `  /** Center x coordinate in SVG space (for label placement) */`,
+      `  cx: number;`,
+      `  /** Center y coordinate in SVG space (for label placement) */`,
+      `  cy: number;`,
+      `  /** Polygon corner points in SVG coordinate space ("x,y ..."), y measured from top */`,
+      `  svgPoints: string;`,
+      `  /** Polygon corners in Booth[] format [[y_bottom, x], ...], y measured from bottom */`,
+      `  coords: [number, number][];`,
+      `}`,
+      ``,
+      `/** Raw booth data extracted from ${fname} */`,
+      `export const ${exportName}: SvgBooth[] = [`,
+    ];
+
+    for (const b of extractedBooths) {
+      const svgPoints = b.corners.map(c => `${c[0]},${c[1]}`).join(' ');
+      const coordPairs = b.corners.map(c => {
+        const yBottom = parseFloat((H - c[1]).toFixed(2));
+        return `[${yBottom}, ${c[0]}]`;
+      }).join(', ');
+      lines.push(`  { boothNum: ${b.booth_num}, cx: ${b.center_svg_x}, cy: ${b.center_svg_y}, svgPoints: "${svgPoints}", coords: [${coordPairs}] },`);
+    }
+
+    lines.push(`];`);
+    return lines.join('\n');
+  }
+
+  function renderTypeScript() {
+    document.getElementById('tsOutput').textContent = buildTypeScript();
   }
 
   // --- PREVIEW ---
