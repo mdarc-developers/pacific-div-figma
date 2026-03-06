@@ -22,6 +22,8 @@ export interface Conference {
   votes?: number;
   mapSessionRooms?: [string, boolean, boolean][];
   mapExhibitorBooths?: [string, boolean, boolean][];
+  conferenceProgramUrl?: string;
+  conferenceAppPageUrl?: string;
 }
 
 export interface MapImage {
