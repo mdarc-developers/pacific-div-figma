@@ -2402,6 +2402,30 @@ export const conferenceMaps: MapImage[] = [
     origHeightNum: 816,
     origWidthNum: 1056,
   },
+  {
+    id: "map-5",
+    name: "Exhibitors — Building 3 Marconi",
+    url: "/assets/maps/hamvention-2026-building-3-marconi.svg", // for Booth[] (SVG interactive map)
+    order: 4,
+    origHeightNum: 816,
+    origWidthNum: 1056,
+  },
+  {
+    id: "map-6",
+    name: "Exhibitors — Building 4 Volta",
+    url: "/assets/maps/hamvention-2026-building-4-volta.svg", // for Booth[] (SVG interactive map)
+    order: 5,
+    origHeightNum: 816,
+    origWidthNum: 1056,
+  },
+  {
+    id: "map-7",
+    name: "Exhibitors — Building 5 Hertz",
+    url: "/assets/maps/hamvention-2026-building-5-hertz.svg", // for Booth[] (SVG interactive map)
+    order: 6,
+    origHeightNum: 816,
+    origWidthNum: 1056,
+  },
 ];
 
 //export interface UserProfile {

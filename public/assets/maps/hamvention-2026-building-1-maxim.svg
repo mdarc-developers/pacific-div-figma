@@ -4,9 +4,9 @@
 <svg
    version="1.1"
    id="svg1"
-   width="1056"
-   height="816"
-   viewBox="0 0 1056 816"
+   width="239.6535"
+   height="248.29472"
+   viewBox="0 0 239.6535 248.29472"
    sodipodi:docname="hamvention-2026-building-1-maxim.svg"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -25,28 +25,30 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.82720588"
-     inkscape:cx="527.68"
-     inkscape:cy="406.79111"
+     inkscape:cx="283.48445"
+     inkscape:cy="276.23111"
      inkscape:window-width="1600"
      inkscape:window-height="877"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g1">
+     inkscape:current-layer="g1"
+     showgrid="false">
     <inkscape:page
-       x="0"
-       y="0"
+       x="3.4862344e-06"
+       y="1.8401781e-06"
        inkscape:label="1"
        id="page1"
-       width="1056"
-       height="816"
+       width="239.6535"
+       height="248.29472"
        margin="0"
        bleed="0" />
   </sodipodi:namedview>
   <g
      id="g1"
      inkscape:groupmode="layer"
-     inkscape:label="1">
+     inkscape:label="1"
+     transform="translate(-244.44,-130.14528)">
     <path
        id="path158"
        d="m 2662,3200 98,58"
