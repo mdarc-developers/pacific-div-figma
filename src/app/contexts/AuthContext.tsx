@@ -8,7 +8,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../../lib/firebase";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../../lib/firebase";
 
 interface AuthContextType {
   user: User | null;
@@ -46,12 +47,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUp = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    setDoc(doc(db, "users", credential.user.uid), {
+      email,
+      displayName: credential.user.displayName ?? null,
+      createdAt: serverTimestamp(),
+    }).catch(console.error);
   };
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    const credential = await signInWithPopup(auth, provider);
+    const userRef = doc(db, "users", credential.user.uid);
+    getDoc(userRef)
+      .then((userSnap) => {
+        if (!userSnap.exists()) {
+          return setDoc(userRef, {
+            email: credential.user.email ?? "",
+            displayName: credential.user.displayName ?? null,
+            createdAt: serverTimestamp(),
+          });
+        }
+      })
+      .catch(console.error);
   };
 
   const logout = async () => {
