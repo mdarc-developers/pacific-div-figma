@@ -181,6 +181,7 @@ Roadrunner Camping Area",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
   },
+  {id:"---"},
   {
     id: "yuma-2026",
     name: "Yuma Hamfest 2026",
