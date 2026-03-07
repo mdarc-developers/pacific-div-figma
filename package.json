@@ -12,6 +12,7 @@
     "lint": "npx eslint src/**/*.{ts,tsx,js,jsx}",
     "indent": "npx prettier --write .",
     "test": "vitest run",
+    "testsave": "vitest run > testoutput.txt 2>&1",
     "testverbose": "vitest run --reporter=verbose",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
