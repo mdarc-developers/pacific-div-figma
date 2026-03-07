@@ -97,48 +97,33 @@ export function ConferenceHeader() {
     if (!iurl || iurl === "") return "";
     else
       return (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span title="Conference Program PDF">
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
         <a
           href={iurl}
-          download
+          target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 hover:underline"
-          style={{ color: {linkcolor} }}
+          style={{ color: linkcolor }}
         >
           program
           <ExternalLink className="h-4 w-4" />
         </a>
-                      </TooltipContent>
-                    </Tooltip>
       );
   };
-  
+
   const conferenceAppPageUrlDisplay = (iurl: string, linkcolor: string) => {
     if (!iurl || iurl === "") return "";
     else
       return (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span title="Conference app">
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
         <a
           href={iurl}
+          target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 hover:underline"
-          style={{ color: {linkcolor} }}
+          style={{ color: linkcolor }}
         >
           app
           <ExternalLink className="h-4 w-4" />
         </a>
-                      </TooltipContent>
-                    </Tooltip>
       );
   };
   
