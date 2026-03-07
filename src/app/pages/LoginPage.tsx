@@ -126,7 +126,7 @@ export const LoginPage = () => {
           <Button asChild variant="link" className="px-0 h-auto text-sm">
             <Link to="/signup" state={{ email }}>
               <UserPlus className="h-4 w-4" />
-              Sign up now</Link>
+              Sign up now
             </Link>
           </Button>
         </p>
