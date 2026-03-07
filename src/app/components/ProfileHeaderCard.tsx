@@ -26,7 +26,7 @@ export function ProfileHeaderCard({
         <div className="flex items-start gap-4">
           <Avatar className="h-16 w-16 text-2xl shrink-0">
             {user.photoURL && (
-              <AvatarImage src={user.photoURL} alt="Profile picture" />
+              <AvatarImage src={user.photoURL} alt="Profile picture" referrerPolicy="no-referrer" />
             )}
             <AvatarFallback className="text-xl font-semibold">
               {initials}
