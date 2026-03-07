@@ -80,6 +80,22 @@ export async function getBookmarkCounts(conferenceId: string): Promise<{
 }
 
 /**
+ * Returns a copy of `counts` that includes a zero entry for every id in
+ * `knownIds` that does not already have a count.  Existing non-zero values are
+ * preserved unchanged.
+ */
+export function withZeroFallbacks(
+  counts: Record<string, number>,
+  knownIds: string[],
+): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const id of knownIds) {
+    result[id] = 0;
+  }
+  return { ...result, ...counts };
+}
+
+/**
  * Atomically increments (or decrements) the aggregate bookmark count for a
  * session.  `delta` should be `1` when bookmarking and `-1` when removing.
  */
