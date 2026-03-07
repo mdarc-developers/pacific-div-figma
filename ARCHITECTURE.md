@@ -436,11 +436,11 @@ Both workflows use the `FirebaseExtended/action-hosting-deploy@v0` action and au
 
 `firebase.json` configures hosting to serve from `dist/` and applies a catch-all rewrite (`** → /index.html`) so the SPA router handles all paths.
 
-To deploy manually:
+To deploy Hosting manually:
 
 ```bash
-npm run build      # compile → dist/
-npm run deploy     # firebase deploy (hosting + rules + functions)
+npm run build                  # compile → dist/
+firebase deploy --only hosting # deploy web app → https://pacific-div.web.app
 ```
 
 ### 10.2 Firestore Security Rules (manual)

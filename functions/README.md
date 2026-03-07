@@ -37,7 +37,7 @@ Before deploying, complete the following one-time setup.
 npm install -g firebase-tools
 ```
 
-Requires Node.js 24 (matches the `"engines"` field in `package.json`).
+Requires Node.js 24 (matches the `"engines"` field in `functions/package.json`).
 
 ### 2. Enable the Gmail API
 
@@ -97,6 +97,7 @@ Override this by pointing Firebase at the **Compute Engine default service accou
 ### 1. Install dependencies
 
 ```bash
+# From the functions/ directory
 cd functions
 npm install
 ```
@@ -106,6 +107,7 @@ npm install
 The `sendWelcomeEmail` function reads two secrets at runtime. Provision them once before the first deployment:
 
 ```bash
+# From the repo root (firebase.json must be present)
 # Paste the full contents of your service-account-key.json when prompted
 firebase functions:secrets:set GMAIL_SERVICE_ACCOUNT_JSON
 
@@ -116,10 +118,10 @@ firebase functions:secrets:set GMAIL_SENDER_EMAIL
 ### 3. Build and deploy
 
 ```bash
-# Compile TypeScript
-npm run build
+# Compile TypeScript (from the functions/ directory)
+cd functions && npm run build
 
-# Deploy only the Cloud Functions (does not affect Hosting or Firestore rules)
+# Deploy only the Cloud Functions — run from the repo root
 firebase deploy --only functions
 ```
 
@@ -137,6 +139,7 @@ See `FIREBASE_SETUP.md §9` for full Gmail / service-account setup instructions.
 ### Run unit tests
 
 ```bash
+# From the functions/ directory
 cd functions
 npm test
 ```
@@ -144,18 +147,21 @@ npm test
 ### Use the Firebase Emulator Suite
 
 ```bash
+# From the repo root (firebase.json must be present)
 firebase emulators:start --only functions,auth
 ```
 
 ### Watch mode (auto-recompile on save)
 
 ```bash
-npm run build:watch
+# From the functions/ directory
+cd functions && npm run build:watch
 ```
 
 ### View logs (deployed functions)
 
 ```bash
+# From the repo root
 firebase functions:log
 ```
 

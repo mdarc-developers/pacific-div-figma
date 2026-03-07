@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
+import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
 import {
   getUserExhibitorBookmarks,
   setUserExhibitorBookmarks,
@@ -24,6 +25,7 @@ export function FirebaseExhibitorBookmarkSync() {
     prevBookmarkedExhibitors,
     overrideExhibitorBookmarks,
   } = useExhibitorBookmarkContext();
+  const { adjustExhibitorCount } = useBookmarkCountsContext();
 
   const conferenceId = activeConference.id;
   // Composite key: changes when either the user or the active conference changes.
@@ -83,6 +85,10 @@ export function FirebaseExhibitorBookmarkSync() {
     const added = next.filter((id) => !prev.includes(id));
     const removed = prev.filter((id) => !next.includes(id));
 
+    // Optimistically update local counts so the UI reflects the change immediately.
+    added.forEach((id) => adjustExhibitorCount(id, 1));
+    removed.forEach((id) => adjustExhibitorCount(id, -1));
+
     added.forEach((id) =>
       incrementExhibitorBookmarkCount(conferenceId, id, 1).catch(console.error),
     );
@@ -106,6 +112,7 @@ export function FirebaseExhibitorBookmarkSync() {
     conferenceId,
     bookmarkedExhibitors,
     prevBookmarkedExhibitors,
+    adjustExhibitorCount,
   ]);
 
   return null;
