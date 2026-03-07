@@ -66,3 +66,31 @@ export async function setUserBookmarks(
     { merge: true },
   );
 }
+
+export interface NotificationSettings {
+  smsEnabled: boolean;
+  phoneNumber: string;
+}
+
+export async function getUserNotificationSettings(
+  uid: string,
+): Promise<NotificationSettings | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return {
+    smsEnabled: typeof data?.smsNotifications === "boolean" ? data.smsNotifications : false,
+    phoneNumber: typeof data?.phoneNumber === "string" ? data.phoneNumber : "",
+  };
+}
+
+export async function setUserNotificationSettings(
+  uid: string,
+  settings: NotificationSettings,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { smsNotifications: settings.smsEnabled, phoneNumber: settings.phoneNumber },
+    { merge: true },
+  );
+}
