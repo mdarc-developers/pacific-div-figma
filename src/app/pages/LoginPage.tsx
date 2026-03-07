@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { User } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
@@ -123,13 +123,8 @@ export const LoginPage = () => {
         </Button>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
           First time?{" "}
-          <Button
-            type="button"
-            variant="link"
-            className="px-0 h-auto text-sm"
-            onClick={() => navigate("/signup", { state: { email } })}
-          >
-            Sign up now
+          <Button asChild variant="link" className="px-0 h-auto text-sm">
+            <Link to="/signup" state={{ email }}>Sign up now</Link>
           </Button>
         </p>
       </form>
