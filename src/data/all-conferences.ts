@@ -76,6 +76,8 @@ export const allConferences: ConferenceListItem[] = [
     logoUrl: "/assets/images/huntsville-logo.png",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    conferenceProgramUrl: "https://hamfest.org/wp-content/uploads/2025/08/Hamfest-Program-2025-08-FINAL.pdf", // broadsheet for us
+    conferenceAppPageUrl: "https://www.hamcation.com/app/",
   },
   {
     id: "pacificon-2026",
