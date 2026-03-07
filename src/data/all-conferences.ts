@@ -28,6 +28,7 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorBooths?: [string, boolean, boolean];
     conferenceProgramUrl: "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf",
     conferenceAppPageUrl: "https://hamvention.org/getconnected/",
+    firstConferenceYear: 1952,
   },
   {
     id: "seapac-2026",
@@ -52,6 +53,7 @@ export const allConferences: ConferenceListItem[] = [
     logoUrl: "/assets/images/seapac-logo.png",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    firstConferenceYear: 1982,
   },
   {
     id: "huntsville-2026",
@@ -78,6 +80,7 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorBooths?: [string, boolean, boolean];
     conferenceProgramUrl: "https://hamfest.org/wp-content/uploads/2025/08/Hamfest-Program-2025-08-FINAL.pdf", // broadsheet for us
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
+    firstConferenceYear: 1954,
   },
   {
     id: "pacificon-2026",
@@ -108,6 +111,7 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorBooths?: [string, boolean, boolean];
     conferenceProgramUrl: "https://drive.google.com/file/d/1TlaEhDC0xvCEiQgJc5QUYApp0WIpHvNm/view", // broadsheet for us
     conferenceAppPageUrl: "https://www.pacificon.org/app/",
+    firstConferenceYear: 1920,
   },
   {
     id: "quartzfest-2027",
@@ -134,6 +138,7 @@ Roadrunner Camping Area",
     logoUrl: "/assets/images/quartzfest-logo-w1000_h1000.webp",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    firstConferenceYear: 1997,
   },
   {
     id: "hamcation-2027",
@@ -162,6 +167,7 @@ Roadrunner Camping Area",
     //mapExhibitorBooths?: [string, boolean, boolean];
     conferenceProgramUrl: "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
+    firstConferenceYear: 1946,
   },
   {
     id: "yuma-2027",
@@ -188,6 +194,7 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    firstConferenceYear: 2005,
   },
   { id: "---" },
   {
@@ -215,6 +222,7 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
+    firstConferenceYear: 2005,
   },
   {
     id: "hamcation-2026",
@@ -243,5 +251,6 @@ Roadrunner Camping Area",
     //mapExhibitorBooths?: [string, boolean, boolean];
     conferenceProgramUrl: "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
+    firstConferenceYear: 1954,
   },
 ];

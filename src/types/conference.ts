@@ -27,6 +27,7 @@ export interface Conference {
   mapExhibitorBooths?: [string, boolean, boolean][];
   conferenceProgramUrl?: string;
   conferenceAppPageUrl?: string;
+  firstConferenceYear?: number;
 }
 
 export interface MapImage {
