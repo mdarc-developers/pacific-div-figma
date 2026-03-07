@@ -5,6 +5,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
+import { sendEmailVerification } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -43,6 +45,13 @@ export function SignUpPage() {
       setError("");
       setLoading(true);
       await signUp(email, password);
+      if (auth.currentUser != null) {
+        try {
+          await sendEmailVerification(auth.currentUser);
+        } catch (verifyErr: unknown) {
+          console.error("Failed to send verification email:", verifyErr);
+        }
+      }
       setSignedUp(true);
     } catch (err: unknown) {
       setError(getErrorMessage(err) || "Failed to create an account");
@@ -71,8 +80,9 @@ export function SignUpPage() {
         <div className="flex flex-col gap-3 max-w-sm mx-auto">
           <h2 className="text-xl font-semibold mb-2">Account Created!</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Your account has been created. Check your email inbox for a welcome
-            message, then click below to get started.
+            Your account has been created. A verification email has been sent to
+            your inbox — please verify your email, then click below to get
+            started.
           </p>
           <Button className="w-full mt-2" onClick={() => navigate("/")}>
             Continue to App
