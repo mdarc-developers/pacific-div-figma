@@ -82,6 +82,15 @@ export function buildWelcomeEmailHtml(
                 <li>Receive prize winner notifications</li>
                 <li>Stay up-to-date with conference alerts</li>
               </ul>
+              <p style="color:#444444;font-size:15px;line-height:1.6;margin:0 0 16px;">
+                Whether you attending for the first time or have attended before you will want to address a number of related concerns to make your trip enjoyable:
+              </p>
+              <ul style="color:#444444;font-size:15px;line-height:1.8;margin:0 0 24px;padding-left:20px;">
+                <li>Please click the link in the separate email verification message</a></li>
+                <li>Complete your attendee registration</li>
+                <li>Arrange your travel and accomodations</li>
+                <li>If you have attended before, consider helping the volunteers that make our conferences happen and providing feedback to the busy team</li>
+              </ul>
               <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
                 <tr>
                   <td style="background-color:#1a3a5c;border-radius:6px;padding:14px 28px;">
@@ -92,7 +101,7 @@ export function buildWelcomeEmailHtml(
                 </tr>
               </table>
               <p style="color:#666666;font-size:13px;line-height:1.6;margin:0;">
-                73 de your conference organizers,<br />
+                73 from your conference organizers & app creators,<br />
                 <a href="mailto:pacific-div@mdarc.org" style="color:#1a3a5c;">pacific-div@mdarc.org</a>
               </p>
             </td>
@@ -102,6 +111,8 @@ export function buildWelcomeEmailHtml(
               <p style="color:#999999;font-size:12px;margin:0;">
                 You were sent this email because you created an account at
                 <a href="https://pacific-div.web.app" style="color:#1a3a5c;">pacific-div.web.app</a>.
+                If you do not verify the email the account will be deleted in 30 days.
+                If you did not create an account please help us fight spam by letting us know at <a href="mailto:pacific-div@mdarc.org" style="color:#1a3a5c;">pacific-div@mdarc.org</a>.
               </p>
             </td>
           </tr>
