@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { SearchBar } from "@/app/components/SearchBar";
 import { Navigation } from "@/app/components/Navigation";
@@ -15,22 +16,23 @@ import { ConferenceHeaderErrorBoundary } from "@/app/components/ConferenceHeader
 import { AdminStatsBar } from "@/app/components/AdminStatsBar";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { ConferenceFooter } from "@/app/components/ConferenceFooter";
-import { MapsPage } from "@/app/pages/MapsPage";
-import { PrizesPage } from "@/app/pages/PrizesPage";
-import { AttendeesPage } from "@/app/pages/AttendeesPage";
-import { ExhibitorsPage } from "@/app/pages/ExhibitorsPage";
-import { SchedulePage } from "@/app/pages/SchedulePage";
-import { ForumsPage } from "@/app/pages/ForumsPage";
-import { AlertsPage } from "@/app/pages/AlertsPage";
-import { ProfilePage } from "@/app/pages/ProfilePage";
-import { LoginPage } from "@/app/pages/LoginPage";
-import { SignUpPage } from "@/app/pages/SignUpPage";
-import { SearchPage } from "@/app/pages/SearchPage";
-import { PrizesAdminPage } from "@/app/pages/PrizesAdminPage";
-import { PacificonSvgExhibitorMap } from "@/app/components/PacificonSvgExhibitorMap";
-import { PrivacyPage } from "@/app/pages/PrivacyPage";
-import { TermsOfServicePage } from "@/app/pages/TermsOfServicePage";
-import { ConferenceRedirectPage } from "@/app/pages/ConferenceRedirectPage";
+
+const MapsPage = lazy(() => import("@/app/pages/MapsPage").then((m) => ({ default: m.MapsPage })));
+const PrizesPage = lazy(() => import("@/app/pages/PrizesPage").then((m) => ({ default: m.PrizesPage })));
+const AttendeesPage = lazy(() => import("@/app/pages/AttendeesPage").then((m) => ({ default: m.AttendeesPage })));
+const ExhibitorsPage = lazy(() => import("@/app/pages/ExhibitorsPage").then((m) => ({ default: m.ExhibitorsPage })));
+const SchedulePage = lazy(() => import("@/app/pages/SchedulePage").then((m) => ({ default: m.SchedulePage })));
+const ForumsPage = lazy(() => import("@/app/pages/ForumsPage").then((m) => ({ default: m.ForumsPage })));
+const AlertsPage = lazy(() => import("@/app/pages/AlertsPage").then((m) => ({ default: m.AlertsPage })));
+const ProfilePage = lazy(() => import("@/app/pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
+const LoginPage = lazy(() => import("@/app/pages/LoginPage").then((m) => ({ default: m.LoginPage })));
+const SignUpPage = lazy(() => import("@/app/pages/SignUpPage").then((m) => ({ default: m.SignUpPage })));
+const SearchPage = lazy(() => import("@/app/pages/SearchPage").then((m) => ({ default: m.SearchPage })));
+const PrizesAdminPage = lazy(() => import("@/app/pages/PrizesAdminPage").then((m) => ({ default: m.PrizesAdminPage })));
+const PacificonSvgExhibitorMap = lazy(() => import("@/app/components/PacificonSvgExhibitorMap").then((m) => ({ default: m.PacificonSvgExhibitorMap })));
+const PrivacyPage = lazy(() => import("@/app/pages/PrivacyPage").then((m) => ({ default: m.PrivacyPage })));
+const TermsOfServicePage = lazy(() => import("@/app/pages/TermsOfServicePage").then((m) => ({ default: m.TermsOfServicePage })));
+const ConferenceRedirectPage = lazy(() => import("@/app/pages/ConferenceRedirectPage").then((m) => ({ default: m.ConferenceRedirectPage })));
 
 export default function App() {
   const isMdarcDeveloper = useMdarcDeveloper();
@@ -49,31 +51,33 @@ export default function App() {
         <SearchBar />
         <Navigation />
 
-        <Routes>
-          <Route path="/" element={<Navigate to="/schedule" replace />} />
-          <Route path="/maps" element={<MapsPage />} />
-          <Route path="/prizes" element={<PrizesPage />} />
-          <Route path="/attendees" element={<AttendeesPage />} />
-          <Route path="/exhibitors" element={<ExhibitorsPage />} />
-          <Route path="/schedule" element={<SchedulePage />} />
-          <Route path="/forums" element={<ForumsPage />} />
-          <Route path="/alerts" element={<AlertsPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/admin/prizes" element={<PrizesAdminPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-          <Route
-            path="/pacificonfloormap"
-            element={<PacificonSvgExhibitorMap />}
-          />
-          {/* Conference slug redirect — must stay AFTER all static routes.
-              Any new static single-segment routes (e.g. /about) must be added ABOVE this line. */}
-          <Route path="/:conferenceSlug" element={<ConferenceRedirectPage />} />
-          <Route path="*" element={<Navigate to="/404.html" replace />} />
-        </Routes>
+        <Suspense fallback={<div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" /></div>}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/schedule" replace />} />
+            <Route path="/maps" element={<MapsPage />} />
+            <Route path="/prizes" element={<PrizesPage />} />
+            <Route path="/attendees" element={<AttendeesPage />} />
+            <Route path="/exhibitors" element={<ExhibitorsPage />} />
+            <Route path="/schedule" element={<SchedulePage />} />
+            <Route path="/forums" element={<ForumsPage />} />
+            <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/admin/prizes" element={<PrizesAdminPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+            <Route
+              path="/pacificonfloormap"
+              element={<PacificonSvgExhibitorMap />}
+            />
+            {/* Conference slug redirect — must stay AFTER all static routes.
+                Any new static single-segment routes (e.g. /about) must be added ABOVE this line. */}
+            <Route path="/:conferenceSlug" element={<ConferenceRedirectPage />} />
+            <Route path="*" element={<Navigate to="/404.html" replace />} />
+          </Routes>
+        </Suspense>
 
         <ConferenceFooter />
       </div>

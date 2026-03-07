@@ -42,7 +42,35 @@ export default defineConfig({
     },
   },
   build: {
-    chunkSizeWarningLimit: 1800,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules/")) return undefined;
+          // Firebase (~485 kB) — isolated so the rest of the app isn't blocked
+          if (
+            id.includes("node_modules/firebase/") ||
+            id.includes("node_modules/@firebase/")
+          ) {
+            return "vendor-firebase";
+          }
+          // FullCalendar (~203 kB) — only needed on the Schedule page
+          if (
+            id.includes("node_modules/@fullcalendar/") ||
+            id.includes("node_modules/fullcalendar/")
+          ) {
+            return "vendor-fullcalendar";
+          }
+          // Leaflet (~150 kB) — only needed on map pages
+          if (id.includes("node_modules/leaflet/")) {
+            return "vendor-leaflet";
+          }
+          // Everything else (React, Radix UI, misc utilities) in one stable
+          // vendor chunk — avoids cross-chunk circular-dependency warnings
+          return "vendor";
+        },
+      },
+    },
   },
   test: {
     root: __dirname,
