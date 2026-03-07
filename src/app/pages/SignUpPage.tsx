@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 //import { Conference } from '@/types/conference';
@@ -20,12 +20,15 @@ export function SignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
+  // Tracks whether a sign-up flow is currently in progress so that the
+  // redirect effect does not fire before setSignedUp(true) is called.
+  const isSigningUpRef = useRef(false);
   const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in (but not right after sign-up — let user see the confirmation)
   useEffect(() => {
-    if (user && !signedUp) {
+    if (user && !signedUp && !isSigningUpRef.current) {
       navigate("/");
     }
   }, [user, navigate, signedUp]);
@@ -44,6 +47,7 @@ export function SignUpPage() {
     try {
       setError("");
       setLoading(true);
+      isSigningUpRef.current = true;
       await signUp(email, password);
       if (auth.currentUser != null) {
         try {
@@ -54,6 +58,7 @@ export function SignUpPage() {
       }
       setSignedUp(true);
     } catch (err: unknown) {
+      isSigningUpRef.current = false;
       setError(getErrorMessage(err) || "Failed to create an account");
     } finally {
       setLoading(false);
