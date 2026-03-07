@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { User } from "lucide-react";
+import { User, UserPlus } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 
@@ -124,7 +124,10 @@ export const LoginPage = () => {
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
           First time?{" "}
           <Button asChild variant="link" className="px-0 h-auto text-sm">
-            <Link to="/signup" state={{ email }}>Sign up now</Link>
+            <Link to="/signup" state={{ email }}>
+              <UserPlus className="h-4 w-4" />
+              Sign up now</Link>
+            </Link>
           </Button>
         </p>
       </form>

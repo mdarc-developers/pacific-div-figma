@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 //import { Conference } from '@/types/conference';
-import { UserPlus } from "lucide-react";
+import { UserPlus, LogIn } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { sendEmailVerification } from "firebase/auth";
@@ -22,12 +22,15 @@ export function SignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
+  // Tracks whether a sign-up flow is currently in progress so that the
+  // redirect effect does not fire before setSignedUp(true) is called.
+  const isSigningUpRef = useRef(false);
   const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in (but not right after sign-up — let user see the confirmation)
   useEffect(() => {
-    if (user && !signedUp) {
+    if (user && !signedUp && !isSigningUpRef.current) {
       navigate("/");
     }
   }, [user, navigate, signedUp]);
@@ -46,6 +49,7 @@ export function SignUpPage() {
     try {
       setError("");
       setLoading(true);
+      isSigningUpRef.current = true;
       await signUp(email, password);
       if (auth.currentUser != null) {
         try {
@@ -56,6 +60,7 @@ export function SignUpPage() {
       }
       setSignedUp(true);
     } catch (err: unknown) {
+      isSigningUpRef.current = false;
       setError(getErrorMessage(err) || "Failed to create an account");
     } finally {
       setLoading(false);
@@ -156,11 +161,14 @@ export function SignUpPage() {
             Sign up with Google
           </Button>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            Already have an account?{" "}
-            <Button asChild variant="link" className="px-0 h-auto text-sm">
-              <Link to="/login">Log in</Link>
-            </Button>
+            Already have an account?
           </p>
+          <Button asChild variant="outline" className="w-full">
+            <Link to="/login">
+              <LogIn className="h-4 w-4" />
+              Log In
+            </Link>
+          </Button>
         </form>
       )}
     </div>
