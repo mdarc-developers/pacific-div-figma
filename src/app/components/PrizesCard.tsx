@@ -154,6 +154,7 @@ export function PrizesCard({
           <TabsContent value="single" className="mt-0">
             <div className="flex gap-2">
               <Input
+                id="raffle-input-1"
                 placeholder="Enter ticket number"
                 value={newTicket}
                 onChange={(e) => setNewTicket(e.target.value)}
@@ -177,6 +178,7 @@ export function PrizesCard({
           <TabsContent value="range" className="mt-0 space-y-2">
             <div className="flex items-center gap-2">
               <Input
+                id="raffle-input-2"
                 type="number"
                 placeholder="First"
                 value={rangeStart}
@@ -189,6 +191,7 @@ export function PrizesCard({
               />
               <span className="text-sm text-muted-foreground">–</span>
               <Input
+                id="raffle-input-3"
                 type="number"
                 placeholder="Last"
                 value={rangeEnd}
