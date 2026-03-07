@@ -1,7 +1,16 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
 import { Link } from "react-router-dom";
-import { Section, Body, BulletList } from "@/app/components/StaticPageComponents";
+import {
+  Section,
+  Body,
+  BulletList,
+} from "@/app/components/StaticPageComponents";
 
 export function TermsOfServicePage() {
   return (
@@ -15,9 +24,9 @@ export function TermsOfServicePage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <Body>
-            By using our websites and services, you are a &ldquo;user&rdquo; and you accept
-            and agree to these Terms of Use (ToU) as a legal contract between
-            you and us, the Mt. Diablo Amateur Radio Club (MDARC). By
+            By using our websites and services, you are a &ldquo;user&rdquo; and
+            you accept and agree to these Terms of Use (ToU) as a legal contract
+            between you and us, the Mt. Diablo Amateur Radio Club (MDARC). By
             interacting with our websites, or using our goods or services, you
             are agreeing to be subject to these ToU in their entirety, without
             modification. If you do not accept and agree to all provisions of
@@ -52,11 +61,11 @@ export function TermsOfServicePage() {
             <Body>
               The content of websites operated by MDARC are copyrighted by the
               Mt. Diablo Amateur Radio Club and we reserve all rights. The
-              content may be viewed, copied, and/or downloaded for
-              noncommercial personal use only. In no event may our content be
-              sold, traded or otherwise used for personal or organizational
-              gain. Should you choose to share our content with other
-              individuals or groups, an attribution to us is required.
+              content may be viewed, copied, and/or downloaded for noncommercial
+              personal use only. In no event may our content be sold, traded or
+              otherwise used for personal or organizational gain. Should you
+              choose to share our content with other individuals or groups, an
+              attribution to us is required.
             </Body>
           </Section>
 
@@ -87,9 +96,9 @@ export function TermsOfServicePage() {
           <Section title="Jurisdiction, Governing Law">
             <Body>
               Any and all claims, causes of action or disputes between you and
-              MDARC arising out of, or related to, these Terms of Use, our
-              sites and/or services or content accessed through our sites will
-              be governed by the laws of the State of California, USA. Any such
+              MDARC arising out of, or related to, these Terms of Use, our sites
+              and/or services or content accessed through our sites will be
+              governed by the laws of the State of California, USA. Any such
               claims shall be filed only in courts located in the county of
               Contra Costa, California, USA.
             </Body>
@@ -102,8 +111,8 @@ export function TermsOfServicePage() {
               There is no age limit to become an amateur radio operator (ham);
               and we believe our websites are appropriate for anyone who is, or
               is interested in becoming, a ham. Our websites have no content
-              directed specifically to children under 13 years of age. We do
-              not knowingly collect data relating to children through these
+              directed specifically to children under 13 years of age. We do not
+              knowingly collect data relating to children through these
               websites. Children may only access these websites and the services
               of MDARC with parental consent.
             </Body>
@@ -125,9 +134,7 @@ export function TermsOfServicePage() {
           <Separator />
 
           <Section title="Prohibited Uses">
-            <Body>
-              As a user of our websites, you are prohibited from:
-            </Body>
+            <Body>As a user of our websites, you are prohibited from:</Body>
             <div className="mt-2">
               <BulletList
                 items={[
@@ -193,9 +200,9 @@ export function TermsOfServicePage() {
 
           <Section title="ToU Revisions">
             <Body>
-              We may post changes to these ToU at any time, and any such
-              changes will be applicable to all subsequent access to, or use of,
-              our sites and services.
+              We may post changes to these ToU at any time, and any such changes
+              will be applicable to all subsequent access to, or use of, our
+              sites and services.
             </Body>
           </Section>
 

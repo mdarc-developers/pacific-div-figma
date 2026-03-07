@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Bell,
-  Calendar,
-  ExternalLink,
-  MapPin,
-  User,
-} from "lucide-react";
+import { Bell, Calendar, ExternalLink, MapPin, User } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { NavLink } from "react-router-dom";
 import {
@@ -82,16 +76,16 @@ export function ConferenceHeader() {
     if (!iurl || iurl === "") return "";
     else
       return (
-                    <a
-                      href={iurl}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      className="flex items-center gap-2 hover:underline"
-                      style={{ color: headerLinkColor }}
-                    >
-                      {activeConference.venue}
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
+        <a
+          href={iurl}
+          rel="noopener noreferrer"
+          target="_blank"
+          className="flex items-center gap-2 hover:underline"
+          style={{ color: headerLinkColor }}
+        >
+          {activeConference.venue}
+          <ExternalLink className="h-4 w-4" />
+        </a>
       );
   };
 
@@ -128,7 +122,7 @@ export function ConferenceHeader() {
         </a>
       );
   };
-  
+
   const icalUrlDisplay = (iurl: string) => {
     if (!iurl || iurl === "") return "";
     else
@@ -215,7 +209,6 @@ export function ConferenceHeader() {
         <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">
           {activeConference.name}
           &nbsp;&nbsp;
-
           {/* Conference website link */}
           <a
             href={activeConference.conferenceWebsite}
@@ -227,12 +220,14 @@ export function ConferenceHeader() {
             website
             <ExternalLink className="h-4 w-4" />
           </a>
-
         </h1>
       </div>
 
       {/* Conference official app link (optional) */}
-      {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
+      {conferenceAppPageUrlDisplay(
+        activeConference.conferenceAppPageUrl,
+        headerLinkColor,
+      )}
 
       {/* Conference logo (linked to website) */}
       {activeConference.logoUrl && !isHeaderCollapsed ? (
@@ -263,10 +258,7 @@ export function ConferenceHeader() {
     <div className="flex items-center gap-2">
       <Calendar className="h-5 w-5" />
       <span>
-        {formatDateRange(
-          activeConference.startDate,
-          activeConference.endDate,
-        )}
+        {formatDateRange(activeConference.startDate, activeConference.endDate)}
         &nbsp;
         {/* iCal download link */}
         {icalUrlDisplay(activeConference.icalUrl)}
@@ -275,7 +267,9 @@ export function ConferenceHeader() {
         {googlecalUrlDisplay(activeConference.googlecalUrl)}
         {/* Year first established */}
         {activeConference.firstConferenceYear && (
-          <>&nbsp;&nbsp;&nbsp;established {activeConference.firstConferenceYear}</>
+          <>
+            &nbsp;&nbsp;&nbsp;established {activeConference.firstConferenceYear}
+          </>
         )}
       </span>
     </div>
@@ -307,9 +301,7 @@ export function ConferenceHeader() {
           {/* GPS coordinates */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <span title="GPS Coordinates">
-                {activeConference.venueGPS}
-              </span>
+              <span title="GPS Coordinates">{activeConference.venueGPS}</span>
             </TooltipTrigger>
             <TooltipContent>GPS Coordinates</TooltipContent>
           </Tooltip>
@@ -331,9 +323,12 @@ export function ConferenceHeader() {
             <TooltipContent>Maidenhead Gridsquare</TooltipContent>
           </Tooltip>
         </div>
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           {/* Conference app page and printed program links */}
-          {conferenceProgramUrlDisplay(activeConference.conferenceProgramUrl, headerLinkColor)}
+          {conferenceProgramUrlDisplay(
+            activeConference.conferenceProgramUrl,
+            headerLinkColor,
+          )}
         </div>
       </div>
     </div>
@@ -364,7 +359,6 @@ export function ConferenceHeader() {
 
   return (
     <div className="flex items-center gap-2 px-2">
-
       {/* Collapse/expand toggle button */}
       {renderCollapseButton()}
 
@@ -413,7 +407,6 @@ export function ConferenceHeader() {
 
       {/* Sidebar nav links: Alert, Profile */}
       {renderNavLinks()}
-
     </div> // container
   ); // return
 } // export function ConferenceHeader

@@ -237,9 +237,7 @@ export function ExhibitorsMapViewSvg({
     }
     const ex = boothToExhibitor.get(booth.boothNum);
     if (!ex) return;
-    onHighlightChange(
-      highlightedExhibitorId === ex.id ? undefined : ex.id,
-    );
+    onHighlightChange(highlightedExhibitorId === ex.id ? undefined : ex.id);
   };
 
   const handleZoomIn = () => {
@@ -278,7 +276,9 @@ export function ExhibitorsMapViewSvg({
           [
             { label: "+", title: "Zoom in", onClick: handleZoomIn },
             { label: "−", title: "Zoom out", onClick: handleZoomOut },
-            ...(isZoomed ? [{ label: "⊙", title: "Reset zoom", onClick: handleResetZoom }] : []),
+            ...(isZoomed
+              ? [{ label: "⊙", title: "Reset zoom", onClick: handleResetZoom }]
+              : []),
           ] as { label: string; title: string; onClick: () => void }[]
         ).map(({ label, title, onClick }) => (
           <button
@@ -329,18 +329,13 @@ export function ExhibitorsMapViewSvg({
         onTouchEnd={handleTouchEnd}
       >
         {/* Building layout SVG as background */}
-        <image
-          href={svgUrl}
-          x={0}
-          y={0}
-          width={svgWidth}
-          height={svgHeight}
-        />
+        <image href={svgUrl} x={0} y={0} width={svgWidth} height={svgHeight} />
 
         {/* Booth polygon overlays */}
         {svgBooths.map((booth) => {
           const ex = boothToExhibitor.get(booth.boothNum);
-          const isHighlighted = ex !== undefined && ex.id === highlightedExhibitorId;
+          const isHighlighted =
+            ex !== undefined && ex.id === highlightedExhibitorId;
           const hasExhibitor = ex !== undefined;
           return (
             <polygon

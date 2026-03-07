@@ -36,9 +36,7 @@ describe("ConferenceHeaderErrorBoundary", () => {
         <ThrowingComponent />
       </ConferenceHeaderErrorBoundary>,
     );
-    expect(
-      screen.getByTestId("conference-header-error"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("conference-header-error")).toBeInTheDocument();
     expect(screen.getByTestId("conference-header-error")).toHaveTextContent(
       "Conference header could not be loaded.",
     );

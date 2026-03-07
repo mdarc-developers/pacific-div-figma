@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { ALL_USER_PROFILES, ALL_USER_PROFILE_GROUPS } from "@/lib/userProfileData";
+import {
+  ALL_USER_PROFILES,
+  ALL_USER_PROFILE_GROUPS,
+} from "@/lib/userProfileData";
 
 /**
  * Returns the deduplicated list of groups the currently authenticated user

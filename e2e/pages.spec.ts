@@ -121,7 +121,9 @@ test.describe("Privacy and Terms pages", () => {
     await page.goto("/privacy");
     await expect(page).toHaveURL(/\/privacy/);
     await expect(page.locator("body")).toContainText("Privacy Policy");
-    await expect(page.locator("body")).toContainText("Personal Information We Collect");
+    await expect(page.locator("body")).toContainText(
+      "Personal Information We Collect",
+    );
   });
 
   test("/terms-of-service renders the Terms of Use inside the app", async ({

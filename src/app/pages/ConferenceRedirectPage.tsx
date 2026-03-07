@@ -42,7 +42,10 @@ export function ConferenceRedirectPage() {
 
   useEffect(() => {
     if (conferenceSlug) {
-      const match = findNextConferenceBySlug(allConferencesList, conferenceSlug);
+      const match = findNextConferenceBySlug(
+        allConferencesList,
+        conferenceSlug,
+      );
       if (match) {
         setActiveConference(match);
       }

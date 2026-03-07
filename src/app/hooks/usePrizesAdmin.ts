@@ -1,5 +1,8 @@
 import { useAuth } from "@/app/contexts/AuthContext";
-import { ALL_USER_PROFILES, ALL_USER_PROFILE_GROUPS } from "@/lib/userProfileData";
+import {
+  ALL_USER_PROFILES,
+  ALL_USER_PROFILE_GROUPS,
+} from "@/lib/userProfileData";
 
 /**
  * Returns true when the currently authenticated user is a member of the
@@ -18,8 +21,10 @@ export function usePrizesAdmin(): boolean {
   if (!user) return false;
 
   // Check by uid via mapUserProfileGroups
-  const byUid = ALL_USER_PROFILE_GROUPS.find((g) => g.uid === user.uid)
-    ?.groups?.includes("prize-admin") ?? false;
+  const byUid =
+    ALL_USER_PROFILE_GROUPS.find((g) => g.uid === user.uid)?.groups?.includes(
+      "prize-admin",
+    ) ?? false;
   if (byUid) return true;
 
   // Check by email via mapUserProfiles

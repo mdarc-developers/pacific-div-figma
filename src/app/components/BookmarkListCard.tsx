@@ -129,10 +129,7 @@ export function BookmarkListCard({
 
         {(bookmarkedExhibitorList.length > 0 ||
           previousExhibitorList.length > 0) && (
-          <ul
-            className="space-y-2 mt-1"
-            data-testid="exhibitor-bookmark-list"
-          >
+          <ul className="space-y-2 mt-1" data-testid="exhibitor-bookmark-list">
             {bookmarkedExhibitorList.map((exhibitor) => (
               <li
                 key={exhibitor.id}

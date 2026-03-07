@@ -113,7 +113,10 @@ export async function getUserNotificationSettings(
   if (!snap.exists()) return null;
   const data = snap.data();
   return {
-    smsEnabled: typeof data?.smsNotifications === "boolean" ? data.smsNotifications : false,
+    smsEnabled:
+      typeof data?.smsNotifications === "boolean"
+        ? data.smsNotifications
+        : false,
     phoneNumber: typeof data?.phoneNumber === "string" ? data.phoneNumber : "",
   };
 }
@@ -124,7 +127,10 @@ export async function setUserNotificationSettings(
 ): Promise<void> {
   await setDoc(
     doc(db, "users", uid),
-    { smsNotifications: settings.smsEnabled, phoneNumber: settings.phoneNumber },
+    {
+      smsNotifications: settings.smsEnabled,
+      phoneNumber: settings.phoneNumber,
+    },
     { merge: true },
   );
 }

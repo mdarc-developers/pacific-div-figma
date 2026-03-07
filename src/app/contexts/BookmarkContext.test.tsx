@@ -42,9 +42,9 @@ describe("BookmarkContext", () => {
   });
 
   it("throws when used outside BookmarkProvider", () => {
-    expect(() =>
-      renderHook(() => useBookmarkContext()),
-    ).toThrow("useBookmarkContext must be used within a BookmarkProvider");
+    expect(() => renderHook(() => useBookmarkContext())).toThrow(
+      "useBookmarkContext must be used within a BookmarkProvider",
+    );
   });
 
   it("initialises with empty bookmarked and prevBookmarked lists", () => {

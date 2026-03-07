@@ -3,7 +3,9 @@ import { renderHook } from "@testing-library/react";
 import type { UserProfileGroups, UserProfile } from "@/types/conference";
 
 // ── Mock AuthContext ──────────────────────────────────────────────────────────
-const mockUser = vi.hoisted(() => ({ current: null as { uid: string; email: string | null } | null }));
+const mockUser = vi.hoisted(() => ({
+  current: null as { uid: string; email: string | null } | null,
+}));
 
 vi.mock("@/app/contexts/AuthContext", () => ({
   useAuth: () => ({ user: mockUser.current }),
@@ -35,7 +37,10 @@ describe("useUserGroups", () => {
   it("returns groups found via uid in ALL_USER_PROFILE_GROUPS", () => {
     mockUser.current = { uid: "uid-1", email: null };
     mockAllUserProfileGroups.splice(0);
-    mockAllUserProfileGroups.push({ uid: "uid-1", groups: ["prize-admin", "mdarc-developers"] });
+    mockAllUserProfileGroups.push({
+      uid: "uid-1",
+      groups: ["prize-admin", "mdarc-developers"],
+    });
 
     const { result } = renderHook(() => useUserGroups());
     expect(result.current).toEqual(["prize-admin", "mdarc-developers"]);

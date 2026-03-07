@@ -1,6 +1,15 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
-import { Section, Body, BulletList } from "@/app/components/StaticPageComponents";
+import {
+  Section,
+  Body,
+  BulletList,
+} from "@/app/components/StaticPageComponents";
 
 export function PrivacyPage() {
   return (
@@ -14,13 +23,13 @@ export function PrivacyPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <Body>
-            By using our websites and services, you are a &ldquo;user&rdquo; and you accept
-            and agree to this Privacy Policy. By interacting with our websites,
-            or using our goods or services, you are agreeing to be subject to
-            this policy in its entirety, without modification. If you do not
-            accept and agree to all provisions of this policy, now or in the
-            future, you may reject it by immediately terminating all access and
-            use of our sites and services.
+            By using our websites and services, you are a &ldquo;user&rdquo; and
+            you accept and agree to this Privacy Policy. By interacting with our
+            websites, or using our goods or services, you are agreeing to be
+            subject to this policy in its entirety, without modification. If you
+            do not accept and agree to all provisions of this policy, now or in
+            the future, you may reject it by immediately terminating all access
+            and use of our sites and services.
           </Body>
 
           <Separator />

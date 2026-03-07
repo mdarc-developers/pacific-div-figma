@@ -3040,4 +3040,3 @@ export const attendeeMessages: Message[] = [
     votes: 0,
   },
 ];
-

@@ -88,19 +88,21 @@ export const mapRooms: [string, Room[]] = [
     // [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
     {
       name: "VBC Room 1",
-      coords: [[305, 260],
+      coords: [
+        [305, 260],
         [478, 260],
         [478, 484],
-        [305, 484]
+        [305, 484],
       ],
       color: "#E63946", //Red
     },
     {
       name: "VBC Room 2",
-      coords: [[0, 673],
+      coords: [
+        [0, 673],
         [77, 673],
         [77, 882],
-        [0, 882]
+        [0, 882],
       ],
       color: "#2A9D8F", // Teal
     },

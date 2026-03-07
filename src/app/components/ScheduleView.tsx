@@ -227,13 +227,15 @@ export function ScheduleView({
   const { setHighlightForumRoomName } = useSearch();
   const navigate = useNavigate();
   const location = useLocation();
-  const sessions = (SESSION_DATA[activeConference.id] || []).filter((s) =>
-    isValidDateTimeString(s.startTime) &&
-    // When categoryFilter is set, only sessions whose category matches (case-insensitive) are included.
-    // Sessions without a category are intentionally excluded when filtering.
-    (!categoryFilter || s.category?.toLowerCase() === categoryFilter.toLowerCase()) &&
-    // When trackFilter is set, only sessions whose track array includes it are included.
-    (!trackFilter || s.track?.includes(trackFilter)),
+  const sessions = (SESSION_DATA[activeConference.id] || []).filter(
+    (s) =>
+      isValidDateTimeString(s.startTime) &&
+      // When categoryFilter is set, only sessions whose category matches (case-insensitive) are included.
+      // Sessions without a category are intentionally excluded when filtering.
+      (!categoryFilter ||
+        s.category?.toLowerCase() === categoryFilter.toLowerCase()) &&
+      // When trackFilter is set, only sessions whose track array includes it are included.
+      (!trackFilter || s.track?.includes(trackFilter)),
   );
   const updateToken = SESSION_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedDay, setSelectedDay] = useState<string>("all");

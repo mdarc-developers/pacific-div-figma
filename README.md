@@ -7,15 +7,16 @@ The planned iOS and Android apps developed with expo.dev will provide the best e
 Great care and testing will enable seamless offline use by using a local-first LoFi.so architecture.
 
 ## Conferences
+
 Proofs of concept have been created using data from past conferences:
 
- * Quartzfest during Jan, Quartzsite, AZ
- * Hamcation during Feb, Orlando, FL
- * Yuma Hamfest during Feb, Yuma, AZ
- * Hamvention during May, Dayton, OH
- * Seapac during Jun, Portland, OR
- * Huntsville Hamfest during Aug, Huntsville, AL
- * Pacificon during Oct, San Ramon, CA
+- Quartzfest during Jan, Quartzsite, AZ
+- Hamcation during Feb, Orlando, FL
+- Yuma Hamfest during Feb, Yuma, AZ
+- Hamvention during May, Dayton, OH
+- Seapac during Jun, Portland, OR
+- Huntsville Hamfest during Aug, Huntsville, AL
+- Pacificon during Oct, San Ramon, CA
 
 ## Running the code
 

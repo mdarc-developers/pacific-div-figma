@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getCountFromServer, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getCountFromServer,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 export interface AdminStats {
   userProfileCount: number | null;

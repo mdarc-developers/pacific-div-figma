@@ -41,7 +41,9 @@ export function ForumsPage() {
             const mapImg = conferenceMaps.find((m) => m.url === entry[0]);
             return (
               <div key={entry[0]}>
-                <p>#{index + 1} URL: {entry[0]}</p>
+                <p>
+                  #{index + 1} URL: {entry[0]}
+                </p>
                 <p>Sessions loaded: {String(entry[1])}</p>
                 <p>Rooms loaded: {String(entry[2])}</p>
                 <p>Categories: {JSON.stringify(mapImg?.category)}</p>
@@ -53,9 +55,7 @@ export function ForumsPage() {
       {numSRurls === 1 && (
         <ForumsMapView
           key={roomEntry[0]?.[0]}
-          forumMap={conferenceMaps.find(
-              (m) => m.url === roomEntry[0]?.[0]
-          )}
+          forumMap={conferenceMaps.find((m) => m.url === roomEntry[0]?.[0])}
           forumRooms={roomEntry[0]?.[1] ?? []}
           highlightForumRoomName={highlightForumRoomName}
         />
@@ -88,7 +88,9 @@ export function ForumsPage() {
               <button
                 key={track}
                 className={`px-2 py-1 rounded border text-xs font-medium transition-colors ${selectedTrack === track ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-blue-900 border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-800"}`}
-                onClick={() => setSelectedTrack(selectedTrack === track ? null : track)}
+                onClick={() =>
+                  setSelectedTrack(selectedTrack === track ? null : track)
+                }
               >
                 {track}
               </button>

@@ -232,10 +232,9 @@ Object.keys(supplementalExhibitorModules)
 // appended to BOOTH_DATA as a new [url, booths] tuple so that all booth maps
 // are rendered side-by-side.  Sorting ensures the most-recent timestamp wins
 // when multiple supplemental files target the same conference + URL.
-const supplementalBoothModules = import.meta.glob(
-  "../data/*-booth-*.ts",
-  { eager: true }
-);
+const supplementalBoothModules = import.meta.glob("../data/*-booth-*.ts", {
+  eager: true,
+});
 Object.keys(supplementalBoothModules)
   .sort()
   .forEach((path) => {
@@ -266,10 +265,9 @@ Object.keys(supplementalBoothModules)
 // appended to ROOM_DATA as a new [url, rooms] tuple so that all room maps
 // are rendered side-by-side.  Sorting ensures the most-recent timestamp wins
 // when multiple supplemental files target the same conference + URL.
-const supplementalRoomModules = import.meta.glob(
-  "../data/*-room-*.ts",
-  { eager: true }
-);
+const supplementalRoomModules = import.meta.glob("../data/*-room-*.ts", {
+  eager: true,
+});
 Object.keys(supplementalRoomModules)
   .sort()
   .forEach((path) => {

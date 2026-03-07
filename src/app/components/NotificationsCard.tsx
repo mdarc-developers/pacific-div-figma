@@ -58,7 +58,10 @@ export function NotificationsCard({
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <Label htmlFor="sms-alerts" className="text-sm font-medium cursor-pointer">
+              <Label
+                htmlFor="sms-alerts"
+                className="text-sm font-medium cursor-pointer"
+              >
                 SMS alerts
               </Label>
               <p className="text-xs text-muted-foreground">
@@ -68,13 +71,18 @@ export function NotificationsCard({
             <Checkbox
               id="sms-alerts"
               checked={smsEnabled}
-              onCheckedChange={(checked) => onSmsEnabledChange(checked === true)}
+              onCheckedChange={(checked) =>
+                onSmsEnabledChange(checked === true)
+              }
               aria-label="Enable SMS alerts"
             />
           </div>
           {smsEnabled && (
             <div className="space-y-1">
-              <Label htmlFor="phone-number" className="text-xs text-muted-foreground">
+              <Label
+                htmlFor="phone-number"
+                className="text-xs text-muted-foreground"
+              >
                 Mobile phone number
               </Label>
               <div className="flex gap-2">

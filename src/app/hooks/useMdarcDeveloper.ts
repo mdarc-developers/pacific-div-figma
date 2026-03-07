@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { ALL_USER_PROFILES, ALL_USER_PROFILE_GROUPS } from "@/lib/userProfileData";
+import {
+  ALL_USER_PROFILES,
+  ALL_USER_PROFILE_GROUPS,
+} from "@/lib/userProfileData";
 import { loadFromStorage, saveToStorage } from "@/lib/localStorage";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -28,16 +31,17 @@ export function useMdarcDeveloper(): boolean {
 
   // --- synchronous local check (by uid via mapUserProfileGroups) ---
   const localByUid = user
-    ? (ALL_USER_PROFILE_GROUPS.find((g) => g.uid === user.uid)
-        ?.groups?.includes("mdarc-developers") ?? false)
+    ? (ALL_USER_PROFILE_GROUPS.find(
+        (g) => g.uid === user.uid,
+      )?.groups?.includes("mdarc-developers") ?? false)
     : false;
 
   // --- synchronous local check (by email via mapUserProfiles) ---
-  const localByEmail =
-    user?.email
-      ? (ALL_USER_PROFILES.find((p) => p.email === user.email)
-          ?.groups?.includes("mdarc-developers") ?? false)
-      : false;
+  const localByEmail = user?.email
+    ? (ALL_USER_PROFILES.find((p) => p.email === user.email)?.groups?.includes(
+        "mdarc-developers",
+      ) ?? false)
+    : false;
 
   const localResult = localByUid || localByEmail;
 

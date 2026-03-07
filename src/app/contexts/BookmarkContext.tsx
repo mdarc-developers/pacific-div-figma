@@ -48,11 +48,7 @@ export function useBookmarkContext(): BookmarkContextType {
   return ctx;
 }
 
-export function BookmarkProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function BookmarkProvider({ children }: { children: React.ReactNode }) {
   const { activeConference } = useConference();
   const conferenceId = activeConference.id;
 
@@ -62,8 +58,8 @@ export function BookmarkProvider({
   const [bookmarkedItems, setBookmarkedItems] = useState<string[]>(() =>
     loadFromLS(bookmarkKey),
   );
-  const [prevBookmarkedItems, setPrevBookmarkedItems] = useState<string[]>(
-    () => loadFromLS(prevBookmarkKey),
+  const [prevBookmarkedItems, setPrevBookmarkedItems] = useState<string[]>(() =>
+    loadFromLS(prevBookmarkKey),
   );
 
   // Reload from localStorage whenever the active conference changes.

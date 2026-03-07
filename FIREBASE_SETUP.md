@@ -121,7 +121,7 @@ Create these collections in Firestore:
 ## 5. Configure Firestore Security Rules
 
 The security rules live in `firestore.rules` in the repository root and are
-deployed automatically by `firebase deploy`.  The rules reference a
+deployed automatically by `firebase deploy`. The rules reference a
 `groups/mdarc-developers` document to identify privileged developer accounts
 (see §5a below).
 
@@ -159,24 +159,24 @@ Example document structure:
 To find a user's UID: Firebase Console → Authentication → Users → copy UID.
 
 > **Note**: The `groups` collection is readable by any authenticated user but
-> writable only via the Firebase Admin SDK (Cloud Functions).  Never store
+> writable only via the Firebase Admin SDK (Cloud Functions). Never store
 > sensitive data in a group document — only UID membership flags.
 
 ### 5b. Full rules reference
 
-The canonical rules are in `firestore.rules`.  For reference, the key
+The canonical rules are in `firestore.rules`. For reference, the key
 collections and their access patterns are:
 
-| Collection | Read | Write |
-|---|---|---|
-| `conferences`, `sessions`, `maps` | Public | Admin (`isAdmin` field) |
-| `users/{uid}` | Own doc only (`get`) | Own doc only |
-| `users` (list/count) | mdarc-developers only | — |
-| `groups/{groupId}` | Any authenticated user | Admin SDK only |
-| `stats/{document}` | mdarc-developers only | Cloud Functions only |
-| `prizes` | Public | Admin (`isAdmin` field) |
-| `prizeWinners` | Own wins or admin | Admin (`isAdmin` field) |
-| `messages` | Public messages or sender/recipient | Any authenticated user (own) |
+| Collection                        | Read                                | Write                        |
+| --------------------------------- | ----------------------------------- | ---------------------------- |
+| `conferences`, `sessions`, `maps` | Public                              | Admin (`isAdmin` field)      |
+| `users/{uid}`                     | Own doc only (`get`)                | Own doc only                 |
+| `users` (list/count)              | mdarc-developers only               | —                            |
+| `groups/{groupId}`                | Any authenticated user              | Admin SDK only               |
+| `stats/{document}`                | mdarc-developers only               | Cloud Functions only         |
+| `prizes`                          | Public                              | Admin (`isAdmin` field)      |
+| `prizeWinners`                    | Own wins or admin                   | Admin (`isAdmin` field)      |
+| `messages`                        | Public messages or sender/recipient | Any authenticated user (own) |
 
 ## 6. Storage Rules
 
@@ -261,7 +261,7 @@ that have Cloud Functions v2 enabled — no App Engine setup required.
 
 Firebase CLI defaults to the legacy App Engine service account
 (`project-id@appspot.gserviceaccount.com`) when it grants Secret Manager IAM
-access for blocking functions.  That account does **not** exist in projects
+access for blocking functions. That account does **not** exist in projects
 that never enabled App Engine, which causes deployment to fail with:
 
 ```

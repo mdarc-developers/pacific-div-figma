@@ -125,8 +125,14 @@ export function ConferenceHeaderSelector() {
                     style={{ backgroundColor: activeConference.primaryColor }}
                   >
                     <CardContent className="px-4 py-4">
-                      <hr className="border-t-2" style={{ borderColor: contrastingColor(activeConference.primaryColor) }} />
-                      <hr className="border-t-2 mt-3" style={{ borderColor: contrastingColor(activeConference.primaryColor) }} />
+                      <hr
+                        className="border-t-2 mt-3"
+                        style={{
+                          borderColor: contrastingColor(
+                            activeConference.primaryColor,
+                          ),
+                        }}
+                      />
                     </CardContent>
                   </Card>
                 );
@@ -152,17 +158,25 @@ export function ConferenceHeaderSelector() {
                             {conference.name}
                           </h3>
                           {current && (
-                            <Badge style={{ backgroundColor: "#66FF00", color: "#000" }}>
+                            <Badge
+                              style={{
+                                backgroundColor: "#66FF00",
+                                color: "#000",
+                              }}
+                            >
                               Currently Active
                             </Badge>
                           )}
                           {upcoming && !current && (
-                            <Badge variant="secondary">
-                              Upcoming
-                            </Badge>
+                            <Badge variant="secondary">Upcoming</Badge>
                           )}
                           {!upcoming && !current && (
-                            <Badge style={{ backgroundColor: "#EF9C5C", color: "#000" }}>
+                            <Badge
+                              style={{
+                                backgroundColor: "#EF9C5C",
+                                color: "#000",
+                              }}
+                            >
                               Past Event
                             </Badge>
                           )}

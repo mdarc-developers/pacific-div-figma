@@ -84,10 +84,26 @@ describe("findNextConferenceBySlug", () => {
     vi.useRealTimers();
   });
 
-  const pastPacificon = makeConference("pacificon-2025", "2025-10-17", "2025-10-19");
-  const nextPacificon = makeConference("pacificon-2026", "2026-10-16", "2026-10-18");
-  const futurePacificon = makeConference("pacificon-2027", "2027-10-15", "2027-10-17");
-  const unrelated = makeConference("hamvention-2026", "2026-05-15", "2026-05-17");
+  const pastPacificon = makeConference(
+    "pacificon-2025",
+    "2025-10-17",
+    "2025-10-19",
+  );
+  const nextPacificon = makeConference(
+    "pacificon-2026",
+    "2026-10-16",
+    "2026-10-18",
+  );
+  const futurePacificon = makeConference(
+    "pacificon-2027",
+    "2027-10-15",
+    "2027-10-17",
+  );
+  const unrelated = makeConference(
+    "hamvention-2026",
+    "2026-05-15",
+    "2026-05-17",
+  );
 
   const allConfs = [pastPacificon, nextPacificon, futurePacificon, unrelated];
 

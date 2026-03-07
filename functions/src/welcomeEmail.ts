@@ -6,8 +6,7 @@
  */
 
 /** Subject line for the new-user welcome email. */
-export const WELCOME_EMAIL_SUBJECT =
-  "Welcome to the Conference AttendeeApp!";
+export const WELCOME_EMAIL_SUBJECT = "Welcome to the Conference AttendeeApp!";
 
 /**
  * Encodes a raw email message as a base64url string for the Gmail API.

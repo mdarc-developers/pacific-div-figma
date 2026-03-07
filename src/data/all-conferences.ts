@@ -26,7 +26,8 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl: "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf",
+    conferenceProgramUrl:
+      "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf",
     conferenceAppPageUrl: "https://hamvention.org/getconnected/",
     firstConferenceYear: 1952,
   },
@@ -78,7 +79,8 @@ export const allConferences: ConferenceListItem[] = [
     logoUrl: "/assets/images/huntsville-logo.png",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl: "https://hamfest.org/wp-content/uploads/2025/08/Hamfest-Program-2025-08-FINAL.pdf", // broadsheet for us
+    conferenceProgramUrl:
+      "https://hamfest.org/wp-content/uploads/2025/08/Hamfest-Program-2025-08-FINAL.pdf", // broadsheet for us
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
     firstConferenceYear: 1954,
   },
@@ -109,7 +111,8 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl: "https://drive.google.com/file/d/1TlaEhDC0xvCEiQgJc5QUYApp0WIpHvNm/view", // broadsheet for us
+    conferenceProgramUrl:
+      "https://drive.google.com/file/d/1TlaEhDC0xvCEiQgJc5QUYApp0WIpHvNm/view", // broadsheet for us
     conferenceAppPageUrl: "https://www.pacificon.org/app/",
     firstConferenceYear: 1920,
   },
@@ -165,7 +168,8 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl: "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
+    conferenceProgramUrl:
+      "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
     firstConferenceYear: 1946,
   },
@@ -249,7 +253,8 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl: "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
+    conferenceProgramUrl:
+      "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
     firstConferenceYear: 1954,
   },

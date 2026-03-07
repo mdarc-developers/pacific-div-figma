@@ -61,10 +61,11 @@ vi.mock("@/lib/sessionData", async (importOriginal) => {
     // verify that JSON.stringify(mapImg?.category) is rendered correctly.
     MAP_DATA: {
       ...original.MAP_DATA,
-      "hamvention-2026": (original.MAP_DATA["hamvention-2026"] ?? []).map((m) =>
-        m.url === "/assets/maps/hamvention-forums-2026-2.png"
-          ? { ...m, category: ["Forums"] }
-          : m,
+      "hamvention-2026": (original.MAP_DATA["hamvention-2026"] ?? []).map(
+        (m) =>
+          m.url === "/assets/maps/hamvention-forums-2026-2.png"
+            ? { ...m, category: ["Forums"] }
+            : m,
       ),
     },
     SESSION_DATA: {

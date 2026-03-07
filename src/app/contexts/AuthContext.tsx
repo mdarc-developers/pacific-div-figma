@@ -47,7 +47,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUp = async (email: string, password: string) => {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
     setDoc(doc(db, "users", credential.user.uid), {
       email,
       displayName: credential.user.displayName ?? null,
