@@ -76,6 +76,8 @@ export function ConferenceHeader() {
   const headerTextColor = contrastingColor(activeConference.primaryColor);
   const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
 
+  // --- URL display helpers ---
+
   const venueWebsiteDisplay = (iurl: string) => {
     if (!iurl || iurl === "") return "";
     else
@@ -143,6 +145,7 @@ export function ConferenceHeader() {
         </a>
       );
   };
+
   const googlecalUrlDisplay = (gurl: string) => {
     if (!gurl || gurl === "") return "";
     else
@@ -155,6 +158,7 @@ export function ConferenceHeader() {
         </a>
       );
   };
+
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -171,175 +175,165 @@ export function ConferenceHeader() {
     return `${formatHeaderFull(startDate, activeConference.timezone)} - ${formatHeaderFull(endDate, activeConference.timezone)}`;
   };
 
+  // --- Navigation items ---
+
   const navItems = [
     { to: "/alerts", icon: Bell, label: "Alert" },
     { to: "/profile", icon: User, label: "Profile" },
   ];
 
-  return (
-    <div className="flex items-center gap-2 px-2">
-      <button
-        onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
-        className="bg-muted hover:text-gray-900 transition-colors self-stretch rounded-xl mb-3"
-        aria-label={isHeaderCollapsed ? "Expand" : "Collapse"}
-        title="Collapse / Expand"
+  // --- Render functions for major header sections ---
+
+  // Collapse/expand toggle button (chevron)
+  const renderCollapseButton = () => (
+    <button
+      onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+      className="bg-muted hover:text-gray-900 transition-colors self-stretch rounded-xl mb-3"
+      aria-label={isHeaderCollapsed ? "Expand" : "Collapse"}
+      title="Collapse / Expand"
+    >
+      <svg
+        className={`w-5 h-5 transition-transform flex ${isHeaderCollapsed ? "-rotate-90" : ""}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
       >
-        <svg
-          className={`w-5 h-5 transition-transform flex ${isHeaderCollapsed ? "-rotate-90" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </button>
+  );
 
-      <div
-        className={`mb-6 self-stretch w-full rounded-xl p-4 ${
-          isHeaderCollapsed
-            ? "cursor-pointer hover:opacity-90 transition-opacity"
-            : ""
-        }`}
-        style={{
-          backgroundColor: activeConference.primaryColor,
-          color: headerTextColor,
-        }}
-        onClick={
-          isHeaderCollapsed ? () => setIsHeaderCollapsed(false) : undefined
-        }
-      >
-        {isHeaderCollapsed ? (
-          <h1 className="text-3xl md:text-4xl font-bold">
-            {activeConference.name}
-          </h1>
-        ) : (
-          <>
-            <div className="flex self-stretch w-full">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">
-                  {activeConference.name}
-                  &nbsp;&nbsp;
+  // Conference name with website link, logo, and conference selector dropdown
+  const renderNameAndLogoRow = () => (
+    <div className="flex self-stretch w-full">
+      <div>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">
+          {activeConference.name}
+          &nbsp;&nbsp;
 
-                  <a
-                    href={activeConference.conferenceWebsite}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 hover:underline"
-                    style={{ color: headerLinkColor }}
-                  >
-                    website
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
+          {/* Conference website link */}
+          <a
+            href={activeConference.conferenceWebsite}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:underline"
+            style={{ color: headerLinkColor }}
+          >
+            website
+            <ExternalLink className="h-4 w-4" />
+          </a>
 
-                </h1>
-              </div>
-              {activeConference.logoUrl && !isHeaderCollapsed ? (
-                <a
-                  href={activeConference.conferenceWebsite}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:underline"
-                  style={{ color: headerLinkColor }}
-                >
-                  <img
-                    src={activeConference.logoUrl}
-                    alt="Conference Logo"
-                    className="h-20 w-auto"
-                  ></img>
-                </a>
-              ) : (
-                ""
-              )}
-              <ConferenceHeaderSelector />
-            </div>
-
-            <div
-              className="space-y-2"
-              // text-gray-700 dark:text-gray-300"
-              style={{
-                backgroundColor: activeConference.primaryColor,
-                color: headerTextColor,
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                <span>
-                  {formatDateRange(
-                    activeConference.startDate,
-                    activeConference.endDate,
-                  )}
-                  &nbsp;
-                  {icalUrlDisplay(activeConference.icalUrl)}
-                  &nbsp;&nbsp;&nbsp;
-                  {googlecalUrlDisplay(activeConference.googlecalUrl)}
-                </span>
-              </div>
-
-              <div className="flex items-start gap-2">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="flex items-center gap-1">
-                    <a
-                      href={activeConference.venueWebsite}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      className="flex items-center gap-2 hover:underline"
-                      style={{ color: headerLinkColor }}
-                    >
-                      {activeConference.venue}
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                    {activeConference.location}
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      className="items-center gap-2 hover:underline"
-                      style={{ color: headerLinkColor }}
-                    >
-                      <MapPin className="h-5 w-5" />
-                      map
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </span>
-                  <div>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span title="GPS Coordinates">
-                          {activeConference.venueGPS}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>GPS Coordinates</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <a
-                          //href={`https://www.levinecentral.com/ham/grid_square.php?Grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
-                          href={`https://www.karhukoti.com/maidenhead-grid-square-locator/?grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                          className="hover:underline"
-                          style={{ color: headerLinkColor }}
-                          title="Maidenhead Gridsquare"
-                        >
-                          {activeConference.venueGridSquare}
-                        </a>
-                      </TooltipTrigger>
-                      <TooltipContent>Maidenhead Gridsquare</TooltipContent>
-                    </Tooltip>
-                    {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
-                    {conferenceProgramUrlDisplay(activeConference.conferenceProgramUrl, headerLinkColor)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+        </h1>
       </div>
+
+      {/* Conference logo (linked to website) */}
+      {activeConference.logoUrl && !isHeaderCollapsed ? (
+        <a
+          href={activeConference.conferenceWebsite}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 hover:underline"
+          style={{ color: headerLinkColor }}
+        >
+          <img
+            src={activeConference.logoUrl}
+            alt="Conference Logo"
+            className="h-20 w-auto"
+          ></img>
+        </a>
+      ) : (
+        ""
+      )}
+
+      {/* Conference selector dropdown */}
+      <ConferenceHeaderSelector />
+    </div>
+  );
+
+  // Date range with iCal download and Google Calendar links
+  const renderDateRow = () => (
+    <div className="flex items-center gap-2">
+      <Calendar className="h-5 w-5" />
+      <span>
+        {formatDateRange(
+          activeConference.startDate,
+          activeConference.endDate,
+        )}
+        &nbsp;
+        {/* iCal download link */}
+        {icalUrlDisplay(activeConference.icalUrl)}
+        &nbsp;&nbsp;&nbsp;
+        {/* Add to Google Calendar link */}
+        {googlecalUrlDisplay(activeConference.googlecalUrl)}
+      </span>
+    </div>
+  );
+
+  // Venue name/link, city location, Google Maps link, GPS coords, Maidenhead grid square, app/program links
+  const renderLocationRow = () => (
+    <div className="flex items-start gap-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span className="flex items-center gap-1">
+          {/* Venue name linked to venue website */}
+          {venueWebsiteDisplay(activeConference.venueWebsite)}
+          {/* City/location text */}
+          {activeConference.location}
+          {/* Google Maps link */}
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
+            rel="noopener noreferrer"
+            target="_blank"
+            className="items-center gap-2 hover:underline"
+            style={{ color: headerLinkColor }}
+          >
+            <MapPin className="h-5 w-5" />
+            map
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </span>
+        <div>
+          {/* GPS coordinates */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span title="GPS Coordinates">
+                {activeConference.venueGPS}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>GPS Coordinates</TooltipContent>
+          </Tooltip>
+          {/* Maidenhead grid square */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a
+                //href={`https://www.levinecentral.com/ham/grid_square.php?Grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
+                href={`https://www.karhukoti.com/maidenhead-grid-square-locator/?grid=${encodeURIComponent(activeConference.venueGridSquare)}`}
+                rel="noopener noreferrer"
+                target="_blank"
+                className="hover:underline"
+                style={{ color: headerLinkColor }}
+                title="Maidenhead Gridsquare"
+              >
+                {activeConference.venueGridSquare}
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>Maidenhead Gridsquare</TooltipContent>
+          </Tooltip>
+          {/* Conference app page and printed program links */}
+          {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
+          {conferenceProgramUrlDisplay(activeConference.conferenceProgramUrl, headerLinkColor)}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Sidebar navigation links (Alert, Profile)
+  const renderNavLinks = () => (
+    <>
       {navItems.map(({ to, icon: Icon, label }) => (
         <NavLink
           key={to}
@@ -357,6 +351,62 @@ export function ConferenceHeader() {
           <span>{label}</span>
         </NavLink>
       ))}
+    </>
+  );
+
+  return (
+    <div className="flex items-center gap-2 px-2">
+
+      {/* Collapse/expand toggle button */}
+      {renderCollapseButton()}
+
+      {/* Main header panel (colored by conference primary color) */}
+      <div
+        className={`mb-6 self-stretch w-full rounded-xl p-4 ${
+          isHeaderCollapsed
+            ? "cursor-pointer hover:opacity-90 transition-opacity"
+            : ""
+        }`}
+        style={{
+          backgroundColor: activeConference.primaryColor,
+          color: headerTextColor,
+        }}
+        onClick={
+          isHeaderCollapsed ? () => setIsHeaderCollapsed(false) : undefined
+        }
+      >
+        {isHeaderCollapsed ? (
+          // Collapsed view: conference name only
+          <h1 className="text-3xl md:text-4xl font-bold">
+            {activeConference.name}
+          </h1>
+        ) : (
+          // Expanded view: full conference details
+          <>
+            {/* Row 1: name, website, logo, conference selector */}
+            {renderNameAndLogoRow()}
+
+            <div
+              className="space-y-2"
+              // text-gray-700 dark:text-gray-300"
+              style={{
+                backgroundColor: activeConference.primaryColor,
+                color: headerTextColor,
+              }}
+            >
+              {/* Row 2: date range with calendar links */}
+              {renderDateRow()}
+
+              {/* Row 3: venue, location, GPS, grid square, app/program links */}
+              {renderLocationRow()}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Sidebar nav links: Alert, Profile */}
+      {renderNavLinks()}
+
     </div> // container
   ); // return
 } // export function ConferenceHeader
