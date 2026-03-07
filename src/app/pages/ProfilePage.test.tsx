@@ -40,6 +40,7 @@ import { ProfilePage } from "@/app/pages/ProfilePage";
 import { AuthProvider } from "@/app/contexts/AuthContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
+import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 function renderProfilePage() {
@@ -49,7 +50,9 @@ function renderProfilePage() {
         <AuthProvider>
           <ConferenceProvider>
             <BookmarkProvider>
-              <ProfilePage />
+              <ExhibitorBookmarkProvider>
+                <ProfilePage />
+              </ExhibitorBookmarkProvider>
             </BookmarkProvider>
           </ConferenceProvider>
         </AuthProvider>

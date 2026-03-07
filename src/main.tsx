@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 import { AuthProvider } from "@/app/contexts/AuthContext";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
+import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
 import { BrowserRouter } from "react-router-dom";
@@ -15,13 +16,15 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider>
       <ConferenceProvider>
         <BookmarkProvider>
-          <AuthProvider>
-            <SearchProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
-            </SearchProvider>
-          </AuthProvider>
+          <ExhibitorBookmarkProvider>
+            <AuthProvider>
+              <SearchProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </SearchProvider>
+            </AuthProvider>
+          </ExhibitorBookmarkProvider>
         </BookmarkProvider>
       </ConferenceProvider>
     </ThemeProvider>

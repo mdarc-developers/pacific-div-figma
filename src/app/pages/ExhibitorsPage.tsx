@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ExhibitorView } from "@/app/components/ExhibitorView";
 import { ExhibitorsMapView } from "@/app/components/ExhibitorsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { useBookmarks } from "@/app/hooks/useBookmarks";
+import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { MAP_DATA, BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
@@ -14,10 +14,8 @@ export function ExhibitorsPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
-  const [bookmarkedExhibitors, handleToggleBookmark] = useBookmarks(
-    activeConference.id,
-    "exhibitor_bookmarks_",
-  );
+  const { bookmarkedExhibitors, toggleExhibitorBookmark } =
+    useExhibitorBookmarkContext();
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id] ?? []; // url and Booth[]
   const exhibitorEntry = EXHIBITOR_DATA[activeConference.id]; // url and Exhibitor[]
@@ -94,7 +92,7 @@ export function ExhibitorsPage() {
         })}
       <ExhibitorView
         bookmarkedExhibitors={bookmarkedExhibitors}
-        onToggleBookmark={handleToggleBookmark}
+        onToggleBookmark={toggleExhibitorBookmark}
         highlightExhibitorId={highlightedExhibitorId}
         onLocationClick={handleLocationClick}
       />

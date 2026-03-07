@@ -12,9 +12,10 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
+import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
-import { SESSION_DATA } from "@/lib/sessionData";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
 import {
@@ -37,6 +38,11 @@ export function ProfilePage() {
     toggleBookmark,
     prevBookmarkedItems: prevBookmarkedSessions,
   } = useBookmarkContext();
+  const {
+    bookmarkedExhibitors,
+    prevBookmarkedExhibitors,
+    toggleExhibitorBookmark,
+  } = useExhibitorBookmarkContext();
   const [error, setError] = useState<string>("");
   const [
     raffleTickets,
@@ -152,6 +158,13 @@ export function ProfilePage() {
         bookmarkedIds={bookmarkedSessions}
         prevBookmarkedIds={prevBookmarkedSessions}
         onToggleBookmark={toggleBookmark}
+        exhibitors={
+          // EXHIBITOR_DATA[id] is a [url, Exhibitor[]] tuple; index [1] is the array
+          EXHIBITOR_DATA[activeConference.id]?.[1] ?? []
+        }
+        bookmarkedExhibitorIds={bookmarkedExhibitors}
+        prevBookmarkedExhibitorIds={prevBookmarkedExhibitors}
+        onToggleExhibitorBookmark={toggleExhibitorBookmark}
       />
 
       {/* Admin card */}
