@@ -122,14 +122,14 @@ export const LoginPage = () => {
           Sign in with Google
         </Button>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-          First time?
+          First time?{" "}
+          <Button asChild variant="link" className="px-0 h-auto text-sm">
+            <Link to="/signup" state={{ email }}>
+              <UserPlus className="h-4 w-4" />
+              Sign up now
+            </Link>
+          </Button>
         </p>
-        <Button asChild variant="outline" disabled={loading} className="w-full">
-          <Link to="/signup">
-            <UserPlus className="h-4 w-4" />
-            Sign up now
-          </Link>
-        </Button>
       </form>
     </div>
   );

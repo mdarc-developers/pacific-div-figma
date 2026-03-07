@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 //import { Conference } from '@/types/conference';
 import { UserPlus, LogIn } from "lucide-react";
@@ -14,7 +14,9 @@ const getErrorMessage = (err: unknown): string => {
 };
 
 export function SignUpPage() {
-  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const prefillEmail = (location.state as { email?: string } | null)?.email ?? "";
+  const [email, setEmail] = useState(prefillEmail);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
