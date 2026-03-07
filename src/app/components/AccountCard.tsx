@@ -1,4 +1,4 @@
-import { KeyRound } from "lucide-react";
+import { KeyRound, MailCheck } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -50,8 +50,9 @@ export function AccountCard({
               variant="link"
               size="sm"
               onClick={onEmailVerification}
-              className="shrink-0 text-amber-600 dark:text-amber-400 px-0"
+              className="shrink-0 text-amber-600 dark:text-amber-400 px-0 gap-1"
             >
+              <MailCheck className="h-3.5 w-3.5" />
               Send verification
             </Button>
           )}
