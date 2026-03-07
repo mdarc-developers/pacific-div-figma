@@ -84,7 +84,7 @@ pacific-div-figma/
 │   │   │   ├── PrizesImageView.tsx    # Prize image carousel view
 │   │   │   ├── PrizesView.tsx         # Attendee-facing prize list + raffle ticket entry
 │   │   │   ├── ProtectedRoute.tsx     # HOC: redirects to /login when no auth user
-│   │   │   ├── RaffleTicketsCard.tsx  # Profile: raffle ticket management
+│   │   │   ├── PrizesCard.tsx         # Profile: prizes won + raffle ticket management
 │   │   │   ├── ScheduleView.tsx       # Card list + FullCalendar; bookmark toggle
 │   │   │   ├── SearchBar.tsx          # Fuse.js search bar; highlights results via SearchContext
 │   │   │   ├── SettingsCard.tsx       # Profile: dark/light/system theme toggle
@@ -345,7 +345,7 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
   - **AccountCard** — uid, email, verification status; Send Verification Email / Reset Password via Sonner toasts.
   - **SettingsCard** — light/dark/system theme toggle (wired to `ThemeContext`; persists via `FirebaseThemeSync`).
   - **NotificationsCard** — SMS and email notification toggle stubs.
-  - **RaffleTicketsCard** — add/remove/range-add raffle ticket numbers (stored in `localStorage`).
+  - **PrizesCard** — prizes won (linked to `/prizes`); Raffle Tickets sub-section to add/remove/range-add ticket numbers (stored in `localStorage`).
   - **BookmarkListCard** — list of bookmarked sessions for the active conference.
   - **AdminCard** — visible only to users in the `prize-admin` group; links to `/admin/prizes`.
 

@@ -1,5 +1,7 @@
-import { Bell } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, Plus } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import {
   Card,
@@ -24,6 +26,19 @@ export function NotificationsCard({
   onSmsEnabledChange,
   onPhoneNumberChange,
 }: NotificationsCardProps) {
+  const [pendingPhone, setPendingPhone] = useState(phoneNumber);
+
+  // Sync local input when the saved value changes (e.g. loaded from Firestore)
+  useEffect(() => {
+    setPendingPhone(phoneNumber);
+  }, [phoneNumber]);
+
+  const handleSavePhone = () => {
+    const trimmed = pendingPhone.trim();
+    if (!trimmed) return;
+    onPhoneNumberChange(trimmed);
+  };
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -62,15 +77,30 @@ export function NotificationsCard({
               <Label htmlFor="phone-number" className="text-xs text-muted-foreground">
                 Mobile phone number
               </Label>
-              <Input
-                id="phone-number"
-                type="tel"
-                placeholder="e.g. +1 555 123 4567"
-                value={phoneNumber}
-                onChange={(e) => onPhoneNumberChange(e.target.value)}
-                aria-label="Mobile phone number for SMS alerts"
-                className="text-sm"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="phone-number"
+                  type="tel"
+                  placeholder="e.g. +1 555 123 4567"
+                  value={pendingPhone}
+                  onChange={(e) => setPendingPhone(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSavePhone();
+                  }}
+                  aria-label="Mobile phone number for SMS alerts"
+                  className="text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSavePhone}
+                  disabled={!pendingPhone.trim()}
+                  aria-label="Save phone number"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
         </div>
