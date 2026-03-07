@@ -7,8 +7,9 @@ import {
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
+  deleteUser,
 } from "firebase/auth";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../lib/firebase";
 
 interface AuthContextType {
@@ -18,6 +19,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -80,6 +82,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await signOut(auth);
   };
 
+  const deleteAccount = async () => {
+    if (!auth.currentUser) throw new Error("No authenticated user");
+    const uid = auth.currentUser.uid;
+    // Remove the Firestore user document first, best-effort
+    await deleteDoc(doc(db, "users", uid)).catch(console.error);
+    await deleteUser(auth.currentUser);
+  };
+
   const authValue = {
     user,
     loading,
@@ -87,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signUp,
     signInWithGoogle,
     logout,
+    deleteAccount,
   };
 
   return (

@@ -6,6 +6,7 @@ import { NotificationsCard } from "@/app/components/NotificationsCard";
 import { PrizesCard } from "@/app/components/PrizesCard";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { AdminCard } from "@/app/components/AdminCard";
+import { DeleteAccountCard } from "@/app/components/DeleteAccountCard";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
@@ -30,7 +31,7 @@ export function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
-  const { user, logout } = useAuth();
+  const { user, logout, deleteAccount } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
@@ -101,6 +102,18 @@ export function ProfilePage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      setError("");
+      await deleteAccount();
+      navigate("/");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete account";
+      setError(message);
+    }
+  };
+
   const initials = user.displayName
     ? user.displayName
         .split(" ")
@@ -163,6 +176,8 @@ export function ProfilePage() {
 
       {/* Admin card */}
       {isPrizesAdmin && <AdminCard />}
+
+      <DeleteAccountCard onDeleteAccount={handleDeleteAccount} />
 
       {error && (
         <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>
