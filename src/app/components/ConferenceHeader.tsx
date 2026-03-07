@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, Calendar, ExternalLink, MapPin, User } from "lucide-react";
+import { Bell, Calendar, ExternalLink, FileDown, MapPin, User } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { NavLink } from "react-router-dom";
 import {
@@ -96,24 +96,30 @@ export function ConferenceHeader() {
 
   const conferenceProgramUrlDisplay = (iurl: string, linkcolor: string) => {
     if (!iurl || iurl === "") return "";
-    else
-      return (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              href={iurl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:underline"
-              style={{ color: linkcolor }}
-            >
-              program
+    const isLocal = iurl.startsWith("/");
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <a
+            href={iurl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:underline"
+            style={{ color: linkcolor }}
+          >
+            program
+            {isLocal ? (
+              <FileDown className="h-4 w-4" />
+            ) : (
               <ExternalLink className="h-4 w-4" />
-            </a>
-          </TooltipTrigger>
-          <TooltipContent>Conference Program</TooltipContent>
-        </Tooltip>
-      );
+            )}
+          </a>
+        </TooltipTrigger>
+        <TooltipContent>
+          {isLocal ? "Conference Program (locally cached)" : "Conference Program"}
+        </TooltipContent>
+      </Tooltip>
+    );
   };
 
   const conferenceAppPageUrlDisplay = (iurl: string, linkcolor: string) => {

@@ -26,6 +26,7 @@ export interface Conference {
   mapSessionRooms?: [string, boolean, boolean][];
   mapExhibitorBooths?: [string, boolean, boolean][];
   conferenceProgramUrl?: string;
+  conferenceProgramSourceUrl?: string; // upstream URL used by scripts/fetch-programs.mjs to refresh the cached local copy
   conferenceAppPageUrl?: string;
   firstConferenceYear?: number;
 }
