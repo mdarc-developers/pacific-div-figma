@@ -270,6 +270,10 @@ export function ConferenceHeader() {
         &nbsp;&nbsp;&nbsp;
         {/* Add to Google Calendar link */}
         {googlecalUrlDisplay(activeConference.googlecalUrl)}
+        {/* Year first established */}
+        {activeConference.firstConferenceYear && (
+          <>&nbsp;&nbsp;&nbsp;established {activeConference.firstConferenceYear}</>
+        )}
       </span>
     </div>
   );
@@ -326,9 +330,6 @@ export function ConferenceHeader() {
           {/* Conference app page and printed program links */}
           {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
           {conferenceProgramUrlDisplay(activeConference.conferenceProgramUrl, headerLinkColor)}
-          {activeConference.firstConferenceYear && (
-            <span>established {activeConference.firstConferenceYear}</span>
-          )}
         </div>
       </div>
     </div>
