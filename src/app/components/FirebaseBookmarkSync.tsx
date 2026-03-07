@@ -6,12 +6,14 @@ import {
   getUserBookmarks,
   setUserBookmarks,
 } from "@/services/userSettingsService";
+import { incrementSessionBookmarkCount } from "@/services/bookmarkCountsService";
 
 /**
  * Headless sync component.
  * - On user login (or conference change while logged in): loads saved bookmarks
  *   from Firestore and applies them via the shared BookmarkContext.
- * - On bookmark change (after initial load): persists updated bookmarks to Firestore.
+ * - On bookmark change (after initial load): persists updated bookmarks to Firestore
+ *   and updates the aggregate bookmark count for the changed session.
  * - On logout: clears the loaded state so the next login re-reads Firestore.
  */
 export function FirebaseBookmarkSync() {
@@ -28,6 +30,9 @@ export function FirebaseBookmarkSync() {
   const loadedForKeyRef = useRef<string | null>(null);
   // Prevents writing back to Firestore the value we just read from it.
   const justLoadedRef = useRef(false);
+  // Snapshot of bookmarkedItems after the last Firestore save — used to compute
+  // the diff so we can increment/decrement the aggregate count precisely.
+  const savedItemsRef = useRef<string[]>([]);
 
   // Load bookmarks from Firestore whenever a new user logs in or the active
   // conference changes while the user is already logged in.
@@ -59,13 +64,31 @@ export function FirebaseBookmarkSync() {
   }, [user, loadKey, conferenceId, overrideBookmarks]);
 
   // Save bookmarks to Firestore whenever they change (only after the initial load).
+  // Also update the aggregate bookmark count for any sessions that were added or removed.
   useEffect(() => {
     if (!user || loadedForKeyRef.current !== loadKey) return;
     // Skip the write that mirrors the value we just read from Firestore.
     if (justLoadedRef.current) {
       justLoadedRef.current = false;
+      savedItemsRef.current = [...bookmarkedItems];
       return;
     }
+
+    // Compute diff against the last saved snapshot to update aggregate counts.
+    const prev = savedItemsRef.current;
+    const next = bookmarkedItems;
+    const added = next.filter((id) => !prev.includes(id));
+    const removed = prev.filter((id) => !next.includes(id));
+
+    added.forEach((id) =>
+      incrementSessionBookmarkCount(conferenceId, id, 1).catch(console.error),
+    );
+    removed.forEach((id) =>
+      incrementSessionBookmarkCount(conferenceId, id, -1).catch(console.error),
+    );
+
+    savedItemsRef.current = [...next];
+
     setUserBookmarks(
       user.uid,
       conferenceId,

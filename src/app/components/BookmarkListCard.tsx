@@ -20,6 +20,10 @@ interface BookmarkListCardProps {
   onToggleExhibitorBookmark?: (exhibitorId: string) => void;
   notes?: Record<string, string>;
   onNoteSessionClick?: (sessionId: string) => void;
+  /** Aggregate bookmark counts keyed by session id. */
+  sessionBookmarkCounts?: Record<string, number>;
+  /** Aggregate bookmark counts keyed by exhibitor id. */
+  exhibitorBookmarkCounts?: Record<string, number>;
 }
 
 export function BookmarkListCard({
@@ -33,6 +37,8 @@ export function BookmarkListCard({
   onToggleExhibitorBookmark,
   notes = {},
   onNoteSessionClick,
+  sessionBookmarkCounts = {},
+  exhibitorBookmarkCounts = {},
 }: BookmarkListCardProps) {
   const sessionMap = new Map(sessions.map((s) => [s.id, s]));
 
@@ -86,14 +92,22 @@ export function BookmarkListCard({
                 className="flex items-center justify-between gap-2 text-sm"
               >
                 <span className="flex-1 truncate">{session.title}</span>
-                <button
-                  type="button"
-                  onClick={() => onToggleBookmark(session.id)}
-                  aria-label={`Remove bookmark for ${session.title}`}
-                  className="shrink-0 text-blue-600 dark:text-blue-400 hover:text-muted-foreground"
-                >
-                  <Bookmark className="h-4 w-4 fill-current" />
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                  {sessionBookmarkCounts[session.id] !== undefined &&
+                    sessionBookmarkCounts[session.id] > 0 && (
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {sessionBookmarkCounts[session.id]}
+                      </span>
+                    )}
+                  <button
+                    type="button"
+                    onClick={() => onToggleBookmark(session.id)}
+                    aria-label={`Remove bookmark for ${session.title}`}
+                    className="text-blue-600 dark:text-blue-400 hover:text-muted-foreground"
+                  >
+                    <Bookmark className="h-4 w-4 fill-current" />
+                  </button>
+                </div>
               </li>
             ))}
 
@@ -104,24 +118,32 @@ export function BookmarkListCard({
                   Previously bookmarked
                 </p>
                 {previous.map((session) => (
-                  <li
-                    key={session.id}
-                    className="flex items-center justify-between gap-2 text-sm text-muted-foreground"
-                    data-testid="prev-bookmark-item"
-                  >
-                    <span className="flex-1 truncate line-through">
-                      {session.title}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onToggleBookmark(session.id)}
-                      aria-label={`Re-bookmark ${session.title}`}
-                      className="shrink-0 hover:text-blue-600 dark:hover:text-blue-400"
-                    >
-                      <Bookmark className="h-4 w-4" />
-                    </button>
-                  </li>
-                ))}
+                   <li
+                     key={session.id}
+                     className="flex items-center justify-between gap-2 text-sm text-muted-foreground"
+                     data-testid="prev-bookmark-item"
+                   >
+                     <span className="flex-1 truncate line-through">
+                       {session.title}
+                     </span>
+                     <div className="flex items-center gap-1 shrink-0">
+                       {sessionBookmarkCounts[session.id] !== undefined &&
+                         sessionBookmarkCounts[session.id] > 0 && (
+                           <span className="text-xs tabular-nums">
+                             {sessionBookmarkCounts[session.id]}
+                           </span>
+                         )}
+                       <button
+                         type="button"
+                         onClick={() => onToggleBookmark(session.id)}
+                         aria-label={`Re-bookmark ${session.title}`}
+                         className="hover:text-blue-600 dark:hover:text-blue-400"
+                       >
+                         <Bookmark className="h-4 w-4" />
+                       </button>
+                     </div>
+                   </li>
+                 ))}
               </>
             )}
           </ul>
@@ -149,14 +171,22 @@ export function BookmarkListCard({
               >
                 <span className="flex-1 truncate">{exhibitor.name}</span>
                 {onToggleExhibitorBookmark && (
-                  <button
-                    type="button"
-                    onClick={() => onToggleExhibitorBookmark(exhibitor.id)}
-                    aria-label={`Remove bookmark for ${exhibitor.name}`}
-                    className="shrink-0 text-blue-600 dark:text-blue-400 hover:text-muted-foreground"
-                  >
-                    <Bookmark className="h-4 w-4 fill-current" />
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {exhibitorBookmarkCounts[exhibitor.id] !== undefined &&
+                      exhibitorBookmarkCounts[exhibitor.id] > 0 && (
+                        <span className="text-xs text-muted-foreground tabular-nums">
+                          {exhibitorBookmarkCounts[exhibitor.id]}
+                        </span>
+                      )}
+                    <button
+                      type="button"
+                      onClick={() => onToggleExhibitorBookmark(exhibitor.id)}
+                      aria-label={`Remove bookmark for ${exhibitor.name}`}
+                      className="text-blue-600 dark:text-blue-400 hover:text-muted-foreground"
+                    >
+                      <Bookmark className="h-4 w-4 fill-current" />
+                    </button>
+                  </div>
                 )}
               </li>
             ))}
@@ -168,26 +198,36 @@ export function BookmarkListCard({
                   Previously bookmarked
                 </p>
                 {previousExhibitorList.map((exhibitor) => (
-                  <li
-                    key={exhibitor.id}
-                    className="flex items-center justify-between gap-2 text-sm text-muted-foreground"
-                    data-testid="prev-exhibitor-bookmark-item"
-                  >
-                    <span className="flex-1 truncate line-through">
-                      {exhibitor.name}
-                    </span>
-                    {onToggleExhibitorBookmark && (
-                      <button
-                        type="button"
-                        onClick={() => onToggleExhibitorBookmark(exhibitor.id)}
-                        aria-label={`Re-bookmark ${exhibitor.name}`}
-                        className="shrink-0 hover:text-blue-600 dark:hover:text-blue-400"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                      </button>
-                    )}
-                  </li>
-                ))}
+                   <li
+                     key={exhibitor.id}
+                     className="flex items-center justify-between gap-2 text-sm text-muted-foreground"
+                     data-testid="prev-exhibitor-bookmark-item"
+                   >
+                     <span className="flex-1 truncate line-through">
+                       {exhibitor.name}
+                     </span>
+                     {onToggleExhibitorBookmark && (
+                       <div className="flex items-center gap-1 shrink-0">
+                         {exhibitorBookmarkCounts[exhibitor.id] !== undefined &&
+                           exhibitorBookmarkCounts[exhibitor.id] > 0 && (
+                             <span className="text-xs tabular-nums">
+                               {exhibitorBookmarkCounts[exhibitor.id]}
+                             </span>
+                           )}
+                         <button
+                           type="button"
+                           onClick={() =>
+                             onToggleExhibitorBookmark(exhibitor.id)
+                           }
+                           aria-label={`Re-bookmark ${exhibitor.name}`}
+                           className="hover:text-blue-600 dark:hover:text-blue-400"
+                         >
+                           <Bookmark className="h-4 w-4" />
+                         </button>
+                       </div>
+                     )}
+                   </li>
+                 ))}
               </>
             )}
           </ul>

@@ -6,12 +6,14 @@ import {
   getUserExhibitorBookmarks,
   setUserExhibitorBookmarks,
 } from "@/services/userSettingsService";
+import { incrementExhibitorBookmarkCount } from "@/services/bookmarkCountsService";
 
 /**
  * Headless sync component.
  * - On user login (or conference change while logged in): loads saved exhibitor
  *   bookmarks from Firestore and applies them via the shared ExhibitorBookmarkContext.
- * - On bookmark change (after initial load): persists updated bookmarks to Firestore.
+ * - On bookmark change (after initial load): persists updated bookmarks to Firestore
+ *   and updates the aggregate bookmark count for the changed exhibitor.
  * - On logout: clears the loaded state so the next login re-reads Firestore.
  */
 export function FirebaseExhibitorBookmarkSync() {
@@ -31,6 +33,9 @@ export function FirebaseExhibitorBookmarkSync() {
   const loadedForKeyRef = useRef<string | null>(null);
   // Prevents writing back to Firestore the value we just read from it.
   const justLoadedRef = useRef(false);
+  // Snapshot of bookmarkedExhibitors after the last Firestore save — used to
+  // compute the diff so we can increment/decrement the aggregate count precisely.
+  const savedItemsRef = useRef<string[]>([]);
 
   // Load bookmarks from Firestore whenever a new user logs in or the active
   // conference changes while the user is already logged in.
@@ -62,13 +67,33 @@ export function FirebaseExhibitorBookmarkSync() {
   }, [user, loadKey, conferenceId, overrideExhibitorBookmarks]);
 
   // Save bookmarks to Firestore whenever they change (only after the initial load).
+  // Also update the aggregate bookmark count for any exhibitors that were added or removed.
   useEffect(() => {
     if (!user || loadedForKeyRef.current !== loadKey) return;
     // Skip the write that mirrors the value we just read from Firestore.
     if (justLoadedRef.current) {
       justLoadedRef.current = false;
+      savedItemsRef.current = [...bookmarkedExhibitors];
       return;
     }
+
+    // Compute diff against the last saved snapshot to update aggregate counts.
+    const prev = savedItemsRef.current;
+    const next = bookmarkedExhibitors;
+    const added = next.filter((id) => !prev.includes(id));
+    const removed = prev.filter((id) => !next.includes(id));
+
+    added.forEach((id) =>
+      incrementExhibitorBookmarkCount(conferenceId, id, 1).catch(console.error),
+    );
+    removed.forEach((id) =>
+      incrementExhibitorBookmarkCount(conferenceId, id, -1).catch(
+        console.error,
+      ),
+    );
+
+    savedItemsRef.current = [...next];
+
     setUserExhibitorBookmarks(
       user.uid,
       conferenceId,

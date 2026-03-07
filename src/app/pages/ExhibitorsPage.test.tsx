@@ -3,6 +3,29 @@ import { render, screen } from "@testing-library/react";
 import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 import { MapImage, Booth, Exhibitor } from "@/types/conference";
 
+// ── Mock Firebase so BookmarkCountsContext initialises without credentials ────
+vi.mock("@/lib/firebase", () => ({
+  auth: {
+    onAuthStateChanged: vi.fn((_a, cb) => {
+      cb(null);
+      return () => {};
+    }),
+  },
+  db: {},
+  storage: {},
+}));
+
+vi.mock("firebase/firestore", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("firebase/firestore")>();
+  return {
+    ...actual,
+    getDoc: vi.fn().mockResolvedValue({ exists: () => false }),
+    setDoc: vi.fn().mockResolvedValue(undefined),
+    doc: vi.fn(),
+    increment: vi.fn((n: number) => n),
+  };
+});
+
 // ── Mock useMdarcDeveloper so it doesn't pull in Firebase ─────────────────────
 vi.mock("@/app/hooks/useMdarcDeveloper", () => ({
   useMdarcDeveloper: () => false,
@@ -40,13 +63,16 @@ vi.mock("@/app/components/ExhibitorView", () => ({
 // Static import — vi.mock calls above are hoisted before this by Vitest
 import { ExhibitorsPage } from "@/app/pages/ExhibitorsPage";
 import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
+import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderExhibitorsPage() {
   return render(
     <ConferenceProvider>
       <ExhibitorBookmarkProvider>
-        <ExhibitorsPage />
+        <BookmarkCountsProvider>
+          <ExhibitorsPage />
+        </BookmarkCountsProvider>
       </ExhibitorBookmarkProvider>
     </ConferenceProvider>,
   );
