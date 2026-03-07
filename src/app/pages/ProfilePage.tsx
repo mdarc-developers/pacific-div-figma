@@ -15,6 +15,7 @@ import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { useUserGroups } from "@/app/hooks/useUserGroups";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
+import { useNotesContext } from "@/app/contexts/NotesContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
@@ -46,6 +47,7 @@ export function ProfilePage() {
     prevBookmarkedExhibitors,
     toggleExhibitorBookmark,
   } = useExhibitorBookmarkContext();
+  const { notes } = useNotesContext();
   const [error, setError] = useState<string>("");
   const [
     raffleTickets,
@@ -68,6 +70,10 @@ export function ProfilePage() {
     } catch (error) {
       console.error("Failed to log out:", error);
     }
+  };
+
+  const handleNoteSessionClick = (sessionId: string) => {
+    navigate(`/schedule?highlight=${sessionId}`);
   };
 
   const handleEmailVerification = async () => {
@@ -172,6 +178,8 @@ export function ProfilePage() {
         bookmarkedExhibitorIds={bookmarkedExhibitors}
         prevBookmarkedExhibitorIds={prevBookmarkedExhibitors}
         onToggleExhibitorBookmark={toggleExhibitorBookmark}
+        notes={notes}
+        onNoteSessionClick={handleNoteSessionClick}
       />
 
       {/* Admin card */}

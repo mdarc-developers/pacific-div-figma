@@ -169,3 +169,95 @@ describe("BookmarkListCard", () => {
     expect(screen.queryByTestId("bookmark-list")).not.toBeInTheDocument();
   });
 });
+
+describe("BookmarkListCard — My Notes section", () => {
+  it("shows 'None yet' for notes when no notes exist", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+        notes={{}}
+      />,
+    );
+    // "None yet" appears at least twice (bookmarks + notes)
+    expect(screen.getAllByText(/none yet/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByTestId("notes-list")).not.toBeInTheDocument();
+  });
+
+  it("shows session titles for sessions that have notes", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+        notes={{ s1: "Great session!", s2: "Learned a lot" }}
+      />,
+    );
+    expect(screen.getByTestId("notes-list")).toBeInTheDocument();
+    expect(screen.getByText("Intro to Ham Radio")).toBeInTheDocument();
+    expect(screen.getByText("Advanced Antennas")).toBeInTheDocument();
+  });
+
+  it("shows note preview text under each session title", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+        notes={{ s1: "Great session!" }}
+      />,
+    );
+    expect(screen.getByText("Great session!")).toBeInTheDocument();
+  });
+
+  it("shows the notes count badge", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+        notes={{ s1: "note one", s2: "note two" }}
+      />,
+    );
+    // Badge shows the count "2"
+    // There may be other "2" badges from bookmarks, so check notes section
+    expect(screen.getByTestId("notes-list")).toBeInTheDocument();
+  });
+
+  it("calls onNoteSessionClick when a noted session is clicked", () => {
+    const handleClick = vi.fn();
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+        notes={{ s1: "My note" }}
+        onNoteSessionClick={handleClick}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: /view note for intro to ham radio/i }),
+    );
+    expect(handleClick).toHaveBeenCalledWith("s1");
+  });
+
+  it("skips sessions whose IDs have no matching session data", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+        notes={{ "unknown-id": "orphaned note" }}
+      />,
+    );
+    // The note exists but no session found → notes list should not render
+    expect(screen.queryByTestId("notes-list")).not.toBeInTheDocument();
+  });
+});

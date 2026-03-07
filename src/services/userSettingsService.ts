@@ -101,6 +101,32 @@ export async function setUserExhibitorBookmarks(
   );
 }
 
+export async function getUserNotes(
+  uid: string,
+  conferenceId: string,
+): Promise<Record<string, string>> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return {};
+  const data = snap.data();
+  const notes = data?.notes?.[conferenceId];
+  if (notes && typeof notes === "object" && !Array.isArray(notes)) {
+    return notes as Record<string, string>;
+  }
+  return {};
+}
+
+export async function setUserNotes(
+  uid: string,
+  conferenceId: string,
+  notes: Record<string, string>,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { notes: { [conferenceId]: notes } },
+    { merge: true },
+  );
+}
+
 export interface NotificationSettings {
   smsEnabled: boolean;
   phoneNumber: string;
