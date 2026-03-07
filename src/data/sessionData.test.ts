@@ -379,7 +379,7 @@ describe("warnOutOfRangeSessions", () => {
     expect(messages.every((m) => m.includes("[sessionData]"))).toBe(true);
   });
 
-  it("emits console.warn for quartzfest-2027 sessions outside the conference date range", () => {
+  it("does not emit console.warn for quartzfest-2027 sessions (all are within the conference date range)", () => {
     const qf = allConferences.find((c) => c.id === "quartzfest-2027")!;
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     warnOutOfRangeSessions("quartzfest-2027", quartzfestSessions[1], qf);
@@ -410,11 +410,12 @@ describe("warnOutOfRangeSessions", () => {
   });
 });
 
-// These tests document that both the seapac-2026 and quartzfest-2027
-// supplemental files contain sessions whose dates do NOT match their
-// respective conference date ranges.  This is known bad data and these tests
-// serve as a regression guard — a CI failure here signals that the session
-// dates have been corrected (or new mismatches introduced).
+// These tests document the date-range behaviour of the seapac-2026 and
+// quartzfest-2027 supplemental session files.  seapac-2026 contains sessions
+// with dates outside its conference range (known bad data); quartzfest-2027
+// sessions are all within range.  A CI failure here signals that the
+// out-of-range seapac-2026 dates have been corrected, or that new mismatches
+// have been introduced.
 describe("conference date-range checks for real session data", () => {
   it("seapac-2026 conference is defined in allConferences", () => {
     const seapac = allConferences.find((c) => c.id === "seapac-2026");
@@ -434,7 +435,7 @@ describe("conference date-range checks for real session data", () => {
     expect(qf).toBeDefined();
   });
 
-  it("quartzfest-2027 sessions contain dates outside the conference date range", () => {
+  it("quartzfest-2027 sessions are all within the conference date range", () => {
     const qf = allConferences.find((c) => c.id === "quartzfest-2027")!;
     const outsideRange = quartzfestSessions[1].filter(
       (s) => !isSessionWithinConference(s, qf),
