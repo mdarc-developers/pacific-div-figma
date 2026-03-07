@@ -145,12 +145,9 @@ export function SignUpPage() {
           </Button>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              Log in
-            </Link>
+            <Button asChild variant="link" className="px-0 h-auto text-sm">
+              <Link to="/login">Log in</Link>
+            </Button>
           </p>
         </form>
       )}
