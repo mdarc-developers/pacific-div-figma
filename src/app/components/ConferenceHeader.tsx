@@ -259,18 +259,21 @@ export function ConferenceHeader() {
       <Calendar className="h-5 w-5" />
       <span>
         {formatDateRange(activeConference.startDate, activeConference.endDate)}
-        &nbsp;
-        {/* iCal download link */}
-        {icalUrlDisplay(activeConference.icalUrl)}
-        &nbsp;&nbsp;&nbsp;
-        {/* Add to Google Calendar link */}
-        {googlecalUrlDisplay(activeConference.googlecalUrl)}
+      </span>
+      <span>
         {/* Year first established */}
         {activeConference.firstConferenceYear && (
           <>
             &nbsp;&nbsp;&nbsp;established {activeConference.firstConferenceYear}
           </>
         )}
+      </span>
+      <span>
+        {/* iCal download link */}
+        {icalUrlDisplay(activeConference.icalUrl)}
+        &nbsp;&nbsp;
+        {/* Add to Google Calendar link */}
+        {googlecalUrlDisplay(activeConference.googlecalUrl)}
       </span>
     </div>
   );
@@ -282,8 +285,12 @@ export function ConferenceHeader() {
         <span className="flex items-center gap-1">
           {/* Venue name linked to venue website */}
           {venueWebsiteDisplay(activeConference.venueWebsite)}
+        </span>
+        <span className="flex items-center gap-1">
           {/* City/location text */}
           {activeConference.location}
+        </span>
+        <span className="flex items-center gap-1">
           {/* Google Maps link */}
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
@@ -292,9 +299,8 @@ export function ConferenceHeader() {
             className="items-center gap-2 hover:underline"
             style={{ color: headerLinkColor }}
           >
-            <MapPin className="h-5 w-5" />
             map
-            <ExternalLink className="h-4 w-4" />
+            <MapPin className="h-5 w-5" />
           </a>
         </span>
         <div>
@@ -324,7 +330,7 @@ export function ConferenceHeader() {
           </Tooltip>
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          {/* Conference app page and printed program links */}
+          {/* Conference printed program links */}
           {conferenceProgramUrlDisplay(
             activeConference.conferenceProgramUrl,
             headerLinkColor,
@@ -398,7 +404,7 @@ export function ConferenceHeader() {
               {/* Row 2: date range with calendar links */}
               {renderDateRow()}
 
-              {/* Row 3: venue, location, GPS, grid square, app/program links */}
+              {/* Row 3: venue, location, GPS, grid square, program links */}
               {renderLocationRow()}
             </div>
           </>
