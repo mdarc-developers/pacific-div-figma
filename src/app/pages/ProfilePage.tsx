@@ -11,7 +11,7 @@ import { useTheme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
-import { useBookmarks } from "@/app/hooks/useBookmarks";
+import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { SESSION_DATA } from "@/lib/sessionData";
 import { useState } from "react";
@@ -30,8 +30,11 @@ export function ProfilePage() {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
-  const [bookmarkedSessions, toggleBookmark, prevBookmarkedSessions] =
-    useBookmarks(activeConference.id);
+  const {
+    bookmarkedItems: bookmarkedSessions,
+    toggleBookmark,
+    prevBookmarkedItems: prevBookmarkedSessions,
+  } = useBookmarkContext();
   const [error, setError] = useState<string>("");
   const [
     raffleTickets,

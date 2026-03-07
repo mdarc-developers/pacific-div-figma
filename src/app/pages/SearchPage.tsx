@@ -1,14 +1,10 @@
 import { useEffect, useRef } from "react";
 import { ScheduleView } from "@/app/components/ScheduleView";
-import { useConference } from "@/app/contexts/ConferenceContext";
-import { useBookmarks } from "@/app/hooks/useBookmarks";
+import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useSearchParams } from "react-router-dom";
 
 export function SearchPage() {
-  const { activeConference } = useConference();
-  const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(
-    activeConference.id,
-  );
+  const { bookmarkedItems, toggleBookmark } = useBookmarkContext();
   const [searchParams] = useSearchParams();
   const highlightSessionId = searchParams.get("highlight");
   const scrollToRef = useRef<HTMLDivElement>(null);
@@ -33,8 +29,8 @@ export function SearchPage() {
   return (
     <div ref={scrollToRef}>
       <ScheduleView
-        bookmarkedSessions={bookmarkedSessions}
-        onToggleBookmark={handleToggleBookmark}
+        bookmarkedSessions={bookmarkedItems}
+        onToggleBookmark={toggleBookmark}
         highlightSessionId={highlightSessionId || undefined}
       />
     </div>

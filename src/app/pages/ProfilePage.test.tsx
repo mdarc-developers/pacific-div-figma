@@ -39,6 +39,7 @@ vi.mock("@/app/hooks/usePrizesAdmin", () => ({
 import { ProfilePage } from "@/app/pages/ProfilePage";
 import { AuthProvider } from "@/app/contexts/AuthContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
+import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 function renderProfilePage() {
@@ -47,7 +48,9 @@ function renderProfilePage() {
       <ThemeProvider>
         <AuthProvider>
           <ConferenceProvider>
-            <ProfilePage />
+            <BookmarkProvider>
+              <ProfilePage />
+            </BookmarkProvider>
           </ConferenceProvider>
         </AuthProvider>
       </ThemeProvider>
