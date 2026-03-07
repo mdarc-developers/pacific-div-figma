@@ -326,6 +326,9 @@ export function ConferenceHeader() {
           {/* Conference app page and printed program links */}
           {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
           {conferenceProgramUrlDisplay(activeConference.conferenceProgramUrl, headerLinkColor)}
+          {activeConference.firstConferenceYear && (
+            <span>established {activeConference.firstConferenceYear}</span>
+          )}
         </div>
       </div>
     </div>
