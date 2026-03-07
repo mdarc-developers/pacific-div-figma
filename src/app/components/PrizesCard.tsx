@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus, Ticket, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Plus, Ticket, Trophy, Trash2 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -8,6 +9,7 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
+import { Separator } from "@/app/components/ui/separator";
 import {
   Tabs,
   TabsList,
@@ -15,20 +17,25 @@ import {
   TabsContent,
 } from "@/app/components/ui/tabs";
 import { MAX_RANGE_SIZE } from "@/app/hooks/useRaffleTickets";
+import { Prize, PrizeWinner } from "@/types/conference";
 
-interface RaffleTicketsCardProps {
+interface PrizesCardProps {
   raffleTickets: string[];
   onAddTicket: (ticket: string) => void;
   onRemoveTicket: (ticket: string) => void;
   onAddTicketRange: (start: number, end: number) => void;
+  prizes: Prize[];
+  prizeWinners: PrizeWinner[];
 }
 
-export function RaffleTicketsCard({
+export function PrizesCard({
   raffleTickets,
   onAddTicket,
   onRemoveTicket,
   onAddTicketRange,
-}: RaffleTicketsCardProps) {
+  prizes,
+  prizeWinners,
+}: PrizesCardProps) {
   const [newTicket, setNewTicket] = useState<string>("");
   const [rangeStart, setRangeStart] = useState<string>("");
   const [rangeEnd, setRangeEnd] = useState<string>("");
@@ -61,15 +68,60 @@ export function RaffleTicketsCard({
     setRangeEnd("");
   };
 
+  // Determine prizes won by matching user's raffle tickets against prize winners
+  const ticketSet = new Set(raffleTickets);
+  const prizeMap = new Map(prizes.map((p) => [p.id, p]));
+  const wonEntries = prizeWinners
+    .filter((pw) => ticketSet.has(pw.winningTicket))
+    .flatMap((pw) =>
+      pw.prizeId.map((pid) => ({
+        prizeId: pid,
+        winningTicket: pw.winningTicket,
+        prize: prizeMap.get(pid),
+      })),
+    );
+
   return (
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-base flex items-center gap-2">
-          <Ticket className="h-4 w-4" />
-          Raffle Tickets
+          <Trophy className="h-4 w-4" />
+          Prizes
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
+        {/* Prizes won section */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium">Prizes won</p>
+          {wonEntries.length === 0 && (
+            <span className="text-xs text-muted-foreground">None yet</span>
+          )}
+        </div>
+        {wonEntries.length > 0 && (
+          <ul className="space-y-1">
+            {wonEntries.map(({ prizeId, winningTicket, prize }) => (
+              <li key={`${prizeId}-${winningTicket}`} className="text-sm">
+                <Link
+                  to={`/prizes#prize-${prizeId}`}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {prize ? prize.name : prizeId}
+                </Link>
+                <span className="text-xs text-muted-foreground ml-2">
+                  (ticket {winningTicket})
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <Separator />
+
+        {/* Raffle Tickets subheading */}
+        <p className="text-sm font-medium flex items-center gap-2">
+          <Ticket className="h-4 w-4" />
+          Raffle Tickets
+        </p>
         {raffleTickets.length > 0 && (
           <ul className="space-y-2">
             {raffleTickets.map((ticket) => (
