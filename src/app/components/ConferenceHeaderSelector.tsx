@@ -152,7 +152,7 @@ export function ConferenceHeaderSelector() {
                             {conference.name}
                           </h3>
                           {current && (
-                            <Badge className="bg-green-600">
+                            <Badge style={{ backgroundColor: "#66FF00", color: "#000" }}>
                               Currently Active
                             </Badge>
                           )}
@@ -162,7 +162,7 @@ export function ConferenceHeaderSelector() {
                             </Badge>
                           )}
                           {!upcoming && !current && (
-                            <Badge variant="outline">
+                            <Badge style={{ backgroundColor: "#EF9C5C", color: "#000" }}>
                               Past Event
                             </Badge>
                           )}
