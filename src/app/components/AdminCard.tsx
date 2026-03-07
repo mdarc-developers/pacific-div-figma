@@ -1,5 +1,6 @@
 import { ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 
 export function AdminCard() {
@@ -11,12 +12,9 @@ export function AdminCard() {
             <ShieldCheck className="h-5 w-5 text-green-600" />
             <p className="text-sm font-medium">Administrator</p>
           </div>
-          <Link
-            to="/admin/prizes"
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            Prizes Management →
-          </Link>
+          <Button asChild variant="link" size="sm" className="px-0">
+            <Link to="/admin/prizes">Prizes Management →</Link>
+          </Button>
         </div>
       </CardContent>
     </Card>

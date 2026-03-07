@@ -123,12 +123,9 @@ export const LoginPage = () => {
         </Button>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
           First time?{" "}
-          <Link
-            to="/signup"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            Sign up now
-          </Link>
+          <Button asChild variant="link" className="px-0 h-auto text-sm">
+            <Link to="/signup">Sign up now</Link>
+          </Button>
         </p>
       </form>
     </div>

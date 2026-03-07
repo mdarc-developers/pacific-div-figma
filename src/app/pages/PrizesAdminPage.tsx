@@ -5,6 +5,7 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { PrizesAdminView } from "@/app/components/PrizesAdminView";
 import { PrizesImageView } from "@/app/components/PrizesImageView";
+import { Button } from "@/app/components/ui/button";
 import {
   PRIZE_DATA,
   PRIZE_WINNER_DATA,
@@ -32,9 +33,9 @@ export function PrizesAdminPage() {
         <p className="text-lg font-medium">Sign in required</p>
         <p className="text-sm text-gray-500">
           Please{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
-            sign in
-          </Link>{" "}
+          <Button asChild variant="link" className="px-0 h-auto text-sm">
+            <Link to="/login">sign in</Link>
+          </Button>{" "}
           to access prizes management.
         </p>
       </div>
