@@ -2,7 +2,11 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
-import { getBookmarkCounts } from "@/services/bookmarkCountsService";
+import {
+  getBookmarkCounts,
+  withZeroFallbacks,
+} from "@/services/bookmarkCountsService";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
 /**
  * Headless sync component.
@@ -30,7 +34,17 @@ export function FirebaseBookmarkCountsSync() {
     getBookmarkCounts(conferenceToLoad)
       .then(({ sessionCounts, exhibitorCounts }) => {
         if (cancelled) return;
-        overrideCounts(sessionCounts, exhibitorCounts);
+        const sessionIds = (SESSION_DATA[conferenceToLoad] ?? []).map(
+          (s) => s.id,
+        );
+        // EXHIBITOR_DATA entries are [mapUrl, exhibitors] tuples; index 1 is the array.
+        const exhibitorIds = (
+          EXHIBITOR_DATA[conferenceToLoad]?.[1] ?? []
+        ).map((e) => e.id);
+        overrideCounts(
+          withZeroFallbacks(sessionCounts, sessionIds),
+          withZeroFallbacks(exhibitorCounts, exhibitorIds),
+        );
       })
       .catch(console.error)
       .finally(() => {
