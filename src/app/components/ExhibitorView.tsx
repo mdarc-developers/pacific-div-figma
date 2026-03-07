@@ -82,7 +82,7 @@ function ExhibitorCard({
             </div>
             {onToggleBookmark && (
               <div className="flex items-center gap-1 ml-2 shrink-0">
-                {bookmarkCount !== undefined && bookmarkCount > 0 && (
+                {bookmarkCount !== undefined && bookmarkCount >= 0 && (
                   <span className="text-xs text-muted-foreground tabular-nums">
                     {bookmarkCount}
                   </span>
