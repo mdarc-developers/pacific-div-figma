@@ -421,6 +421,10 @@ The codebase contains significant scaffolding for features that are typed, docum
 
 ## 10. CI / Deployment
 
+The project has **three independent deployment targets**. Only Hosting is automated by CI; the other two must be deployed manually.
+
+### 10.1 Hosting (automated)
+
 Two GitHub Actions workflows live in `.github/workflows/`:
 
 | Workflow                            | Trigger                 | Effect                                                                          |
@@ -431,6 +435,42 @@ Two GitHub Actions workflows live in `.github/workflows/`:
 Both workflows use the `FirebaseExtended/action-hosting-deploy@v0` action and authenticate via a `FIREBASE_SERVICE_ACCOUNT_PACIFIC_DIV` secret.
 
 `firebase.json` configures hosting to serve from `dist/` and applies a catch-all rewrite (`** → /index.html`) so the SPA router handles all paths.
+
+To deploy Hosting manually:
+
+```bash
+npm run build                  # compile → dist/
+firebase deploy --only hosting # deploy web app → https://pacific-div.web.app
+```
+
+### 10.2 Firestore Security Rules (manual)
+
+`firestore.rules` at the repo root defines per-collection access control for conferences, sessions, maps, users, prizes, prize winners, bookmark counts, messages, stats, and groups.
+
+Deploy rules independently whenever `firestore.rules` changes:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+This does **not** trigger a redeploy of Hosting or Cloud Functions.
+
+### 10.3 Cloud Functions (manual)
+
+Cloud Functions live in the `functions/` subdirectory, which has its own `package.json`, `tsconfig.json`, and test suite. See [`functions/README.md`](functions/README.md) for full setup, secrets provisioning, and deployment instructions.
+
+```bash
+firebase deploy --only functions
+```
+
+Deployed functions:
+
+| Function                 | Trigger                               | Purpose                                                       |
+| ------------------------ | ------------------------------------- | ------------------------------------------------------------- |
+| `sendWelcomeEmail`       | `beforeUserCreated` (blocking, v2)    | Sends a welcome email via the Gmail API on new registration.  |
+| `incrementSignupCounter` | `onDocumentCreated("users/{uid}") v2` | Atomically increments `stats/signupCounter.count` in Firestore. |
+
+> **Note:** Cloud Functions and Firestore rules are never deployed automatically by CI. Always deploy them manually after reviewing the changes.
 
 ---
 
