@@ -20,10 +20,10 @@ import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
 import {
-  getAuth,
   sendEmailVerification,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { Toaster, toast } from "sonner";
 
 export function ProfilePage() {
@@ -60,15 +60,6 @@ export function ProfilePage() {
     return <ProfileView />; //  not logged in
   }
 
-  const auth = getAuth();
-  const authCurrentUser = auth.currentUser;
-
-  if (!authCurrentUser) {
-    return <ProfileView />;
-  }
-
-  const authUserEmail = authCurrentUser.email;
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -81,8 +72,8 @@ export function ProfilePage() {
   const handleEmailVerification = async () => {
     try {
       setError("");
-      if (authCurrentUser != null) {
-        await sendEmailVerification(authCurrentUser);
+      if (user != null) {
+        await sendEmailVerification(user);
         toast("Email Verification Sent");
       } else {
         toast("No Email To Verify");
@@ -97,8 +88,8 @@ export function ProfilePage() {
   const handlePasswordReset = async () => {
     try {
       setError("");
-      if (authUserEmail != null) {
-        await sendPasswordResetEmail(auth, authUserEmail);
+      if (user?.email != null) {
+        await sendPasswordResetEmail(auth, user.email);
         toast("Password Reset Email Sent");
       } else {
         toast("No Email To Send Password Reset");
