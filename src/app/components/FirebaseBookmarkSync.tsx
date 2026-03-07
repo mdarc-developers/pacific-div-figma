@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
+import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
 import {
   getUserBookmarks,
   setUserBookmarks,
@@ -21,6 +22,7 @@ export function FirebaseBookmarkSync() {
   const { activeConference } = useConference();
   const { bookmarkedItems, prevBookmarkedItems, overrideBookmarks } =
     useBookmarkContext();
+  const { adjustSessionCount } = useBookmarkCountsContext();
 
   const conferenceId = activeConference.id;
   // Composite key: changes when either the user or the active conference changes.
@@ -80,6 +82,10 @@ export function FirebaseBookmarkSync() {
     const added = next.filter((id) => !prev.includes(id));
     const removed = prev.filter((id) => !next.includes(id));
 
+    // Optimistically update local counts so the UI reflects the change immediately.
+    added.forEach((id) => adjustSessionCount(id, 1));
+    removed.forEach((id) => adjustSessionCount(id, -1));
+
     added.forEach((id) =>
       incrementSessionBookmarkCount(conferenceId, id, 1).catch(console.error),
     );
@@ -95,7 +101,7 @@ export function FirebaseBookmarkSync() {
       bookmarkedItems,
       prevBookmarkedItems,
     ).catch(console.error);
-  }, [user, loadKey, conferenceId, bookmarkedItems, prevBookmarkedItems]);
+  }, [user, loadKey, conferenceId, bookmarkedItems, prevBookmarkedItems, adjustSessionCount]);
 
   return null;
 }

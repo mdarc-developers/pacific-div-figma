@@ -4,6 +4,7 @@ import { ForumsMapView } from "@/app/components/ForumsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
+import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { MAP_DATA, ROOM_DATA, SESSION_DATA } from "@/lib/sessionData";
 
@@ -14,6 +15,7 @@ export function ForumsPage() {
     useConference();
   const { highlightForumRoomName } = useSearch();
   const { bookmarkedItems, toggleBookmark } = useBookmarkContext();
+  const { sessionCounts } = useBookmarkCountsContext();
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const roomEntry = ROOM_DATA[activeConference.id] ?? []; // url and Room[]
@@ -103,6 +105,7 @@ export function ForumsPage() {
         onToggleBookmark={toggleBookmark}
         categoryFilter="forums"
         trackFilter={selectedTrack ?? undefined}
+        sessionBookmarkCounts={sessionCounts}
       />
     </div>
   );

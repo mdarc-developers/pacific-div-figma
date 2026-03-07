@@ -27,6 +27,12 @@ interface BookmarkCountsContextType {
     exhibitorCounts: Record<string, number>,
   ) => void;
   /**
+   * Optimistically adjusts a session's local count by `delta` (+1 or -1).
+   * Called by FirebaseBookmarkSync immediately when a bookmark is toggled
+   * so the UI reflects the change before the Firestore write completes.
+   */
+  adjustSessionCount: (sessionId: string, delta: 1 | -1) => void;
+  /**
    * Optimistically adjusts an exhibitor's local count by `delta` (+1 or -1).
    * Called by FirebaseExhibitorBookmarkSync immediately when a bookmark is toggled
    * so the UI reflects the change before the Firestore write completes.
@@ -82,6 +88,20 @@ export function BookmarkCountsProvider({
     [conferenceId],
   );
 
+  const adjustSessionCount = useCallback(
+    (sessionId: string, delta: 1 | -1) => {
+      setSessionCounts((prev) => {
+        const updated = {
+          ...prev,
+          [sessionId]: Math.max(0, (prev[sessionId] ?? 0) + delta),
+        };
+        saveSessionCountsToLS(conferenceId, updated);
+        return updated;
+      });
+    },
+    [conferenceId],
+  );
+
   const adjustExhibitorCount = useCallback(
     (exhibitorId: string, delta: 1 | -1) => {
       setExhibitorCounts((prev) => {
@@ -98,7 +118,7 @@ export function BookmarkCountsProvider({
 
   return (
     <BookmarkCountsContext.Provider
-      value={{ sessionCounts, exhibitorCounts, overrideCounts, adjustExhibitorCount }}
+      value={{ sessionCounts, exhibitorCounts, overrideCounts, adjustSessionCount, adjustExhibitorCount }}
     >
       {children}
     </BookmarkCountsContext.Provider>
