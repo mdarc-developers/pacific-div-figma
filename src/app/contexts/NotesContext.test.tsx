@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { NotesProvider, useNotesContext } from "@/app/contexts/NotesContext";
 import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 

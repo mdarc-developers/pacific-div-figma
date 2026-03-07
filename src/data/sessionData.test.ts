@@ -383,6 +383,7 @@ describe("warnOutOfRangeSessions", () => {
     const qf = allConferences.find((c) => c.id === "quartzfest-2027")!;
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     warnOutOfRangeSessions("quartzfest-2027", quartzfestSessions[1], qf);
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it("does not emit console.warn when all sessions are within the conference date range", () => {
@@ -438,6 +439,7 @@ describe("conference date-range checks for real session data", () => {
     const outsideRange = quartzfestSessions[1].filter(
       (s) => !isSessionWithinConference(s, qf),
     );
+    expect(outsideRange.length).toBe(0);
   });
 });
 
