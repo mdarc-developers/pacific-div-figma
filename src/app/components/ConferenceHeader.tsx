@@ -76,16 +76,21 @@ export function ConferenceHeader() {
     if (!iurl || iurl === "") return "";
     else
       return (
-        <a
-          href={iurl}
-          rel="noopener noreferrer"
-          target="_blank"
-          className="flex items-center gap-2 hover:underline"
-          style={{ color: headerLinkColor }}
-        >
-          {activeConference.venue}
-          <ExternalLink className="h-4 w-4" />
-        </a>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href={iurl}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="flex items-center gap-2 hover:underline"
+              style={{ color: headerLinkColor }}
+            >
+              {activeConference.venue}
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </TooltipTrigger>
+          <TooltipContent>Venue Website</TooltipContent>
+        </Tooltip>
       );
   };
 
@@ -93,16 +98,21 @@ export function ConferenceHeader() {
     if (!iurl || iurl === "") return "";
     else
       return (
-        <a
-          href={iurl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 hover:underline"
-          style={{ color: linkcolor }}
-        >
-          program
-          <ExternalLink className="h-4 w-4" />
-        </a>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href={iurl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:underline"
+              style={{ color: linkcolor }}
+            >
+              program
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </TooltipTrigger>
+          <TooltipContent>Conference Program</TooltipContent>
+        </Tooltip>
       );
   };
 
@@ -110,16 +120,21 @@ export function ConferenceHeader() {
     if (!iurl || iurl === "") return "";
     else
       return (
-        <a
-          href={iurl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 hover:underline"
-          style={{ color: linkcolor }}
-        >
-          app
-          <ExternalLink className="h-4 w-4" />
-        </a>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href={iurl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:underline"
+              style={{ color: linkcolor }}
+            >
+              app
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </TooltipTrigger>
+          <TooltipContent>Conference App</TooltipContent>
+        </Tooltip>
       );
   };
 
@@ -127,16 +142,21 @@ export function ConferenceHeader() {
     if (!iurl || iurl === "") return "";
     else
       return (
-        <a
-          href={iurl}
-          download
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 hover:underline"
-          style={{ color: headerLinkColor }}
-        >
-          &nbsp;iCal
-          <ExternalLink className="h-4 w-4" />
-        </a>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href={iurl}
+              download
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:underline"
+              style={{ color: headerLinkColor }}
+            >
+              &nbsp;iCal
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </TooltipTrigger>
+          <TooltipContent>Download iCal / Add to Calendar</TooltipContent>
+        </Tooltip>
       );
   };
 
@@ -144,13 +164,39 @@ export function ConferenceHeader() {
     if (!gurl || gurl === "") return "";
     else
       return (
-        <a href={gurl} rel="noopener noreferrer" target="_blank">
-          <img
-            src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
-            alt="Google Calendar"
-          />
-        </a>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a href={gurl} rel="noopener noreferrer" target="_blank">
+              <img
+                src="https://calendar.google.com/calendar/images/ext/gc_button1_en.gif"
+                alt="Google Calendar"
+              />
+            </a>
+          </TooltipTrigger>
+          <TooltipContent>Add to Google Calendar</TooltipContent>
+        </Tooltip>
       );
+  };
+
+  const googleMapsUrlDisplay = (location: string) => {
+    if (!location || location === "") return "";
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
+            rel="noopener noreferrer"
+            target="_blank"
+            className="flex items-center gap-2 hover:underline"
+            style={{ color: headerLinkColor }}
+          >
+            map
+            <MapPin className="h-5 w-5" />
+          </a>
+        </TooltipTrigger>
+        <TooltipContent>Open in Google Maps</TooltipContent>
+      </Tooltip>
+    );
   };
 
   const formatDateRange = (start: string, end: string) => {
@@ -292,16 +338,7 @@ export function ConferenceHeader() {
         </span>
         <span className="flex items-center gap-1">
           {/* Google Maps link */}
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeConference.location) || ""}`}
-            rel="noopener noreferrer"
-            target="_blank"
-            className="items-center gap-2 hover:underline"
-            style={{ color: headerLinkColor }}
-          >
-            map
-            <MapPin className="h-5 w-5" />
-          </a>
+          {googleMapsUrlDisplay(activeConference.location)}
         </span>
         <div>
           {/* GPS coordinates */}
