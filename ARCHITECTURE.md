@@ -482,6 +482,8 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 
 ## 13. How Firestore settings sync works
 
+### Theme (`FirebaseThemeSync`)
+
 Theme preference is the first user setting persisted to Firestore. The flow is:
 
 1. On user **login**, `FirebaseThemeSync` (mounted inside `<App>`) calls `getUserTheme(uid)` from `src/services/userSettingsService.ts`, which reads `users/{uid}.theme` from Firestore.
@@ -494,4 +496,16 @@ Theme preference is the first user setting persisted to Firestore. The flow is:
 
 5. Firestore security rule: each user can only read and write their own `users/{uid}` document.
 
-The `users` collection is the single source of truth for all user data — profile fields, preferences (theme, notification toggles, etc.), and bookmarks.
+### Active Conference (`FirebaseConferenceSync`)
+
+Active conference selection follows the same pattern:
+
+1. On user **login**, `FirebaseConferenceSync` (mounted inside `<App>`) calls `getUserActiveConferenceId(uid)` from `src/services/userSettingsService.ts`, which reads `users/{uid}.activeConferenceId` from Firestore.
+
+2. If a saved conference ID is found and matches a known conference, it calls `ConferenceContext.setActiveConference()` to apply it immediately — and sets a flag to suppress the echoed write-back.
+
+3. On any subsequent **conference change** (user picks a conference in `ConferenceHeaderSelector`), `FirebaseConferenceSync` detects the change and calls `setUserActiveConferenceId(uid, id)`, which writes `{ activeConferenceId }` (merge) to `users/{uid}`.
+
+4. On **logout**, `FirebaseConferenceSync` clears its loaded-uid ref so the next login re-reads Firestore.
+
+The `users` collection is the single source of truth for all user data — profile fields, preferences (theme, active conference, notification toggles, etc.), and bookmarks.
