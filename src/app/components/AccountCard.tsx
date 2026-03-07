@@ -1,4 +1,5 @@
 import { KeyRound } from "lucide-react";
+import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -11,6 +12,7 @@ import type { User } from "firebase/auth";
 
 interface AccountCardProps {
   user: User;
+  groups?: string[];
   onEmailVerification: () => void;
   onPasswordReset: () => void;
 }
@@ -26,6 +28,7 @@ function formatDate(dateStr: string | null | undefined): string {
 
 export function AccountCard({
   user,
+  groups,
   onEmailVerification,
   onPasswordReset,
 }: AccountCardProps) {
@@ -88,6 +91,21 @@ export function AccountCard({
             {user.uid}
           </p>
         </div>
+        {groups && groups.length > 0 && (
+          <>
+            <Separator />
+            <div>
+              <p className="text-xs text-muted-foreground mb-1.5">Groups</p>
+              <div className="flex flex-wrap gap-1.5">
+                {groups.map((group) => (
+                  <Badge key={group} variant="secondary" className="text-xs">
+                    {group}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
