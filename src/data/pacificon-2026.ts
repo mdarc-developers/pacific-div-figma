@@ -85,7 +85,7 @@ export const samplePrizeWinners: PrizeWinner[] = [
 export const mapUserProfileGroups: UserProfileGroups[] = [
   {
     uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
-    groups: ["prizes-admin", "mdarc-developer"],
+    groups: ["prize-admin", "mdarc-developers"],
   },
 ];
 
