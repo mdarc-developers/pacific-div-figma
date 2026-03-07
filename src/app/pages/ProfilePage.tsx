@@ -11,6 +11,7 @@ import { useTheme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
+import { useUserGroups } from "@/app/hooks/useUserGroups";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
@@ -33,6 +34,7 @@ export function ProfilePage() {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
+  const userGroups = useUserGroups();
   const {
     bookmarkedItems: bookmarkedSessions,
     toggleBookmark,
@@ -130,6 +132,7 @@ export function ProfilePage() {
 
       <AccountCard
         user={user}
+        groups={userGroups}
         onEmailVerification={handleEmailVerification}
         onPasswordReset={handlePasswordReset}
       />
