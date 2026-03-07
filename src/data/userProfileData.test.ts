@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { UserProfile } from "@/types/conference";
+import { UserProfile, UserProfileGroups } from "@/types/conference";
+import { ALL_USER_PROFILE_GROUPS } from "@/lib/userProfileData";
 
 interface SupplementalAttendeeModule {
   mapUserProfiles?: UserProfile[];
@@ -68,5 +69,47 @@ describe("supplemental userprofile override logic", () => {
       expect(typeof attendee.uid).toBe("string");
       expect(typeof attendee.email).toBe("string");
     });
+  });
+});
+
+// ── ALL_USER_PROFILE_GROUPS — collected from mapUserProfileGroups exports ──────
+describe("ALL_USER_PROFILE_GROUPS", () => {
+  it("is an array", () => {
+    expect(Array.isArray(ALL_USER_PROFILE_GROUPS)).toBe(true);
+  });
+
+  it("each entry has a uid string and a groups string array", () => {
+    ALL_USER_PROFILE_GROUPS.forEach((entry: UserProfileGroups) => {
+      expect(typeof entry.uid).toBe("string");
+      expect(entry.uid.length).toBeGreaterThan(0);
+      expect(Array.isArray(entry.groups)).toBe(true);
+      entry.groups.forEach((g) => {
+        expect(typeof g).toBe("string");
+      });
+    });
+  });
+
+  it("all group names use consistent casing (mdarc-developers not mdarc-developer)", () => {
+    ALL_USER_PROFILE_GROUPS.forEach((entry: UserProfileGroups) => {
+      // The canonical group name is "mdarc-developers" (with trailing 's').
+      // Entries with the old "mdarc-developer" form indicate a data inconsistency.
+      expect(entry.groups).not.toContain("mdarc-developer");
+    });
+  });
+
+  it("all group names use consistent casing (prize-admin not prizes-admin)", () => {
+    ALL_USER_PROFILE_GROUPS.forEach((entry: UserProfileGroups) => {
+      // The canonical group name is "prize-admin" (without leading 's').
+      // Entries with the old "prizes-admin" form indicate a data inconsistency.
+      expect(entry.groups).not.toContain("prizes-admin");
+    });
+  });
+
+  it("contains at least one mdarc-developers entry from pacificon-2026", () => {
+    const mdarcEntry = ALL_USER_PROFILE_GROUPS.find(
+      (e) => e.uid === "FNLvRnWJSuOalAC0WQf46gNERPi2",
+    );
+    expect(mdarcEntry).toBeDefined();
+    expect(mdarcEntry?.groups).toContain("mdarc-developers");
   });
 });

@@ -1,8 +1,9 @@
-import { UserProfile } from "@/types/conference";
+import { UserProfile, UserProfileGroups } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
 
 interface ProfileModule {
   mapUserProfiles?: UserProfile[];
+  mapUserProfileGroups?: UserProfileGroups[];
   [key: string]: unknown;
 }
 
@@ -12,6 +13,17 @@ Object.values(conferenceModules).forEach((module) => {
   const typedModule = module as ProfileModule;
   if (typedModule.mapUserProfiles) {
     ALL_USER_PROFILES.push(...typedModule.mapUserProfiles);
+  }
+});
+
+// Collect all mapUserProfileGroups exports from every conference data file.
+// These lightweight uid+groups entries allow specifying group membership
+// without requiring a full UserProfile record.
+export const ALL_USER_PROFILE_GROUPS: UserProfileGroups[] = [];
+Object.values(conferenceModules).forEach((module) => {
+  const typedModule = module as ProfileModule;
+  if (typedModule.mapUserProfileGroups) {
+    ALL_USER_PROFILE_GROUPS.push(...typedModule.mapUserProfileGroups);
   }
 });
 
