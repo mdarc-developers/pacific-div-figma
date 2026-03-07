@@ -231,6 +231,9 @@ export function ConferenceHeader() {
         </h1>
       </div>
 
+      {/* Conference official app link (optional) */}
+      {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
+
       {/* Conference logo (linked to website) */}
       {activeConference.logoUrl && !isHeaderCollapsed ? (
         <a
@@ -327,8 +330,9 @@ export function ConferenceHeader() {
             </TooltipTrigger>
             <TooltipContent>Maidenhead Gridsquare</TooltipContent>
           </Tooltip>
+        </div>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           {/* Conference app page and printed program links */}
-          {conferenceAppPageUrlDisplay(activeConference.conferenceAppPageUrl, headerLinkColor)}
           {conferenceProgramUrlDisplay(activeConference.conferenceProgramUrl, headerLinkColor)}
         </div>
       </div>
@@ -392,7 +396,6 @@ export function ConferenceHeader() {
 
             <div
               className="space-y-2"
-              // text-gray-700 dark:text-gray-300"
               style={{
                 backgroundColor: activeConference.primaryColor,
                 color: headerTextColor,
