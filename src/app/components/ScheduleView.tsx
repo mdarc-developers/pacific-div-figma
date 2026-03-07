@@ -513,20 +513,20 @@ export function ScheduleView({
                   {formatSessionDate(date, activeConference.timezoneNumeric)}
                 </h3>
                 {filtered.map((session) => (
-                   <SessionCard
-                     key={session.id}
-                     session={session}
-                     isBookmarked={bookmarkedSessions.includes(session.id)}
-                     isHighlighted={highlightSessionId === session.id}
-                     onToggleBookmark={onToggleBookmark}
-                     formatTime={formatTime}
-                     activeConference={activeConference}
-                     onRoomClick={handleRoomClick}
-                     note={notes?.[session.id]}
-                     onSaveNote={onSaveNote}
-                     bookmarkCount={sessionBookmarkCounts[session.id]}
-                   />
-                 ))}
+                  <SessionCard
+                    key={session.id}
+                    session={session}
+                    isBookmarked={bookmarkedSessions.includes(session.id)}
+                    isHighlighted={highlightSessionId === session.id}
+                    onToggleBookmark={onToggleBookmark}
+                    formatTime={formatTime}
+                    activeConference={activeConference}
+                    onRoomClick={handleRoomClick}
+                    note={notes?.[session.id]}
+                    onSaveNote={onSaveNote}
+                    bookmarkCount={sessionBookmarkCounts[session.id]}
+                  />
+                ))}
               </div>
             );
           })}
@@ -547,20 +547,20 @@ export function ScheduleView({
             <TabsContent key={date} value={date}>
               {filtered.length > 0 ? (
                 filtered.map((session) => (
-                   <SessionCard
-                     key={session.id}
-                     session={session}
-                     isBookmarked={bookmarkedSessions.includes(session.id)}
-                     isHighlighted={highlightSessionId === session.id}
-                     onToggleBookmark={onToggleBookmark}
-                     formatTime={formatTime}
-                     activeConference={activeConference}
-                     onRoomClick={handleRoomClick}
-                     note={notes?.[session.id]}
-                     onSaveNote={onSaveNote}
-                     bookmarkCount={sessionBookmarkCounts[session.id]}
-                   />
-                 ))
+                  <SessionCard
+                    key={session.id}
+                    session={session}
+                    isBookmarked={bookmarkedSessions.includes(session.id)}
+                    isHighlighted={highlightSessionId === session.id}
+                    onToggleBookmark={onToggleBookmark}
+                    formatTime={formatTime}
+                    activeConference={activeConference}
+                    onRoomClick={handleRoomClick}
+                    note={notes?.[session.id]}
+                    onSaveNote={onSaveNote}
+                    bookmarkCount={sessionBookmarkCounts[session.id]}
+                  />
+                ))
               ) : (
                 <p className="text-center text-gray-500 py-8">
                   No sessions match the active filters.

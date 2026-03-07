@@ -6,8 +6,8 @@ import { getBookmarkCounts } from "@/services/bookmarkCountsService";
 
 /**
  * Headless sync component.
- * - On conference change (regardless of auth): loads aggregate bookmark counts
- *   from Firestore and applies them via the shared BookmarkCountsContext.
+ * - On conference or auth change: loads aggregate bookmark counts from Firestore
+ *   and applies them via the shared BookmarkCountsContext.
  * - Individual count increments are handled by FirebaseBookmarkSync and
  *   FirebaseExhibitorBookmarkSync when a user-initiated toggle occurs.
  */
@@ -17,12 +17,13 @@ export function FirebaseBookmarkCountsSync() {
   const { overrideCounts } = useBookmarkCountsContext();
 
   const conferenceId = activeConference.id;
-  const loadedForConferenceRef = useRef<string | null>(null);
+  // Composite key so we reload whenever either the conference or auth state changes.
+  const loadKey = `${conferenceId}:${user?.uid ?? "anon"}`;
+  const loadedForKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Reload whenever the conference changes (even when not logged in, since
-    // aggregate counts are public read data).
-    if (loadedForConferenceRef.current === conferenceId) return;
+    if (loadedForKeyRef.current === loadKey) return;
+    const keyToLoad = loadKey;
     const conferenceToLoad = conferenceId;
     let cancelled = false;
 
@@ -33,20 +34,13 @@ export function FirebaseBookmarkCountsSync() {
       })
       .catch(console.error)
       .finally(() => {
-        if (!cancelled) loadedForConferenceRef.current = conferenceToLoad;
+        if (!cancelled) loadedForKeyRef.current = keyToLoad;
       });
 
     return () => {
       cancelled = true;
     };
-  }, [conferenceId, overrideCounts]);
-
-  // Reset when user logs out so the next login triggers a fresh load.
-  useEffect(() => {
-    if (!user) {
-      loadedForConferenceRef.current = null;
-    }
-  }, [user]);
+  }, [loadKey, conferenceId, overrideCounts]);
 
   return null;
 }
