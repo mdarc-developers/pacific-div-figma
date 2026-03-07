@@ -3,7 +3,7 @@ import { ScheduleView } from "@/app/components/ScheduleView";
 import { ForumsMapView } from "@/app/components/ForumsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
-import { useBookmarks } from "@/app/hooks/useBookmarks";
+import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { MAP_DATA, ROOM_DATA, SESSION_DATA } from "@/lib/sessionData";
 
@@ -13,9 +13,7 @@ export function ForumsPage() {
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
   const { highlightForumRoomName } = useSearch();
-  const [bookmarkedSessions, handleToggleBookmark] = useBookmarks(
-    activeConference.id,
-  );
+  const { bookmarkedItems, toggleBookmark } = useBookmarkContext();
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const roomEntry = ROOM_DATA[activeConference.id] ?? []; // url and Room[]
@@ -99,8 +97,8 @@ export function ForumsPage() {
         </div>
       )}
       <ScheduleView
-        bookmarkedSessions={bookmarkedSessions}
-        onToggleBookmark={handleToggleBookmark}
+        bookmarkedSessions={bookmarkedItems}
+        onToggleBookmark={toggleBookmark}
         categoryFilter="forums"
         trackFilter={selectedTrack ?? undefined}
       />

@@ -34,3 +34,35 @@ export async function setUserActiveConferenceId(
     { merge: true },
   );
 }
+
+export async function getUserBookmarks(
+  uid: string,
+  conferenceId: string,
+): Promise<{ bookmarks: string[]; prevBookmarks: string[] }> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return { bookmarks: [], prevBookmarks: [] };
+  const data = snap.data();
+  const bookmarks = Array.isArray(data?.bookmarks?.[conferenceId])
+    ? (data.bookmarks[conferenceId] as string[])
+    : [];
+  const prevBookmarks = Array.isArray(data?.prevBookmarks?.[conferenceId])
+    ? (data.prevBookmarks[conferenceId] as string[])
+    : [];
+  return { bookmarks, prevBookmarks };
+}
+
+export async function setUserBookmarks(
+  uid: string,
+  conferenceId: string,
+  bookmarks: string[],
+  prevBookmarks: string[],
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    {
+      bookmarks: { [conferenceId]: bookmarks },
+      prevBookmarks: { [conferenceId]: prevBookmarks },
+    },
+    { merge: true },
+  );
+}

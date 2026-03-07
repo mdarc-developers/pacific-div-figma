@@ -123,14 +123,17 @@ vi.mock("@/lib/sessionData", async (importOriginal) => {
 
 // Static import — vi.mock calls above are hoisted before this by Vitest
 import { ForumsPage } from "@/app/pages/ForumsPage";
+import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderForumsPage() {
   return render(
     <ConferenceProvider>
-      <SearchProvider>
-        <ForumsPage />
-      </SearchProvider>
+      <BookmarkProvider>
+        <SearchProvider>
+          <ForumsPage />
+        </SearchProvider>
+      </BookmarkProvider>
     </ConferenceProvider>,
   );
 }
