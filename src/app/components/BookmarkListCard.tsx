@@ -94,7 +94,7 @@ export function BookmarkListCard({
                 <span className="flex-1 truncate">{session.title}</span>
                 <div className="flex items-center gap-1 shrink-0">
                   {sessionBookmarkCounts[session.id] !== undefined &&
-                    sessionBookmarkCounts[session.id] > 0 && (
+                    sessionBookmarkCounts[session.id] >= 0 && (
                       <span className="text-xs text-muted-foreground tabular-nums">
                         {sessionBookmarkCounts[session.id]}
                       </span>
@@ -128,7 +128,7 @@ export function BookmarkListCard({
                     </span>
                     <div className="flex items-center gap-1 shrink-0">
                       {sessionBookmarkCounts[session.id] !== undefined &&
-                        sessionBookmarkCounts[session.id] > 0 && (
+                        sessionBookmarkCounts[session.id] >= 0 && (
                           <span className="text-xs tabular-nums">
                             {sessionBookmarkCounts[session.id]}
                           </span>
@@ -173,7 +173,7 @@ export function BookmarkListCard({
                 {onToggleExhibitorBookmark && (
                   <div className="flex items-center gap-1 shrink-0">
                     {exhibitorBookmarkCounts[exhibitor.id] !== undefined &&
-                      exhibitorBookmarkCounts[exhibitor.id] > 0 && (
+                      exhibitorBookmarkCounts[exhibitor.id] >= 0 && (
                         <span className="text-xs text-muted-foreground tabular-nums">
                           {exhibitorBookmarkCounts[exhibitor.id]}
                         </span>
@@ -209,7 +209,7 @@ export function BookmarkListCard({
                     {onToggleExhibitorBookmark && (
                       <div className="flex items-center gap-1 shrink-0">
                         {exhibitorBookmarkCounts[exhibitor.id] !== undefined &&
-                          exhibitorBookmarkCounts[exhibitor.id] > 0 && (
+                          exhibitorBookmarkCounts[exhibitor.id] >= 0 && (
                             <span className="text-xs tabular-nums">
                               {exhibitorBookmarkCounts[exhibitor.id]}
                             </span>

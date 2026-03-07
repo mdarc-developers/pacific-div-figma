@@ -5,6 +5,8 @@ import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
 import {
   getBookmarkCounts,
   withZeroFallbacks,
+  loadSessionCountsFromLS,
+  loadExhibitorCountsFromLS,
 } from "@/services/bookmarkCountsService";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
@@ -46,7 +48,29 @@ export function FirebaseBookmarkCountsSync() {
           withZeroFallbacks(exhibitorCounts, exhibitorIds),
         );
       })
-      .catch(console.error)
+      .catch((err) => {
+        console.error(err);
+        if (cancelled) return;
+        // Firebase rules may block the read. Fall back to localStorage-cached
+        // values with zero-fallbacks for every known ID so the UI shows 0
+        // (not undefined) while the sync is unavailable.
+        const sessionIds = (SESSION_DATA[conferenceToLoad] ?? []).map(
+          (s) => s.id,
+        );
+        const exhibitorIds = (
+          EXHIBITOR_DATA[conferenceToLoad]?.[1] ?? []
+        ).map((e) => e.id);
+        overrideCounts(
+          withZeroFallbacks(
+            loadSessionCountsFromLS(conferenceToLoad),
+            sessionIds,
+          ),
+          withZeroFallbacks(
+            loadExhibitorCountsFromLS(conferenceToLoad),
+            exhibitorIds,
+          ),
+        );
+      })
       .finally(() => {
         if (!cancelled) loadedForKeyRef.current = keyToLoad;
       });
