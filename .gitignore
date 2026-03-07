@@ -5,4 +5,6 @@ dist
 .eslintcache
 playwright-report
 test-results
+!test-results/.gitkeep
+!test-results/to-convention.sh
 
