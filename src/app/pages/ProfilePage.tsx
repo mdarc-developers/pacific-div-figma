@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
+import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { SESSION_DATA } from "@/lib/sessionData";
 import { useState } from "react";
 import {
@@ -42,6 +43,8 @@ export function ProfilePage() {
     removeRaffleTicket,
     addRaffleTicketRange,
   ] = useRaffleTickets(activeConference.id);
+  const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber } =
+    useNotificationSettings();
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -126,7 +129,12 @@ export function ProfilePage() {
 
       <SettingsCard theme={theme} onThemeChange={setTheme} />
 
-      <NotificationsCard />
+      <NotificationsCard
+        smsEnabled={smsEnabled}
+        phoneNumber={phoneNumber}
+        onSmsEnabledChange={setSmsEnabled}
+        onPhoneNumberChange={setPhoneNumber}
+      />
 
       <RaffleTicketsCard
         raffleTickets={raffleTickets}
