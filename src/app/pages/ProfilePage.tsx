@@ -3,7 +3,7 @@ import { ProfileHeaderCard } from "@/app/components/ProfileHeaderCard";
 import { AccountCard } from "@/app/components/AccountCard";
 import { SettingsCard } from "@/app/components/SettingsCard";
 import { NotificationsCard } from "@/app/components/NotificationsCard";
-import { RaffleTicketsCard } from "@/app/components/RaffleTicketsCard";
+import { PrizesCard } from "@/app/components/PrizesCard";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { AdminCard } from "@/app/components/AdminCard";
 import { useAuth } from "@/app/contexts/AuthContext";
@@ -15,6 +15,7 @@ import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { SESSION_DATA } from "@/lib/sessionData";
+import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
 import {
   getAuth,
@@ -136,11 +137,13 @@ export function ProfilePage() {
         onPhoneNumberChange={setPhoneNumber}
       />
 
-      <RaffleTicketsCard
+      <PrizesCard
         raffleTickets={raffleTickets}
         onAddTicket={addRaffleTicket}
         onRemoveTicket={removeRaffleTicket}
         onAddTicketRange={addRaffleTicketRange}
+        prizes={PRIZE_DATA[activeConference.id] ?? []}
+        prizeWinners={PRIZE_WINNER_DATA[activeConference.id] ?? []}
       />
 
       {/* Activity card */}

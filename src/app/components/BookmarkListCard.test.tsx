@@ -60,7 +60,7 @@ describe("BookmarkListCard", () => {
         onToggleBookmark={vi.fn()}
       />,
     );
-    // Both "Bookmarks" and "Prizes won" show "None yet"; verify the bookmark count badge is absent
+    // When no bookmarks exist the badge count is absent; "None yet" appears for Bookmarks
     expect(screen.getAllByText(/none yet/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.queryByTestId("bookmark-list")).not.toBeInTheDocument();
   });

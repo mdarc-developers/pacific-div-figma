@@ -97,11 +97,6 @@ export function BookmarkListCard({
           </ul>
         )}
 
-        <Separator />
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Prizes won</p>
-          <span className="text-xs text-muted-foreground">None yet</span>
-        </div>
       </CardContent>
     </Card>
   );
