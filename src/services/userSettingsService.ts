@@ -67,6 +67,40 @@ export async function setUserBookmarks(
   );
 }
 
+export async function getUserExhibitorBookmarks(
+  uid: string,
+  conferenceId: string,
+): Promise<{ bookmarks: string[]; prevBookmarks: string[] }> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return { bookmarks: [], prevBookmarks: [] };
+  const data = snap.data();
+  const bookmarks = Array.isArray(data?.exhibitorBookmarks?.[conferenceId])
+    ? (data.exhibitorBookmarks[conferenceId] as string[])
+    : [];
+  const prevBookmarks = Array.isArray(
+    data?.prevExhibitorBookmarks?.[conferenceId],
+  )
+    ? (data.prevExhibitorBookmarks[conferenceId] as string[])
+    : [];
+  return { bookmarks, prevBookmarks };
+}
+
+export async function setUserExhibitorBookmarks(
+  uid: string,
+  conferenceId: string,
+  bookmarks: string[],
+  prevBookmarks: string[],
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    {
+      exhibitorBookmarks: { [conferenceId]: bookmarks },
+      prevExhibitorBookmarks: { [conferenceId]: prevBookmarks },
+    },
+    { merge: true },
+  );
+}
+
 export interface NotificationSettings {
   smsEnabled: boolean;
   phoneNumber: string;

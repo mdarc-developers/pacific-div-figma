@@ -39,12 +39,15 @@ vi.mock("@/app/components/ExhibitorView", () => ({
 
 // Static import — vi.mock calls above are hoisted before this by Vitest
 import { ExhibitorsPage } from "@/app/pages/ExhibitorsPage";
+import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderExhibitorsPage() {
   return render(
     <ConferenceProvider>
-      <ExhibitorsPage />
+      <ExhibitorBookmarkProvider>
+        <ExhibitorsPage />
+      </ExhibitorBookmarkProvider>
     </ConferenceProvider>,
   );
 }
