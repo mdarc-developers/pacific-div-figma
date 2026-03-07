@@ -204,7 +204,7 @@ export function ConferenceHeader() {
 
   // Conference name with website link, logo, and conference selector dropdown
   const renderNameAndLogoRow = () => (
-    <div className="flex self-stretch w-full">
+    <div className="flex justify-between items-center self-stretch w-full gap-6">
       <div>
         <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">
           {activeConference.name}
@@ -255,7 +255,7 @@ export function ConferenceHeader() {
 
   // Date range with iCal download and Google Calendar links
   const renderDateRow = () => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4">
       <Calendar className="h-5 w-5" />
       <span>
         {formatDateRange(activeConference.startDate, activeConference.endDate)}
@@ -277,8 +277,8 @@ export function ConferenceHeader() {
 
   // Venue name/link, city location, Google Maps link, GPS coords, Maidenhead grid square, app/program links
   const renderLocationRow = () => (
-    <div className="flex items-start gap-2">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+    <div className="flex items-start gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <span className="flex items-center gap-1">
           {/* Venue name linked to venue website */}
           {venueWebsiteDisplay(activeConference.venueWebsite)}
@@ -323,7 +323,7 @@ export function ConferenceHeader() {
             <TooltipContent>Maidenhead Gridsquare</TooltipContent>
           </Tooltip>
         </div>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           {/* Conference app page and printed program links */}
           {conferenceProgramUrlDisplay(
             activeConference.conferenceProgramUrl,
@@ -358,13 +358,13 @@ export function ConferenceHeader() {
   );
 
   return (
-    <div className="flex items-center gap-2 px-2">
+    <div className="flex items-center gap-4 px-4">
       {/* Collapse/expand toggle button */}
       {renderCollapseButton()}
 
       {/* Main header panel (colored by conference primary color) */}
       <div
-        className={`mb-6 self-stretch w-full rounded-xl p-4 ${
+        className={`mb-6 self-stretch w-full rounded-xl p-6 ${
           isHeaderCollapsed
             ? "cursor-pointer hover:opacity-90 transition-opacity"
             : ""
