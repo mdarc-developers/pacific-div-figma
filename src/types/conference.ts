@@ -106,6 +106,11 @@ export interface PrizeWinner {
   votes?: number;
 }
 
+export interface UserProfileGroups {
+  uid: string;
+  groups: string[];
+}
+
 export interface UserProfile {
   uid: string;
   email: string;

@@ -8,6 +8,7 @@ import {
   Room,
   Session,
   UserProfile,
+  UserProfileGroups,
 } from "@/types/conference";
 
 // TODO: PRIZES see current static data for proof of concept, needs wiring & data entry. Prize[]
@@ -81,21 +82,18 @@ export const samplePrizeWinners: PrizeWinner[] = [
   },
 ];
 
+export const mapUserProfileGroups: UserProfileGroups[] = [
+  {
+    uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
+    groups: ["prizes-admin", "mdarc-developer"],
+  },
+];
+
 // Sample user profiles — groups simulate Google Cloud Groups membership.
 // prize-admin group grants access to the prize management admin page.
 export const mapUserProfiles: UserProfile[] = [
   {
-    uid: "7dBAeZv7kJbVOI5A99Zol06dCTU2",
-    email: "grantbow@gmail.com",
-    darkMode: false,
-    bookmarkedSessions: [],
-    notificationsEnabled: true,
-    smsNotifications: true,
-    displayName: "Grant B",
-    callsign: "K6CBK",
-  },
-  {
-    uid: "2JjLExoVgiVdblnPFUVX1YJzqdA2",
+    uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
     email: "grantbow@mdarc.org",
     darkMode: false,
     bookmarkedSessions: [],
