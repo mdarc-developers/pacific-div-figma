@@ -440,7 +440,7 @@ To deploy manually:
 
 ```bash
 npm run build      # compile → dist/
-npm run deploy     # firebase deploy --only hosting
+npm run deploy     # firebase deploy (hosting + rules + functions)
 ```
 
 ### 10.2 Firestore Security Rules (manual)

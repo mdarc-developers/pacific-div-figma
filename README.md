@@ -50,8 +50,8 @@ Three independent deployment targets must be managed separately:
 ### 1. Web app (Hosting)
 
 ```bash
-npm run build      # compile → dist/
-npm run deploy     # firebase deploy --only hosting → https://pacific-div.web.app
+npm run build                  # compile → dist/
+firebase deploy --only hosting # deploy web app → https://pacific-div.web.app
 ```
 
 ### 2. Firestore security rules
