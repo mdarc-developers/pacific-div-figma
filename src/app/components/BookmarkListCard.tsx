@@ -1,4 +1,4 @@
-import { Bookmark } from "lucide-react";
+import { Bookmark, StickyNote } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import {
   Card,
@@ -18,6 +18,8 @@ interface BookmarkListCardProps {
   bookmarkedExhibitorIds?: string[];
   prevBookmarkedExhibitorIds?: string[];
   onToggleExhibitorBookmark?: (exhibitorId: string) => void;
+  notes?: Record<string, string>;
+  onNoteSessionClick?: (sessionId: string) => void;
 }
 
 export function BookmarkListCard({
@@ -29,6 +31,8 @@ export function BookmarkListCard({
   bookmarkedExhibitorIds = [],
   prevBookmarkedExhibitorIds = [],
   onToggleExhibitorBookmark,
+  notes = {},
+  onNoteSessionClick,
 }: BookmarkListCardProps) {
   const sessionMap = new Map(sessions.map((s) => [s.id, s]));
 
@@ -49,6 +53,14 @@ export function BookmarkListCard({
   const previousExhibitorList = prevBookmarkedExhibitorIds
     .map((id) => exhibitorMap.get(id))
     .filter((e): e is Exhibitor => e !== undefined);
+
+  // Build the list of sessions that have notes, preserving note text
+  const notedSessions = Object.entries(notes)
+    .filter(([, text]) => text.trim().length > 0)
+    .map(([sessionId, text]) => ({ session: sessionMap.get(sessionId), text }))
+    .filter((entry): entry is { session: Session; text: string } =>
+      entry.session !== undefined,
+    );
 
   return (
     <Card>
@@ -178,6 +190,56 @@ export function BookmarkListCard({
                 ))}
               </>
             )}
+          </ul>
+        )}
+
+        <Separator />
+
+        {/* My Notes section */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium">My Notes</p>
+          {notedSessions.length > 0 ? (
+            <Badge variant="secondary">{notedSessions.length}</Badge>
+          ) : (
+            <span className="text-xs text-muted-foreground">None yet</span>
+          )}
+        </div>
+
+        {notedSessions.length > 0 && (
+          <ul
+            className="space-y-2 mt-1"
+            data-testid="notes-list"
+          >
+            {notedSessions.map(({ session, text }) => (
+              <li key={session.id} className="text-sm">
+                {onNoteSessionClick ? (
+                  <button
+                    type="button"
+                    className="w-full text-left group"
+                    onClick={() => onNoteSessionClick(session.id)}
+                    aria-label={`View note for ${session.title}`}
+                  >
+                    <span className="flex items-center gap-1 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                      <StickyNote className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                      {session.title}
+                    </span>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 pl-5">
+                      {text}
+                    </p>
+                  </button>
+                ) : (
+                  <div>
+                    <span className="flex items-center gap-1 font-medium truncate">
+                      <StickyNote className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                      {session.title}
+                    </span>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 pl-5">
+                      {text}
+                    </p>
+                  </div>
+                )}
+              </li>
+            ))}
           </ul>
         )}
       </CardContent>

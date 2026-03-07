@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
+import { Textarea } from "@/app/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -14,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { Bookmark, Clock, MapPin, Mic, Zap } from "lucide-react";
+import { Bookmark, Clock, MapPin, Mic, StickyNote, Zap } from "lucide-react";
 import { Session, Conference } from "@/types/conference";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -92,6 +93,8 @@ interface SessionCardProps {
   formatTime: (timeString: string) => string;
   activeConference: Conference;
   onRoomClick?: (roomName: string) => void;
+  note?: string;
+  onSaveNote?: (sessionId: string, text: string) => void;
 }
 
 function SessionCard({
@@ -101,8 +104,20 @@ function SessionCard({
   onToggleBookmark,
   activeConference,
   onRoomClick,
+  note,
+  onSaveNote,
 }: SessionCardProps) {
   const sessionRef = useRef<HTMLDivElement>(null);
+  const [showNoteEditor, setShowNoteEditor] = useState(false);
+  const [draftNote, setDraftNote] = useState(note ?? "");
+
+  // Keep draft in sync if the saved note changes externally (e.g. Firestore load),
+  // but only when the editor is not currently open to avoid discarding in-progress edits.
+  useEffect(() => {
+    if (!showNoteEditor) {
+      setDraftNote(note ?? "");
+    }
+  }, [note, showNoteEditor]);
 
   useEffect(() => {
     if (isHighlighted && sessionRef.current) {
@@ -112,6 +127,16 @@ function SessionCard({
       });
     }
   }, [isHighlighted]);
+
+  const handleSaveNote = () => {
+    onSaveNote?.(session.id, draftNote);
+    setShowNoteEditor(false);
+  };
+
+  const handleCancelNote = () => {
+    setDraftNote(note ?? "");
+    setShowNoteEditor(false);
+  };
 
   return (
     <div
@@ -191,6 +216,63 @@ function SessionCard({
               <span>{session.speaker}</span>
             </div>
           </div>
+          {/* Notes section — only shown when the parent provides a save handler */}
+          {onSaveNote && (
+            <div className="mt-3">
+              {note && !showNoteEditor && (
+                <div
+                  className="text-xs text-muted-foreground bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded p-2 mb-2 cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-900/30"
+                  onClick={() => setShowNoteEditor(true)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && setShowNoteEditor(true)}
+                  aria-label="Edit note"
+                >
+                  <div className="flex items-center gap-1 mb-1">
+                    <StickyNote className="h-3 w-3 text-yellow-600 dark:text-yellow-400" />
+                    <span className="font-medium text-yellow-700 dark:text-yellow-400 text-xs">
+                      My Note
+                    </span>
+                  </div>
+                  <p className="line-clamp-3 whitespace-pre-wrap">{note}</p>
+                </div>
+              )}
+              {showNoteEditor ? (
+                <div className="space-y-2">
+                  <Textarea
+                    value={draftNote}
+                    onChange={(e) => setDraftNote(e.target.value)}
+                    placeholder="Type your notes here…"
+                    className="text-sm min-h-[80px]"
+                    autoFocus
+                    aria-label="Session note"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleSaveNote}>
+                      Save Note
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCancelNote}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowNoteEditor(true)}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-0"
+                >
+                  <StickyNote className="h-3.5 w-3.5" />
+                  {note ? "Edit Note" : "Add Note"}
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -203,6 +285,8 @@ interface ScheduleViewProps {
   highlightSessionId?: string;
   categoryFilter?: string;
   trackFilter?: string;
+  notes?: Record<string, string>;
+  onSaveNote?: (sessionId: string, text: string) => void;
 }
 
 // Returns true if the session is currently happening or starts within the next 2 hours
@@ -220,6 +304,8 @@ export function ScheduleView({
   highlightSessionId,
   categoryFilter,
   trackFilter,
+  notes,
+  onSaveNote,
 }: ScheduleViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
@@ -425,6 +511,8 @@ export function ScheduleView({
                     formatTime={formatTime}
                     activeConference={activeConference}
                     onRoomClick={handleRoomClick}
+                    note={notes?.[session.id]}
+                    onSaveNote={onSaveNote}
                   />
                 ))}
               </div>
@@ -456,6 +544,8 @@ export function ScheduleView({
                     formatTime={formatTime}
                     activeConference={activeConference}
                     onRoomClick={handleRoomClick}
+                    note={notes?.[session.id]}
+                    onSaveNote={onSaveNote}
                   />
                 ))
               ) : (

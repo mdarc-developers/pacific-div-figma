@@ -6,6 +6,7 @@ import { FirebaseThemeSync } from "@/app/components/FirebaseThemeSync";
 import { FirebaseConferenceSync } from "@/app/components/FirebaseConferenceSync";
 import { FirebaseBookmarkSync } from "@/app/components/FirebaseBookmarkSync";
 import { FirebaseExhibitorBookmarkSync } from "@/app/components/FirebaseExhibitorBookmarkSync";
+import { FirebaseNotesSync } from "@/app/components/FirebaseNotesSync";
 //import { useState } from 'react';
 //import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 //import { Calendar, Map, User, Bell } from 'lucide-react';
@@ -42,6 +43,7 @@ export default function App() {
       <FirebaseConferenceSync />
       <FirebaseBookmarkSync />
       <FirebaseExhibitorBookmarkSync />
+      <FirebaseNotesSync />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {isMdarcDeveloper && <AdminStatsBar />}
         <ConferenceHeaderErrorBoundary>
