@@ -15,6 +15,7 @@ import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { useUserGroups } from "@/app/hooks/useUserGroups";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
+import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
 import { useNotesContext } from "@/app/contexts/NotesContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
@@ -47,6 +48,7 @@ export function ProfilePage() {
     prevBookmarkedExhibitors,
     toggleExhibitorBookmark,
   } = useExhibitorBookmarkContext();
+  const { sessionCounts, exhibitorCounts } = useBookmarkCountsContext();
   const { notes } = useNotesContext();
   const [error, setError] = useState<string>("");
   const [
@@ -180,6 +182,8 @@ export function ProfilePage() {
         onToggleExhibitorBookmark={toggleExhibitorBookmark}
         notes={notes}
         onNoteSessionClick={handleNoteSessionClick}
+        sessionBookmarkCounts={sessionCounts}
+        exhibitorBookmarkCounts={exhibitorCounts}
       />
 
       {/* Admin card */}

@@ -26,6 +26,8 @@ interface ExhibitorViewProps {
   onToggleBookmark?: (exhibitorId: string) => void;
   highlightExhibitorId?: string;
   onLocationClick?: (exhibitorId: string) => void;
+  /** Aggregate bookmark counts keyed by exhibitor id. */
+  exhibitorBookmarkCounts?: Record<string, number>;
 }
 
 // NEW: Separate component for individual exhibitor
@@ -35,6 +37,7 @@ interface ExhibitorCardProps {
   isHighlighted: boolean;
   onToggleBookmark?: (exhibitorId: string) => void;
   onLocationClick?: (exhibitorId: string) => void;
+  bookmarkCount?: number;
 }
 
 function ExhibitorCard({
@@ -43,6 +46,7 @@ function ExhibitorCard({
   isHighlighted,
   onToggleBookmark,
   onLocationClick,
+  bookmarkCount,
 }: ExhibitorCardProps) {
   const exhibitorRef = useRef<HTMLDivElement>(null);
 
@@ -77,18 +81,24 @@ function ExhibitorCard({
               </div>
             </div>
             {onToggleBookmark && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onToggleBookmark(exhibitor.id)}
-                className="ml-2"
-              >
-                <Bookmark
-                  className={`h-5 w-5 ${
-                    isBookmarked ? "fill-current text-blue-600" : ""
-                  }`}
-                />
-              </Button>
+              <div className="flex items-center gap-1 ml-2 shrink-0">
+                {bookmarkCount !== undefined && bookmarkCount > 0 && (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {bookmarkCount}
+                  </span>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onToggleBookmark(exhibitor.id)}
+                >
+                  <Bookmark
+                    className={`h-5 w-5 ${
+                      isBookmarked ? "fill-current text-blue-600" : ""
+                    }`}
+                  />
+                </Button>
+              </div>
             )}
           </div>
         </CardHeader>
@@ -141,6 +151,7 @@ export function ExhibitorView({
   onToggleBookmark,
   highlightExhibitorId,
   onLocationClick,
+  exhibitorBookmarkCounts = {},
 }: ExhibitorViewProps) {
   const [selectedType, setSelectedType] = useState<string>("all");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -202,6 +213,7 @@ export function ExhibitorView({
                     isHighlighted={highlightExhibitorId === exhibitor.id}
                     onToggleBookmark={onToggleBookmark}
                     onLocationClick={onLocationClick}
+                    bookmarkCount={exhibitorBookmarkCounts[exhibitor.id]}
                   />
                 ))}
             </div>
@@ -220,6 +232,7 @@ export function ExhibitorView({
                   isHighlighted={highlightExhibitorId === exhibitor.id}
                   onToggleBookmark={onToggleBookmark}
                   onLocationClick={onLocationClick}
+                  bookmarkCount={exhibitorBookmarkCounts[exhibitor.id]}
                 />
               ))}
           </TabsContent>

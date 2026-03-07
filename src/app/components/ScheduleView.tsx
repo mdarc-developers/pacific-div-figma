@@ -95,6 +95,7 @@ interface SessionCardProps {
   onRoomClick?: (roomName: string) => void;
   note?: string;
   onSaveNote?: (sessionId: string, text: string) => void;
+  bookmarkCount?: number;
 }
 
 function SessionCard({
@@ -106,6 +107,7 @@ function SessionCard({
   onRoomClick,
   note,
   onSaveNote,
+  bookmarkCount,
 }: SessionCardProps) {
   const sessionRef = useRef<HTMLDivElement>(null);
   const [showNoteEditor, setShowNoteEditor] = useState(false);
@@ -161,18 +163,24 @@ function SessionCard({
               </div>
             </div>
             {onToggleBookmark && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onToggleBookmark(session.id)}
-                className="ml-2"
-              >
-                <Bookmark
-                  className={`h-5 w-5 ${
-                    isBookmarked ? "fill-current text-blue-600" : ""
-                  }`}
-                />
-              </Button>
+              <div className="flex items-center gap-1 ml-2 shrink-0">
+                {bookmarkCount !== undefined && bookmarkCount > 0 && (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {bookmarkCount}
+                  </span>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onToggleBookmark(session.id)}
+                >
+                  <Bookmark
+                    className={`h-5 w-5 ${
+                      isBookmarked ? "fill-current text-blue-600" : ""
+                    }`}
+                  />
+                </Button>
+              </div>
             )}
           </div>
         </CardHeader>
@@ -287,6 +295,8 @@ interface ScheduleViewProps {
   trackFilter?: string;
   notes?: Record<string, string>;
   onSaveNote?: (sessionId: string, text: string) => void;
+  /** Aggregate bookmark counts keyed by session id. */
+  sessionBookmarkCounts?: Record<string, number>;
 }
 
 // Returns true if the session is currently happening or starts within the next 2 hours
@@ -306,6 +316,7 @@ export function ScheduleView({
   trackFilter,
   notes,
   onSaveNote,
+  sessionBookmarkCounts = {},
 }: ScheduleViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
@@ -513,6 +524,7 @@ export function ScheduleView({
                     onRoomClick={handleRoomClick}
                     note={notes?.[session.id]}
                     onSaveNote={onSaveNote}
+                    bookmarkCount={sessionBookmarkCounts[session.id]}
                   />
                 ))}
               </div>
@@ -546,6 +558,7 @@ export function ScheduleView({
                     onRoomClick={handleRoomClick}
                     note={notes?.[session.id]}
                     onSaveNote={onSaveNote}
+                    bookmarkCount={sessionBookmarkCounts[session.id]}
                   />
                 ))
               ) : (

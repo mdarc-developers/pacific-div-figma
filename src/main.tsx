@@ -5,6 +5,7 @@ import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 import { AuthProvider } from "@/app/contexts/AuthContext";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
+import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
@@ -18,15 +19,17 @@ createRoot(document.getElementById("root")!).render(
       <ConferenceProvider>
         <BookmarkProvider>
           <ExhibitorBookmarkProvider>
-            <NotesProvider>
-              <AuthProvider>
-                <SearchProvider>
-                  <BrowserRouter>
-                    <App />
-                  </BrowserRouter>
-                </SearchProvider>
-              </AuthProvider>
-            </NotesProvider>
+            <BookmarkCountsProvider>
+              <NotesProvider>
+                <AuthProvider>
+                  <SearchProvider>
+                    <BrowserRouter>
+                      <App />
+                    </BrowserRouter>
+                  </SearchProvider>
+                </AuthProvider>
+              </NotesProvider>
+            </BookmarkCountsProvider>
           </ExhibitorBookmarkProvider>
         </BookmarkProvider>
       </ConferenceProvider>
