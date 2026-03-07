@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # to-convention.sh — split test-results/testoutput.txt by convention name.
 #
 # For each convention in the list, grep testoutput.txt (case-insensitive) and
 # write matching lines to testoutput-{convention}-YYYYMMDD.txt in this same
 # directory.
 #
-# Usage: bash test-results/to-convention.sh
+# Usage: ./test-results/to-convention.sh
 #        (or run from within test-results/: ./to-convention.sh)
 
 set -euo pipefail
