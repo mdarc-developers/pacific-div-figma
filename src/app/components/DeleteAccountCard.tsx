@@ -54,7 +54,9 @@ export function DeleteAccountCard({ onDeleteAccount }: DeleteAccountCardProps) {
                 <AlertDialogTitle>Delete account?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. Your account and all associated
-                  data will be permanently deleted.
+                  data will be permanently deleted. We recommend exporting your
+                  data using the <strong>Export My Data</strong> card above
+                  before proceeding.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

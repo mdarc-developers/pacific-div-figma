@@ -40,6 +40,15 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // ── Audit logs — users may create entries in their own subcollection;
+    //    mdarc-developers may read all audit logs for compliance review.
+    match /users/{userId}/auditLog/{entryId} {
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read: if (request.auth != null && request.auth.uid == userId)
+        || isMdarcDeveloper();
+      allow update, delete: if false;
+    }
+
     // ── Groups — readable by authenticated users; written via admin SDK only
     match /groups/{groupId} {
       allow read: if request.auth != null;
