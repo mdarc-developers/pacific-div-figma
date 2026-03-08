@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { Bookmark, Clock, MapPin, Mic, StickyNote, Zap } from "lucide-react";
+import { Bookmark, Clock, MapPin, Mic, StickyNote, Star, Zap } from "lucide-react";
 import { Session, Conference } from "@/types/conference";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -96,6 +96,9 @@ interface SessionCardProps {
   note?: string;
   onSaveNote?: (sessionId: string, text: string) => void;
   bookmarkCount?: number;
+  isVoted?: boolean;
+  onToggleVote?: (sessionId: string) => void;
+  voteCount?: number;
 }
 
 function SessionCard({
@@ -108,6 +111,9 @@ function SessionCard({
   note,
   onSaveNote,
   bookmarkCount,
+  isVoted,
+  onToggleVote,
+  voteCount,
 }: SessionCardProps) {
   const sessionRef = useRef<HTMLDivElement>(null);
   const [showNoteEditor, setShowNoteEditor] = useState(false);
@@ -177,6 +183,27 @@ function SessionCard({
                   <Bookmark
                     className={`h-5 w-5 ${
                       isBookmarked ? "fill-current text-blue-600" : ""
+                    }`}
+                  />
+                </Button>
+              </div>
+            )}
+            {onToggleVote && (
+              <div className="flex items-center gap-1 ml-1 shrink-0">
+                {voteCount !== undefined && voteCount >= 0 && (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {voteCount}
+                  </span>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onToggleVote(session.id)}
+                  aria-label={isVoted ? "Remove vote" : "Vote for this session"}
+                >
+                  <Star
+                    className={`h-5 w-5 ${
+                      isVoted ? "fill-current text-yellow-500" : ""
                     }`}
                   />
                 </Button>
@@ -297,6 +324,11 @@ interface ScheduleViewProps {
   onSaveNote?: (sessionId: string, text: string) => void;
   /** Aggregate bookmark counts keyed by session id. */
   sessionBookmarkCounts?: Record<string, number>;
+  /** Sessions the current user has voted for. */
+  votedSessions?: string[];
+  onToggleSessionVote?: (sessionId: string) => void;
+  /** Aggregate vote counts keyed by session id. */
+  sessionVoteCounts?: Record<string, number>;
 }
 
 // Returns true if the session is currently happening or starts within the next 2 hours
@@ -317,6 +349,9 @@ export function ScheduleView({
   notes,
   onSaveNote,
   sessionBookmarkCounts = {},
+  votedSessions = [],
+  onToggleSessionVote,
+  sessionVoteCounts = {},
 }: ScheduleViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
@@ -525,6 +560,9 @@ export function ScheduleView({
                     note={notes?.[session.id]}
                     onSaveNote={onSaveNote}
                     bookmarkCount={sessionBookmarkCounts[session.id]}
+                    isVoted={votedSessions.includes(session.id)}
+                    onToggleVote={onToggleSessionVote}
+                    voteCount={sessionVoteCounts[session.id]}
                   />
                 ))}
               </div>
@@ -559,6 +597,9 @@ export function ScheduleView({
                     note={notes?.[session.id]}
                     onSaveNote={onSaveNote}
                     bookmarkCount={sessionBookmarkCounts[session.id]}
+                    isVoted={votedSessions.includes(session.id)}
+                    onToggleVote={onToggleSessionVote}
+                    voteCount={sessionVoteCounts[session.id]}
                   />
                 ))
               ) : (

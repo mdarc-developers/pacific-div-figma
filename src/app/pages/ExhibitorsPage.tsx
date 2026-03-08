@@ -4,6 +4,8 @@ import { ExhibitorsMapView } from "@/app/components/ExhibitorsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
 import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
+import { useExhibitorVoteContext } from "@/app/contexts/ExhibitorVoteContext";
+import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { MAP_DATA, BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
@@ -18,6 +20,8 @@ export function ExhibitorsPage() {
   const { bookmarkedExhibitors, toggleExhibitorBookmark } =
     useExhibitorBookmarkContext();
   const { exhibitorCounts } = useBookmarkCountsContext();
+  const { votedExhibitors, toggleExhibitorVote } = useExhibitorVoteContext();
+  const { exhibitorVoteCounts } = useVoteCountsContext();
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
   const boothEntry = BOOTH_DATA[activeConference.id] ?? []; // url and Booth[]
   const exhibitorEntry = EXHIBITOR_DATA[activeConference.id]; // url and Exhibitor[]
@@ -98,6 +102,9 @@ export function ExhibitorsPage() {
         highlightExhibitorId={highlightedExhibitorId}
         onLocationClick={handleLocationClick}
         exhibitorBookmarkCounts={exhibitorCounts}
+        votedExhibitors={votedExhibitors}
+        onToggleVote={toggleExhibitorVote}
+        exhibitorVoteCounts={exhibitorVoteCounts}
       />
     </div>
   );

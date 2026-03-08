@@ -127,6 +127,54 @@ export async function setUserNotes(
   );
 }
 
+export async function getUserSessionVotes(
+  uid: string,
+  conferenceId: string,
+): Promise<string[]> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return [];
+  const data = snap.data();
+  return Array.isArray(data?.sessionVotes?.[conferenceId])
+    ? (data.sessionVotes[conferenceId] as string[])
+    : [];
+}
+
+export async function setUserSessionVotes(
+  uid: string,
+  conferenceId: string,
+  votes: string[],
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { sessionVotes: { [conferenceId]: votes } },
+    { merge: true },
+  );
+}
+
+export async function getUserExhibitorVotes(
+  uid: string,
+  conferenceId: string,
+): Promise<string[]> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return [];
+  const data = snap.data();
+  return Array.isArray(data?.exhibitorVotes?.[conferenceId])
+    ? (data.exhibitorVotes[conferenceId] as string[])
+    : [];
+}
+
+export async function setUserExhibitorVotes(
+  uid: string,
+  conferenceId: string,
+  votes: string[],
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { exhibitorVotes: { [conferenceId]: votes } },
+    { merge: true },
+  );
+}
+
 export interface NotificationSettings {
   smsEnabled: boolean;
   phoneNumber: string;

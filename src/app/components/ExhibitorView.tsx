@@ -14,7 +14,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { Bookmark, MapPin } from "lucide-react";
+import { Bookmark, MapPin, Star } from "lucide-react";
 import { Exhibitor } from "@/types/conference";
 //import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
@@ -28,6 +28,11 @@ interface ExhibitorViewProps {
   onLocationClick?: (exhibitorId: string) => void;
   /** Aggregate bookmark counts keyed by exhibitor id. */
   exhibitorBookmarkCounts?: Record<string, number>;
+  /** Exhibitors the current user has voted for. */
+  votedExhibitors?: string[];
+  onToggleVote?: (exhibitorId: string) => void;
+  /** Aggregate vote counts keyed by exhibitor id. */
+  exhibitorVoteCounts?: Record<string, number>;
 }
 
 // NEW: Separate component for individual exhibitor
@@ -38,6 +43,9 @@ interface ExhibitorCardProps {
   onToggleBookmark?: (exhibitorId: string) => void;
   onLocationClick?: (exhibitorId: string) => void;
   bookmarkCount?: number;
+  isVoted?: boolean;
+  onToggleVote?: (exhibitorId: string) => void;
+  voteCount?: number;
 }
 
 function ExhibitorCard({
@@ -47,6 +55,9 @@ function ExhibitorCard({
   onToggleBookmark,
   onLocationClick,
   bookmarkCount,
+  isVoted,
+  onToggleVote,
+  voteCount,
 }: ExhibitorCardProps) {
   const exhibitorRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +106,27 @@ function ExhibitorCard({
                   <Bookmark
                     className={`h-5 w-5 ${
                       isBookmarked ? "fill-current text-blue-600" : ""
+                    }`}
+                  />
+                </Button>
+              </div>
+            )}
+            {onToggleVote && (
+              <div className="flex items-center gap-1 ml-1 shrink-0">
+                {voteCount !== undefined && voteCount >= 0 && (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {voteCount}
+                  </span>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onToggleVote(exhibitor.id)}
+                  aria-label={isVoted ? "Remove vote" : "Vote for this exhibitor"}
+                >
+                  <Star
+                    className={`h-5 w-5 ${
+                      isVoted ? "fill-current text-yellow-500" : ""
                     }`}
                   />
                 </Button>
@@ -152,6 +184,9 @@ export function ExhibitorView({
   highlightExhibitorId,
   onLocationClick,
   exhibitorBookmarkCounts = {},
+  votedExhibitors = [],
+  onToggleVote,
+  exhibitorVoteCounts = {},
 }: ExhibitorViewProps) {
   const [selectedType, setSelectedType] = useState<string>("all");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -214,6 +249,9 @@ export function ExhibitorView({
                     onToggleBookmark={onToggleBookmark}
                     onLocationClick={onLocationClick}
                     bookmarkCount={exhibitorBookmarkCounts[exhibitor.id]}
+                    isVoted={votedExhibitors.includes(exhibitor.id)}
+                    onToggleVote={onToggleVote}
+                    voteCount={exhibitorVoteCounts[exhibitor.id]}
                   />
                 ))}
             </div>
@@ -233,6 +271,9 @@ export function ExhibitorView({
                   onToggleBookmark={onToggleBookmark}
                   onLocationClick={onLocationClick}
                   bookmarkCount={exhibitorBookmarkCounts[exhibitor.id]}
+                  isVoted={votedExhibitors.includes(exhibitor.id)}
+                  onToggleVote={onToggleVote}
+                  voteCount={exhibitorVoteCounts[exhibitor.id]}
                 />
               ))}
           </TabsContent>

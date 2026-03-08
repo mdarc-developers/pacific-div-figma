@@ -8,6 +8,9 @@ import { FirebaseBookmarkSync } from "@/app/components/FirebaseBookmarkSync";
 import { FirebaseExhibitorBookmarkSync } from "@/app/components/FirebaseExhibitorBookmarkSync";
 import { FirebaseBookmarkCountsSync } from "@/app/components/FirebaseBookmarkCountsSync";
 import { FirebaseNotesSync } from "@/app/components/FirebaseNotesSync";
+import { FirebaseVoteSync } from "@/app/components/FirebaseVoteSync";
+import { FirebaseExhibitorVoteSync } from "@/app/components/FirebaseExhibitorVoteSync";
+import { FirebaseVoteCountsSync } from "@/app/components/FirebaseVoteCountsSync";
 //import { useState } from 'react';
 //import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 //import { Calendar, Map, User, Bell } from 'lucide-react';
@@ -46,6 +49,9 @@ export default function App() {
       <FirebaseExhibitorBookmarkSync />
       <FirebaseBookmarkCountsSync />
       <FirebaseNotesSync />
+      <FirebaseVoteSync />
+      <FirebaseExhibitorVoteSync />
+      <FirebaseVoteCountsSync />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {isMdarcDeveloper && <AdminStatsBar />}
         <ConferenceHeaderErrorBoundary>
