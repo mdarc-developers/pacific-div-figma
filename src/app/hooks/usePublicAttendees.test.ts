@@ -19,11 +19,6 @@ vi.mock("firebase/firestore", async (importOriginal) => {
   };
 });
 
-// Mock exportDataService to avoid testing audit-log internals here
-vi.mock("@/services/exportDataService", () => ({
-  writeAuditLog: vi.fn().mockResolvedValue(undefined),
-}));
-
 // Mock AuthContext — default to an authenticated, email-verified user
 const mockUser = { uid: "test-uid", emailVerified: true };
 vi.mock("@/app/contexts/AuthContext", () => ({

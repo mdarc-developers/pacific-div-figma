@@ -1,10 +1,11 @@
-import { Users, UserPlus } from "lucide-react";
+import { Users, UserPlus, ExternalLink } from "lucide-react";
 import { useAdminStats } from "@/app/hooks/useAdminStats";
 
 /**
  * A narrow banner displayed above the ConferenceHeader for users in the
  * mdarc-developers group.  Shows aggregate counts from Firestore so
- * developers can quickly see live data metrics.
+ * developers can quickly see live data metrics, plus quick-access links
+ * to Firebase Console and Google Cloud Logging.
  */
 export function AdminStatsBar() {
   const { userProfileCount, signupCount, loading, error } = useAdminStats();
@@ -12,7 +13,7 @@ export function AdminStatsBar() {
   return (
     <div
       data-testid="admin-stats-bar"
-      className="flex items-center gap-3 px-3 py-1.5 mb-2 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs font-medium"
+      className="flex flex-wrap items-center gap-3 px-3 py-1.5 mb-2 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs font-medium"
     >
       <span className="flex items-center gap-1.5">
         <Users className="h-3.5 w-3.5" aria-hidden="true" />
@@ -49,6 +50,30 @@ export function AdminStatsBar() {
           </span>
         </span>
       )}
+      <span className="flex items-center gap-2 ml-auto">
+        <a
+          data-testid="admin-firebase-console-link"
+          href="https://console.firebase.google.com/project/pacific-div/overview"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
+          title="Firebase Console"
+        >
+          Firebase Console
+          <ExternalLink className="h-3 w-3" aria-hidden="true" />
+        </a>
+        <a
+          data-testid="admin-cloud-logs-link"
+          href="https://console.cloud.google.com/logs?project=pacific-div"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
+          title="Google Cloud Logs"
+        >
+          Cloud Logs
+          <ExternalLink className="h-3 w-3" aria-hidden="true" />
+        </a>
+      </span>
     </div>
   );
 }

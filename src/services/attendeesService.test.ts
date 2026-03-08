@@ -7,11 +7,6 @@ vi.mock("@/lib/firebase", () => ({
   storage: {},
 }));
 
-// Mock exportDataService to avoid testing audit-log internals here
-vi.mock("@/services/exportDataService", () => ({
-  writeAuditLog: vi.fn().mockResolvedValue(undefined),
-}));
-
 const mockGetDocs = vi.fn();
 const mockSetDoc = vi.fn();
 const mockDeleteDoc = vi.fn();
@@ -40,10 +35,7 @@ import {
   deletePublicProfile,
   ATTENDEES_STORAGE_KEY,
 } from "@/services/attendeesService";
-import { writeAuditLog } from "@/services/exportDataService";
 import type { PublicAttendeeProfile } from "@/types/conference";
-
-const mockWriteAuditLog = writeAuditLog as ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   localStorage.clear();
@@ -94,7 +86,7 @@ describe("saveAttendeesToStorage", () => {
 describe("fetchPublicAttendees", () => {
   it("returns an empty array when the collection is empty", async () => {
     mockGetDocs.mockResolvedValue({ docs: [] });
-    const result = await fetchPublicAttendees("uid-caller");
+    const result = await fetchPublicAttendees();
     expect(result).toEqual([]);
   });
 
@@ -124,7 +116,7 @@ describe("fetchPublicAttendees", () => {
       ],
     });
 
-    const result = await fetchPublicAttendees("uid-caller");
+    const result = await fetchPublicAttendees();
     expect(result).toHaveLength(2);
     // Sensitive fields must be absent from the result
     expect(result[0]).toEqual({
@@ -153,41 +145,21 @@ describe("fetchPublicAttendees", () => {
       ],
     });
 
-    const result = await fetchPublicAttendees("uid-caller");
+    const result = await fetchPublicAttendees();
     expect(result[0]).toEqual({ uid: "uid3" });
   });
 
-  it("writes a success audit log entry after a successful fetch", async () => {
-    mockGetDocs.mockResolvedValue({ docs: [] });
-    await fetchPublicAttendees("uid-caller");
-    expect(mockWriteAuditLog).toHaveBeenCalledWith(
-      "uid-caller",
-      "attendee_list_read",
-      expect.objectContaining({ resultCode: 200 }),
-    );
-  });
-
-  it("writes a failure audit log entry and rethrows when Firestore read fails", async () => {
+  it("rethrows when Firestore read fails", async () => {
     mockGetDocs.mockRejectedValue(new Error("network error"));
-    await expect(fetchPublicAttendees("uid-caller")).rejects.toThrow("network error");
-    expect(mockWriteAuditLog).toHaveBeenCalledWith(
-      "uid-caller",
-      "attendee_list_read",
-      expect.objectContaining({ resultCode: 500 }),
-    );
+    await expect(fetchPublicAttendees()).rejects.toThrow("network error");
   });
 
-  it("uses resultCode 403 when Firestore returns a permission-denied error", async () => {
+  it("rethrows permission-denied errors", async () => {
     const permissionError = Object.assign(new Error("permission-denied"), {
       code: "permission-denied",
     });
     mockGetDocs.mockRejectedValue(permissionError);
-    await expect(fetchPublicAttendees("uid-caller")).rejects.toThrow();
-    expect(mockWriteAuditLog).toHaveBeenCalledWith(
-      "uid-caller",
-      "attendee_list_read",
-      expect.objectContaining({ resultCode: 403 }),
-    );
+    await expect(fetchPublicAttendees()).rejects.toThrow();
   });
 });
 

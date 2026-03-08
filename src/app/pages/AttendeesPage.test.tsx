@@ -39,10 +39,6 @@ vi.mock("firebase/firestore", async (importOriginal) => {
   };
 });
 
-vi.mock("@/services/exportDataService", () => ({
-  writeAuditLog: vi.fn().mockResolvedValue(undefined),
-}));
-
 vi.mock("@/app/hooks/useSignupCount", () => ({
   useSignupCount: () => null,
 }));
