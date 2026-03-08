@@ -41,7 +41,21 @@ export function AccountCard({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Account</CardTitle>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <CardTitle className="text-base">Account</CardTitle>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="profile-visible" className="text-sm font-medium cursor-pointer">
+              Make Profile Visible in /attendees
+            </Label>
+            <Checkbox
+              id="profile-visible"
+              checked={profileVisible}
+              onCheckedChange={(checked) =>
+                onProfileVisibleChange(checked === true)
+              }
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between gap-2">
@@ -113,19 +127,6 @@ export function AccountCard({
             </div>
           </>
         )}
-        <Separator />
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="profile-visible"
-            checked={profileVisible}
-            onCheckedChange={(checked) =>
-              onProfileVisibleChange(checked === true)
-            }
-          />
-          <Label htmlFor="profile-visible" className="text-sm font-medium cursor-pointer">
-            Make Profile Visible in /attendees
-          </Label>
-        </div>
       </CardContent>
     </Card>
   );
