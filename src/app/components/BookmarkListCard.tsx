@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Bookmark, StickyNote, Star, Trash2 } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -9,32 +8,7 @@ import {
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
 import { Session, Exhibitor } from "@/types/conference";
-
-/** Persists a boolean open/closed state to localStorage, defaulting to open. */
-function useSectionOpen(key: string): [boolean, () => void] {
-  const [isOpen, setIsOpen] = useState<boolean>(() => {
-    try {
-      const stored = localStorage.getItem(key);
-      return stored === null ? true : stored === "true";
-    } catch {
-      return true;
-    }
-  });
-
-  const toggle = () => {
-    setIsOpen((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem(key, String(next));
-      } catch {
-        /* ignore storage errors */
-      }
-      return next;
-    });
-  };
-
-  return [isOpen, toggle];
-}
+import { useActivitySections } from "@/app/contexts/ActivitySectionsContext";
 
 /** Section header with a vertical-bar + chevron collapse toggle on the left. */
 function SectionHeader({
@@ -140,21 +114,7 @@ export function BookmarkListCard({
   onToggleExhibitorVote,
   exhibitorVoteCounts = {},
 }: BookmarkListCardProps) {
-  // Collapsible section state — default open, persisted to localStorage
-  const [bookmarkedSessionsOpen, toggleBookmarkedSessions] = useSectionOpen(
-    "profile-bookmarked-sessions-open",
-  );
-  const [bookmarkedExhibitorsOpen, toggleBookmarkedExhibitors] =
-    useSectionOpen("profile-bookmarked-exhibitors-open");
-  const [votedSessionsOpen, toggleVotedSessions] = useSectionOpen(
-    "profile-voted-sessions-open",
-  );
-  const [votedExhibitorsOpen, toggleVotedExhibitors] = useSectionOpen(
-    "profile-voted-exhibitors-open",
-  );
-  const [myNotesOpen, toggleMyNotes] = useSectionOpen(
-    "profile-my-notes-open",
-  );
+  const { sections, toggleSection } = useActivitySections();
 
   const sessionMap = new Map(sessions.map((s) => [s.id, s]));
 
@@ -194,11 +154,11 @@ export function BookmarkListCard({
         <SectionHeader
           title="Bookmarked Sessions"
           count={bookmarked.length}
-          isOpen={bookmarkedSessionsOpen}
-          onToggle={toggleBookmarkedSessions}
+          isOpen={sections.bookmarkedSessions}
+          onToggle={() => toggleSection("bookmarkedSessions")}
         />
 
-        {bookmarkedSessionsOpen && (bookmarked.length > 0 || previous.length > 0) && (
+        {sections.bookmarkedSessions && (bookmarked.length > 0 || previous.length > 0) && (
           <ul className="space-y-2 mt-1" data-testid="bookmark-list">
             {bookmarked.map((session) => (
               <li
@@ -279,11 +239,11 @@ export function BookmarkListCard({
         <SectionHeader
           title="Bookmarked Exhibitors"
           count={bookmarkedExhibitorList.length}
-          isOpen={bookmarkedExhibitorsOpen}
-          onToggle={toggleBookmarkedExhibitors}
+          isOpen={sections.bookmarkedExhibitors}
+          onToggle={() => toggleSection("bookmarkedExhibitors")}
         />
 
-        {bookmarkedExhibitorsOpen && (bookmarkedExhibitorList.length > 0 ||
+        {sections.bookmarkedExhibitors && (bookmarkedExhibitorList.length > 0 ||
           previousExhibitorList.length > 0) && (
           <ul className="space-y-2 mt-1" data-testid="exhibitor-bookmark-list">
             {bookmarkedExhibitorList.map((exhibitor) => (
@@ -373,11 +333,11 @@ export function BookmarkListCard({
         <SectionHeader
           title="Voted Sessions"
           count={votedSessionIds.length}
-          isOpen={votedSessionsOpen}
-          onToggle={toggleVotedSessions}
+          isOpen={sections.votedSessions}
+          onToggle={() => toggleSection("votedSessions")}
         />
 
-        {votedSessionsOpen && votedSessionIds.length > 0 && (
+        {sections.votedSessions && votedSessionIds.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-sessions-list">
             {votedSessionIds
               .map((id) => sessionMap.get(id))
@@ -417,11 +377,11 @@ export function BookmarkListCard({
         <SectionHeader
           title="Voted Exhibitors"
           count={votedExhibitorIds.length}
-          isOpen={votedExhibitorsOpen}
-          onToggle={toggleVotedExhibitors}
+          isOpen={sections.votedExhibitors}
+          onToggle={() => toggleSection("votedExhibitors")}
         />
 
-        {votedExhibitorsOpen && votedExhibitorIds.length > 0 && (
+        {sections.votedExhibitors && votedExhibitorIds.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-exhibitors-list">
             {votedExhibitorIds
               .map((id) => exhibitorMap.get(id))
@@ -461,11 +421,11 @@ export function BookmarkListCard({
         <SectionHeader
           title="My Notes"
           count={notedSessions.length}
-          isOpen={myNotesOpen}
-          onToggle={toggleMyNotes}
+          isOpen={sections.myNotes}
+          onToggle={() => toggleSection("myNotes")}
         />
 
-        {myNotesOpen && notedSessions.length > 0 && (
+        {sections.myNotes && notedSessions.length > 0 && (
           <ul
             className="space-y-2 mt-1"
             data-testid="notes-list"
