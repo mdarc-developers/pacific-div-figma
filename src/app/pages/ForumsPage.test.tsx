@@ -149,6 +149,8 @@ vi.mock("@/lib/sessionData", async (importOriginal) => {
 import { ForumsPage } from "@/app/pages/ForumsPage";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
+import { VoteProvider } from "@/app/contexts/VoteContext";
+import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderForumsPage() {
@@ -156,9 +158,13 @@ function renderForumsPage() {
     <ConferenceProvider>
       <BookmarkProvider>
         <BookmarkCountsProvider>
-          <SearchProvider>
-            <ForumsPage />
-          </SearchProvider>
+          <VoteProvider>
+            <VoteCountsProvider>
+              <SearchProvider>
+                <ForumsPage />
+              </SearchProvider>
+            </VoteCountsProvider>
+          </VoteProvider>
         </BookmarkCountsProvider>
       </BookmarkProvider>
     </ConferenceProvider>,
