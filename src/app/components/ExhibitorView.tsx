@@ -8,13 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import { Textarea } from "@/app/components/ui/textarea";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { Bookmark, MapPin, Star } from "lucide-react";
+import { Bookmark, MapPin, Star, StickyNote } from "lucide-react";
 import { Exhibitor } from "@/types/conference";
 //import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
@@ -33,6 +34,9 @@ interface ExhibitorViewProps {
   onToggleVote?: (exhibitorId: string) => void;
   /** Aggregate vote counts keyed by exhibitor id. */
   exhibitorVoteCounts?: Record<string, number>;
+  /** Notes for exhibitors keyed by exhibitor id. */
+  exhibitorNotes?: Record<string, string>;
+  onSaveExhibitorNote?: (exhibitorId: string, text: string) => void;
 }
 
 // NEW: Separate component for individual exhibitor
@@ -46,6 +50,8 @@ interface ExhibitorCardProps {
   isVoted?: boolean;
   onToggleVote?: (exhibitorId: string) => void;
   voteCount?: number;
+  note?: string;
+  onSaveNote?: (exhibitorId: string, text: string) => void;
 }
 
 function ExhibitorCard({
@@ -58,8 +64,20 @@ function ExhibitorCard({
   isVoted,
   onToggleVote,
   voteCount,
+  note,
+  onSaveNote,
 }: ExhibitorCardProps) {
   const exhibitorRef = useRef<HTMLDivElement>(null);
+  const [showNoteEditor, setShowNoteEditor] = useState(false);
+  const [draftNote, setDraftNote] = useState(note ?? "");
+
+  // Keep draft in sync if the saved note changes externally (e.g. Firestore load),
+  // but only when the editor is not currently open to avoid discarding in-progress edits.
+  useEffect(() => {
+    if (!showNoteEditor) {
+      setDraftNote(note ?? "");
+    }
+  }, [note, showNoteEditor]);
 
   useEffect(() => {
     if (isHighlighted && exhibitorRef.current) {
@@ -69,6 +87,16 @@ function ExhibitorCard({
       });
     }
   }, [isHighlighted]);
+
+  const handleSaveNote = () => {
+    onSaveNote?.(exhibitor.id, draftNote);
+    setShowNoteEditor(false);
+  };
+
+  const handleCancelNote = () => {
+    setDraftNote(note ?? "");
+    setShowNoteEditor(false);
+  };
 
   return (
     <div
@@ -170,6 +198,63 @@ function ExhibitorCard({
               <span>{exhibitor.boothName}</span>
             </div>
           </div>
+          {/* Notes section — only shown when the parent provides a save handler */}
+          {onSaveNote && (
+            <div className="mt-3">
+              {note && !showNoteEditor && (
+                <div
+                  className="text-xs text-muted-foreground bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded p-2 mb-2 cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-900/30"
+                  onClick={() => setShowNoteEditor(true)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && setShowNoteEditor(true)}
+                  aria-label="Edit note"
+                >
+                  <div className="flex items-center gap-1 mb-1">
+                    <StickyNote className="h-3 w-3 text-yellow-600 dark:text-yellow-400" />
+                    <span className="font-medium text-yellow-700 dark:text-yellow-400 text-xs">
+                      My Note
+                    </span>
+                  </div>
+                  <p className="line-clamp-3 whitespace-pre-wrap">{note}</p>
+                </div>
+              )}
+              {showNoteEditor ? (
+                <div className="space-y-2">
+                  <Textarea
+                    value={draftNote}
+                    onChange={(e) => setDraftNote(e.target.value)}
+                    placeholder="Type your notes here…"
+                    className="text-sm min-h-[80px]"
+                    autoFocus
+                    aria-label="Exhibitor note"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleSaveNote}>
+                      Save Note
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCancelNote}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowNoteEditor(true)}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-0"
+                >
+                  <StickyNote className="h-3.5 w-3.5" />
+                  {note ? "Edit Note" : "Add Note"}
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -185,6 +270,8 @@ export function ExhibitorView({
   votedExhibitors = [],
   onToggleVote,
   exhibitorVoteCounts = {},
+  exhibitorNotes = {},
+  onSaveExhibitorNote,
 }: ExhibitorViewProps) {
   const [selectedType, setSelectedType] = useState<string>("all");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -250,6 +337,8 @@ export function ExhibitorView({
                     isVoted={votedExhibitors.includes(exhibitor.id)}
                     onToggleVote={onToggleVote}
                     voteCount={exhibitorVoteCounts[exhibitor.id]}
+                    note={exhibitorNotes[exhibitor.id]}
+                    onSaveNote={onSaveExhibitorNote}
                   />
                 ))}
             </div>
@@ -272,6 +361,8 @@ export function ExhibitorView({
                   isVoted={votedExhibitors.includes(exhibitor.id)}
                   onToggleVote={onToggleVote}
                   voteCount={exhibitorVoteCounts[exhibitor.id]}
+                  note={exhibitorNotes[exhibitor.id]}
+                  onSaveNote={onSaveExhibitorNote}
                 />
               ))}
           </TabsContent>
