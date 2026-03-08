@@ -45,6 +45,7 @@ import { VoteProvider } from "@/app/contexts/VoteContext";
 import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
+import { ActivitySectionsProvider } from "@/app/contexts/ActivitySectionsContext";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 function renderProfilePage() {
@@ -60,7 +61,9 @@ function renderProfilePage() {
                     <ExhibitorVoteProvider>
                       <VoteCountsProvider>
                         <NotesProvider>
-                          <ProfilePage />
+                          <ActivitySectionsProvider>
+                            <ProfilePage />
+                          </ActivitySectionsProvider>
                         </NotesProvider>
                       </VoteCountsProvider>
                     </ExhibitorVoteProvider>

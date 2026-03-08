@@ -1,8 +1,14 @@
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
+import { ActivitySectionsProvider } from "@/app/contexts/ActivitySectionsContext";
 import { Session } from "@/types/conference";
+
+/** Wraps the component with the required context providers. */
+function renderCard(ui: React.ReactElement) {
+  return render(<ActivitySectionsProvider>{ui}</ActivitySectionsProvider>);
+}
 
 const makeSessions = (): Session[] => [
   {
@@ -40,7 +46,7 @@ const makeSessions = (): Session[] => [
 describe("BookmarkListCard", () => {
   it("renders without crashing", () => {
     expect(() =>
-      render(
+      renderCard(
         <BookmarkListCard
           sessions={[]}
           bookmarkedIds={[]}
@@ -52,7 +58,7 @@ describe("BookmarkListCard", () => {
   });
 
   it("shows 'None yet' for bookmarks when no bookmarks exist", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -66,7 +72,7 @@ describe("BookmarkListCard", () => {
   });
 
   it("shows bookmarked session titles with filled bookmark button", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={["s1", "s2"]}
@@ -84,7 +90,7 @@ describe("BookmarkListCard", () => {
   });
 
   it("shows the bookmark count badge", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={["s1", "s2"]}
@@ -96,7 +102,7 @@ describe("BookmarkListCard", () => {
   });
 
   it("shows previously-bookmarked sessions greyed out with re-bookmark button", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -112,7 +118,7 @@ describe("BookmarkListCard", () => {
   });
 
   it("shows 'Previously bookmarked' label when previous items exist", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={["s1"]}
@@ -125,7 +131,7 @@ describe("BookmarkListCard", () => {
 
   it("calls onToggleBookmark when unbookmark button is clicked", () => {
     const toggle = vi.fn();
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={["s1"]}
@@ -143,7 +149,7 @@ describe("BookmarkListCard", () => {
 
   it("calls onToggleBookmark when re-bookmark button is clicked", () => {
     const toggle = vi.fn();
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -158,7 +164,7 @@ describe("BookmarkListCard", () => {
   });
 
   it("does not render a list when session IDs have no matching session data", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={[]}
         bookmarkedIds={["unknown-id"]}
@@ -170,9 +176,118 @@ describe("BookmarkListCard", () => {
   });
 });
 
+describe("BookmarkListCard — collapsible sections", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("renders a collapse/expand button for each section", () => {
+    renderCard(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse bookmarked exhibitors/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse voted sessions/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse voted exhibitors/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse my notes/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("collapses the Bookmarked Sessions list when the chevron is clicked", () => {
+    renderCard(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    // List is visible initially
+    expect(screen.getByTestId("bookmark-list")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
+    );
+
+    expect(screen.queryByTestId("bookmark-list")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /expand bookmarked sessions/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("re-expands the Bookmarked Sessions list on second click", () => {
+    renderCard(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    const btn = screen.getByRole("button", {
+      name: /collapse bookmarked sessions/i,
+    });
+    fireEvent.click(btn); // collapse
+    fireEvent.click(
+      screen.getByRole("button", { name: /expand bookmarked sessions/i }),
+    ); // expand
+    expect(screen.getByTestId("bookmark-list")).toBeInTheDocument();
+  });
+
+  it("persists collapse state to localStorage", () => {
+    renderCard(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
+    );
+    const stored = JSON.parse(localStorage.getItem("activity-sections") ?? "{}");
+    expect(stored.bookmarkedSessions).toBe(false);
+  });
+
+  it("reads persisted collapsed state from localStorage on mount", () => {
+    localStorage.setItem(
+      "activity-sections",
+      JSON.stringify({ bookmarkedSessions: false }),
+    );
+    renderCard(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    // Section should start collapsed because localStorage says false
+    expect(screen.queryByTestId("bookmark-list")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /expand bookmarked sessions/i }),
+    ).toBeInTheDocument();
+  });
+});
+
 describe("BookmarkListCard — My Notes section", () => {
   it("shows 'None yet' for notes when no notes exist", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -187,7 +302,7 @@ describe("BookmarkListCard — My Notes section", () => {
   });
 
   it("shows session titles for sessions that have notes", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -202,7 +317,7 @@ describe("BookmarkListCard — My Notes section", () => {
   });
 
   it("shows note preview text under each session title", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -215,7 +330,7 @@ describe("BookmarkListCard — My Notes section", () => {
   });
 
   it("shows the notes count badge", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -231,7 +346,7 @@ describe("BookmarkListCard — My Notes section", () => {
 
   it("calls onNoteSessionClick when a noted session is clicked", () => {
     const handleClick = vi.fn();
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}
@@ -248,7 +363,7 @@ describe("BookmarkListCard — My Notes section", () => {
   });
 
   it("skips sessions whose IDs have no matching session data", () => {
-    render(
+    renderCard(
       <BookmarkListCard
         sessions={makeSessions()}
         bookmarkedIds={[]}

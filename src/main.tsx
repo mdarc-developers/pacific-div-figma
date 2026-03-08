@@ -11,6 +11,7 @@ import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
 import { HeaderCollapsedProvider } from "@/app/contexts/HeaderCollapsedContext";
+import { ActivitySectionsProvider } from "@/app/contexts/ActivitySectionsContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
 import { BrowserRouter } from "react-router-dom";
@@ -29,6 +30,7 @@ createRoot(document.getElementById("root")!).render(
                   <VoteCountsProvider>
                     <NotesProvider>
                       <HeaderCollapsedProvider>
+                      <ActivitySectionsProvider>
                         <AuthProvider>
                           <SearchProvider>
                             <BrowserRouter>
@@ -36,6 +38,7 @@ createRoot(document.getElementById("root")!).render(
                             </BrowserRouter>
                           </SearchProvider>
                         </AuthProvider>
+                      </ActivitySectionsProvider>
                       </HeaderCollapsedProvider>
                     </NotesProvider>
                   </VoteCountsProvider>
