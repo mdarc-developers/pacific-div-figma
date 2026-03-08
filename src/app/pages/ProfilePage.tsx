@@ -3,7 +3,6 @@ import { ProfileHeaderCard } from "@/app/components/ProfileHeaderCard";
 import { AccountCard } from "@/app/components/AccountCard";
 import { SettingsCard } from "@/app/components/SettingsCard";
 import { NotificationsCard } from "@/app/components/NotificationsCard";
-import { PrizesCard } from "@/app/components/PrizesCard";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { AttendanceCard } from "@/app/components/AttendanceCard";
 import { AdminCard } from "@/app/components/AdminCard";
@@ -206,15 +205,6 @@ export function ProfilePage() {
         onMinutesBeforeChange={setMinutesBefore}
       />
 
-      <PrizesCard
-        raffleTickets={raffleTickets}
-        onAddTicket={addRaffleTicket}
-        onRemoveTicket={removeRaffleTicket}
-        onAddTicketRange={addRaffleTicketRange}
-        prizes={PRIZE_DATA[activeConference.id] ?? []}
-        prizeWinners={PRIZE_WINNER_DATA[activeConference.id] ?? []}
-      />
-
       <AttendanceCard
         attendance={attendance}
         allConferences={allConferencesList.filter((c) => c.id !== "---") as Conference[]}
@@ -222,7 +212,7 @@ export function ProfilePage() {
         onRemoveConference={removeAttendedConference}
       />
 
-      {/* Activity card */}
+      {/* Prizes & Activity card */}
       <BookmarkListCard
         sessions={SESSION_DATA[activeConference.id] ?? []}
         bookmarkedIds={bookmarkedSessions}
@@ -249,6 +239,13 @@ export function ProfilePage() {
         votedExhibitorIds={votedExhibitors}
         onToggleExhibitorVote={toggleExhibitorVote}
         exhibitorVoteCounts={exhibitorVoteCounts}
+        raffleTickets={raffleTickets}
+        onAddTicket={addRaffleTicket}
+        onRemoveTicket={removeRaffleTicket}
+        onAddTicketRange={addRaffleTicketRange}
+        prizes={PRIZE_DATA[activeConference.id] ?? []}
+        prizeWinners={PRIZE_WINNER_DATA[activeConference.id] ?? []}
+        conferenceName={activeConference.name}
       />
 
       {/* Admin card */}
