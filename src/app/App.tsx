@@ -10,6 +10,7 @@ import { FirebaseBookmarkCountsSync } from "@/app/components/FirebaseBookmarkCou
 import { FirebaseNotesSync } from "@/app/components/FirebaseNotesSync";
 import { FirebaseVoteSync } from "@/app/components/FirebaseVoteSync";
 import { FirebaseExhibitorVoteSync } from "@/app/components/FirebaseExhibitorVoteSync";
+import { FirebaseHeaderCollapsedSync } from "@/app/components/FirebaseHeaderCollapsedSync";
 import { FirebaseVoteCountsSync } from "@/app/components/FirebaseVoteCountsSync";
 //import { useState } from 'react';
 //import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
@@ -52,6 +53,7 @@ export default function App() {
       <FirebaseVoteSync />
       <FirebaseExhibitorVoteSync />
       <FirebaseVoteCountsSync />
+      <FirebaseHeaderCollapsedSync />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {isMdarcDeveloper && <AdminStatsBar />}
         <ConferenceHeaderErrorBoundary>

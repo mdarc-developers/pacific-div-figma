@@ -10,6 +10,7 @@ import { VoteProvider } from "@/app/contexts/VoteContext";
 import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
+import { HeaderCollapsedProvider } from "@/app/contexts/HeaderCollapsedContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
 import { BrowserRouter } from "react-router-dom";
@@ -27,13 +28,15 @@ createRoot(document.getElementById("root")!).render(
                 <ExhibitorVoteProvider>
                   <VoteCountsProvider>
                     <NotesProvider>
-                      <AuthProvider>
-                        <SearchProvider>
-                          <BrowserRouter>
-                            <App />
-                          </BrowserRouter>
-                        </SearchProvider>
-                      </AuthProvider>
+                      <HeaderCollapsedProvider>
+                        <AuthProvider>
+                          <SearchProvider>
+                            <BrowserRouter>
+                              <App />
+                            </BrowserRouter>
+                          </SearchProvider>
+                        </AuthProvider>
+                      </HeaderCollapsedProvider>
                     </NotesProvider>
                   </VoteCountsProvider>
                 </ExhibitorVoteProvider>

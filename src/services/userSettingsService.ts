@@ -198,6 +198,23 @@ export async function getUserNotificationSettings(
   };
 }
 
+export async function getUserHeaderCollapsed(
+  uid: string,
+): Promise<boolean | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  const val = snap.data()?.headerCollapsed;
+  if (typeof val === "boolean") return val;
+  return null;
+}
+
+export async function setUserHeaderCollapsed(
+  uid: string,
+  collapsed: boolean,
+): Promise<void> {
+  await setDoc(doc(db, "users", uid), { headerCollapsed: collapsed }, { merge: true });
+}
+
 export async function setUserNotificationSettings(
   uid: string,
   settings: NotificationSettings,

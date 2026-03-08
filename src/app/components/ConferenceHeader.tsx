@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Bell, Calendar, ExternalLink, FileDown, MapPin, User } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { useHeaderCollapsed } from "@/app/contexts/HeaderCollapsedContext";
 import { NavLink } from "react-router-dom";
 import {
   Tooltip,
@@ -64,7 +64,7 @@ function formatHeaderYear(isoDate: Date, tzString: string) {
 }
 
 export function ConferenceHeader() {
-  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const { isHeaderCollapsed, setIsHeaderCollapsed } = useHeaderCollapsed();
   const { activeConference } = useConference();
 
   const headerTextColor = contrastingColor(activeConference.primaryColor);
