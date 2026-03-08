@@ -1,4 +1,4 @@
-import { Bookmark, StickyNote, Star } from "lucide-react";
+import { Bookmark, StickyNote, Star, Trash2 } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import {
   Card,
@@ -14,10 +14,12 @@ interface BookmarkListCardProps {
   bookmarkedIds: string[];
   prevBookmarkedIds: string[];
   onToggleBookmark: (sessionId: string) => void;
+  onRemovePrevBookmark?: (sessionId: string) => void;
   exhibitors?: Exhibitor[];
   bookmarkedExhibitorIds?: string[];
   prevBookmarkedExhibitorIds?: string[];
   onToggleExhibitorBookmark?: (exhibitorId: string) => void;
+  onRemovePrevExhibitorBookmark?: (exhibitorId: string) => void;
   notes?: Record<string, string>;
   onNoteSessionClick?: (sessionId: string) => void;
   /** Aggregate bookmark counts keyed by session id. */
@@ -41,10 +43,12 @@ export function BookmarkListCard({
   bookmarkedIds,
   prevBookmarkedIds,
   onToggleBookmark,
+  onRemovePrevBookmark,
   exhibitors = [],
   bookmarkedExhibitorIds = [],
   prevBookmarkedExhibitorIds = [],
   onToggleExhibitorBookmark,
+  onRemovePrevExhibitorBookmark,
   notes = {},
   onNoteSessionClick,
   sessionBookmarkCounts = {},
@@ -157,6 +161,16 @@ export function BookmarkListCard({
                       >
                         <Bookmark className="h-4 w-4" />
                       </button>
+                      {onRemovePrevBookmark && (
+                        <button
+                          type="button"
+                          onClick={() => onRemovePrevBookmark(session.id)}
+                          aria-label={`Remove ${session.title} from history`}
+                          className="hover:text-red-600 dark:hover:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </li>
                 ))}
@@ -240,6 +254,18 @@ export function BookmarkListCard({
                         >
                           <Bookmark className="h-4 w-4" />
                         </button>
+                        {onRemovePrevExhibitorBookmark && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              onRemovePrevExhibitorBookmark(exhibitor.id)
+                            }
+                            aria-label={`Remove ${exhibitor.name} from history`}
+                            className="hover:text-red-600 dark:hover:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     )}
                   </li>

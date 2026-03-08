@@ -30,6 +30,8 @@ interface BookmarkContextType {
   bookmarkedItems: string[];
   prevBookmarkedItems: string[];
   toggleBookmark: (itemId: string) => void;
+  /** Permanently removes an item from the previously-bookmarked list. */
+  removePrevBookmark: (itemId: string) => void;
   /** Used by FirebaseBookmarkSync to apply values loaded from Firestore. */
   overrideBookmarks: (items: string[], prevItems: string[]) => void;
 }
@@ -98,6 +100,17 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
     [bookmarkKey, prevBookmarkKey],
   );
 
+  const removePrevBookmark = useCallback(
+    (itemId: string) => {
+      setPrevBookmarkedItems((prevPrev) => {
+        const nextPrev = prevPrev.filter((id) => id !== itemId);
+        saveToLS(prevBookmarkKey, nextPrev);
+        return nextPrev;
+      });
+    },
+    [prevBookmarkKey],
+  );
+
   /**
    * Replaces the in-memory bookmark state and persists to localStorage.
    * Called by FirebaseBookmarkSync after loading from Firestore so that
@@ -119,6 +132,7 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
         bookmarkedItems,
         prevBookmarkedItems,
         toggleBookmark,
+        removePrevBookmark,
         overrideBookmarks,
       }}
     >

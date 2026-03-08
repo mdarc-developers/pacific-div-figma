@@ -30,6 +30,8 @@ interface ExhibitorBookmarkContextType {
   bookmarkedExhibitors: string[];
   prevBookmarkedExhibitors: string[];
   toggleExhibitorBookmark: (exhibitorId: string) => void;
+  /** Permanently removes an item from the previously-bookmarked list. */
+  removePrevExhibitorBookmark: (exhibitorId: string) => void;
   /** Used by FirebaseExhibitorBookmarkSync to apply values loaded from Firestore. */
   overrideExhibitorBookmarks: (items: string[], prevItems: string[]) => void;
 }
@@ -102,6 +104,17 @@ export function ExhibitorBookmarkProvider({
     [bookmarkKey, prevBookmarkKey],
   );
 
+  const removePrevExhibitorBookmark = useCallback(
+    (exhibitorId: string) => {
+      setPrevBookmarkedExhibitors((prevPrev) => {
+        const nextPrev = prevPrev.filter((id) => id !== exhibitorId);
+        saveToLS(prevBookmarkKey, nextPrev);
+        return nextPrev;
+      });
+    },
+    [prevBookmarkKey],
+  );
+
   /**
    * Replaces the in-memory bookmark state and persists to localStorage.
    * Called by FirebaseExhibitorBookmarkSync after loading from Firestore so that
@@ -123,6 +136,7 @@ export function ExhibitorBookmarkProvider({
         bookmarkedExhibitors,
         prevBookmarkedExhibitors,
         toggleExhibitorBookmark,
+        removePrevExhibitorBookmark,
         overrideExhibitorBookmarks,
       }}
     >
