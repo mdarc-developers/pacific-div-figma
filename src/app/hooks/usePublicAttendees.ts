@@ -5,6 +5,7 @@ import {
   loadAttendeesFromStorage,
   saveAttendeesToStorage,
 } from "@/services/attendeesService";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export interface UsePublicAttendeesResult {
   /** Attendees loaded from Firestore or localStorage cache. */
@@ -21,7 +22,12 @@ export interface UsePublicAttendeesResult {
  * Loads the public attendee list from the `publicProfiles` Firestore
  * collection with localStorage caching for offline access.
  *
- * On mount the hook:
+ * Requires an authenticated user with a verified email address.
+ * If the user is not authenticated or has not verified their email,
+ * the hook returns an empty array without attempting a Firestore fetch.
+ * The Firestore security rules enforce this requirement server-side as well.
+ *
+ * On mount (when authenticated) the hook:
  *   1. Immediately returns whatever is cached in localStorage.
  *   2. Fetches fresh data from Firestore in the background.
  *   3. Saves the fresh data back to localStorage on success.
@@ -29,6 +35,7 @@ export interface UsePublicAttendeesResult {
  * Calling `refresh()` re-triggers the Firestore fetch at any time.
  */
 export function usePublicAttendees(): UsePublicAttendeesResult {
+  const { user } = useAuth();
   const [attendees, setAttendees] = useState<PublicAttendeeProfile[]>(
     () => loadAttendeesFromStorage(),
   );
@@ -41,11 +48,17 @@ export function usePublicAttendees(): UsePublicAttendeesResult {
   }, []);
 
   useEffect(() => {
+    // Only fetch if the user is authenticated and has a verified email.
+    if (!user || !user.emailVerified) {
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
 
-    fetchPublicAttendees()
+    fetchPublicAttendees(user.uid)
       .then((data) => {
         if (cancelled) return;
         setAttendees(data);
@@ -66,7 +79,7 @@ export function usePublicAttendees(): UsePublicAttendeesResult {
     return () => {
       cancelled = true;
     };
-  }, [fetchTick]);
+  }, [fetchTick, user]);
 
   return { attendees, loading, error, refresh };
 }

@@ -7,6 +7,11 @@ vi.mock("@/lib/firebase", () => ({
   storage: {},
 }));
 
+// Mock exportDataService to avoid testing audit-log internals here
+vi.mock("@/services/exportDataService", () => ({
+  writeAuditLog: vi.fn().mockResolvedValue(undefined),
+}));
+
 const mockGetDocs = vi.fn();
 const mockSetDoc = vi.fn();
 const mockDeleteDoc = vi.fn();
@@ -35,7 +40,10 @@ import {
   deletePublicProfile,
   ATTENDEES_STORAGE_KEY,
 } from "@/services/attendeesService";
+import { writeAuditLog } from "@/services/exportDataService";
 import type { PublicAttendeeProfile } from "@/types/conference";
+
+const mockWriteAuditLog = writeAuditLog as ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   localStorage.clear();
@@ -48,7 +56,7 @@ afterEach(() => {
 
 const sampleAttendees: PublicAttendeeProfile[] = [
   { uid: "uid1", displayName: "Alice Smith", callsign: "W6ABC" },
-  { uid: "uid2", displayName: "Bob Jones", email: "bob@example.com" },
+  { uid: "uid2", displayName: "Bob Jones" },
 ];
 
 describe("loadAttendeesFromStorage", () => {
@@ -86,11 +94,11 @@ describe("saveAttendeesToStorage", () => {
 describe("fetchPublicAttendees", () => {
   it("returns an empty array when the collection is empty", async () => {
     mockGetDocs.mockResolvedValue({ docs: [] });
-    const result = await fetchPublicAttendees();
+    const result = await fetchPublicAttendees("uid-caller");
     expect(result).toEqual([]);
   });
 
-  it("maps Firestore documents to PublicAttendeeProfile objects", async () => {
+  it("maps Firestore documents to PublicAttendeeProfile objects (allowed fields only)", async () => {
     mockGetDocs.mockResolvedValue({
       docs: [
         {
@@ -98,8 +106,13 @@ describe("fetchPublicAttendees", () => {
           data: () => ({
             displayName: "Alice Smith",
             callsign: "W6ABC",
+            // email, groups, sessions, exhibitors, prizesDonated are stored in
+            // Firestore but should NOT be returned by fetchPublicAttendees
             email: "alice@example.com",
             groups: ["organizers"],
+            sessions: ["session-1"],
+            exhibitors: ["exhibitor-1"],
+            prizesDonated: ["prize-1"],
           }),
         },
         {
@@ -111,15 +124,19 @@ describe("fetchPublicAttendees", () => {
       ],
     });
 
-    const result = await fetchPublicAttendees();
+    const result = await fetchPublicAttendees("uid-caller");
     expect(result).toHaveLength(2);
+    // Sensitive fields must be absent from the result
     expect(result[0]).toEqual({
       uid: "uid1",
       displayName: "Alice Smith",
       callsign: "W6ABC",
-      email: "alice@example.com",
-      groups: ["organizers"],
     });
+    expect(result[0]).not.toHaveProperty("email");
+    expect(result[0]).not.toHaveProperty("groups");
+    expect(result[0]).not.toHaveProperty("sessions");
+    expect(result[0]).not.toHaveProperty("exhibitors");
+    expect(result[0]).not.toHaveProperty("prizesDonated");
     expect(result[1]).toEqual({ uid: "uid2", displayName: "Bob Jones" });
   });
 
@@ -131,30 +148,75 @@ describe("fetchPublicAttendees", () => {
           data: () => ({
             displayName: "",
             callsign: null,
-            email: "test@test.com",
           }),
         },
       ],
     });
 
-    const result = await fetchPublicAttendees();
-    expect(result[0]).toEqual({ uid: "uid3", email: "test@test.com" });
+    const result = await fetchPublicAttendees("uid-caller");
+    expect(result[0]).toEqual({ uid: "uid3" });
   });
 
-  it("throws when Firestore read fails", async () => {
+  it("writes a success audit log entry after a successful fetch", async () => {
+    mockGetDocs.mockResolvedValue({ docs: [] });
+    await fetchPublicAttendees("uid-caller");
+    expect(mockWriteAuditLog).toHaveBeenCalledWith(
+      "uid-caller",
+      "attendee_list_read",
+      expect.objectContaining({ resultCode: 200 }),
+    );
+  });
+
+  it("writes a failure audit log entry and rethrows when Firestore read fails", async () => {
     mockGetDocs.mockRejectedValue(new Error("network error"));
-    await expect(fetchPublicAttendees()).rejects.toThrow("network error");
+    await expect(fetchPublicAttendees("uid-caller")).rejects.toThrow("network error");
+    expect(mockWriteAuditLog).toHaveBeenCalledWith(
+      "uid-caller",
+      "attendee_list_read",
+      expect.objectContaining({ resultCode: 500 }),
+    );
+  });
+
+  it("uses resultCode 403 when Firestore returns a permission-denied error", async () => {
+    const permissionError = Object.assign(new Error("permission-denied"), {
+      code: "permission-denied",
+    });
+    mockGetDocs.mockRejectedValue(permissionError);
+    await expect(fetchPublicAttendees("uid-caller")).rejects.toThrow();
+    expect(mockWriteAuditLog).toHaveBeenCalledWith(
+      "uid-caller",
+      "attendee_list_read",
+      expect.objectContaining({ resultCode: 403 }),
+    );
   });
 });
 
 describe("writePublicProfile", () => {
-  it("calls setDoc with the correct path and profile data", async () => {
+  it("calls setDoc with only the allowed fields (strips sensitive data)", async () => {
     mockSetDoc.mockResolvedValue(undefined);
-    const profile: PublicAttendeeProfile = { uid: "uid1", displayName: "Alice" };
+    // Pass a profile object — TypeScript ensures only allowed fields exist,
+    // but we verify the safe-profile logic strips nothing extra.
+    const profile: PublicAttendeeProfile = {
+      uid: "uid1",
+      displayName: "Alice",
+      callsign: "W6ABC",
+      displayProfile: "Ham radio operator",
+    };
     await writePublicProfile("uid1", profile);
     expect(mockSetDoc).toHaveBeenCalledWith(
       expect.objectContaining({ path: "publicProfiles/uid1" }),
-      profile,
+      { uid: "uid1", displayName: "Alice", callsign: "W6ABC", displayProfile: "Ham radio operator" },
+      { merge: true },
+    );
+  });
+
+  it("omits optional fields that are undefined", async () => {
+    mockSetDoc.mockResolvedValue(undefined);
+    const profile: PublicAttendeeProfile = { uid: "uid2" };
+    await writePublicProfile("uid2", profile);
+    expect(mockSetDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "publicProfiles/uid2" }),
+      { uid: "uid2" },
       { merge: true },
     );
   });

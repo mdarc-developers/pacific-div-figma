@@ -21,7 +21,6 @@ import {
   Info,
   Mic,
   RefreshCw,
-  Send,
   Trophy,
   User,
 } from "lucide-react";
@@ -45,10 +44,6 @@ import {
   TooltipContent,
 } from "@/app/components/ui/tooltip";
 import { usePublicAttendees } from "@/app/hooks/usePublicAttendees";
-
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 
 /** Placeholder card shown for attendees who have not opted in to be visible. */
 function HiddenAttendeeCard() {
@@ -140,14 +135,6 @@ function AttendeeCard({
                 {attendee.displayName}&nbsp;&nbsp;
                 {displayCallsign(attendee.callsign)}
               </CardTitle>
-              {isValidEmail(attendee.email) && (
-                <span className="float-right items-center space-y-2 gap-2 text-gray-700 dark:text-gray-300">
-                  <a href={`mailto:${attendee.email}`} className="flex">
-                    email&nbsp;
-                    <Send className="flex h-4 w-4" />
-                  </a>
-                </span>
-              )}
             </div>
           </CardHeader>
           {hasContent && (
@@ -271,7 +258,9 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
       .map(
         (fa): UserProfile => ({
           uid: fa.uid,
-          email: fa.email ?? "",
+          // email is not available in public profiles; empty string satisfies the
+          // required field while AttendeeCard no longer displays it for privacy.
+          email: "",
           darkMode: false,
           bookmarkedSessions: [],
           notificationsEnabled: false,
@@ -279,10 +268,6 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
           displayName: fa.displayName,
           callsign: fa.callsign,
           displayProfile: fa.displayProfile,
-          groups: fa.groups,
-          sessions: fa.sessions,
-          exhibitors: fa.exhibitors,
-          prizesDonated: fa.prizesDonated,
           profileVisible: true,
         }),
       );

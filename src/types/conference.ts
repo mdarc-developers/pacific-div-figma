@@ -138,20 +138,18 @@ export interface UserProfile {
 
 /**
  * Public attendee profile stored in the `publicProfiles` Firestore collection.
- * Contains only the fields that are safe to expose to all app users.
+ * Contains only the fields that are safe to expose to authenticated users.
  * Synced automatically by the `syncPublicProfile` Cloud Function whenever a
  * `users/{uid}` document changes and `profileVisible` is true.
+ *
+ * Fields intentionally excluded: email, groups, sessions, exhibitors, prizesDonated.
+ * These are considered private and must never be stored in publicProfiles.
  */
 export interface PublicAttendeeProfile {
   uid: string;
   displayName?: string;
   callsign?: string;
   displayProfile?: string;
-  email?: string;
-  groups?: string[];
-  sessions?: string[];
-  exhibitors?: string[];
-  prizesDonated?: string[];
 }
 
 export interface Message {
