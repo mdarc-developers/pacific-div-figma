@@ -48,7 +48,7 @@ export function AttendeesAccessDeniedView() {
             <Button asChild variant="link" className={linkBtnClass}>
               <Link to="/profile">profile page</Link>
             </Button>{" "}
-            to create an account and verify your email.
+            to verify your email or create an account.
           </>
         )}
       </p>
