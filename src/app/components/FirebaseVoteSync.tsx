@@ -48,12 +48,34 @@ export function FirebaseVoteSync() {
     const uidToLoad = user.uid;
     let cancelled = false;
 
+    // Capture local (logged-out) votes before any Firestore override.
+    const localVotes = [...votedSessions];
+
     getUserSessionVotes(uidToLoad, conferenceId)
       .then((votes) => {
         if (cancelled) return;
+
+        // Preserve any locally-cast votes not yet in Firestore.
+        const votesSet = new Set(votes);
+        const addedLocally = localVotes.filter((id) => !votesSet.has(id));
+        const merged =
+          addedLocally.length > 0 ? [...votes, ...addedLocally] : votes;
+
         justLoadedRef.current = true;
-        savedItemsRef.current = votes;
-        overrideSessionVotes(votes);
+        savedItemsRef.current = merged;
+        overrideSessionVotes(merged);
+
+        // If there were locally-cast votes, persist the merged set to Firestore
+        // and update aggregate vote counts for the newly added items.
+        if (addedLocally.length > 0) {
+          setUserSessionVotes(uidToLoad, conferenceId, merged).catch(
+            console.error,
+          );
+          addedLocally.forEach((id) => {
+            adjustSessionVoteCount(id, 1);
+            incrementSessionVoteCount(conferenceId, id, 1).catch(console.error);
+          });
+        }
       })
       .catch(console.error)
       .finally(() => {
