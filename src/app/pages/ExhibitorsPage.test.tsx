@@ -66,6 +66,7 @@ import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkConte
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
 import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
+import { ExhibitorNotesProvider } from "@/app/contexts/ExhibitorNotesContext";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderExhibitorsPage() {
@@ -75,7 +76,9 @@ function renderExhibitorsPage() {
         <BookmarkCountsProvider>
           <ExhibitorVoteProvider>
             <VoteCountsProvider>
-              <ExhibitorsPage />
+              <ExhibitorNotesProvider>
+                <ExhibitorsPage />
+              </ExhibitorNotesProvider>
             </VoteCountsProvider>
           </ExhibitorVoteProvider>
         </BookmarkCountsProvider>

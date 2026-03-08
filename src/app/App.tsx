@@ -8,6 +8,7 @@ import { FirebaseBookmarkSync } from "@/app/components/FirebaseBookmarkSync";
 import { FirebaseExhibitorBookmarkSync } from "@/app/components/FirebaseExhibitorBookmarkSync";
 import { FirebaseBookmarkCountsSync } from "@/app/components/FirebaseBookmarkCountsSync";
 import { FirebaseNotesSync } from "@/app/components/FirebaseNotesSync";
+import { FirebaseExhibitorNotesSync } from "@/app/components/FirebaseExhibitorNotesSync";
 import { FirebaseVoteSync } from "@/app/components/FirebaseVoteSync";
 import { FirebaseExhibitorVoteSync } from "@/app/components/FirebaseExhibitorVoteSync";
 import { FirebaseHeaderCollapsedSync } from "@/app/components/FirebaseHeaderCollapsedSync";
@@ -51,6 +52,7 @@ export default function App() {
       <FirebaseExhibitorBookmarkSync />
       <FirebaseBookmarkCountsSync />
       <FirebaseNotesSync />
+      <FirebaseExhibitorNotesSync />
       <FirebaseVoteSync />
       <FirebaseExhibitorVoteSync />
       <FirebaseVoteCountsSync />

@@ -128,6 +128,32 @@ export async function setUserNotes(
   );
 }
 
+export async function getUserExhibitorNotes(
+  uid: string,
+  conferenceId: string,
+): Promise<Record<string, string>> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return {};
+  const data = snap.data();
+  const notes = data?.exhibitorNotes?.[conferenceId];
+  if (notes && typeof notes === "object" && !Array.isArray(notes)) {
+    return notes as Record<string, string>;
+  }
+  return {};
+}
+
+export async function setUserExhibitorNotes(
+  uid: string,
+  conferenceId: string,
+  notes: Record<string, string>,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { exhibitorNotes: { [conferenceId]: notes } },
+    { merge: true },
+  );
+}
+
 export async function getUserSessionVotes(
   uid: string,
   conferenceId: string,
@@ -251,6 +277,8 @@ export async function getUserActivitySections(
       typeof s.votedExhibitors === "boolean" ? s.votedExhibitors : true,
     myNotes: typeof s.myNotes === "boolean" ? s.myNotes : true,
     raffleTickets: typeof s.raffleTickets === "boolean" ? s.raffleTickets : true,
+    myExhibitorNotes:
+      typeof s.myExhibitorNotes === "boolean" ? s.myExhibitorNotes : true,
   };
 }
 
