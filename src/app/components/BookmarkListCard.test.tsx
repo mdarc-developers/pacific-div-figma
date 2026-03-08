@@ -203,7 +203,7 @@ describe("BookmarkListCard — collapsible sections", () => {
       screen.getByRole("button", { name: /collapse voted exhibitors/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /collapse my notes/i }),
+      screen.getByRole("button", { name: /collapse noted sessions/i }),
     ).toBeInTheDocument();
   });
 
