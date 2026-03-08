@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Bookmark, StickyNote, Star, Trash2 } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -8,6 +9,85 @@ import {
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
 import { Session, Exhibitor } from "@/types/conference";
+
+/** Persists a boolean open/closed state to localStorage, defaulting to open. */
+function useSectionOpen(key: string): [boolean, () => void] {
+  const [isOpen, setIsOpen] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored === null ? true : stored === "true";
+    } catch {
+      return true;
+    }
+  });
+
+  const toggle = () => {
+    setIsOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(key, String(next));
+      } catch {
+        /* ignore storage errors */
+      }
+      return next;
+    });
+  };
+
+  return [isOpen, toggle];
+}
+
+/** Section header with a vertical-bar + chevron collapse toggle on the left. */
+function SectionHeader({
+  title,
+  count,
+  isOpen,
+  onToggle,
+  badgeLabel,
+}: {
+  title: string;
+  count: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  badgeLabel?: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      {/* Collapse toggle: vertical bar + chevron (mirrors ConferenceHeader style) */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors self-stretch"
+        aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
+        title="Collapse / Expand"
+      >
+        <div className="w-0.5 self-stretch rounded-full bg-current opacity-40" />
+        <svg
+          className={`w-4 h-4 transition-transform ${isOpen ? "" : "-rotate-90"}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Title and count badge */}
+      <div className="flex flex-1 items-center justify-between gap-2">
+        <p className="text-sm font-medium">{title}</p>
+        {count > 0 ? (
+          <Badge variant="secondary">{badgeLabel ?? count}</Badge>
+        ) : (
+          <span className="text-xs text-muted-foreground">None yet</span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface BookmarkListCardProps {
   sessions: Session[];
@@ -60,6 +140,22 @@ export function BookmarkListCard({
   onToggleExhibitorVote,
   exhibitorVoteCounts = {},
 }: BookmarkListCardProps) {
+  // Collapsible section state — default open, persisted to localStorage
+  const [bookmarkedSessionsOpen, toggleBookmarkedSessions] = useSectionOpen(
+    "profile-bookmarked-sessions-open",
+  );
+  const [bookmarkedExhibitorsOpen, toggleBookmarkedExhibitors] =
+    useSectionOpen("profile-bookmarked-exhibitors-open");
+  const [votedSessionsOpen, toggleVotedSessions] = useSectionOpen(
+    "profile-voted-sessions-open",
+  );
+  const [votedExhibitorsOpen, toggleVotedExhibitors] = useSectionOpen(
+    "profile-voted-exhibitors-open",
+  );
+  const [myNotesOpen, toggleMyNotes] = useSectionOpen(
+    "profile-my-notes-open",
+  );
+
   const sessionMap = new Map(sessions.map((s) => [s.id, s]));
 
   const bookmarked = bookmarkedIds
@@ -95,16 +191,14 @@ export function BookmarkListCard({
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Bookmarked Sessions section */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Bookmarked Sessions</p>
-          {bookmarked.length > 0 ? (
-            <Badge variant="secondary">{bookmarked.length}</Badge>
-          ) : (
-            <span className="text-xs text-muted-foreground">None yet</span>
-          )}
-        </div>
+        <SectionHeader
+          title="Bookmarked Sessions"
+          count={bookmarked.length}
+          isOpen={bookmarkedSessionsOpen}
+          onToggle={toggleBookmarkedSessions}
+        />
 
-        {(bookmarked.length > 0 || previous.length > 0) && (
+        {bookmarkedSessionsOpen && (bookmarked.length > 0 || previous.length > 0) && (
           <ul className="space-y-2 mt-1" data-testid="bookmark-list">
             {bookmarked.map((session) => (
               <li
@@ -182,16 +276,14 @@ export function BookmarkListCard({
         <Separator />
 
         {/* Exhibitor Bookmarks section */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Bookmarked Exhibitors</p>
-          {bookmarkedExhibitorList.length > 0 ? (
-            <Badge variant="secondary">{bookmarkedExhibitorList.length}</Badge>
-          ) : (
-            <span className="text-xs text-muted-foreground">None yet</span>
-          )}
-        </div>
+        <SectionHeader
+          title="Bookmarked Exhibitors"
+          count={bookmarkedExhibitorList.length}
+          isOpen={bookmarkedExhibitorsOpen}
+          onToggle={toggleBookmarkedExhibitors}
+        />
 
-        {(bookmarkedExhibitorList.length > 0 ||
+        {bookmarkedExhibitorsOpen && (bookmarkedExhibitorList.length > 0 ||
           previousExhibitorList.length > 0) && (
           <ul className="space-y-2 mt-1" data-testid="exhibitor-bookmark-list">
             {bookmarkedExhibitorList.map((exhibitor) => (
@@ -278,16 +370,14 @@ export function BookmarkListCard({
         <Separator />
 
         {/* Voted Sessions section */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Voted Sessions</p>
-          {votedSessionIds.length > 0 ? (
-            <Badge variant="secondary">{votedSessionIds.length}</Badge>
-          ) : (
-            <span className="text-xs text-muted-foreground">None yet</span>
-          )}
-        </div>
+        <SectionHeader
+          title="Voted Sessions"
+          count={votedSessionIds.length}
+          isOpen={votedSessionsOpen}
+          onToggle={toggleVotedSessions}
+        />
 
-        {votedSessionIds.length > 0 && (
+        {votedSessionsOpen && votedSessionIds.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-sessions-list">
             {votedSessionIds
               .map((id) => sessionMap.get(id))
@@ -324,16 +414,14 @@ export function BookmarkListCard({
         <Separator />
 
         {/* Voted Exhibitors section */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Voted Exhibitors</p>
-          {votedExhibitorIds.length > 0 ? (
-            <Badge variant="secondary">{votedExhibitorIds.length}</Badge>
-          ) : (
-            <span className="text-xs text-muted-foreground">None yet</span>
-          )}
-        </div>
+        <SectionHeader
+          title="Voted Exhibitors"
+          count={votedExhibitorIds.length}
+          isOpen={votedExhibitorsOpen}
+          onToggle={toggleVotedExhibitors}
+        />
 
-        {votedExhibitorIds.length > 0 && (
+        {votedExhibitorsOpen && votedExhibitorIds.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-exhibitors-list">
             {votedExhibitorIds
               .map((id) => exhibitorMap.get(id))
@@ -370,16 +458,14 @@ export function BookmarkListCard({
         <Separator />
 
         {/* My Notes section */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">My Notes</p>
-          {notedSessions.length > 0 ? (
-            <Badge variant="secondary">{notedSessions.length}</Badge>
-          ) : (
-            <span className="text-xs text-muted-foreground">None yet</span>
-          )}
-        </div>
+        <SectionHeader
+          title="My Notes"
+          count={notedSessions.length}
+          isOpen={myNotesOpen}
+          onToggle={toggleMyNotes}
+        />
 
-        {notedSessions.length > 0 && (
+        {myNotesOpen && notedSessions.length > 0 && (
           <ul
             className="space-y-2 mt-1"
             data-testid="notes-list"

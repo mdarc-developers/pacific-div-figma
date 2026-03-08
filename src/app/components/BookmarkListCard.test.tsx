@@ -1,5 +1,5 @@
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { Session } from "@/types/conference";
@@ -167,6 +167,113 @@ describe("BookmarkListCard", () => {
       />,
     );
     expect(screen.queryByTestId("bookmark-list")).not.toBeInTheDocument();
+  });
+});
+
+describe("BookmarkListCard — collapsible sections", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("renders a collapse/expand button for each section", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={[]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse bookmarked exhibitors/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse voted sessions/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse voted exhibitors/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /collapse my notes/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("collapses the Bookmarked Sessions list when the chevron is clicked", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    // List is visible initially
+    expect(screen.getByTestId("bookmark-list")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
+    );
+
+    expect(screen.queryByTestId("bookmark-list")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /expand bookmarked sessions/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("re-expands the Bookmarked Sessions list on second click", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    const btn = screen.getByRole("button", {
+      name: /collapse bookmarked sessions/i,
+    });
+    fireEvent.click(btn); // collapse
+    fireEvent.click(
+      screen.getByRole("button", { name: /expand bookmarked sessions/i }),
+    ); // expand
+    expect(screen.getByTestId("bookmark-list")).toBeInTheDocument();
+  });
+
+  it("persists collapse state to localStorage", () => {
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
+    );
+    expect(
+      localStorage.getItem("profile-bookmarked-sessions-open"),
+    ).toBe("false");
+  });
+
+  it("reads persisted collapsed state from localStorage on mount", () => {
+    localStorage.setItem("profile-bookmarked-sessions-open", "false");
+    render(
+      <BookmarkListCard
+        sessions={makeSessions()}
+        bookmarkedIds={["s1"]}
+        prevBookmarkedIds={[]}
+        onToggleBookmark={vi.fn()}
+      />,
+    );
+    // Section should start collapsed because localStorage says false
+    expect(screen.queryByTestId("bookmark-list")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /expand bookmarked sessions/i }),
+    ).toBeInTheDocument();
   });
 });
 
