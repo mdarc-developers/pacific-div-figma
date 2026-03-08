@@ -12,15 +12,19 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
+import { Button } from "@/app/components/ui/button";
 import {
   Building2,
+  Eye,
   ExternalLink,
+  HatGlasses,
   Info,
   Mic,
   Send,
   Trophy,
   User,
 } from "lucide-react";
+import { useSignupCount } from "@/app/hooks/useSignupCount";
 import { Session, Exhibitor, Prize, UserProfile } from "@/types/conference";
 import {
   ATTENDEE_DATA,
@@ -42,6 +46,24 @@ import {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+/** Placeholder card shown for attendees who have not opted in to be visible. */
+function HiddenAttendeeCard() {
+  return (
+    <div className="mb-4 w-full">
+      <Card className="w-full opacity-60">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <HatGlasses className="h-5 w-5 text-gray-400" />
+            <CardTitle className="text-base text-gray-400 italic">
+              Anonymous Attendee
+            </CardTitle>
+          </div>
+        </CardHeader>
+      </Card>
+    </div>
+  );
 }
 
 interface AttendeeCardProps {
@@ -221,6 +243,8 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const attendees = ATTENDEE_DATA[activeConference.id] || [];
   const updateToken = ATTENDEE_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [showVisibleOnly, setShowVisibleOnly] = useState(true);
+  const signupCount = useSignupCount();
 
   // Build lookup maps for sessions, exhibitors, and prizes (memoized per conference)
   const sessionMap = useMemo(
@@ -258,6 +282,23 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const tabBg = blendWithWhite(activeConference.primaryColor);
   const tabText = contrastingColor(tabBg);
 
+  /** Renders either an AttendeeCard or a HiddenAttendeeCard placeholder. */
+  const renderAttendee = (attendee: UserProfile) => {
+    if (!attendee.profileVisible) {
+      return showVisibleOnly ? null : <HiddenAttendeeCard key={attendee.uid} />;
+    }
+    return (
+      <AttendeeCard
+        key={attendee.uid}
+        attendee={attendee}
+        isHighlighted={highlightAttendeeId === attendee.uid}
+        sessionMap={sessionMap}
+        exhibitorMap={exhibitorMap}
+        prizeMap={prizeMap}
+      />
+    );
+  };
+
   return (
     <div className="w-full">
       <Tabs
@@ -269,6 +310,26 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
           className="rounded-lg p-2 mb-6 w-full"
           style={{ backgroundColor: tabBg, color: tabText }}
         >
+          {/* Filter toolbar */}
+          <div className="flex gap-2 mb-2 justify-between items-center">
+            <Button
+              variant={showVisibleOnly ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowVisibleOnly((v) => !v)}
+              className="flex items-center gap-1"
+            >
+              <Eye
+                className={`h-4 w-4 ${showVisibleOnly ? "fill-current" : ""}`}
+              />
+              Visible
+            </Button>
+            {signupCount !== null && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/20">
+                {signupCount} registered
+              </span>
+            )}
+          </div>
+
           <TabsList className="w-full flex-wrap h-auto bg-transparent">
             <TabsTrigger value="all">All Attendees</TabsTrigger>
             {categoryTabs.map((cat) => (
@@ -279,29 +340,11 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
           </TabsList>
         </div>
         <TabsContent value="all">
-          {attendees.map((attendee) => (
-            <AttendeeCard
-              key={attendee.uid}
-              attendee={attendee}
-              isHighlighted={highlightAttendeeId === attendee.uid}
-              sessionMap={sessionMap}
-              exhibitorMap={exhibitorMap}
-              prizeMap={prizeMap}
-            />
-          ))}
+          {attendees.map((attendee) => renderAttendee(attendee))}
         </TabsContent>
         {categoryTabs.map((cat) => (
           <TabsContent key={cat.key} value={cat.key}>
-            {cat.list.map((attendee) => (
-              <AttendeeCard
-                key={attendee.uid}
-                attendee={attendee}
-                isHighlighted={highlightAttendeeId === attendee.uid}
-                sessionMap={sessionMap}
-                exhibitorMap={exhibitorMap}
-                prizeMap={prizeMap}
-              />
-            ))}
+            {cat.list.map((attendee) => renderAttendee(attendee))}
           </TabsContent>
         ))}
       </Tabs>
