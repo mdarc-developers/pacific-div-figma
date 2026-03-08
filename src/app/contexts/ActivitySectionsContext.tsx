@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState } from "react";
 
-/** The six collapsible sections in the Activity card on the Profile page. */
+/** The collapsible sections in the Activity card and Prizes card on the Profile page. */
+/** The seven collapsible sections in the Activity card on the Profile page. */
 export interface ActivitySections {
   bookmarkedSessions: boolean;
   bookmarkedExhibitors: boolean;
   votedSessions: boolean;
   votedExhibitors: boolean;
   myNotes: boolean;
+  raffleTickets: boolean;
   myExhibitorNotes: boolean;
 }
 
@@ -18,6 +20,7 @@ const DEFAULT_SECTIONS: ActivitySections = {
   votedSessions: true,
   votedExhibitors: true,
   myNotes: true,
+  raffleTickets: true,
   myExhibitorNotes: true,
 };
 
@@ -45,6 +48,10 @@ function parseSections(raw: unknown): ActivitySections {
         : DEFAULT_SECTIONS.votedExhibitors,
     myNotes:
       typeof s.myNotes === "boolean" ? s.myNotes : DEFAULT_SECTIONS.myNotes,
+    raffleTickets:
+      typeof s.raffleTickets === "boolean"
+        ? s.raffleTickets
+        : DEFAULT_SECTIONS.raffleTickets,
     myExhibitorNotes:
       typeof s.myExhibitorNotes === "boolean"
         ? s.myExhibitorNotes
