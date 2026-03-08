@@ -172,7 +172,7 @@ export function triggerDownload(
 /**
  * Audit log event types.
  */
-export type AuditAction = "data_export" | "account_deletion" | "attendee_list_read";
+export type AuditAction = "data_export" | "account_deletion";
 
 /**
  * Writes an audit log entry to `users/{uid}/auditLog`.

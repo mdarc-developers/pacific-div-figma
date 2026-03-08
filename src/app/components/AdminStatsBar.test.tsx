@@ -117,4 +117,40 @@ describe("AdminStatsBar", () => {
       screen.queryByTestId("admin-stats-signup-count"),
     ).not.toBeInTheDocument();
   });
+
+  it("renders a link to the Firebase Console", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: 5,
+      signupCount: 10,
+      loading: false,
+      error: null,
+    });
+    render(<AdminStatsBar />);
+    const link = screen.getByTestId("admin-firebase-console-link");
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      "href",
+      "https://console.firebase.google.com/project/pacific-div/overview",
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("renders a link to Google Cloud Logs", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: 5,
+      signupCount: 10,
+      loading: false,
+      error: null,
+    });
+    render(<AdminStatsBar />);
+    const link = screen.getByTestId("admin-cloud-logs-link");
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      "href",
+      "https://console.cloud.google.com/logs?project=pacific-div",
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
 });

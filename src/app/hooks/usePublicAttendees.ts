@@ -67,7 +67,7 @@ export function usePublicAttendees(): UsePublicAttendeesResult {
     setLoading(true);
     setError(null);
 
-    fetchPublicAttendees(user.uid)
+    fetchPublicAttendees()
       .then((data) => {
         if (cancelled) return;
         setAttendees(data);
