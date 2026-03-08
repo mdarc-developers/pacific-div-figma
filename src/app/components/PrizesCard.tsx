@@ -18,6 +18,7 @@ import {
 } from "@/app/components/ui/tabs";
 import { MAX_RANGE_SIZE } from "@/app/hooks/useRaffleTickets";
 import { Prize, PrizeWinner } from "@/types/conference";
+import { useActivitySections } from "@/app/contexts/ActivitySectionsContext";
 
 interface PrizesCardProps {
   raffleTickets: string[];
@@ -39,6 +40,7 @@ export function PrizesCard({
   const [newTicket, setNewTicket] = useState<string>("");
   const [rangeStart, setRangeStart] = useState<string>("");
   const [rangeEnd, setRangeEnd] = useState<string>("");
+  const { sections, toggleSection } = useActivitySections();
 
   const rangeStartNum = parseInt(rangeStart, 10);
   const rangeEndNum = parseInt(rangeEnd, 10);
@@ -117,12 +119,45 @@ export function PrizesCard({
 
         <Separator />
 
-        {/* Raffle Tickets subheading */}
-        <p className="text-sm font-medium flex items-center gap-2">
-          <Ticket className="h-4 w-4" />
-          Raffle Tickets
-        </p>
-        {raffleTickets.length > 0 && (
+        {/* Raffle Tickets subheading with collapse toggle */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => toggleSection("raffleTickets")}
+            className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors self-stretch"
+            aria-label={sections.raffleTickets ? "Collapse Raffle Tickets" : "Expand Raffle Tickets"}
+            title="Collapse / Expand"
+          >
+            <div className="w-0.5 self-stretch rounded-full bg-current opacity-40" />
+            <svg
+              className={`w-4 h-4 transition-transform ${sections.raffleTickets ? "" : "-rotate-90"}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          <div className="flex flex-1 items-center justify-between gap-2">
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Ticket className="h-4 w-4" />
+              Raffle Tickets
+            </p>
+            {raffleTickets.length > 0 ? (
+              <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+                {raffleTickets.length}
+              </span>
+            ) : (
+              <span className="text-xs text-muted-foreground">None yet</span>
+            )}
+          </div>
+        </div>
+        {sections.raffleTickets && raffleTickets.length > 0 && (
           <ul className="space-y-2">
             {raffleTickets.map((ticket) => (
               <li
@@ -142,8 +177,9 @@ export function PrizesCard({
             ))}
           </ul>
         )}
-        <Tabs defaultValue="single">
-          <TabsList className="h-7 text-xs mb-1">
+        {sections.raffleTickets && (
+          <Tabs defaultValue="single">
+            <TabsList className="h-7 text-xs mb-1">
             <TabsTrigger value="single" className="h-6 px-3 text-xs">
               Single
             </TabsTrigger>
@@ -226,7 +262,8 @@ export function PrizesCard({
                 </p>
               )}
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        )}
       </CardContent>
     </Card>
   );

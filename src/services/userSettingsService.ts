@@ -250,6 +250,7 @@ export async function getUserActivitySections(
     votedExhibitors:
       typeof s.votedExhibitors === "boolean" ? s.votedExhibitors : true,
     myNotes: typeof s.myNotes === "boolean" ? s.myNotes : true,
+    raffleTickets: typeof s.raffleTickets === "boolean" ? s.raffleTickets : true,
   };
 }
 
