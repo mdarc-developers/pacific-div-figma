@@ -57,7 +57,7 @@ export function usePublicAttendees(): UsePublicAttendeesResult {
           err instanceof Error ? err.message : "Failed to load attendees";
         setError(message);
         // Keep the stale localStorage cache in `attendees` — it was set on
-        // initialisation from localStorage so the UI still has data.
+        // initialization from localStorage so the UI still has data.
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
