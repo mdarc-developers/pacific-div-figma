@@ -16,6 +16,15 @@ export interface UsePublicAttendeesResult {
   error: string | null;
   /** Manually trigger a fresh fetch from Firestore. */
   refresh: () => void;
+  /**
+   * True when the current user is authenticated and has a verified email
+   * address, meaning they are permitted to fetch the attendee list.
+   * False when not signed in, when email is unverified, or while auth is
+   * still initialising.
+   */
+  hasAccess: boolean;
+  /** True while Firebase Auth is still determining the initial auth state. */
+  authLoading: boolean;
 }
 
 /**
@@ -35,7 +44,7 @@ export interface UsePublicAttendeesResult {
  * Calling `refresh()` re-triggers the Firestore fetch at any time.
  */
 export function usePublicAttendees(): UsePublicAttendeesResult {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [attendees, setAttendees] = useState<PublicAttendeeProfile[]>(
     () => loadAttendeesFromStorage(),
   );
@@ -81,5 +90,5 @@ export function usePublicAttendees(): UsePublicAttendeesResult {
     };
   }, [fetchTick, user]);
 
-  return { attendees, loading, error, refresh };
+  return { attendees, loading, error, refresh, hasAccess: !!(user && user.emailVerified), authLoading };
 }

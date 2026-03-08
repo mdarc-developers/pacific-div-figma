@@ -44,6 +44,7 @@ import {
   TooltipContent,
 } from "@/app/components/ui/tooltip";
 import { usePublicAttendees } from "@/app/hooks/usePublicAttendees";
+import { AttendeesAccessDeniedView } from "@/app/components/AttendeesAccessDeniedView";
 
 /** Placeholder card shown for attendees who have not opted in to be visible. */
 function HiddenAttendeeCard() {
@@ -243,6 +244,8 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
     loading: firestoreLoading,
     error: firestoreError,
     refresh: refreshAttendees,
+    hasAccess,
+    authLoading,
   } = usePublicAttendees();
 
   // Merge static attendees with Firestore attendees.
@@ -345,6 +348,7 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
                 variant={showVisibleOnly ? "default" : "outline"}
                 size="sm"
                 onClick={() => setShowVisibleOnly((v) => !v)}
+                disabled={!hasAccess || authLoading}
                 className="flex items-center gap-1"
               >
                 <Eye
@@ -356,7 +360,7 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
                 variant="outline"
                 size="sm"
                 onClick={refreshAttendees}
-                disabled={firestoreLoading}
+                disabled={!hasAccess || firestoreLoading || authLoading}
                 className="flex items-center gap-1"
                 title="Refresh attendee list from server"
               >
@@ -388,11 +392,19 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
           </TabsList>
         </div>
         <TabsContent value="all">
-          {attendees.map((attendee) => renderAttendee(attendee))}
+          {!authLoading && !hasAccess ? (
+            <AttendeesAccessDeniedView />
+          ) : (
+            attendees.map((attendee) => renderAttendee(attendee))
+          )}
         </TabsContent>
         {categoryTabs.map((cat) => (
           <TabsContent key={cat.key} value={cat.key}>
-            {cat.list.map((attendee) => renderAttendee(attendee))}
+            {!authLoading && !hasAccess ? (
+              <AttendeesAccessDeniedView />
+            ) : (
+              cat.list.map((attendee) => renderAttendee(attendee))
+            )}
           </TabsContent>
         ))}
       </Tabs>

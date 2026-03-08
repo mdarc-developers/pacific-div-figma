@@ -27,7 +27,7 @@ vi.mock("@/services/exportDataService", () => ({
 // Mock AuthContext — default to an authenticated, email-verified user
 const mockUser = { uid: "test-uid", emailVerified: true };
 vi.mock("@/app/contexts/AuthContext", () => ({
-  useAuth: vi.fn(() => ({ user: mockUser })),
+  useAuth: vi.fn(() => ({ user: mockUser, loading: false })),
 }));
 
 import { getDocs } from "firebase/firestore";
@@ -54,7 +54,7 @@ beforeEach(() => {
   localStorage.clear();
   vi.clearAllMocks();
   // Reset to authenticated, verified user by default
-  mockUseAuth.mockReturnValue({ user: mockUser });
+  mockUseAuth.mockReturnValue({ user: mockUser, loading: false });
   mockGetDocs.mockResolvedValue({ docs: [] });
 });
 
@@ -153,7 +153,7 @@ describe("usePublicAttendees", () => {
   });
 
   it("does not fetch from Firestore when user is not authenticated", () => {
-    mockUseAuth.mockReturnValue({ user: null });
+    mockUseAuth.mockReturnValue({ user: null, loading: false });
     mockGetDocs.mockResolvedValue({ docs: [] });
 
     const { result } = renderHook(() => usePublicAttendees());
@@ -164,7 +164,7 @@ describe("usePublicAttendees", () => {
   });
 
   it("does not fetch from Firestore when user email is not verified", () => {
-    mockUseAuth.mockReturnValue({ user: { uid: "uid1", emailVerified: false } });
+    mockUseAuth.mockReturnValue({ user: { uid: "uid1", emailVerified: false }, loading: false });
     mockGetDocs.mockResolvedValue({ docs: [] });
 
     const { result } = renderHook(() => usePublicAttendees());
@@ -172,5 +172,30 @@ describe("usePublicAttendees", () => {
     expect(mockGetDocs).not.toHaveBeenCalled();
     expect(result.current.loading).toBe(false);
     expect(result.current.attendees).toEqual([]);
+  });
+
+  it("hasAccess is true for authenticated user with verified email", async () => {
+    mockGetDocs.mockResolvedValue({ docs: [] });
+    const { result } = renderHook(() => usePublicAttendees());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.hasAccess).toBe(true);
+  });
+
+  it("hasAccess is false when user is not authenticated", () => {
+    mockUseAuth.mockReturnValue({ user: null, loading: false });
+    const { result } = renderHook(() => usePublicAttendees());
+    expect(result.current.hasAccess).toBe(false);
+  });
+
+  it("hasAccess is false when user email is not verified", () => {
+    mockUseAuth.mockReturnValue({ user: { uid: "uid1", emailVerified: false }, loading: false });
+    const { result } = renderHook(() => usePublicAttendees());
+    expect(result.current.hasAccess).toBe(false);
+  });
+
+  it("authLoading reflects the auth context loading state", () => {
+    mockUseAuth.mockReturnValue({ user: null, loading: true });
+    const { result } = renderHook(() => usePublicAttendees());
+    expect(result.current.authLoading).toBe(true);
   });
 });
