@@ -6,7 +6,7 @@ vi.mock("@/lib/firebase", () => ({
 }));
 
 const mockGetDoc = vi.fn();
-const mockDoc = vi.fn((_db, _col, _id) => ({ path: "stats/signupCounter" }));
+const mockDoc = vi.fn(() => ({ path: "stats/signupCounter" }));
 
 vi.mock("firebase/firestore", () => ({
   getDoc: (...args: unknown[]) => mockGetDoc(...args),
