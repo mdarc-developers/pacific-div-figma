@@ -21,6 +21,15 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // ── Conference attendees — owner-only; not exposed as a public list.
+    // The primary record is written/deleted by the authenticated user for their own uid.
+    // Admin read is allowed for mdarc-developers.
+    match /conferences/{conferenceId}/attendees/{uid} {
+      allow read: if (request.auth != null && request.auth.uid == uid)
+        || isMdarcDeveloper();
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
     match /sessions/{sessionId} {
       allow read: if true;
       allow write: if request.auth != null

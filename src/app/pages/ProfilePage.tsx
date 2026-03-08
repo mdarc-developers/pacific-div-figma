@@ -5,6 +5,7 @@ import { SettingsCard } from "@/app/components/SettingsCard";
 import { NotificationsCard } from "@/app/components/NotificationsCard";
 import { PrizesCard } from "@/app/components/PrizesCard";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
+import { AttendanceCard } from "@/app/components/AttendanceCard";
 import { AdminCard } from "@/app/components/AdminCard";
 import { DeleteAccountCard } from "@/app/components/DeleteAccountCard";
 import { ExportDataCard } from "@/app/components/ExportDataCard";
@@ -28,6 +29,8 @@ import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { useProfileVisible } from "@/app/hooks/useProfileVisible";
 import { useUserProfileFields } from "@/app/hooks/useUserProfileFields";
+import { useAttendanceContext } from "@/app/contexts/AttendanceContext";
+import { Conference } from "@/types/conference";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
@@ -85,6 +88,11 @@ export function ProfilePage() {
     displayProfile,
     setDisplayProfile,
   } = useUserProfileFields();
+  const {
+    attendance,
+    addConference: addAttendedConference,
+    removeConference: removeAttendedConference,
+  } = useAttendanceContext();
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -205,6 +213,13 @@ export function ProfilePage() {
         onAddTicketRange={addRaffleTicketRange}
         prizes={PRIZE_DATA[activeConference.id] ?? []}
         prizeWinners={PRIZE_WINNER_DATA[activeConference.id] ?? []}
+      />
+
+      <AttendanceCard
+        attendance={attendance}
+        allConferences={allConferencesList.filter((c) => c.id !== "---") as Conference[]}
+        onAddConference={addAttendedConference}
+        onRemoveConference={removeAttendedConference}
       />
 
       {/* Activity card */}
