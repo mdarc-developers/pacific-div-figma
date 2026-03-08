@@ -6,6 +6,9 @@ import { AuthProvider } from "@/app/contexts/AuthContext";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
+import { VoteProvider } from "@/app/contexts/VoteContext";
+import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
+import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
@@ -20,15 +23,21 @@ createRoot(document.getElementById("root")!).render(
         <BookmarkProvider>
           <ExhibitorBookmarkProvider>
             <BookmarkCountsProvider>
-              <NotesProvider>
-                <AuthProvider>
-                  <SearchProvider>
-                    <BrowserRouter>
-                      <App />
-                    </BrowserRouter>
-                  </SearchProvider>
-                </AuthProvider>
-              </NotesProvider>
+              <VoteProvider>
+                <ExhibitorVoteProvider>
+                  <VoteCountsProvider>
+                    <NotesProvider>
+                      <AuthProvider>
+                        <SearchProvider>
+                          <BrowserRouter>
+                            <App />
+                          </BrowserRouter>
+                        </SearchProvider>
+                      </AuthProvider>
+                    </NotesProvider>
+                  </VoteCountsProvider>
+                </ExhibitorVoteProvider>
+              </VoteProvider>
             </BookmarkCountsProvider>
           </ExhibitorBookmarkProvider>
         </BookmarkProvider>

@@ -64,6 +64,8 @@ vi.mock("@/app/components/ExhibitorView", () => ({
 import { ExhibitorsPage } from "@/app/pages/ExhibitorsPage";
 import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
+import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
+import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderExhibitorsPage() {
@@ -71,7 +73,11 @@ function renderExhibitorsPage() {
     <ConferenceProvider>
       <ExhibitorBookmarkProvider>
         <BookmarkCountsProvider>
-          <ExhibitorsPage />
+          <ExhibitorVoteProvider>
+            <VoteCountsProvider>
+              <ExhibitorsPage />
+            </VoteCountsProvider>
+          </ExhibitorVoteProvider>
         </BookmarkCountsProvider>
       </ExhibitorBookmarkProvider>
     </ConferenceProvider>,

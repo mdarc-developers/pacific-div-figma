@@ -16,6 +16,9 @@ import { useUserGroups } from "@/app/hooks/useUserGroups";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
 import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
+import { useVoteContext } from "@/app/contexts/VoteContext";
+import { useExhibitorVoteContext } from "@/app/contexts/ExhibitorVoteContext";
+import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useNotesContext } from "@/app/contexts/NotesContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
@@ -49,6 +52,9 @@ export function ProfilePage() {
     toggleExhibitorBookmark,
   } = useExhibitorBookmarkContext();
   const { sessionCounts, exhibitorCounts } = useBookmarkCountsContext();
+  const { votedSessions, toggleSessionVote } = useVoteContext();
+  const { votedExhibitors, toggleExhibitorVote } = useExhibitorVoteContext();
+  const { sessionVoteCounts, exhibitorVoteCounts } = useVoteCountsContext();
   const { notes } = useNotesContext();
   const [error, setError] = useState<string>("");
   const [
@@ -184,6 +190,12 @@ export function ProfilePage() {
         onNoteSessionClick={handleNoteSessionClick}
         sessionBookmarkCounts={sessionCounts}
         exhibitorBookmarkCounts={exhibitorCounts}
+        votedSessionIds={votedSessions}
+        onToggleSessionVote={toggleSessionVote}
+        sessionVoteCounts={sessionVoteCounts}
+        votedExhibitorIds={votedExhibitors}
+        onToggleExhibitorVote={toggleExhibitorVote}
+        exhibitorVoteCounts={exhibitorVoteCounts}
       />
 
       {/* Admin card */}

@@ -1,4 +1,4 @@
-import { Bookmark, StickyNote } from "lucide-react";
+import { Bookmark, StickyNote, Star } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import {
   Card,
@@ -24,6 +24,16 @@ interface BookmarkListCardProps {
   sessionBookmarkCounts?: Record<string, number>;
   /** Aggregate bookmark counts keyed by exhibitor id. */
   exhibitorBookmarkCounts?: Record<string, number>;
+  /** Session IDs the user has voted for. */
+  votedSessionIds?: string[];
+  onToggleSessionVote?: (sessionId: string) => void;
+  /** Aggregate vote counts keyed by session id. */
+  sessionVoteCounts?: Record<string, number>;
+  /** Exhibitor IDs the user has voted for. */
+  votedExhibitorIds?: string[];
+  onToggleExhibitorVote?: (exhibitorId: string) => void;
+  /** Aggregate vote counts keyed by exhibitor id. */
+  exhibitorVoteCounts?: Record<string, number>;
 }
 
 export function BookmarkListCard({
@@ -39,6 +49,12 @@ export function BookmarkListCard({
   onNoteSessionClick,
   sessionBookmarkCounts = {},
   exhibitorBookmarkCounts = {},
+  votedSessionIds = [],
+  onToggleSessionVote,
+  sessionVoteCounts = {},
+  votedExhibitorIds = [],
+  onToggleExhibitorVote,
+  exhibitorVoteCounts = {},
 }: BookmarkListCardProps) {
   const sessionMap = new Map(sessions.map((s) => [s.id, s]));
 
@@ -230,6 +246,98 @@ export function BookmarkListCard({
                 ))}
               </>
             )}
+          </ul>
+        )}
+
+        <Separator />
+
+        {/* Voted Sessions section */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium">Voted Sessions</p>
+          {votedSessionIds.length > 0 ? (
+            <Badge variant="secondary">{votedSessionIds.length}</Badge>
+          ) : (
+            <span className="text-xs text-muted-foreground">None yet</span>
+          )}
+        </div>
+
+        {votedSessionIds.length > 0 && (
+          <ul className="space-y-2 mt-1" data-testid="voted-sessions-list">
+            {votedSessionIds
+              .map((id) => sessionMap.get(id))
+              .filter((s): s is Session => s !== undefined)
+              .map((session) => (
+                <li
+                  key={session.id}
+                  className="flex items-center justify-between gap-2 text-sm"
+                >
+                  <span className="flex-1 truncate">{session.title}</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {sessionVoteCounts[session.id] !== undefined &&
+                      sessionVoteCounts[session.id] >= 0 && (
+                        <span className="text-xs text-muted-foreground tabular-nums">
+                          {sessionVoteCounts[session.id]}
+                        </span>
+                      )}
+                    {onToggleSessionVote && (
+                      <button
+                        type="button"
+                        onClick={() => onToggleSessionVote(session.id)}
+                        aria-label={`Remove vote for ${session.title}`}
+                        className="text-yellow-500 hover:text-muted-foreground"
+                      >
+                        <Star className="h-4 w-4 fill-current" />
+                      </button>
+                    )}
+                  </div>
+                </li>
+              ))}
+          </ul>
+        )}
+
+        <Separator />
+
+        {/* Voted Exhibitors section */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium">Voted Exhibitors</p>
+          {votedExhibitorIds.length > 0 ? (
+            <Badge variant="secondary">{votedExhibitorIds.length}</Badge>
+          ) : (
+            <span className="text-xs text-muted-foreground">None yet</span>
+          )}
+        </div>
+
+        {votedExhibitorIds.length > 0 && (
+          <ul className="space-y-2 mt-1" data-testid="voted-exhibitors-list">
+            {votedExhibitorIds
+              .map((id) => exhibitorMap.get(id))
+              .filter((e): e is Exhibitor => e !== undefined)
+              .map((exhibitor) => (
+                <li
+                  key={exhibitor.id}
+                  className="flex items-center justify-between gap-2 text-sm"
+                >
+                  <span className="flex-1 truncate">{exhibitor.name}</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {exhibitorVoteCounts[exhibitor.id] !== undefined &&
+                      exhibitorVoteCounts[exhibitor.id] >= 0 && (
+                        <span className="text-xs text-muted-foreground tabular-nums">
+                          {exhibitorVoteCounts[exhibitor.id]}
+                        </span>
+                      )}
+                    {onToggleExhibitorVote && (
+                      <button
+                        type="button"
+                        onClick={() => onToggleExhibitorVote(exhibitor.id)}
+                        aria-label={`Remove vote for ${exhibitor.name}`}
+                        className="text-yellow-500 hover:text-muted-foreground"
+                      >
+                        <Star className="h-4 w-4 fill-current" />
+                      </button>
+                    )}
+                  </div>
+                </li>
+              ))}
           </ul>
         )}
 

@@ -1,0 +1,104 @@
+import { useEffect, useRef } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useConference } from "@/app/contexts/ConferenceContext";
+import { useVoteContext } from "@/app/contexts/VoteContext";
+import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
+import {
+  getUserSessionVotes,
+  setUserSessionVotes,
+} from "@/services/userSettingsService";
+import { incrementSessionVoteCount } from "@/services/voteCountsService";
+
+/**
+ * Headless sync component.
+ * - On user login (or conference change while logged in): loads saved session
+ *   votes from Firestore and applies them via the shared VoteContext.
+ * - On vote change (after initial load): persists updated votes to Firestore
+ *   and updates the aggregate vote count for the changed session.
+ * - On logout: clears the loaded state so the next login re-reads Firestore.
+ */
+export function FirebaseVoteSync() {
+  const { user } = useAuth();
+  const { activeConference } = useConference();
+  const { votedSessions, overrideSessionVotes } = useVoteContext();
+  const { adjustSessionVoteCount } = useVoteCountsContext();
+
+  const conferenceId = activeConference.id;
+  // Composite key: changes when either the user or the active conference changes.
+  const loadKey = user ? `${user.uid}:${conferenceId}` : null;
+
+  // Tracks the composite key for which we have already loaded from Firestore.
+  const loadedForKeyRef = useRef<string | null>(null);
+  // Prevents writing back to Firestore the value we just read from it.
+  const justLoadedRef = useRef(false);
+  // Snapshot of votedSessions after the last Firestore save — used to compute
+  // the diff so we can increment/decrement the aggregate count precisely.
+  const savedItemsRef = useRef<string[]>([]);
+
+  // Load votes from Firestore whenever a new user logs in or the active
+  // conference changes while the user is already logged in.
+  useEffect(() => {
+    if (!user || !loadKey) {
+      loadedForKeyRef.current = null;
+      return;
+    }
+    if (loadedForKeyRef.current === loadKey) return;
+
+    const keyToLoad = loadKey;
+    const uidToLoad = user.uid;
+    let cancelled = false;
+
+    getUserSessionVotes(uidToLoad, conferenceId)
+      .then((votes) => {
+        if (cancelled) return;
+        justLoadedRef.current = true;
+        savedItemsRef.current = votes;
+        overrideSessionVotes(votes);
+      })
+      .catch(console.error)
+      .finally(() => {
+        if (!cancelled) loadedForKeyRef.current = keyToLoad;
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, loadKey, conferenceId, overrideSessionVotes]);
+
+  // Save votes to Firestore whenever they change (only after the initial load).
+  // Also update the aggregate vote count for any sessions that were added or removed.
+  useEffect(() => {
+    if (!user || loadedForKeyRef.current !== loadKey) return;
+    // Skip the write that mirrors the value we just read from Firestore.
+    if (justLoadedRef.current) {
+      justLoadedRef.current = false;
+      savedItemsRef.current = [...votedSessions];
+      return;
+    }
+
+    // Compute diff against the last saved snapshot to update aggregate counts.
+    const prev = savedItemsRef.current;
+    const next = votedSessions;
+    const added = next.filter((id) => !prev.includes(id));
+    const removed = prev.filter((id) => !next.includes(id));
+
+    // Optimistically update local counts so the UI reflects the change immediately.
+    added.forEach((id) => adjustSessionVoteCount(id, 1));
+    removed.forEach((id) => adjustSessionVoteCount(id, -1));
+
+    added.forEach((id) =>
+      incrementSessionVoteCount(conferenceId, id, 1).catch(console.error),
+    );
+    removed.forEach((id) =>
+      incrementSessionVoteCount(conferenceId, id, -1).catch(console.error),
+    );
+
+    savedItemsRef.current = [...next];
+
+    setUserSessionVotes(user.uid, conferenceId, votedSessions).catch(
+      console.error,
+    );
+  }, [user, loadKey, conferenceId, votedSessions, adjustSessionVoteCount]);
+
+  return null;
+}
