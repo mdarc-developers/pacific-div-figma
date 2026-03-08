@@ -136,6 +136,24 @@ export interface UserProfile {
   profileVisible?: boolean; // whether the user's profile appears in /attendees
 }
 
+/**
+ * Public attendee profile stored in the `publicProfiles` Firestore collection.
+ * Contains only the fields that are safe to expose to all app users.
+ * Synced automatically by the `syncPublicProfile` Cloud Function whenever a
+ * `users/{uid}` document changes and `profileVisible` is true.
+ */
+export interface PublicAttendeeProfile {
+  uid: string;
+  displayName?: string;
+  callsign?: string;
+  displayProfile?: string;
+  email?: string;
+  groups?: string[];
+  sessions?: string[];
+  exhibitors?: string[];
+  prizesDonated?: string[];
+}
+
 export interface Message {
   id: string;
   createdAt: string;
