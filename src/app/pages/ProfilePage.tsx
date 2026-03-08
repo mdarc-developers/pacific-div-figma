@@ -23,6 +23,7 @@ import { useNotesContext } from "@/app/contexts/NotesContext";
 import { useExhibitorNotesContext } from "@/app/contexts/ExhibitorNotesContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
+import { useProfileVisible } from "@/app/hooks/useProfileVisible";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
@@ -69,6 +70,7 @@ export function ProfilePage() {
   ] = useRaffleTickets(activeConference.id);
   const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore } =
     useNotificationSettings();
+  const { profileVisible, setProfileVisible } = useProfileVisible();
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -159,6 +161,8 @@ export function ProfilePage() {
       <AccountCard
         user={user}
         groups={userGroups}
+        profileVisible={profileVisible}
+        onProfileVisibleChange={setProfileVisible}
         onEmailVerification={handleEmailVerification}
         onPasswordReset={handlePasswordReset}
       />

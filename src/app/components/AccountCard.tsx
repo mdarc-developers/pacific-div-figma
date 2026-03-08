@@ -7,12 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import { Checkbox } from "@/app/components/ui/checkbox";
+import { Label } from "@/app/components/ui/label";
 import { Separator } from "@/app/components/ui/separator";
 import type { User } from "firebase/auth";
 
 interface AccountCardProps {
   user: User;
   groups?: string[];
+  profileVisible: boolean;
+  onProfileVisibleChange: (value: boolean) => void;
   onEmailVerification: () => void;
   onPasswordReset: () => void;
 }
@@ -29,6 +33,8 @@ function formatDate(dateStr: string | null | undefined): string {
 export function AccountCard({
   user,
   groups,
+  profileVisible,
+  onProfileVisibleChange,
   onEmailVerification,
   onPasswordReset,
 }: AccountCardProps) {
@@ -107,6 +113,19 @@ export function AccountCard({
             </div>
           </>
         )}
+        <Separator />
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="profile-visible"
+            checked={profileVisible}
+            onCheckedChange={(checked) =>
+              onProfileVisibleChange(checked === true)
+            }
+          />
+          <Label htmlFor="profile-visible" className="text-sm font-medium cursor-pointer">
+            Make Profile Visible in /attendees
+          </Label>
+        </div>
       </CardContent>
     </Card>
   );
