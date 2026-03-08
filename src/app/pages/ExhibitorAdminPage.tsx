@@ -50,6 +50,7 @@ export function ExhibitorAdminPage() {
     );
   }
 
+  // EXHIBITOR_DATA[id] is a [mapUrl, Exhibitor[]] tuple; index [1] is the array
   const exhibitors = EXHIBITOR_DATA[activeConference.id]?.[1] ?? [];
 
   return (
