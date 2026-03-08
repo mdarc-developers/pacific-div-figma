@@ -1,3 +1,4 @@
+import { type ReactNode } from "react";
 import { Bookmark, StickyNote, Star, Trash2 } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -17,12 +18,14 @@ function SectionHeader({
   isOpen,
   onToggle,
   badgeLabel,
+  icon,
 }: {
   title: string;
   count: number;
   isOpen: boolean;
   onToggle: () => void;
   badgeLabel?: string;
+  icon?: ReactNode;
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -52,7 +55,10 @@ function SectionHeader({
 
       {/* Title and count badge */}
       <div className="flex flex-1 items-center justify-between gap-2">
-        <p className="text-sm font-medium">{title}</p>
+        <p className="flex items-center gap-1.5 text-sm font-medium">
+          {icon}
+          {title}
+        </p>
         {count > 0 ? (
           <Badge variant="secondary">{badgeLabel ?? count}</Badge>
         ) : (
@@ -171,6 +177,7 @@ export function BookmarkListCard({
           count={bookmarked.length}
           isOpen={sections.bookmarkedSessions}
           onToggle={() => toggleSection("bookmarkedSessions")}
+          icon={<Bookmark className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
         />
 
         {sections.bookmarkedSessions && (bookmarked.length > 0 || previous.length > 0) && (
@@ -256,6 +263,7 @@ export function BookmarkListCard({
           count={bookmarkedExhibitorList.length}
           isOpen={sections.bookmarkedExhibitors}
           onToggle={() => toggleSection("bookmarkedExhibitors")}
+          icon={<Bookmark className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
         />
 
         {sections.bookmarkedExhibitors && (bookmarkedExhibitorList.length > 0 ||
@@ -350,6 +358,7 @@ export function BookmarkListCard({
           count={votedSessionIds.length}
           isOpen={sections.votedSessions}
           onToggle={() => toggleSection("votedSessions")}
+          icon={<Star className="h-4 w-4 text-yellow-500" />}
         />
 
         {sections.votedSessions && votedSessionIds.length > 0 && (
@@ -394,6 +403,7 @@ export function BookmarkListCard({
           count={votedExhibitorIds.length}
           isOpen={sections.votedExhibitors}
           onToggle={() => toggleSection("votedExhibitors")}
+          icon={<Star className="h-4 w-4 text-yellow-500" />}
         />
 
         {sections.votedExhibitors && votedExhibitorIds.length > 0 && (
@@ -432,12 +442,13 @@ export function BookmarkListCard({
 
         <Separator />
 
-        {/* My Notes section */}
+        {/* Noted Sessions section */}
         <SectionHeader
-          title="My Notes"
+          title="Noted Sessions"
           count={notedSessions.length}
           isOpen={sections.myNotes}
           onToggle={() => toggleSection("myNotes")}
+          icon={<StickyNote className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />}
         />
 
         {sections.myNotes && notedSessions.length > 0 && (
@@ -480,12 +491,13 @@ export function BookmarkListCard({
 
         <Separator />
 
-        {/* My Exhibitor Notes section */}
+        {/* Noted Exhibitors section */}
         <SectionHeader
-          title="My Exhibitor Notes"
+          title="Noted Exhibitors"
           count={notedExhibitors.length}
           isOpen={sections.myExhibitorNotes}
           onToggle={() => toggleSection("myExhibitorNotes")}
+          icon={<StickyNote className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />}
         />
 
         {sections.myExhibitorNotes && notedExhibitors.length > 0 && (
