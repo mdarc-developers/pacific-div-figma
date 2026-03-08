@@ -313,3 +313,30 @@ export async function setUserActivitySections(
     { merge: true },
   );
 }
+
+export interface UserProfileFields {
+  callsign: string;
+  displayName: string;
+  displayProfile: string;
+}
+
+export async function getUserProfileFields(
+  uid: string,
+): Promise<UserProfileFields | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return {
+    callsign: typeof data?.callsign === "string" ? data.callsign : "",
+    displayName: typeof data?.displayName === "string" ? data.displayName : "",
+    displayProfile:
+      typeof data?.displayProfile === "string" ? data.displayProfile : "",
+  };
+}
+
+export async function setUserProfileFields(
+  uid: string,
+  fields: Partial<UserProfileFields>,
+): Promise<void> {
+  await setDoc(doc(db, "users", uid), fields, { merge: true });
+}

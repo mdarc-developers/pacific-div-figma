@@ -27,6 +27,7 @@ import { useExhibitorNotesContext } from "@/app/contexts/ExhibitorNotesContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { useProfileVisible } from "@/app/hooks/useProfileVisible";
+import { useUserProfileFields } from "@/app/hooks/useUserProfileFields";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
@@ -76,6 +77,14 @@ export function ProfilePage() {
   const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore } =
     useNotificationSettings();
   const { profileVisible, setProfileVisible } = useProfileVisible();
+  const {
+    callsign,
+    setCallsign,
+    displayName,
+    setDisplayName,
+    displayProfile,
+    setDisplayProfile,
+  } = useUserProfileFields();
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -170,6 +179,12 @@ export function ProfilePage() {
         onProfileVisibleChange={setProfileVisible}
         onEmailVerification={handleEmailVerification}
         onPasswordReset={handlePasswordReset}
+        callsign={callsign}
+        onCallsignChange={setCallsign}
+        displayName={displayName}
+        onDisplayNameChange={setDisplayName}
+        displayProfile={displayProfile}
+        onDisplayProfileChange={setDisplayProfile}
       />
 
       <SettingsCard theme={theme} onThemeChange={setTheme} />
