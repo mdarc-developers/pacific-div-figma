@@ -76,6 +76,8 @@ interface BookmarkListCardProps {
   onRemovePrevExhibitorBookmark?: (exhibitorId: string) => void;
   notes?: Record<string, string>;
   onNoteSessionClick?: (sessionId: string) => void;
+  exhibitorNotes?: Record<string, string>;
+  onNoteExhibitorClick?: (exhibitorId: string) => void;
   /** Aggregate bookmark counts keyed by session id. */
   sessionBookmarkCounts?: Record<string, number>;
   /** Aggregate bookmark counts keyed by exhibitor id. */
@@ -105,6 +107,8 @@ export function BookmarkListCard({
   onRemovePrevExhibitorBookmark,
   notes = {},
   onNoteSessionClick,
+  exhibitorNotes = {},
+  onNoteExhibitorClick,
   sessionBookmarkCounts = {},
   exhibitorBookmarkCounts = {},
   votedSessionIds = [],
@@ -142,6 +146,17 @@ export function BookmarkListCard({
     .map(([sessionId, text]) => ({ session: sessionMap.get(sessionId), text }))
     .filter((entry): entry is { session: Session; text: string } =>
       entry.session !== undefined,
+    );
+
+  // Build the list of exhibitors that have notes, preserving note text
+  const notedExhibitors = Object.entries(exhibitorNotes)
+    .filter(([, text]) => text.trim().length > 0)
+    .map(([exhibitorId, text]) => ({
+      exhibitor: exhibitorMap.get(exhibitorId),
+      text,
+    }))
+    .filter((entry): entry is { exhibitor: Exhibitor; text: string } =>
+      entry.exhibitor !== undefined,
     );
 
   return (
@@ -452,6 +467,54 @@ export function BookmarkListCard({
                     <span className="flex items-center gap-1 font-medium truncate">
                       <StickyNote className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
                       {session.title}
+                    </span>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 pl-5">
+                      {text}
+                    </p>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <Separator />
+
+        {/* My Exhibitor Notes section */}
+        <SectionHeader
+          title="My Exhibitor Notes"
+          count={notedExhibitors.length}
+          isOpen={sections.myExhibitorNotes}
+          onToggle={() => toggleSection("myExhibitorNotes")}
+        />
+
+        {sections.myExhibitorNotes && notedExhibitors.length > 0 && (
+          <ul
+            className="space-y-2 mt-1"
+            data-testid="exhibitor-notes-list"
+          >
+            {notedExhibitors.map(({ exhibitor, text }) => (
+              <li key={exhibitor.id} className="text-sm">
+                {onNoteExhibitorClick ? (
+                  <button
+                    type="button"
+                    className="w-full text-left group"
+                    onClick={() => onNoteExhibitorClick(exhibitor.id)}
+                    aria-label={`View note for ${exhibitor.name}`}
+                  >
+                    <span className="flex items-center gap-1 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                      <StickyNote className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                      {exhibitor.name}
+                    </span>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 pl-5">
+                      {text}
+                    </p>
+                  </button>
+                ) : (
+                  <div>
+                    <span className="flex items-center gap-1 font-medium truncate">
+                      <StickyNote className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                      {exhibitor.name}
                     </span>
                     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 pl-5">
                       {text}

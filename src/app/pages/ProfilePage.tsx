@@ -20,6 +20,7 @@ import { useVoteContext } from "@/app/contexts/VoteContext";
 import { useExhibitorVoteContext } from "@/app/contexts/ExhibitorVoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useNotesContext } from "@/app/contexts/NotesContext";
+import { useExhibitorNotesContext } from "@/app/contexts/ExhibitorNotesContext";
 import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
@@ -58,6 +59,7 @@ export function ProfilePage() {
   const { votedExhibitors, toggleExhibitorVote } = useExhibitorVoteContext();
   const { sessionVoteCounts, exhibitorVoteCounts } = useVoteCountsContext();
   const { notes } = useNotesContext();
+  const { notes: exhibitorNotes } = useExhibitorNotesContext();
   const [error, setError] = useState<string>("");
   const [
     raffleTickets,
@@ -84,6 +86,10 @@ export function ProfilePage() {
 
   const handleNoteSessionClick = (sessionId: string) => {
     navigate(`/schedule?highlight=${sessionId}`);
+  };
+
+  const handleNoteExhibitorClick = (exhibitorId: string) => {
+    navigate(`/exhibitors#${exhibitorId}`);
   };
 
   const handleEmailVerification = async () => {
@@ -194,6 +200,8 @@ export function ProfilePage() {
         onRemovePrevExhibitorBookmark={removePrevExhibitorBookmark}
         notes={notes}
         onNoteSessionClick={handleNoteSessionClick}
+        exhibitorNotes={exhibitorNotes}
+        onNoteExhibitorClick={handleNoteExhibitorClick}
         sessionBookmarkCounts={sessionCounts}
         exhibitorBookmarkCounts={exhibitorCounts}
         votedSessionIds={votedSessions}

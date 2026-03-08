@@ -10,6 +10,7 @@ import { VoteProvider } from "@/app/contexts/VoteContext";
 import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
+import { ExhibitorNotesProvider } from "@/app/contexts/ExhibitorNotesContext";
 import { HeaderCollapsedProvider } from "@/app/contexts/HeaderCollapsedContext";
 import { ActivitySectionsProvider } from "@/app/contexts/ActivitySectionsContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
@@ -29,6 +30,7 @@ createRoot(document.getElementById("root")!).render(
                 <ExhibitorVoteProvider>
                   <VoteCountsProvider>
                     <NotesProvider>
+                      <ExhibitorNotesProvider>
                       <HeaderCollapsedProvider>
                       <ActivitySectionsProvider>
                         <AuthProvider>
@@ -40,6 +42,7 @@ createRoot(document.getElementById("root")!).render(
                         </AuthProvider>
                       </ActivitySectionsProvider>
                       </HeaderCollapsedProvider>
+                      </ExhibitorNotesProvider>
                     </NotesProvider>
                   </VoteCountsProvider>
                 </ExhibitorVoteProvider>
