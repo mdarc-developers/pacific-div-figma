@@ -113,11 +113,9 @@ function ExhibitorCard({
             )}
             {onToggleVote && (
               <div className="flex items-center gap-1 ml-1 shrink-0">
-                {voteCount !== undefined && voteCount >= 0 && (
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {voteCount}
-                  </span>
-                )}
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {voteCount ?? 0}
+                </span>
                 <Button
                   variant="ghost"
                   size="icon"
