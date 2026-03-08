@@ -170,15 +170,17 @@ export const incrementSignupCounter = onDocumentCreated(
  * Synchronises the `publicProfiles` collection whenever a `users/{uid}`
  * document is written.
  *
- * - If `profileVisible` is `true` the public fields (displayName, callsign,
- *   displayProfile, email, groups, sessions, exhibitors, prizesDonated) are
- *   copied to `publicProfiles/{uid}`.
+ * - If `profileVisible` is `true` the non-sensitive display fields
+ *   (displayName, callsign, displayProfile) are copied to
+ *   `publicProfiles/{uid}`.
  * - If `profileVisible` is falsy, or the user document is deleted, any
  *   existing `publicProfiles/{uid}` entry is removed.
  *
- * This function keeps the publicly-readable `publicProfiles` collection in
- * sync without requiring the client to hold the sensitive data in the `users`
- * document or requiring mdarc-developer privileges to list users.
+ * Fields intentionally excluded from publicProfiles:
+ *   email, groups, sessions, exhibitors, prizesDonated.
+ *
+ * The `publicProfiles` collection is readable only by authenticated users
+ * with a verified email address (enforced by Firestore security rules).
  */
 export const syncPublicProfile = onDocumentWritten(
   "users/{uid}",
@@ -225,27 +227,14 @@ export const syncPublicProfile = onDocumentWritten(
       return;
     }
 
-    // Build the public-safe subset of the user document
+    // Build the safe-to-share subset of the user document.
+    // Only displayName, callsign, and displayProfile are included.
+    // email, groups, sessions, exhibitors, and prizesDonated are intentionally
+    // excluded to minimise exposure of attendee data.
     const publicData: Record<string, unknown> = { uid };
-    const stringFields = [
-      "displayName",
-      "callsign",
-      "displayProfile",
-      "email",
-    ] as const;
-    for (const field of stringFields) {
+    const allowedStringFields = ["displayName", "callsign", "displayProfile"] as const;
+    for (const field of allowedStringFields) {
       if (typeof data[field] === "string" && data[field]) {
-        publicData[field] = data[field];
-      }
-    }
-    const arrayFields = [
-      "groups",
-      "sessions",
-      "exhibitors",
-      "prizesDonated",
-    ] as const;
-    for (const field of arrayFields) {
-      if (Array.isArray(data[field])) {
         publicData[field] = data[field];
       }
     }

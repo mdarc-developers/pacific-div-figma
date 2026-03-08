@@ -19,12 +19,25 @@ vi.mock("firebase/firestore", async (importOriginal) => {
   };
 });
 
+// Mock exportDataService to avoid testing audit-log internals here
+vi.mock("@/services/exportDataService", () => ({
+  writeAuditLog: vi.fn().mockResolvedValue(undefined),
+}));
+
+// Mock AuthContext — default to an authenticated, email-verified user
+const mockUser = { uid: "test-uid", emailVerified: true };
+vi.mock("@/app/contexts/AuthContext", () => ({
+  useAuth: vi.fn(() => ({ user: mockUser })),
+}));
+
 import { getDocs } from "firebase/firestore";
+import { useAuth } from "@/app/contexts/AuthContext";
 import { usePublicAttendees } from "@/app/hooks/usePublicAttendees";
 import { ATTENDEES_STORAGE_KEY } from "@/services/attendeesService";
 import type { PublicAttendeeProfile } from "@/types/conference";
 
 const mockGetDocs = getDocs as ReturnType<typeof vi.fn>;
+const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
 
 const sampleDocs = [
   {
@@ -40,6 +53,9 @@ const sampleAttendees: PublicAttendeeProfile[] = [
 beforeEach(() => {
   localStorage.clear();
   vi.clearAllMocks();
+  // Reset to authenticated, verified user by default
+  mockUseAuth.mockReturnValue({ user: mockUser });
+  mockGetDocs.mockResolvedValue({ docs: [] });
 });
 
 afterEach(() => {
@@ -134,5 +150,27 @@ describe("usePublicAttendees", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.error).toBeNull();
     expect(result.current.attendees).toEqual(sampleAttendees);
+  });
+
+  it("does not fetch from Firestore when user is not authenticated", () => {
+    mockUseAuth.mockReturnValue({ user: null });
+    mockGetDocs.mockResolvedValue({ docs: [] });
+
+    const { result } = renderHook(() => usePublicAttendees());
+
+    expect(mockGetDocs).not.toHaveBeenCalled();
+    expect(result.current.loading).toBe(false);
+    expect(result.current.attendees).toEqual([]);
+  });
+
+  it("does not fetch from Firestore when user email is not verified", () => {
+    mockUseAuth.mockReturnValue({ user: { uid: "uid1", emailVerified: false } });
+    mockGetDocs.mockResolvedValue({ docs: [] });
+
+    const { result } = renderHook(() => usePublicAttendees());
+
+    expect(mockGetDocs).not.toHaveBeenCalled();
+    expect(result.current.loading).toBe(false);
+    expect(result.current.attendees).toEqual([]);
   });
 });
