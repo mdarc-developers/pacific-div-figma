@@ -52,11 +52,58 @@ export function FirebaseExhibitorBookmarkSync() {
     const uidToLoad = user.uid;
     let cancelled = false;
 
+    // Capture local (logged-out) state before any Firestore override.
+    const localBookmarks = [...bookmarkedExhibitors];
+    const localPrevBookmarks = [...prevBookmarkedExhibitors];
+
     getUserExhibitorBookmarks(uidToLoad, conferenceId)
       .then(({ bookmarks, prevBookmarks }) => {
         if (cancelled) return;
+
+        // Items added locally while logged out that are not yet in Firestore.
+        const bookmarksSet = new Set(bookmarks);
+        const localBookmarksSet = new Set(localBookmarks);
+        const addedLocally = localBookmarks.filter(
+          (id) => !bookmarksSet.has(id),
+        );
+        // Items the user intentionally removed while logged out (moved to prev
+        // in local state) but that are still active in Firestore.
+        const removedLocally = localPrevBookmarks.filter(
+          (id) => !localBookmarksSet.has(id) && bookmarksSet.has(id),
+        );
+
+        const removedLocallySet = new Set(removedLocally);
+        const merged =
+          addedLocally.length > 0 || removedLocally.length > 0
+            ? [...bookmarks, ...addedLocally].filter(
+                (id) => !removedLocallySet.has(id),
+              )
+            : bookmarks;
+
+        const mergedSet = new Set(merged);
+        const mergedPrev = [
+          ...new Set([...prevBookmarks, ...localPrevBookmarks]),
+        ].filter((id) => !mergedSet.has(id));
+
         justLoadedRef.current = true;
-        overrideExhibitorBookmarks(bookmarks, prevBookmarks);
+        overrideExhibitorBookmarks(merged, mergedPrev);
+
+        // If the local state differed from Firestore, persist the merged set
+        // and update aggregate bookmark counts for newly added items.
+        if (addedLocally.length > 0 || removedLocally.length > 0) {
+          setUserExhibitorBookmarks(
+            uidToLoad,
+            conferenceId,
+            merged,
+            mergedPrev,
+          ).catch(console.error);
+          addedLocally.forEach((id) => {
+            adjustExhibitorCount(id, 1);
+            incrementExhibitorBookmarkCount(conferenceId, id, 1).catch(
+              console.error,
+            );
+          });
+        }
       })
       .catch(console.error)
       .finally(() => {
