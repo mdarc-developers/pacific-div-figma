@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { type Theme } from "@/app/contexts/ThemeContext";
+import { type ActivitySections } from "@/app/contexts/ActivitySectionsContext";
 
 export async function getUserTheme(uid: string): Promise<Theme | null> {
   const snap = await getDoc(doc(db, "users", uid));
@@ -209,6 +210,39 @@ export async function setUserNotificationSettings(
       phoneNumber: settings.phoneNumber,
       minutesBefore: settings.minutesBefore,
     },
+    { merge: true },
+  );
+}
+
+export async function getUserActivitySections(
+  uid: string,
+): Promise<ActivitySections | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  const s = snap.data()?.activitySections;
+  if (!s || typeof s !== "object" || Array.isArray(s)) return null;
+  return {
+    bookmarkedSessions:
+      typeof s.bookmarkedSessions === "boolean" ? s.bookmarkedSessions : true,
+    bookmarkedExhibitors:
+      typeof s.bookmarkedExhibitors === "boolean"
+        ? s.bookmarkedExhibitors
+        : true,
+    votedSessions:
+      typeof s.votedSessions === "boolean" ? s.votedSessions : true,
+    votedExhibitors:
+      typeof s.votedExhibitors === "boolean" ? s.votedExhibitors : true,
+    myNotes: typeof s.myNotes === "boolean" ? s.myNotes : true,
+  };
+}
+
+export async function setUserActivitySections(
+  uid: string,
+  sections: ActivitySections,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { activitySections: sections },
     { merge: true },
   );
 }
