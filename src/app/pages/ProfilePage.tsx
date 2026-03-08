@@ -12,6 +12,8 @@ import { useTheme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useNavigate } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
+import { useExhibitorAdmin } from "@/app/hooks/useExhibitorAdmin";
+import { useSessionAdmin } from "@/app/hooks/useSessionAdmin";
 import { useUserGroups } from "@/app/hooks/useUserGroups";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
@@ -41,6 +43,8 @@ export function ProfilePage() {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const isPrizesAdmin = usePrizesAdmin();
+  const isExhibitorAdmin = useExhibitorAdmin();
+  const isSessionAdmin = useSessionAdmin();
   const userGroups = useUserGroups();
   const {
     bookmarkedItems: bookmarkedSessions,
@@ -213,7 +217,13 @@ export function ProfilePage() {
       />
 
       {/* Admin card */}
-      {isPrizesAdmin && <AdminCard />}
+      {(isPrizesAdmin || isExhibitorAdmin || isSessionAdmin) && (
+        <AdminCard
+          isPrizesAdmin={isPrizesAdmin}
+          isExhibitorAdmin={isExhibitorAdmin}
+          isSessionAdmin={isSessionAdmin}
+        />
+      )}
 
       <DeleteAccountCard onDeleteAccount={handleDeleteAccount} />
 

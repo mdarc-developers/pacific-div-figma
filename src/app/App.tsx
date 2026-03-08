@@ -37,6 +37,8 @@ const LoginPage = lazy(() => import("@/app/pages/LoginPage").then((m) => ({ defa
 const SignUpPage = lazy(() => import("@/app/pages/SignUpPage").then((m) => ({ default: m.SignUpPage })));
 const SearchPage = lazy(() => import("@/app/pages/SearchPage").then((m) => ({ default: m.SearchPage })));
 const PrizesAdminPage = lazy(() => import("@/app/pages/PrizesAdminPage").then((m) => ({ default: m.PrizesAdminPage })));
+const ExhibitorAdminPage = lazy(() => import("@/app/pages/ExhibitorAdminPage").then((m) => ({ default: m.ExhibitorAdminPage })));
+const SessionAdminPage = lazy(() => import("@/app/pages/SessionAdminPage").then((m) => ({ default: m.SessionAdminPage })));
 const PacificonSvgExhibitorMap = lazy(() => import("@/app/components/PacificonSvgExhibitorMap").then((m) => ({ default: m.PacificonSvgExhibitorMap })));
 const PrivacyPage = lazy(() => import("@/app/pages/PrivacyPage").then((m) => ({ default: m.PrivacyPage })));
 const TermsOfServicePage = lazy(() => import("@/app/pages/TermsOfServicePage").then((m) => ({ default: m.TermsOfServicePage })));
@@ -82,6 +84,8 @@ export default function App() {
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/admin/prizes" element={<PrizesAdminPage />} />
+            <Route path="/admin/exhibitors" element={<ExhibitorAdminPage />} />
+            <Route path="/admin/sessions" element={<SessionAdminPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route
