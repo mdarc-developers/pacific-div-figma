@@ -22,8 +22,8 @@ interface AttendanceCardProps {
   attendance: string[];
   /** All conferences available for selection (separators with id "---" excluded). */
   allConferences: Conference[];
-  onAddConference: (conferenceId: string) => Promise<void>;
-  onRemoveConference: (conferenceId: string) => Promise<void>;
+  onAddConference: (conferenceId: string) => void;
+  onRemoveConference: (conferenceId: string) => void;
 }
 
 export function AttendanceCard({
@@ -33,8 +33,6 @@ export function AttendanceCard({
   onRemoveConference,
 }: AttendanceCardProps) {
   const [selected, setSelected] = useState<string>("");
-  const [adding, setAdding] = useState(false);
-  const [removingId, setRemovingId] = useState<string | null>(null);
 
   // Build a map for name lookups
   const conferenceMap = new Map(allConferences.map((c) => [c.id, c.name]));
@@ -42,28 +40,10 @@ export function AttendanceCard({
   // Conferences not yet in the attendance list
   const available = allConferences.filter((c) => !attendance.includes(c.id));
 
-  const handleAdd = async () => {
+  const handleAdd = () => {
     if (!selected) return;
-    setAdding(true);
-    try {
-      await onAddConference(selected);
-      setSelected("");
-    } catch (err) {
-      console.error("Failed to add conference attendance:", err);
-    } finally {
-      setAdding(false);
-    }
-  };
-
-  const handleRemove = async (conferenceId: string) => {
-    setRemovingId(conferenceId);
-    try {
-      await onRemoveConference(conferenceId);
-    } catch (err) {
-      console.error("Failed to remove conference attendance:", err);
-    } finally {
-      setRemovingId(null);
-    }
+    onAddConference(selected);
+    setSelected("");
   };
 
   return (
@@ -98,8 +78,7 @@ export function AttendanceCard({
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
-                  onClick={() => handleRemove(conferenceId)}
-                  disabled={removingId === conferenceId}
+                  onClick={() => onRemoveConference(conferenceId)}
                   aria-label={`Remove ${conferenceMap.get(conferenceId) ?? conferenceId} from attendance`}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -113,10 +92,7 @@ export function AttendanceCard({
           <>
             <Separator />
             <div className="flex items-center gap-2">
-              <Select
-                value={selected}
-                onValueChange={setSelected}
-              >
+              <Select value={selected} onValueChange={setSelected}>
                 <SelectTrigger
                   className="flex-1 text-sm"
                   aria-label="Select a conference to add"
@@ -137,7 +113,7 @@ export function AttendanceCard({
                 size="icon"
                 className="h-9 w-9 flex-shrink-0"
                 onClick={handleAdd}
-                disabled={!selected || adding}
+                disabled={!selected}
                 aria-label="Add conference to attendance"
               >
                 <Plus className="h-4 w-4" />

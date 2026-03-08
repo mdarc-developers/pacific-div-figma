@@ -5,9 +5,6 @@ import {
   setDoc,
   deleteDoc,
   serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  updateDoc,
 } from "firebase/firestore";
 
 /**
@@ -24,45 +21,43 @@ export async function getUserAttendance(uid: string): Promise<string[]> {
 }
 
 /**
- * Adds a conference to the user's attendance.
- * - Primary record: `conferences/{conferenceId}/attendees/{uid}`
- * - Convenience field: adds conferenceId to `users/{uid}.attendance` array
+ * Writes the full attendance list to the user's convenience field.
+ * Path: `users/{uid}.attendance`
  */
-export async function addUserAttendance(
+export async function setUserAttendance(
   uid: string,
-  conferenceId: string,
+  conferenceIds: string[],
 ): Promise<void> {
-  // Primary record — not exposed via public services
-  await setDoc(
-    doc(db, "conferences", conferenceId, "attendees", uid),
-    { uid, joinedAt: serverTimestamp() },
-    { merge: true },
-  );
-
-  // Convenience field on the user document
   await setDoc(
     doc(db, "users", uid),
-    { attendance: arrayUnion(conferenceId) },
+    { attendance: conferenceIds },
     { merge: true },
   );
 }
 
 /**
- * Removes a conference from the user's attendance.
- * - Deletes the primary record `conferences/{conferenceId}/attendees/{uid}`
- * - Removes conferenceId from `users/{uid}.attendance` array
+ * Creates (or overwrites) the primary attendee record for a single conference.
+ * Path: `conferences/{conferenceId}/attendees/{uid}`
+ * Not exposed via public read services — only the authenticated owner may write.
  */
-export async function removeUserAttendance(
+export async function addAttendeeRecord(
   uid: string,
   conferenceId: string,
 ): Promise<void> {
-  // Remove primary record
-  await deleteDoc(
+  await setDoc(
     doc(db, "conferences", conferenceId, "attendees", uid),
+    { uid, joinedAt: serverTimestamp() },
+    { merge: true },
   );
+}
 
-  // Remove from convenience array — use updateDoc so it's atomic
-  await updateDoc(doc(db, "users", uid), {
-    attendance: arrayRemove(conferenceId),
-  });
+/**
+ * Deletes the primary attendee record for a single conference.
+ * Path: `conferences/{conferenceId}/attendees/{uid}`
+ */
+export async function removeAttendeeRecord(
+  uid: string,
+  conferenceId: string,
+): Promise<void> {
+  await deleteDoc(doc(db, "conferences", conferenceId, "attendees", uid));
 }

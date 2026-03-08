@@ -47,6 +47,7 @@ import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
 import { ExhibitorNotesProvider } from "@/app/contexts/ExhibitorNotesContext";
 import { ActivitySectionsProvider } from "@/app/contexts/ActivitySectionsContext";
+import { AttendanceProvider } from "@/app/contexts/AttendanceContext";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 function renderProfilePage() {
@@ -64,7 +65,9 @@ function renderProfilePage() {
                         <NotesProvider>
                           <ExhibitorNotesProvider>
                           <ActivitySectionsProvider>
-                            <ProfilePage />
+                            <AttendanceProvider>
+                              <ProfilePage />
+                            </AttendanceProvider>
                           </ActivitySectionsProvider>
                           </ExhibitorNotesProvider>
                         </NotesProvider>

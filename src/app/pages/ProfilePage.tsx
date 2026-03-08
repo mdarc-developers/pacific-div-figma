@@ -29,7 +29,8 @@ import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { useProfileVisible } from "@/app/hooks/useProfileVisible";
 import { useUserProfileFields } from "@/app/hooks/useUserProfileFields";
-import { useAttendance } from "@/app/hooks/useAttendance";
+import { useAttendanceContext } from "@/app/contexts/AttendanceContext";
+import { Conference } from "@/types/conference";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
@@ -91,7 +92,7 @@ export function ProfilePage() {
     attendance,
     addConference: addAttendedConference,
     removeConference: removeAttendedConference,
-  } = useAttendance();
+  } = useAttendanceContext();
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -216,7 +217,7 @@ export function ProfilePage() {
 
       <AttendanceCard
         attendance={attendance}
-        allConferences={allConferencesList.filter((c) => c.id !== "---") as import("@/types/conference").Conference[]}
+        allConferences={allConferencesList.filter((c) => c.id !== "---") as Conference[]}
         onAddConference={addAttendedConference}
         onRemoveConference={removeAttendedConference}
       />
