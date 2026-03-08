@@ -191,6 +191,9 @@ describe("BookmarkListCard — collapsible sections", () => {
       />,
     );
     expect(
+      screen.getByRole("button", { name: /collapse raffle tickets/i }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
     ).toBeInTheDocument();
     expect(
