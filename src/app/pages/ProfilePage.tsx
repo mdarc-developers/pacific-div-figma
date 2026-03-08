@@ -45,11 +45,13 @@ export function ProfilePage() {
     bookmarkedItems: bookmarkedSessions,
     toggleBookmark,
     prevBookmarkedItems: prevBookmarkedSessions,
+    removePrevBookmark,
   } = useBookmarkContext();
   const {
     bookmarkedExhibitors,
     prevBookmarkedExhibitors,
     toggleExhibitorBookmark,
+    removePrevExhibitorBookmark,
   } = useExhibitorBookmarkContext();
   const { sessionCounts, exhibitorCounts } = useBookmarkCountsContext();
   const { votedSessions, toggleSessionVote } = useVoteContext();
@@ -181,6 +183,7 @@ export function ProfilePage() {
         bookmarkedIds={bookmarkedSessions}
         prevBookmarkedIds={prevBookmarkedSessions}
         onToggleBookmark={toggleBookmark}
+        onRemovePrevBookmark={removePrevBookmark}
         exhibitors={
           // EXHIBITOR_DATA[id] is a [url, Exhibitor[]] tuple; index [1] is the array
           EXHIBITOR_DATA[activeConference.id]?.[1] ?? []
@@ -188,6 +191,7 @@ export function ProfilePage() {
         bookmarkedExhibitorIds={bookmarkedExhibitors}
         prevBookmarkedExhibitorIds={prevBookmarkedExhibitors}
         onToggleExhibitorBookmark={toggleExhibitorBookmark}
+        onRemovePrevExhibitorBookmark={removePrevExhibitorBookmark}
         notes={notes}
         onNoteSessionClick={handleNoteSessionClick}
         sessionBookmarkCounts={sessionCounts}
