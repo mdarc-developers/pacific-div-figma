@@ -218,7 +218,9 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
-  const attendees = ATTENDEE_DATA[activeConference.id] || [];
+  const attendees = (ATTENDEE_DATA[activeConference.id] || []).filter(
+    (a) => a.profileVisible !== false,
+  );
   const updateToken = ATTENDEE_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
