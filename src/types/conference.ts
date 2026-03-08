@@ -125,6 +125,7 @@ export interface UserProfile {
   displayName?: string; // for exhibitors, speakers or anyone
   displayProfile?: string; // like a public QRZ text for display, also speaker bio - should not be empty for speakers
   phoneNumber?: string; // not for public display, just for alerts/notifications
+  minutesBefore?: number; // minutes before a bookmarked session/forum to send a notification
   raffleTickets?: string[];
   votes?: number; // an interesting popularity contest for Gordo then everyone else!
   exhibitors?: string[]; // employees or owners, possibly associated with multiple exhibitors

@@ -63,7 +63,7 @@ export function ProfilePage() {
     removeRaffleTicket,
     addRaffleTicketRange,
   ] = useRaffleTickets(activeConference.id);
-  const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber } =
+  const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore } =
     useNotificationSettings();
 
   if (!user) {
@@ -160,8 +160,10 @@ export function ProfilePage() {
       <NotificationsCard
         smsEnabled={smsEnabled}
         phoneNumber={phoneNumber}
+        minutesBefore={minutesBefore}
         onSmsEnabledChange={setSmsEnabled}
         onPhoneNumberChange={setPhoneNumber}
+        onMinutesBeforeChange={setMinutesBefore}
       />
 
       <PrizesCard

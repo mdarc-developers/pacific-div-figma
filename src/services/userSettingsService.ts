@@ -178,6 +178,7 @@ export async function setUserExhibitorVotes(
 export interface NotificationSettings {
   smsEnabled: boolean;
   phoneNumber: string;
+  minutesBefore: number;
 }
 
 export async function getUserNotificationSettings(
@@ -192,6 +193,8 @@ export async function getUserNotificationSettings(
         ? data.smsNotifications
         : false,
     phoneNumber: typeof data?.phoneNumber === "string" ? data.phoneNumber : "",
+    minutesBefore:
+      typeof data?.minutesBefore === "number" ? data.minutesBefore : 10,
   };
 }
 
@@ -204,6 +207,7 @@ export async function setUserNotificationSettings(
     {
       smsNotifications: settings.smsEnabled,
       phoneNumber: settings.phoneNumber,
+      minutesBefore: settings.minutesBefore,
     },
     { merge: true },
   );

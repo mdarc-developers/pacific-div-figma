@@ -12,19 +12,32 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Separator } from "@/app/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+
+const MINUTES_OPTIONS = [5, 10, 15, 30, 60];
 
 interface NotificationsCardProps {
   smsEnabled: boolean;
   phoneNumber: string;
+  minutesBefore: number;
   onSmsEnabledChange: (value: boolean) => void;
   onPhoneNumberChange: (value: string) => void;
+  onMinutesBeforeChange: (value: number) => void;
 }
 
 export function NotificationsCard({
   smsEnabled,
   phoneNumber,
+  minutesBefore,
   onSmsEnabledChange,
   onPhoneNumberChange,
+  onMinutesBeforeChange,
 }: NotificationsCardProps) {
   const [pendingPhone, setPendingPhone] = useState(phoneNumber);
 
@@ -111,6 +124,41 @@ export function NotificationsCard({
               </div>
             </div>
           )}
+        </div>
+        <Separator />
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <Label
+              htmlFor="minutes-before"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Minutes before
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Notify this many minutes before a bookmarked session or forum
+            </p>
+          </div>
+          <Select
+            value={String(
+              MINUTES_OPTIONS.includes(minutesBefore) ? minutesBefore : 10,
+            )}
+            onValueChange={(v) => onMinutesBeforeChange(Number(v))}
+          >
+            <SelectTrigger
+              id="minutes-before"
+              className="w-24 text-sm"
+              aria-label="Minutes before session notification"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MINUTES_OPTIONS.map((m) => (
+                <SelectItem key={m} value={String(m)}>
+                  {m} min
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <Separator />
         <div className="flex items-center justify-between gap-2">
