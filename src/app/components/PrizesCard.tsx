@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Ticket, Trophy, Trash2 } from "lucide-react";
+import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -148,13 +149,7 @@ export function PrizesCard({
               <Ticket className="h-4 w-4" />
               Raffle Tickets
             </p>
-            {raffleTickets.length > 0 ? (
-              <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
-                {raffleTickets.length}
-              </span>
-            ) : (
-              <span className="text-xs text-muted-foreground">None yet</span>
-            )}
+            <Badge variant="secondary">{raffleTickets.length}</Badge>
           </div>
         </div>
         {sections.raffleTickets && raffleTickets.length > 0 && (
