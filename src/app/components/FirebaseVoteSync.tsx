@@ -52,6 +52,7 @@ export function FirebaseVoteSync() {
       .then((votes) => {
         if (cancelled) return;
         justLoadedRef.current = true;
+        savedItemsRef.current = votes;
         overrideSessionVotes(votes);
       })
       .catch(console.error)

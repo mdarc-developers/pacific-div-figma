@@ -52,6 +52,7 @@ export function FirebaseExhibitorVoteSync() {
       .then((votes) => {
         if (cancelled) return;
         justLoadedRef.current = true;
+        savedItemsRef.current = votes;
         overrideExhibitorVotes(votes);
       })
       .catch(console.error)
