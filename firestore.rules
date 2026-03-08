@@ -46,7 +46,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // ── Stats — readable by mdarc-developers; written via Cloud Functions only
+    // ── Stats — signupCounter is public; other stat docs require mdarc-developers
+    match /stats/signupCounter {
+      allow read: if true;
+      allow write: if false;
+    }
     match /stats/{document} {
       allow read: if isMdarcDeveloper();
       allow write: if false;
