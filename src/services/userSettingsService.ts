@@ -282,6 +282,27 @@ export async function getUserActivitySections(
   };
 }
 
+export async function getUserProfileVisible(
+  uid: string,
+): Promise<boolean | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  const val = snap.data()?.profileVisible;
+  if (typeof val === "boolean") return val;
+  return null;
+}
+
+export async function setUserProfileVisible(
+  uid: string,
+  profileVisible: boolean,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { profileVisible },
+    { merge: true },
+  );
+}
+
 export async function setUserActivitySections(
   uid: string,
   sections: ActivitySections,

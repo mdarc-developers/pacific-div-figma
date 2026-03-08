@@ -133,6 +133,7 @@ export interface UserProfile {
   sessions?: string[]; // could be leading more than one session
   prizesDonated?: string[];
   prizeWinnerId?: string[];
+  profileVisible?: boolean; // whether the user's profile appears in /attendees
 }
 
 export interface Message {
