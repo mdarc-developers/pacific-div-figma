@@ -61,16 +61,24 @@ vi.mock("leaflet", () => ({
 // ── Mock ScheduleView ─────────────────────────────────────────────────────────
 let capturedCategoryFilter: string | undefined;
 let capturedTrackFilter: string | undefined;
+let capturedNotes: Record<string, string> | undefined;
+let capturedOnSaveNote: ((id: string, text: string) => void) | undefined;
 vi.mock("@/app/components/ScheduleView", () => ({
   ScheduleView: ({
     categoryFilter,
     trackFilter,
+    notes,
+    onSaveNote,
   }: {
     categoryFilter?: string;
     trackFilter?: string;
+    notes?: Record<string, string>;
+    onSaveNote?: (id: string, text: string) => void;
   }) => {
     capturedCategoryFilter = categoryFilter;
     capturedTrackFilter = trackFilter;
+    capturedNotes = notes;
+    capturedOnSaveNote = onSaveNote;
     return <div data-testid="schedule-view" />;
   },
 }));
@@ -149,6 +157,7 @@ vi.mock("@/lib/sessionData", async (importOriginal) => {
 import { ForumsPage } from "@/app/pages/ForumsPage";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
+import { NotesProvider } from "@/app/contexts/NotesContext";
 import { VoteProvider } from "@/app/contexts/VoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 
@@ -160,9 +169,11 @@ function renderForumsPage() {
         <BookmarkCountsProvider>
           <VoteProvider>
             <VoteCountsProvider>
-              <SearchProvider>
-                <ForumsPage />
-              </SearchProvider>
+              <NotesProvider>
+                <SearchProvider>
+                  <ForumsPage />
+                </SearchProvider>
+              </NotesProvider>
             </VoteCountsProvider>
           </VoteProvider>
         </BookmarkCountsProvider>
@@ -207,6 +218,18 @@ describe("ForumsPage", () => {
   it("renders category filter panel for all users when forumTracks exist", () => {
     renderForumsPage();
     expect(screen.getByText("Filter by category:")).toBeInTheDocument();
+  });
+
+  it("passes notes to ScheduleView", () => {
+    capturedNotes = undefined;
+    renderForumsPage();
+    expect(capturedNotes).toBeDefined();
+  });
+
+  it("passes onSaveNote to ScheduleView", () => {
+    capturedOnSaveNote = undefined;
+    renderForumsPage();
+    expect(capturedOnSaveNote).toBeInstanceOf(Function);
   });
 });
 

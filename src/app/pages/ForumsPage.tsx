@@ -5,6 +5,7 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSearch } from "@/app/contexts/SearchContext";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
+import { useNotesContext } from "@/app/contexts/NotesContext";
 import { useVoteContext } from "@/app/contexts/VoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
@@ -18,6 +19,7 @@ export function ForumsPage() {
   const { highlightForumRoomName } = useSearch();
   const { bookmarkedItems, toggleBookmark } = useBookmarkContext();
   const { sessionCounts } = useBookmarkCountsContext();
+  const { notes, setNote } = useNotesContext();
   const { votedSessions, toggleSessionVote } = useVoteContext();
   const { sessionVoteCounts } = useVoteCountsContext();
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
@@ -109,6 +111,8 @@ export function ForumsPage() {
         onToggleBookmark={toggleBookmark}
         categoryFilter="forums"
         trackFilter={selectedTrack ?? undefined}
+        notes={notes}
+        onSaveNote={setNote}
         sessionBookmarkCounts={sessionCounts}
         votedSessions={votedSessions}
         onToggleSessionVote={toggleSessionVote}
