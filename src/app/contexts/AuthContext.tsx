@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../lib/firebase";
+import { writeAuditLog } from "@/services/exportDataService";
 
 interface AuthContextType {
   user: User | null;
@@ -85,6 +86,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const deleteAccount = async () => {
     if (!auth.currentUser) throw new Error("No authenticated user");
     const uid = auth.currentUser.uid;
+    // Write audit log entry before deleting the document so the entry lands
+    // in the subcollection while the user's Firestore document still exists.
+    await writeAuditLog(uid, "account_deletion");
     // Remove the Firestore user document first, best-effort
     await deleteDoc(doc(db, "users", uid)).catch(console.error);
     await deleteUser(auth.currentUser);

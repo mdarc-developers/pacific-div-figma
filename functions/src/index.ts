@@ -11,6 +11,7 @@ import {
   buildRawMessage,
   buildWelcomeEmailHtml,
 } from "./welcomeEmail";
+export { purgeExpiredUserData } from "./dataRetention";
 
 admin.initializeApp();
 

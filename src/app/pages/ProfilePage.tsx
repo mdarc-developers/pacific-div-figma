@@ -7,6 +7,7 @@ import { PrizesCard } from "@/app/components/PrizesCard";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { AdminCard } from "@/app/components/AdminCard";
 import { DeleteAccountCard } from "@/app/components/DeleteAccountCard";
+import { ExportDataCard } from "@/app/components/ExportDataCard";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
@@ -228,6 +229,8 @@ export function ProfilePage() {
           isSessionAdmin={isSessionAdmin}
         />
       )}
+
+      <ExportDataCard uid={user.uid} />
 
       <DeleteAccountCard onDeleteAccount={handleDeleteAccount} />
 
