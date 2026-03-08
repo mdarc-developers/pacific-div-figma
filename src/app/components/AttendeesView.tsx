@@ -20,6 +20,7 @@ import {
   HatGlasses,
   Info,
   Mic,
+  RefreshCw,
   Send,
   Trophy,
   User,
@@ -43,6 +44,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/app/components/ui/tooltip";
+import { usePublicAttendees } from "@/app/hooks/usePublicAttendees";
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -240,13 +242,52 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
-  const attendees = (ATTENDEE_DATA[activeConference.id] || []).filter(
+  const staticAttendees = (ATTENDEE_DATA[activeConference.id] || []).filter(
     (a) => a.profileVisible !== false,
   );
   const updateToken = ATTENDEE_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showVisibleOnly, setShowVisibleOnly] = useState(true);
   const signupCount = useSignupCount();
+
+  // Fetch public attendees from Firestore (with localStorage caching)
+  const {
+    attendees: firestoreAttendees,
+    loading: firestoreLoading,
+    error: firestoreError,
+    refresh: refreshAttendees,
+  } = usePublicAttendees();
+
+  // Merge static attendees with Firestore attendees.
+  // Static entries take precedence (they carry curated session/exhibitor links).
+  // Firestore entries whose uid is not already present in static data are appended.
+  const staticUids = useMemo(
+    () => new Set(staticAttendees.map((a) => a.uid)),
+    [staticAttendees],
+  );
+  const attendees = useMemo(() => {
+    const firestoreOnly = firestoreAttendees
+      .filter((fa) => !staticUids.has(fa.uid))
+      .map(
+        (fa): UserProfile => ({
+          uid: fa.uid,
+          email: fa.email ?? "",
+          darkMode: false,
+          bookmarkedSessions: [],
+          notificationsEnabled: false,
+          smsNotifications: false,
+          displayName: fa.displayName,
+          callsign: fa.callsign,
+          displayProfile: fa.displayProfile,
+          groups: fa.groups,
+          sessions: fa.sessions,
+          exhibitors: fa.exhibitors,
+          prizesDonated: fa.prizesDonated,
+          profileVisible: true,
+        }),
+      );
+    return [...staticAttendees, ...firestoreOnly];
+  }, [staticAttendees, firestoreAttendees, staticUids]);
 
   // Build lookup maps for sessions, exhibitors, and prizes (memoized per conference)
   const sessionMap = useMemo(
@@ -314,23 +355,43 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
         >
           {/* Filter toolbar */}
           <div className="flex gap-2 mb-2 justify-between items-center">
-            <Button
-              variant={showVisibleOnly ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowVisibleOnly((v) => !v)}
-              className="flex items-center gap-1"
-            >
-              <Eye
-                className={`h-4 w-4 ${showVisibleOnly ? "fill-current" : ""}`}
-              />
-              Visible
-            </Button>
+            <div className="flex gap-2 items-center">
+              <Button
+                variant={showVisibleOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowVisibleOnly((v) => !v)}
+                className="flex items-center gap-1"
+              >
+                <Eye
+                  className={`h-4 w-4 ${showVisibleOnly ? "fill-current" : ""}`}
+                />
+                Visible
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={refreshAttendees}
+                disabled={firestoreLoading}
+                className="flex items-center gap-1"
+                title="Refresh attendee list from server"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${firestoreLoading ? "animate-spin" : ""}`}
+                />
+                Sync
+              </Button>
+            </div>
             {signupCount !== null && (
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/20">
                 {signupCount} registered
               </span>
             )}
           </div>
+          {firestoreError && (
+            <p className="text-xs text-red-500 mb-2">
+              Could not sync from server: {firestoreError}
+            </p>
+          )}
 
           <TabsList className="w-full flex-wrap h-auto bg-transparent">
             <TabsTrigger value="all">All Attendees</TabsTrigger>

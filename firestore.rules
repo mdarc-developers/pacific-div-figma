@@ -93,6 +93,15 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // ── Public Profiles — publicly readable; owner may write their own ────
+    // Documents are synced automatically by the syncPublicProfile Cloud
+    // Function whenever a user's `profileVisible` field is true.
+    // Clients may also write their own entry to support immediate UI updates.
+    match /publicProfiles/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
     // ── Messages ──────────────────────────────────────────────────────────
     match /messages/{messageId} {
       allow read: if resource.data.isPublic == true

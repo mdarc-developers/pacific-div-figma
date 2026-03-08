@@ -1,5 +1,8 @@
 import { beforeUserCreated } from "firebase-functions/v2/identity";
-import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import {
+  onDocumentCreated,
+  onDocumentWritten,
+} from "firebase-functions/v2/firestore";
 import { logger } from "firebase-functions";
 //import { onRequest } from "firebase-functions/https";
 import { defineSecret, defineString } from "firebase-functions/params";
@@ -156,6 +159,102 @@ export const incrementSignupCounter = onDocumentCreated(
       logger.info("incrementSignupCounter: counter incremented", { uid });
     } catch (err) {
       logger.error("incrementSignupCounter: failed to increment counter", {
+        uid,
+        err,
+      });
+    }
+  },
+);
+
+/**
+ * Synchronises the `publicProfiles` collection whenever a `users/{uid}`
+ * document is written.
+ *
+ * - If `profileVisible` is `true` the public fields (displayName, callsign,
+ *   displayProfile, email, groups, sessions, exhibitors, prizesDonated) are
+ *   copied to `publicProfiles/{uid}`.
+ * - If `profileVisible` is falsy, or the user document is deleted, any
+ *   existing `publicProfiles/{uid}` entry is removed.
+ *
+ * This function keeps the publicly-readable `publicProfiles` collection in
+ * sync without requiring the client to hold the sensitive data in the `users`
+ * document or requiring mdarc-developer privileges to list users.
+ */
+export const syncPublicProfile = onDocumentWritten(
+  "users/{uid}",
+  async (event) => {
+    const uid = event.params.uid;
+    const publicProfileRef = admin
+      .firestore()
+      .collection("publicProfiles")
+      .doc(uid);
+
+    const after = event.data?.after;
+
+    if (!after?.exists) {
+      // Document deleted — remove public profile entry
+      try {
+        await publicProfileRef.delete();
+        logger.info("syncPublicProfile: removed public profile on delete", {
+          uid,
+        });
+      } catch (err) {
+        logger.error("syncPublicProfile: failed to remove public profile", {
+          uid,
+          err,
+        });
+      }
+      return;
+    }
+
+    const data = after.data() as Record<string, unknown> | undefined;
+
+    if (!data?.profileVisible) {
+      // User has opted out — remove any existing public profile entry
+      try {
+        await publicProfileRef.delete();
+        logger.info("syncPublicProfile: removed public profile (not visible)", {
+          uid,
+        });
+      } catch (err) {
+        logger.error("syncPublicProfile: failed to remove public profile", {
+          uid,
+          err,
+        });
+      }
+      return;
+    }
+
+    // Build the public-safe subset of the user document
+    const publicData: Record<string, unknown> = { uid };
+    const stringFields = [
+      "displayName",
+      "callsign",
+      "displayProfile",
+      "email",
+    ] as const;
+    for (const field of stringFields) {
+      if (typeof data[field] === "string" && data[field]) {
+        publicData[field] = data[field];
+      }
+    }
+    const arrayFields = [
+      "groups",
+      "sessions",
+      "exhibitors",
+      "prizesDonated",
+    ] as const;
+    for (const field of arrayFields) {
+      if (Array.isArray(data[field])) {
+        publicData[field] = data[field];
+      }
+    }
+
+    try {
+      await publicProfileRef.set(publicData);
+      logger.info("syncPublicProfile: public profile synced", { uid });
+    } catch (err) {
+      logger.error("syncPublicProfile: failed to write public profile", {
         uid,
         err,
       });
