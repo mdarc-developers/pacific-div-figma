@@ -10,7 +10,7 @@ export function Navigation() {
   const navItems = [
     { to: "/schedule", icon: Calendar, label: "Schedule" },
     { to: "/forums", icon: Mic, label: "Forums" },
-    { to: "/maps", icon: Map, label: "Venue" },
+    { to: "/maps", icon: Map, label: "Maps" },
     //{ to: '/alerts', icon: Bell, label: 'Prizes' },
     //{ to: '/profile', icon: User, label: 'Profile' },
     {
