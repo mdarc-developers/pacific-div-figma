@@ -61,13 +61,6 @@ export function NotificationsCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Email alerts</p>
-          <Badge variant="secondary" className="text-xs">
-            Coming soon
-          </Badge>
-        </div>
-        <Separator />
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div>
@@ -132,7 +125,7 @@ export function NotificationsCard({
               htmlFor="minutes-before"
               className="text-sm font-medium cursor-pointer"
             >
-              Minutes before
+              Minutes before session
             </Label>
             <p className="text-xs text-muted-foreground">
               Notify this many minutes before a bookmarked session or forum
@@ -162,7 +155,7 @@ export function NotificationsCard({
         </div>
         <Separator />
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Messages</p>
+          <p className="text-sm font-medium">Email alerts</p>
           <Badge variant="secondary" className="text-xs">
             Coming soon
           </Badge>
