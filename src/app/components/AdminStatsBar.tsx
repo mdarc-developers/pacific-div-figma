@@ -52,14 +52,14 @@ export function AdminStatsBar() {
       )}
       <span className="flex items-center gap-2 ml-auto">
         <a
-          data-testid="admin-firebase-console-link"
-          href="https://console.firebase.google.com/project/pacific-div/overview"
+          data-testid="admin-cloud-monitoring-link"
+          href="https://console.cloud.google.com/monitoring?project=pacific-div"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
-          title="Firebase Console"
+          title="console.cloud.google.com/monitoring"
         >
-          Firebase Console
+          cloud
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
         <a
@@ -68,20 +68,20 @@ export function AdminStatsBar() {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
-          title="Google Cloud Logs"
+          title="console.cloud.google.com/logs"
         >
-          Cloud Logs
+          cloud logs
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
         <a
-          data-testid="admin-cloud-monitoring-link"
-          href="https://console.cloud.google.com/monitoring?project=pacific-div"
+          data-testid="admin-firebase-console-link"
+          href="https://console.firebase.google.com/project/pacific-div/overview"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
-          title="Google Cloud Monitoring"
+          title="console.firebase.google.com"
         >
-          Cloud
+          firebase
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
       </span>
