@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IdCard, KeyRound, MailCheck, Save, User as UserIcon, Users } from "lucide-react";
+import { IdCard, KeyRound, Mail, MailCheck, Save, User as UserIcon, Users } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -72,21 +72,22 @@ export function AccountCard({
             <UserIcon className="h-3.5 w-3.5" aria-hidden="true" />
             Account
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="profile-visible" className="text-sm font-medium cursor-pointer">
-              /attendees visible profile
-            </Label>
-            <Checkbox
-              id="profile-visible"
-              checked={profileVisible}
-              onCheckedChange={(checked) =>
-                onProfileVisibleChange(checked === true)
-              }
-            />
-          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
+        <div className="flex items-center gap-2 justify-end">
+          <Label htmlFor="profile-visible" className="text-sm font-medium cursor-pointer">
+            Make your callsign, name and about visible to /attendees
+          </Label>
+          <Checkbox
+            id="profile-visible"
+            checked={profileVisible}
+            onCheckedChange={(checked) =>
+              onProfileVisibleChange(checked === true)
+            }
+          />
+        </div>
+        <Separator />
         <div className="flex items-center gap-2">
           <Label htmlFor="callsign" className="text-sm font-medium items-center flex gap-2 shrink-0">
             <IdCard className="h-3.5 w-3.5" aria-hidden="true" />
@@ -173,7 +174,9 @@ export function AccountCard({
         <Separator />
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-sm font-medium">Email</p>
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Mail className="h-3.5 w-3.5" aria-hidden="true" />
+              Email</p>
             <p className="text-sm text-muted-foreground truncate">
               {user.email}
             </p>
