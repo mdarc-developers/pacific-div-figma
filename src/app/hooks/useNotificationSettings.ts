@@ -179,49 +179,46 @@ export function useNotificationSettings(): {
   const setCloudAlertsEnabled = useCallback(
     (value: boolean) => {
       if (value) {
-        // Optimistically update state, then request FCM permission.
-        // If permission is denied the state reverts to false.
+        // Persist the preference immediately, then request FCM permission as a
+        // best-effort side effect.  We no longer revert on FCM failure so the
+        // user's choice is always preserved across navigation.
         setCloudAlertsEnabledState(true);
         saveToStorage(CLOUD_ALERTS_ENABLED_KEY, true);
+        if (user) {
+          setUserNotificationSettings(user.uid, {
+            smsEnabled: smsEnabledRef.current,
+            phoneNumber: phoneNumberRef.current,
+            minutesBefore: minutesBeforeRef.current,
+            emailEnabled: emailEnabledRef.current,
+            cloudAlertsEnabled: true,
+          }).catch(console.error);
+        }
 
         requestFcmToken()
           .then((token) => {
-            if (!token) {
-              // Permission denied or unsupported — revert
-              setCloudAlertsEnabledState(false);
-              saveToStorage(CLOUD_ALERTS_ENABLED_KEY, false);
-              return;
-            }
-            if (user) {
+            if (token && user) {
               addUserFcmToken(user.uid, token).catch(console.error);
-              setUserNotificationSettings(user.uid, {
-                smsEnabled: smsEnabledRef.current,
-                phoneNumber: phoneNumberRef.current,
-                minutesBefore: minutesBeforeRef.current,
-                emailEnabled: emailEnabledRef.current,
-                cloudAlertsEnabled: true,
-              }).catch(console.error);
             }
           })
           .catch(console.error);
       } else {
         setCloudAlertsEnabledState(false);
         saveToStorage(CLOUD_ALERTS_ENABLED_KEY, false);
+        if (user) {
+          setUserNotificationSettings(user.uid, {
+            smsEnabled: smsEnabledRef.current,
+            phoneNumber: phoneNumberRef.current,
+            minutesBefore: minutesBeforeRef.current,
+            emailEnabled: emailEnabledRef.current,
+            cloudAlertsEnabled: false,
+          }).catch(console.error);
+        }
 
         // Revoke FCM token in the background
         deleteFcmToken()
           .then((token) => {
             if (user && token) {
               removeUserFcmToken(user.uid, token).catch(console.error);
-            }
-            if (user) {
-              setUserNotificationSettings(user.uid, {
-                smsEnabled: smsEnabledRef.current,
-                phoneNumber: phoneNumberRef.current,
-                minutesBefore: minutesBeforeRef.current,
-                emailEnabled: emailEnabledRef.current,
-                cloudAlertsEnabled: false,
-              }).catch(console.error);
             }
           })
           .catch(console.error);
