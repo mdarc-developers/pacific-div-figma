@@ -363,7 +363,7 @@ export function SessionAdminView({
             className="flex items-center gap-1"
           >
             <MapPin className="h-4 w-4" />
-            All Rooms
+            All Locations
           </Button>
           {allRooms.map((room) => (
             <Button
