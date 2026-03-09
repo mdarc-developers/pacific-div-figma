@@ -1,14 +1,23 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Search, X } from "lucide-react";
-import { searchService, SearchResult } from "@/services/searchService";
-import { Session } from "@/types/conference";
+import { Search, X, Building2 } from "lucide-react";
+import {
+  searchService,
+  SearchResult,
+  ExhibitorSearchResult,
+} from "@/services/searchService";
+import { Session, Exhibitor } from "@/types/conference";
 import { Button } from "@/app/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { SESSION_DATA } from "@/lib/sessionData";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+
+type CombinedResult =
+  | { kind: "session"; result: SearchResult }
+  | { kind: "exhibitor"; result: ExhibitorSearchResult };
 
 interface SearchBarProps {
   onSelectSession?: (session: Session) => void;
+  onSelectExhibitor?: (exhibitor: Exhibitor) => void;
   onSearch?: (results: SearchResult[]) => void;
   placeholderProp?: string;
   classNameProp?: string;
@@ -16,13 +25,14 @@ interface SearchBarProps {
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   onSelectSession,
+  onSelectExhibitor,
   onSearch,
   placeholderProp = "Search schedule...",
   //placeholder="Search speakers, forums, events, exhibitors..."
   classNameProp = "",
 }) => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<CombinedResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,11 +44,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     useConference();
 
   const indexSessions = SESSION_DATA[activeConference.id] || [];
+  const indexExhibitors = EXHIBITOR_DATA[activeConference.id]?.[1] || [];
 
   // Initialize search index on mount
   useEffect(() => {
     searchService.buildIndex(indexSessions);
-  }, [indexSessions]);
+    searchService.buildExhibitorIndex(indexExhibitors);
+  }, [indexSessions, indexExhibitors]);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -59,13 +71,25 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           return;
         }
 
-        const searchResults = searchService.search(searchQuery, undefined, 10);
-        setResults(searchResults);
-        setIsOpen(searchResults.length > 0);
+        const sessionResults = searchService.search(searchQuery, undefined, 7);
+        const exhibitorResults = searchService.searchExhibitors(
+          searchQuery,
+          5,
+        );
+        const combined: CombinedResult[] = [
+          ...sessionResults.map(
+            (r): CombinedResult => ({ kind: "session", result: r }),
+          ),
+          ...exhibitorResults.map(
+            (r): CombinedResult => ({ kind: "exhibitor", result: r }),
+          ),
+        ];
+        setResults(combined);
+        setIsOpen(combined.length > 0);
         setIsLoading(false);
 
         if (onSearch) {
-          onSearch(searchResults);
+          onSearch(sessionResults);
         }
         //if (onSearch) onSearch(searchQuery);
       }, 300);
@@ -87,14 +111,21 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     inputRef.current?.focus();
   };
 
-  const handleSelectResult = (session: Session) => {
+  const handleSelectResult = (item: CombinedResult) => {
     setQuery("");
     setResults([]);
     setIsOpen(false);
-    if (onSelectSession) {
-      onSelectSession(session);
+    if (item.kind === "session") {
+      if (onSelectSession) {
+        onSelectSession(item.result.session);
+      }
+      navigate(`/search?highlight=${item.result.session.id}`);
+    } else {
+      if (onSelectExhibitor) {
+        onSelectExhibitor(item.result.exhibitor);
+      }
+      navigate(`/exhibitors?highlight=${item.result.exhibitor.id}`);
     }
-    navigate(`/search?highlight=${session.id}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -114,7 +145,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0) {
-          handleSelectResult(results[selectedIndex].session);
+          handleSelectResult(results[selectedIndex]);
         }
         break;
       case "Escape":
@@ -189,10 +220,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             ref={dropdownRef}
             className="absolute top-full left-0 right-0 z-50 mt-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 shadow-lg max-h-96 overflow-y-auto"
           >
-            {results.map((result, index) => (
+            {results.map((item, index) => (
               <button
-                key={result.session.id}
-                onClick={() => handleSelectResult(result.session)}
+                key={
+                  item.kind === "session"
+                    ? `session-${item.result.session.id}`
+                    : `exhibitor-${item.result.exhibitor.id}`
+                }
+                onClick={() => handleSelectResult(item)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={`w-full px-4 py-3 text-left border-b border-gray-200 dark:border-gray-700 last:border-b-0 transition-colors ${
                   index === selectedIndex
@@ -200,46 +235,68 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     : "hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
                 }`}
               >
-                <div className="flex flex-col gap-1">
-                  {/* Session Title */}
-                  <p className="font-semibold text-sm">
-                    {result.session.title}
-                  </p>
+                {item.kind === "session" ? (
+                  <div className="flex flex-col gap-1">
+                    {/* Session Title */}
+                    <p className="font-semibold text-sm">
+                      {item.result.session.title}
+                    </p>
 
-                  {/* Speaker and Badges */}
-                  <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                    {result.session.speaker && (
-                      <span>by {result.session.speaker}</span>
-                    )}
-                    {result.session.category && (
-                      <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">
-                        {result.session.category}
-                      </span>
-                    )}
-                    {result.session.location && (
-                      <span className="text-xs">{result.session.location}</span>
+                    {/* Speaker and Badges */}
+                    <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                      {item.result.session.speaker && (
+                        <span>by {item.result.session.speaker}</span>
+                      )}
+                      {item.result.session.category && (
+                        <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">
+                          {item.result.session.category}
+                        </span>
+                      )}
+                      {item.result.session.location && (
+                        <span className="text-xs">
+                          {item.result.session.location}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Time */}
+                    {item.result.session.startTime && (
+                      <p className="text-xs text-gray-500 dark:text-gray-500">
+                        {new Date(
+                          item.result.session.startTime +
+                            activeConference.timezoneNumeric,
+                        ).toLocaleTimeString("en-US", {
+                          timeZone: activeConference.timezone,
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     )}
                   </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {/* Exhibitor Name */}
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                      <p className="font-semibold text-sm">
+                        {item.result.exhibitor.name}
+                      </p>
+                    </div>
 
-                  {/* Time */}
-                  {result.session.startTime && (
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
-                      {new Date(
-                        result.session.startTime +
-                          activeConference.timezoneNumeric,
-                      ).toLocaleTimeString("en-US", {
-                        timeZone: activeConference.timezone,
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  )}
-                </div>
-
-                {/* Relevance Indicator */}
-                {result.score !== undefined && (
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                    {Math.round((1 - result.score) * 100)}%
+                    {/* Type and Description */}
+                    <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                      <span className="inline-block px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">
+                        Exhibitor
+                      </span>
+                      {item.result.exhibitor.type && (
+                        <span>{item.result.exhibitor.type}</span>
+                      )}
+                      {item.result.exhibitor.description && (
+                        <span className="truncate max-w-[200px]">
+                          {item.result.exhibitor.description}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
               </button>
@@ -250,7 +307,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         {/* No Results Message */}
         {isOpen && !isLoading && query && results.length === 0 && (
           <div className="absolute top-full left-0 right-0 z-50 mt-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 shadow-lg p-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            No sessions found for &quot;{query}&quot;
+            No results found for &quot;{query}&quot;
           </div>
         )}
       </form>

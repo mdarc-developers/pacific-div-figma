@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ExhibitorView } from "@/app/components/ExhibitorView";
 import { ExhibitorsMapView } from "@/app/components/ExhibitorsMapView";
 import { useConference } from "@/app/contexts/ConferenceContext";
@@ -8,13 +8,16 @@ import { useExhibitorVoteContext } from "@/app/contexts/ExhibitorVoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useExhibitorNotesContext } from "@/app/contexts/ExhibitorNotesContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
+import { useSearchParams } from "react-router-dom";
 import { MAP_DATA, BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
 export function ExhibitorsPage() {
   const isMdarcDeveloper = useMdarcDeveloper();
+  const [searchParams] = useSearchParams();
+  const highlightParam = searchParams.get("highlight");
   const [highlightedExhibitorId, setHighlightedExhibitorId] = useState<
     string | undefined
-  >(undefined);
+  >(highlightParam || undefined);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
@@ -30,6 +33,12 @@ export function ExhibitorsPage() {
   const exhibitorEntry = EXHIBITOR_DATA[activeConference.id]; // url and Exhibitor[]
   const exhibitorArray = exhibitorEntry ? exhibitorEntry[1] : []; // Exhibitor[]
   const numEBurls = activeConference.mapExhibitorBooths?.length ?? 0; // num of Exhibitor Booth image urls
+
+  // Sync highlight state when the URL ?highlight param changes (e.g. user
+  // selects multiple search results while already on the exhibitors page).
+  useEffect(() => {
+    setHighlightedExhibitorId(highlightParam || undefined);
+  }, [highlightParam]);
 
   const handleLocationClick = (exhibitorId: string) => {
     setHighlightedExhibitorId(exhibitorId);

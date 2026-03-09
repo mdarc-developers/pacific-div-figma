@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
+import { MemoryRouter } from "react-router-dom";
 import { MapImage, Booth, Exhibitor } from "@/types/conference";
 
 // ── Mock Firebase so BookmarkCountsContext initialises without credentials ────
@@ -71,19 +72,21 @@ import { ExhibitorNotesProvider } from "@/app/contexts/ExhibitorNotesContext";
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderExhibitorsPage() {
   return render(
-    <ConferenceProvider>
-      <ExhibitorBookmarkProvider>
-        <BookmarkCountsProvider>
-          <ExhibitorVoteProvider>
-            <VoteCountsProvider>
-              <ExhibitorNotesProvider>
-                <ExhibitorsPage />
-              </ExhibitorNotesProvider>
-            </VoteCountsProvider>
-          </ExhibitorVoteProvider>
-        </BookmarkCountsProvider>
-      </ExhibitorBookmarkProvider>
-    </ConferenceProvider>,
+    <MemoryRouter>
+      <ConferenceProvider>
+        <ExhibitorBookmarkProvider>
+          <BookmarkCountsProvider>
+            <ExhibitorVoteProvider>
+              <VoteCountsProvider>
+                <ExhibitorNotesProvider>
+                  <ExhibitorsPage />
+                </ExhibitorNotesProvider>
+              </VoteCountsProvider>
+            </ExhibitorVoteProvider>
+          </BookmarkCountsProvider>
+        </ExhibitorBookmarkProvider>
+      </ConferenceProvider>
+    </MemoryRouter>,
   );
 }
 

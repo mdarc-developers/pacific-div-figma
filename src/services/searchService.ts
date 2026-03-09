@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { Session } from "@/types/conference";
+import { Session, Exhibitor } from "@/types/conference";
 
 export interface SearchResult {
   session: Session;
@@ -9,6 +9,11 @@ export interface SearchResult {
     speaker?: string;
     description?: string;
   };
+}
+
+export interface ExhibitorSearchResult {
+  exhibitor: Exhibitor;
+  score: number;
 }
 
 export interface SearchFilters {
@@ -26,6 +31,10 @@ class SearchService {
     fuse: null,
     sessions: [],
   };
+  private exhibitorIndex: {
+    fuse: Fuse<Exhibitor> | null;
+    exhibitors: Exhibitor[];
+  } = { fuse: null, exhibitors: [] };
   //private fuse: Fuse<Session> | null = null;
   //private sessions: Session[] = [];
 
@@ -62,6 +71,27 @@ class SearchService {
   }
 
   /**
+   * Build the search index from exhibitors
+   */
+  buildExhibitorIndex(exhibitors: Exhibitor[]): void {
+    if (!exhibitors || exhibitors.length === 0) {
+      this.exhibitorIndex = { fuse: null, exhibitors: [] };
+      return;
+    }
+    const options: Fuse.IFuseOptions<Exhibitor> = {
+      keys: [
+        { name: "name", weight: 0.5 },
+        { name: "description", weight: 0.3 },
+        { name: "type", weight: 0.2 },
+      ],
+      threshold: 0.4,
+      includeScore: true,
+      minMatchCharLength: 2,
+    };
+    this.exhibitorIndex = { fuse: new Fuse(exhibitors, options), exhibitors };
+  }
+
+  /**
    * Search for sessions
    */
   search(
@@ -74,7 +104,7 @@ class SearchService {
       //if (!this.fuse || !query.trim()) {
       return [];
     }
-    const results = this.fuse
+    const results = this.searchIndex.fuse
       .search(query)
       .slice(0, limit)
       .map((result) => ({ session: result.item, score: result.score || 1 }));
@@ -82,6 +112,19 @@ class SearchService {
       return this.applyFilters(results, filters);
     }
     return results;
+  }
+
+  /**
+   * Search for exhibitors
+   */
+  searchExhibitors(query: string, limit: number = 10): ExhibitorSearchResult[] {
+    if (!this.exhibitorIndex.fuse || !query.trim()) {
+      return [];
+    }
+    return this.exhibitorIndex.fuse
+      .search(query)
+      .slice(0, limit)
+      .map((result) => ({ exhibitor: result.item, score: result.score || 1 }));
   }
 
   private applyFilters(
@@ -150,12 +193,20 @@ class SearchService {
   }
 
   /**
+   * Get all exhibitors
+   */
+  getAllExhibitors(): Exhibitor[] {
+    return this.exhibitorIndex.exhibitors;
+  }
+
+  /**
    * Clear the index
    */
   clearIndex(): void {
     this.searchIndex = { fuse: null, sessions: [] };
+    this.exhibitorIndex = { fuse: null, exhibitors: [] };
   }
 }
 
 export const searchService = new SearchService();
-export type { SearchResult, SearchFilters };
+export type { SearchResult, ExhibitorSearchResult, SearchFilters };
