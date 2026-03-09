@@ -2,6 +2,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { type Theme } from "@/app/contexts/ThemeContext";
 import { type ActivitySections } from "@/app/contexts/ActivitySectionsContext";
+import { type AlertHistoryItem } from "@/types/conference";
 
 export async function getUserTheme(uid: string): Promise<Theme | null> {
   const snap = await getDoc(doc(db, "users", uid));
@@ -403,6 +404,35 @@ export async function removeUserFcmToken(
   await setDoc(
     doc(db, "users", uid),
     { fcmTokens: arrayRemove(token) },
+    { merge: true },
+  );
+}
+
+/**
+ * Loads the user's alert history from Firestore.
+ * Returns an empty array if no history is stored yet.
+ */
+export async function getUserAlertHistory(
+  uid: string,
+): Promise<AlertHistoryItem[]> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return [];
+  const data = snap.data();
+  return Array.isArray(data?.alertHistory)
+    ? (data.alertHistory as AlertHistoryItem[])
+    : [];
+}
+
+/**
+ * Persists the user's alert history to Firestore.
+ */
+export async function setUserAlertHistory(
+  uid: string,
+  history: AlertHistoryItem[],
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { alertHistory: history },
     { merge: true },
   );
 }

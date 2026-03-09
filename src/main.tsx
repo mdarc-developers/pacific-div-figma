@@ -14,6 +14,7 @@ import { ExhibitorNotesProvider } from "@/app/contexts/ExhibitorNotesContext";
 import { HeaderCollapsedProvider } from "@/app/contexts/HeaderCollapsedContext";
 import { ActivitySectionsProvider } from "@/app/contexts/ActivitySectionsContext";
 import { AttendanceProvider } from "@/app/contexts/AttendanceContext";
+import { AlertHistoryProvider } from "@/app/contexts/AlertHistoryContext";
 import { SearchProvider } from "@/app/contexts/SearchContext";
 import { ThemeProvider } from "@/app/contexts/ThemeContext";
 import { BrowserRouter } from "react-router-dom";
@@ -35,6 +36,7 @@ createRoot(document.getElementById("root")!).render(
                       <HeaderCollapsedProvider>
                       <ActivitySectionsProvider>
                       <AttendanceProvider>
+                      <AlertHistoryProvider>
                         <AuthProvider>
                           <SearchProvider>
                             <BrowserRouter>
@@ -42,6 +44,7 @@ createRoot(document.getElementById("root")!).render(
                             </BrowserRouter>
                           </SearchProvider>
                         </AuthProvider>
+                      </AlertHistoryProvider>
                       </AttendanceProvider>
                       </ActivitySectionsProvider>
                       </HeaderCollapsedProvider>
