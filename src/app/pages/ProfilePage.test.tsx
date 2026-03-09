@@ -26,6 +26,7 @@ vi.mock("firebase/auth", async (importOriginal) => {
     }),
     sendEmailVerification: vi.fn(),
     sendPasswordResetEmail: vi.fn(),
+    signInWithPopup: vi.fn(),
   };
 });
 
@@ -98,5 +99,12 @@ describe("ProfilePage (unauthenticated)", () => {
   it("shows the account features heading", () => {
     renderProfilePage();
     expect(screen.getByText(/account features/i)).toBeInTheDocument();
+  });
+
+  it("shows the Sign In with Google button when not logged in", () => {
+    renderProfilePage();
+    expect(
+      screen.getByRole("button", { name: /sign in with google/i }),
+    ).toBeInTheDocument();
   });
 });
