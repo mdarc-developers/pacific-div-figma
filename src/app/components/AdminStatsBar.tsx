@@ -73,6 +73,17 @@ export function AdminStatsBar() {
           Cloud Logs
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
+        <a
+          data-testid="admin-cloud-monitoring-link"
+          href="https://console.cloud.google.com/monitoring?project=pacific-div"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
+          title="Google Cloud Monitoring"
+        >
+          Cloud
+          <ExternalLink className="h-3 w-3" aria-hidden="true" />
+        </a>
       </span>
     </div>
   );
