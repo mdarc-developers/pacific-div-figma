@@ -1903,8 +1903,8 @@ export const mapSessions: [string, Session[]] = [
       track: ["Education"],
     },
     {
-      id: "saturday-outside-displays",
-      title: "Outside Displays",
+      id: "saturday-emcomm-show",
+      title: "EmComm Show",
       description: "",
       speaker: [],
       location: "Parking Lot",
@@ -1912,7 +1912,7 @@ export const mapSessions: [string, Session[]] = [
       endTime: "2026-10-17T15:00:00",
       url: "https://www.pacificon.org/events/outside-displays",
       category: "Events",
-      track: ["Outside_Displays"],
+      track: ["EmComm_Show"],
     },
     {
       id: "saturday-technician-one-day-license-class",
@@ -2683,7 +2683,7 @@ export const mapSessions: [string, Session[]] = [
       title: "Building a Ham Shack In Your RV",
       description: "",
       speaker: ["Bruce Perens, K6BP"],
-      location: "Salon G,H)",
+      location: "Salon G,H",
       startTime: "2026-10-17T15:00:00",
       endTime: "2026-10-17T15:50:00",
       category: "Forums",
