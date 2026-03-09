@@ -32,6 +32,7 @@ export const allConferences: ConferenceListItem[] = [
       "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf", // upstream filename reflects the year it was published, not the conference year
     conferenceAppPageUrl: "https://hamvention.org/getconnected/",
     firstConferenceYear: 1952,
+    estimatedAttendees: 36814,
   },
   {
     id: "seapac-2026",
@@ -57,6 +58,7 @@ export const allConferences: ConferenceListItem[] = [
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
     firstConferenceYear: 1982,
+    estimatedAttendees: 2500,
   },
   {
     id: "huntsville-2026",
@@ -87,6 +89,7 @@ export const allConferences: ConferenceListItem[] = [
       "https://hamfest.org/wp-content/uploads/2025/08/Hamfest-Program-2025-08-FINAL.pdf",
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
     firstConferenceYear: 1954,
+    estimatedAttendees: 5981,
   },
   {
     id: "pacificon-2026",
@@ -121,6 +124,7 @@ export const allConferences: ConferenceListItem[] = [
       "https://drive.google.com/uc?export=download&id=1TlaEhDC0xvCEiQgJc5QUYApp0WIpHvNm",
     conferenceAppPageUrl: "https://www.pacificon.org/app/",
     firstConferenceYear: 1920,
+    estimatedAttendees: 1200,
   },
   {
     id: "quartzfest-2027",
@@ -148,6 +152,7 @@ Roadrunner Camping Area",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
     firstConferenceYear: 1997,
+    estimatedAttendees: 450,
   },
   {
     id: "hamcation-2027",
@@ -180,6 +185,7 @@ Roadrunner Camping Area",
       "https://www.hamcation.com/PDF/HamCation-2027-Program.pdf", // run npm run fetch-programs when 2027 program is published
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
     firstConferenceYear: 1946,
+    estimatedAttendees: 23000,
   },
   {
     id: "yuma-2027",
@@ -207,6 +213,7 @@ Roadrunner Camping Area",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
     firstConferenceYear: 2005,
+    estimatedAttendees: 1200,
   },
   { id: "---" },
   {
@@ -235,6 +242,7 @@ Roadrunner Camping Area",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
     firstConferenceYear: 2005,
+    estimatedAttendees: 1200,
   },
   {
     id: "hamcation-2026",
@@ -267,5 +275,6 @@ Roadrunner Camping Area",
       "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
     firstConferenceYear: 1954,
+    estimatedAttendees: 23000,
   },
 ];

@@ -29,6 +29,7 @@ export interface Conference {
   conferenceProgramSourceUrl?: string; // upstream URL used by scripts/fetch-programs.mjs to refresh the cached local copy
   conferenceAppPageUrl?: string;
   firstConferenceYear?: number;
+  estimatedAttendees?: number;
 }
 
 export interface MapImage {
