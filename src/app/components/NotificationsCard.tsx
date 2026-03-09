@@ -71,6 +71,28 @@ export function NotificationsCard({
         <div className="flex items-center justify-between gap-2">
           <div>
             <Label
+              htmlFor="cloud-alerts"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Prize app alerts
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Receive prize winner push notifications on this device
+            </p>
+          </div>
+          <Checkbox
+            id="cloud-alerts"
+            checked={cloudAlertsEnabled}
+            onCheckedChange={(checked) =>
+              onCloudAlertsEnabledChange(checked === true)
+            }
+            aria-label="Enable cloud alerts"
+          />
+        </div>
+        <Separator />
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <Label
               htmlFor="email-alerts"
               className="text-sm font-medium cursor-pointer"
             >
@@ -87,28 +109,6 @@ export function NotificationsCard({
               onEmailEnabledChange(checked === true)
             }
             aria-label="Enable email alerts"
-          />
-        </div>
-        <Separator />
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <Label
-              htmlFor="cloud-alerts"
-              className="text-sm font-medium cursor-pointer"
-            >
-              Prize cloud alerts
-            </Label>
-            <p className="text-xs text-muted-foreground">
-              Receive prize winner push notifications on this device
-            </p>
-          </div>
-          <Checkbox
-            id="cloud-alerts"
-            checked={cloudAlertsEnabled}
-            onCheckedChange={(checked) =>
-              onCloudAlertsEnabledChange(checked === true)
-            }
-            aria-label="Enable cloud alerts"
           />
         </div>
         <Separator />
