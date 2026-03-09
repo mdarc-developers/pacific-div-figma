@@ -34,6 +34,7 @@ interface UserData {
   smsNotifications?: boolean;
   phoneNumber?: string;
   email?: string;
+  emailNotifications?: boolean;
   raffleTickets?: Record<string, string[]>;
   displayName?: string;
   callsign?: string;
@@ -199,7 +200,7 @@ export function buildPrizeWinnerEmailHtml(
  *    `raffleTickets.{conferenceId}` array contains the winning ticket.
  * 3. For each matching user:
  *    - Sends an SMS if `smsNotifications` is true and `phoneNumber` is set.
- *    - Sends an email if email is available and Gmail secrets are configured.
+ *    - Sends an email if `emailNotifications` is not false and email is available and Gmail secrets are configured.
  * 4. Updates the winner document with a `notifiedAt` timestamp.
  *
  * Required Firebase Secrets:
@@ -335,8 +336,8 @@ export const notifyPrizeWinner = onDocumentCreated(
         }
       }
 
-      // Send email if available
-      if (userData.email) {
+      // Send email if enabled and available
+      if (userData.emailNotifications !== false && userData.email) {
         if (serviceAccountJson && senderEmail) {
           notificationPromises.push(
             sendEmailNotification(

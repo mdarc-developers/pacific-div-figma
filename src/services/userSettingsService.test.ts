@@ -367,12 +367,13 @@ describe("getUserNotificationSettings", () => {
 
   it("returns the stored notification settings", async () => {
     mockGetDoc.mockResolvedValue(
-      snap({ smsNotifications: true, phoneNumber: "+15095551234", minutesBefore: 15 }),
+      snap({ smsNotifications: true, phoneNumber: "+15095551234", minutesBefore: 15, emailNotifications: false }),
     );
     expect(await getUserNotificationSettings("uid1")).toEqual({
       smsEnabled: true,
       phoneNumber: "+15095551234",
       minutesBefore: 15,
+      emailEnabled: false,
     });
   });
 
@@ -393,6 +394,12 @@ describe("getUserNotificationSettings", () => {
     const result = await getUserNotificationSettings("uid1");
     expect(result!.minutesBefore).toBe(10);
   });
+
+  it("defaults emailEnabled to true when the field is missing", async () => {
+    mockGetDoc.mockResolvedValue(snap({ smsNotifications: false, phoneNumber: "", minutesBefore: 10 }));
+    const result = await getUserNotificationSettings("uid1");
+    expect(result!.emailEnabled).toBe(true);
+  });
 });
 
 describe("setUserNotificationSettings", () => {
@@ -401,6 +408,7 @@ describe("setUserNotificationSettings", () => {
       smsEnabled: true,
       phoneNumber: "+15095551234",
       minutesBefore: 20,
+      emailEnabled: false,
     };
     await setUserNotificationSettings("uid1", settings);
     expect(mockSetDoc).toHaveBeenCalledWith(
@@ -409,6 +417,7 @@ describe("setUserNotificationSettings", () => {
         smsNotifications: true,
         phoneNumber: "+15095551234",
         minutesBefore: 20,
+        emailNotifications: false,
       },
       { merge: true },
     );

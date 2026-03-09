@@ -9,6 +9,7 @@ import {
 const SMS_ENABLED_KEY = "sms_notifications_enabled";
 const PHONE_NUMBER_KEY = "sms_phone_number";
 const MINUTES_BEFORE_KEY = "notification_minutes_before";
+const EMAIL_ENABLED_KEY = "email_notifications_enabled";
 
 export function useNotificationSettings(): {
   smsEnabled: boolean;
@@ -17,6 +18,8 @@ export function useNotificationSettings(): {
   setPhoneNumber: (value: string) => void;
   minutesBefore: number;
   setMinutesBefore: (value: number) => void;
+  emailEnabled: boolean;
+  setEmailEnabled: (value: boolean) => void;
 } {
   const { user } = useAuth();
 
@@ -29,11 +32,15 @@ export function useNotificationSettings(): {
   const [minutesBefore, setMinutesBeforeState] = useState<number>(() =>
     loadFromStorage<number>(MINUTES_BEFORE_KEY, 10),
   );
+  const [emailEnabled, setEmailEnabledState] = useState<boolean>(() =>
+    loadFromStorage<boolean>(EMAIL_ENABLED_KEY, true),
+  );
 
   // Refs for use inside callbacks to avoid stale closures
   const smsEnabledRef = useRef(smsEnabled);
   const phoneNumberRef = useRef(phoneNumber);
   const minutesBeforeRef = useRef(minutesBefore);
+  const emailEnabledRef = useRef(emailEnabled);
   useEffect(() => {
     smsEnabledRef.current = smsEnabled;
   }, [smsEnabled]);
@@ -43,6 +50,9 @@ export function useNotificationSettings(): {
   useEffect(() => {
     minutesBeforeRef.current = minutesBefore;
   }, [minutesBefore]);
+  useEffect(() => {
+    emailEnabledRef.current = emailEnabled;
+  }, [emailEnabled]);
 
   // Track the uid we have loaded settings for, so we only load once per login
   const loadedForUidRef = useRef<string | null>(null);
@@ -64,9 +74,11 @@ export function useNotificationSettings(): {
         setSmsEnabledState(settings.smsEnabled);
         setPhoneNumberState(settings.phoneNumber);
         setMinutesBeforeState(settings.minutesBefore);
+        setEmailEnabledState(settings.emailEnabled);
         saveToStorage(SMS_ENABLED_KEY, settings.smsEnabled);
         saveToStorage(PHONE_NUMBER_KEY, settings.phoneNumber);
         saveToStorage(MINUTES_BEFORE_KEY, settings.minutesBefore);
+        saveToStorage(EMAIL_ENABLED_KEY, settings.emailEnabled);
       })
       .catch(console.error)
       .finally(() => {
@@ -87,6 +99,7 @@ export function useNotificationSettings(): {
           smsEnabled: value,
           phoneNumber: phoneNumberRef.current,
           minutesBefore: minutesBeforeRef.current,
+          emailEnabled: emailEnabledRef.current,
         }).catch(console.error);
       }
     },
@@ -102,6 +115,7 @@ export function useNotificationSettings(): {
           smsEnabled: smsEnabledRef.current,
           phoneNumber: value,
           minutesBefore: minutesBeforeRef.current,
+          emailEnabled: emailEnabledRef.current,
         }).catch(console.error);
       }
     },
@@ -117,11 +131,28 @@ export function useNotificationSettings(): {
           smsEnabled: smsEnabledRef.current,
           phoneNumber: phoneNumberRef.current,
           minutesBefore: value,
+          emailEnabled: emailEnabledRef.current,
         }).catch(console.error);
       }
     },
     [user],
   );
 
-  return { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore };
+  const setEmailEnabled = useCallback(
+    (value: boolean) => {
+      setEmailEnabledState(value);
+      saveToStorage(EMAIL_ENABLED_KEY, value);
+      if (user) {
+        setUserNotificationSettings(user.uid, {
+          smsEnabled: smsEnabledRef.current,
+          phoneNumber: phoneNumberRef.current,
+          minutesBefore: minutesBeforeRef.current,
+          emailEnabled: value,
+        }).catch(console.error);
+      }
+    },
+    [user],
+  );
+
+  return { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore, emailEnabled, setEmailEnabled };
 }

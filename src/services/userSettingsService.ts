@@ -206,6 +206,7 @@ export interface NotificationSettings {
   smsEnabled: boolean;
   phoneNumber: string;
   minutesBefore: number;
+  emailEnabled: boolean;
 }
 
 export async function getUserNotificationSettings(
@@ -222,6 +223,10 @@ export async function getUserNotificationSettings(
     phoneNumber: typeof data?.phoneNumber === "string" ? data.phoneNumber : "",
     minutesBefore:
       typeof data?.minutesBefore === "number" ? data.minutesBefore : 10,
+    emailEnabled:
+      typeof data?.emailNotifications === "boolean"
+        ? data.emailNotifications
+        : true,
   };
 }
 
@@ -252,6 +257,7 @@ export async function setUserNotificationSettings(
       smsNotifications: settings.smsEnabled,
       phoneNumber: settings.phoneNumber,
       minutesBefore: settings.minutesBefore,
+      emailNotifications: settings.emailEnabled,
     },
     { merge: true },
   );

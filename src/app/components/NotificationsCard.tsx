@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Bell, Plus } from "lucide-react";
-import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import {
@@ -29,6 +28,8 @@ interface NotificationsCardProps {
   onSmsEnabledChange: (value: boolean) => void;
   onPhoneNumberChange: (value: string) => void;
   onMinutesBeforeChange: (value: number) => void;
+  emailEnabled: boolean;
+  onEmailEnabledChange: (value: boolean) => void;
 }
 
 export function NotificationsCard({
@@ -38,6 +39,8 @@ export function NotificationsCard({
   onSmsEnabledChange,
   onPhoneNumberChange,
   onMinutesBeforeChange,
+  emailEnabled,
+  onEmailEnabledChange,
 }: NotificationsCardProps) {
   const [pendingPhone, setPendingPhone] = useState(phoneNumber);
 
@@ -155,10 +158,25 @@ export function NotificationsCard({
         </div>
         <Separator />
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Email alerts</p>
-          <Badge variant="secondary" className="text-xs">
-            Coming soon
-          </Badge>
+          <div>
+            <Label
+              htmlFor="email-alerts"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Email alerts
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Receive prize winner notifications by email
+            </p>
+          </div>
+          <Checkbox
+            id="email-alerts"
+            checked={emailEnabled}
+            onCheckedChange={(checked) =>
+              onEmailEnabledChange(checked === true)
+            }
+            aria-label="Enable email alerts"
+          />
         </div>
       </CardContent>
     </Card>
