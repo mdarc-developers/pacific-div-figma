@@ -24,7 +24,7 @@ import {
   Trophy,
   User,
 } from "lucide-react";
-import { useSignupCount } from "@/app/hooks/useSignupCount";
+import { useAttendeeCounter } from "@/app/hooks/useAttendeeCounter";
 import { Session, Exhibitor, Prize, UserProfile } from "@/types/conference";
 import {
   ATTENDEE_DATA,
@@ -236,7 +236,7 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   const updateToken = ATTENDEE_SUPPLEMENTAL_TOKEN[activeConference.id];
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showVisibleOnly, setShowVisibleOnly] = useState(true);
-  const signupCount = useSignupCount();
+  const attendeeCounter = useAttendeeCounter(activeConference.id);
 
   // Fetch public attendees from Firestore (with localStorage caching)
   const {
@@ -300,6 +300,11 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
   );
   // Users with any group membership are treated as organizers/staff
   const organizers = attendees.filter((a) => a.groups && a.groups.length > 0);
+
+  // Count attendees with a visible, named profile (used in the counter badge)
+  const viewableProfileCount = attendees.filter(
+    (a) => a.profileVisible !== false && a.displayName,
+  ).length;
 
   // Build the list of visible category tabs (only show non-empty ones)
   const categoryTabs = (
@@ -370,11 +375,19 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
                 Sync
               </Button>
             </div>
-            {signupCount !== null && (
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/20">
-                {signupCount} registered
-              </span>
-            )}
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/20">
+              {viewableProfileCount} viewable profiles
+              {attendeeCounter !== null && (
+                <> / {attendeeCounter} attendee profiles</>
+              )}
+              {activeConference.estimatedAttendees !== undefined && (
+                <>
+                  {" "}
+                  / {activeConference.estimatedAttendees.toLocaleString()}{" "}
+                  estimated {activeConference.name} attendees
+                </>
+              )}
+            </span>
           </div>
           {firestoreError && (
             <p className="text-xs text-red-500 mb-2">
