@@ -27,8 +27,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onSelectSession,
   onSelectExhibitor,
   onSearch,
-  placeholderProp = "Search schedule...",
-  //placeholder="Search speakers, forums, events, exhibitors..."
+  placeholderProp = "Search schedule, forums, exhibitors...",
+  //placeholder="Search speakers, forums, events..."
   classNameProp = "",
 }) => {
   const [query, setQuery] = useState("");
