@@ -312,10 +312,15 @@ export function SessionAdminView({
     return result;
   }, [sessions, selectedRoom, selectedTrack, selectedDate]);
 
-  // Returns true when the room has not been assigned or is not in the defined rooms list
-  const isRoomUndefined = (location: string) =>
-    !location?.trim() ||
-    (validRoomNames.size > 0 && !validRoomNames.has(location));
+  // Returns true when the room has not been assigned or is not in the defined rooms list.
+  // Some locations contain comma-separated room names; only the first segment is checked.
+  const isRoomUndefined = (location: string) => {
+    const trimmed = location?.trim();
+    if (!trimmed) return true;
+    if (validRoomNames.size === 0) return false;
+    const primaryRoom = trimmed.split(",")[0].trim();
+    return !validRoomNames.has(primaryRoom);
+  };
 
   // Returns true when the session start/end date is outside the conference date range
   const isDateOutOfRange = (session: Session) =>
