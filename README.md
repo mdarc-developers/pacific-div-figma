@@ -21,7 +21,7 @@ Live app: **https://pacific-div.web.app**
 - **Firebase Auth** — email/password and Google sign-in; email verification; password reset
 - **Dark / light / system theme** — fully wired; persists to `localStorage` and Firestore so it roams across devices
 - **User profile** — avatar, callsign, account card, theme toggle, notification stubs, bookmarked sessions, raffle tickets, prize-admin link
-- **Cloud Functions** — welcome email on new user registration; signup counter; see [`functions/README.md`](functions/README.md) for details
+- **Cloud Functions** — welcome email on new user registration; signup counter; SMS + email prize winner notifications via Twilio and Gmail API; see [`functions/README.md`](functions/README.md) for details
 - **Firestore security rules** — per-collection access control for conferences, sessions, maps, users, prizes, messages, and stats
 
 ## Conferences
