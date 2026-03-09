@@ -86,7 +86,9 @@ describe("SearchBar — rendering", () => {
   });
 
   afterEach(() => {
-    vi.runAllTimers();
+    act(() => {
+      vi.runAllTimers();
+    });
     vi.useRealTimers();
     vi.clearAllMocks();
   });
@@ -133,7 +135,9 @@ describe("SearchBar — clear button", () => {
   });
 
   afterEach(() => {
-    vi.runAllTimers();
+    act(() => {
+      vi.runAllTimers();
+    });
     vi.useRealTimers();
     vi.clearAllMocks();
   });
@@ -188,7 +192,9 @@ describe("SearchBar — search results", () => {
   });
 
   afterEach(() => {
-    vi.runAllTimers();
+    act(() => {
+      vi.runAllTimers();
+    });
     vi.useRealTimers();
     vi.clearAllMocks();
   });
@@ -287,7 +293,9 @@ describe("SearchBar — result selection", () => {
   });
 
   afterEach(() => {
-    vi.runAllTimers();
+    act(() => {
+      vi.runAllTimers();
+    });
     vi.useRealTimers();
     vi.clearAllMocks();
   });
@@ -358,7 +366,9 @@ describe("SearchBar — keyboard navigation", () => {
   });
 
   afterEach(() => {
-    vi.runAllTimers();
+    act(() => {
+      vi.runAllTimers();
+    });
     vi.useRealTimers();
     vi.clearAllMocks();
   });
