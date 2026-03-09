@@ -35,6 +35,16 @@ vi.mock("../contexts/AuthContext", () => ({
   }),
 }));
 
+// ── Mock AlertHistoryContext ─────────────────────────────────────────────────
+vi.mock("../contexts/AlertHistoryContext", () => ({
+  useAlertHistoryContext: () => ({
+    alertHistory: [],
+    clearHistory: vi.fn(),
+    addAlert: vi.fn(),
+    overrideAlertHistory: vi.fn(),
+  }),
+}));
+
 // Static import — vi.mock calls above are hoisted before this by Vitest
 import { AlertsPage } from "@/app/pages/AlertsPage";
 
@@ -63,10 +73,12 @@ describe("AlertsPage", () => {
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
   });
 
-  it("shows the user's email when authenticated", () => {
+  it("renders alert history heading when authenticated", () => {
     mockUser = { email: "ham@example.com" };
     renderAlertsPage();
-    expect(screen.getByText(/ham@example\.com/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /alert history/i }),
+    ).toBeInTheDocument();
   });
 
   it("does not render the sign-in prompt when authenticated", () => {
@@ -76,4 +88,13 @@ describe("AlertsPage", () => {
       screen.queryByRole("heading", { name: /prize notifications/i }),
     ).not.toBeInTheDocument();
   });
+
+  it("shows empty-state message when there are no alerts", () => {
+    mockUser = { email: "ham@example.com" };
+    renderAlertsPage();
+    expect(
+      screen.getByText(/no alerts yet/i),
+    ).toBeInTheDocument();
+  });
 });
+

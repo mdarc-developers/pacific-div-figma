@@ -165,3 +165,17 @@ export interface Message {
   boardId?: string; // for public board messages
   votes?: number;
 }
+
+/** A record of an alert (e.g. prize notification) that the user has seen. */
+export interface AlertHistoryItem {
+  /** Unique identifier for the alert (e.g. prizeWinnerId or a generated UUID). */
+  id: string;
+  /** Human-readable alert title (e.g. "Prize Winner!"). */
+  title: string;
+  /** Human-readable alert body (e.g. "You won a Yaesu FT-991A!"). */
+  body: string;
+  /** Unix epoch milliseconds when the alert was received. */
+  timestamp: number;
+  /** Conference the alert is associated with, if known. */
+  conferenceId?: string;
+}

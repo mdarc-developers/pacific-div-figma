@@ -15,6 +15,7 @@ import { FirebaseHeaderCollapsedSync } from "@/app/components/FirebaseHeaderColl
 import { FirebaseVoteCountsSync } from "@/app/components/FirebaseVoteCountsSync";
 import { FirebaseActivitySectionsSync } from "@/app/components/FirebaseActivitySectionsSync";
 import { FirebaseAttendanceSync } from "@/app/components/FirebaseAttendanceSync";
+import { FirebaseAlertHistorySync } from "@/app/components/FirebaseAlertHistorySync";
 //import { useState } from 'react';
 //import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 //import { Calendar, Map, User, Bell } from 'lucide-react';
@@ -62,6 +63,7 @@ export default function App() {
       <FirebaseHeaderCollapsedSync />
       <FirebaseActivitySectionsSync />
       <FirebaseAttendanceSync />
+      <FirebaseAlertHistorySync />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {isMdarcDeveloper && <AdminStatsBar />}
         <ConferenceHeaderErrorBoundary>
