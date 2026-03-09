@@ -33,6 +33,8 @@ const envConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  // Optional: enables Firebase Analytics / Google Analytics.
+  measurementId: import.meta.env.VITE_FIREBASE_MEASURE_ID,
 };
 
 // Only validate env vars when the Firebase Hosting auto-config is unavailable

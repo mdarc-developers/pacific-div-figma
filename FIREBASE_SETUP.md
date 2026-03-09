@@ -39,7 +39,7 @@ This application uses Firebase for backend services. Follow these steps to confi
 
 ### Local development
 
-Copy `.env.example` to `.env` and fill in the six values from your Firebase config:
+Copy `.env.example` to `.env` and fill in the values from your Firebase config:
 
 ```
 VITE_FIREBASE_API_KEY=AIza...
@@ -48,6 +48,9 @@ VITE_FIREBASE_PROJECT_ID=your-project
 VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
 VITE_FIREBASE_APP_ID=1:123456789:web:abc123
+
+# Optional — enables Firebase Analytics / Google Analytics (starts with "G-")
+VITE_FIREBASE_MEASURE_ID=G-XXXXXXXXXX
 ```
 
 Never commit `.env` — it is already listed in `.gitignore`.
