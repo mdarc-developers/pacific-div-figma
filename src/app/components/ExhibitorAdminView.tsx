@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Exhibitor } from "@/types/conference";
+import { useState, useMemo } from "react";
+import { Exhibitor, Booth } from "@/types/conference";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -11,12 +11,19 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Building2, Pencil, PlusCircle, Trash2 } from "lucide-react";
+import { Building2, Pencil, PlusCircle, Search, Trash2, X } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -190,11 +197,14 @@ function DeleteDialog({ open, name, onConfirm, onClose }: DeleteDialogProps) {
 export interface ExhibitorAdminViewProps {
   conferenceId: string;
   initialExhibitors: Exhibitor[];
+  /** All booths for this conference (used to derive zone labels). */
+  allBooths?: Booth[];
 }
 
 export function ExhibitorAdminView({
   conferenceId,
   initialExhibitors,
+  allBooths = [],
 }: ExhibitorAdminViewProps) {
   const [exhibitors, setExhibitors] = useState<Exhibitor[]>(initialExhibitors);
   const [form, setForm] = useState<{ open: boolean; item: Exhibitor | null }>({
@@ -202,6 +212,9 @@ export function ExhibitorAdminView({
     item: null,
   });
   const [deleteTarget, setDeleteTarget] = useState<Exhibitor | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedZone, setSelectedZone] = useState("all");
 
   const saveExhibitor = (exhibitor: Exhibitor) => {
     setExhibitors((prev) => {
@@ -217,6 +230,78 @@ export function ExhibitorAdminView({
 
   const deleteExhibitor = (id: string) =>
     setExhibitors((prev) => prev.filter((e) => e.id !== id));
+
+  // Build a booth-id → zone lookup map from the provided booth data
+  const boothZoneMap = useMemo<Record<number, string>>(() => {
+    const map: Record<number, string> = {};
+    for (const booth of allBooths) {
+      if (booth.locationZone) map[booth.id] = booth.locationZone;
+    }
+    return map;
+  }, [allBooths]);
+
+  // Derive the zone(s) for an exhibitor from its booth location IDs
+  const getExhibitorZones = (exhibitor: Exhibitor): string[] => {
+    const zones = new Set<string>();
+    for (const locId of exhibitor.location ?? []) {
+      const zone = boothZoneMap[locId];
+      if (zone) zones.add(zone);
+    }
+    return Array.from(zones);
+  };
+
+  // Collect distinct types and zones for filter dropdowns
+  const allTypes = useMemo(
+    () =>
+      Array.from(
+        new Set(exhibitors.map((e) => e.type ?? "").filter(Boolean)),
+      ).sort(),
+    [exhibitors],
+  );
+
+  const allZones = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          exhibitors.flatMap((e) => {
+            const zones = new Set<string>();
+            for (const locId of e.location ?? []) {
+              const zone = boothZoneMap[locId];
+              if (zone) zones.add(zone);
+            }
+            return Array.from(zones);
+          }),
+        ),
+      ).sort(),
+    [exhibitors, boothZoneMap],
+  );
+
+  const filteredExhibitors = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return exhibitors
+      .filter((e) => {
+        if (q && !e.name.toLowerCase().includes(q) && !e.description?.toLowerCase().includes(q)) {
+          return false;
+        }
+        if (selectedType !== "all" && (e.type ?? "") !== selectedType) {
+          return false;
+        }
+        if (selectedZone !== "all") {
+          if (!getExhibitorZones(e).includes(selectedZone)) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [exhibitors, searchQuery, selectedType, selectedZone, boothZoneMap]);
+
+  const hasActiveFilter =
+    searchQuery.trim() !== "" || selectedType !== "all" || selectedZone !== "all";
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedType("all");
+    setSelectedZone("all");
+  };
 
   return (
     <div className="space-y-6">
@@ -235,9 +320,73 @@ export function ExhibitorAdminView({
         </Button>
       </div>
 
+      {/* Filter bar */}
+      <div className="flex flex-wrap gap-3 items-end">
+        <div className="relative flex-1 min-w-[180px]">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            placeholder="Search exhibitors…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8"
+            aria-label="Search exhibitors"
+          />
+        </div>
+        <Select value={selectedType} onValueChange={setSelectedType}>
+          <SelectTrigger className="w-[150px]" aria-label="Filter by type">
+            <SelectValue placeholder="All Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            {allTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {allZones.length > 0 && (
+          <Select value={selectedZone} onValueChange={setSelectedZone}>
+            <SelectTrigger className="w-[150px]" aria-label="Filter by zone">
+              <SelectValue placeholder="All Zones" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Zones</SelectItem>
+              {allZones.map((zone) => (
+                <SelectItem key={zone} value={zone}>
+                  {zone}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        {hasActiveFilter && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="flex items-center gap-1 text-muted-foreground"
+            aria-label="Clear filters"
+          >
+            <X className="h-4 w-4" />
+            Clear
+          </Button>
+        )}
+      </div>
+
+      {/* Result count when filtering */}
+      {hasActiveFilter && (
+        <p className="text-sm text-muted-foreground">
+          Showing {filteredExhibitors.length} of {exhibitors.length} exhibitor
+          {filteredExhibitors.length !== 1 ? "s" : ""}
+        </p>
+      )}
+
       {/* Exhibitor cards */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {exhibitors.map((exhibitor) => (
+        {filteredExhibitors.map((exhibitor) => {
+          const zones = getExhibitorZones(exhibitor);
+          return (
           <Card key={exhibitor.id}>
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">
@@ -273,6 +422,11 @@ export function ExhibitorAdminView({
                   <strong>Booth:</strong> {exhibitor.boothName}
                 </p>
               )}
+              {zones.length > 0 && (
+                <p>
+                  <strong>Zone:</strong> {zones.join(", ")}
+                </p>
+              )}
               {exhibitor.type && (
                 <p>
                   <strong>Type:</strong> {exhibitor.type}
@@ -294,9 +448,12 @@ export function ExhibitorAdminView({
               <p className="text-xs text-gray-400">ID: {exhibitor.id}</p>
             </CardContent>
           </Card>
-        ))}
-        {exhibitors.length === 0 && (
-          <p className="text-gray-500 text-sm col-span-2">No exhibitors yet.</p>
+          );
+        })}
+        {filteredExhibitors.length === 0 && (
+          <p className="text-gray-500 text-sm col-span-2">
+            {hasActiveFilter ? "No exhibitors match the current filters." : "No exhibitors yet."}
+          </p>
         )}
       </div>
 

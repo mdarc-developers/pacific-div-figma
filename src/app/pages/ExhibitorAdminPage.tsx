@@ -5,7 +5,7 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { useExhibitorAdmin } from "@/app/hooks/useExhibitorAdmin";
 import { ExhibitorAdminView } from "@/app/components/ExhibitorAdminView";
 import { Button } from "@/app/components/ui/button";
-import { EXHIBITOR_DATA } from "@/lib/sessionData";
+import { BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 
 export function ExhibitorAdminPage() {
   const { user, loading } = useAuth();
@@ -52,6 +52,10 @@ export function ExhibitorAdminPage() {
 
   // EXHIBITOR_DATA[id] is a [mapUrl, Exhibitor[]] tuple; index [1] is the array
   const exhibitors = EXHIBITOR_DATA[activeConference.id]?.[1] ?? [];
+  // BOOTH_DATA[id] is an array of [mapUrl, Booth[]] tuples; flatten to a single array
+  const allBooths = (BOOTH_DATA[activeConference.id] ?? []).flatMap(
+    ([, booths]) => booths,
+  );
 
   return (
     <div className="w-full">
@@ -68,6 +72,7 @@ export function ExhibitorAdminPage() {
       <ExhibitorAdminView
         conferenceId={activeConference.id}
         initialExhibitors={exhibitors}
+        allBooths={allBooths}
       />
     </div>
   );
