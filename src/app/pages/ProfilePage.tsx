@@ -28,6 +28,7 @@ import { useRaffleTickets } from "@/app/hooks/useRaffleTickets";
 import { useNotificationSettings } from "@/app/hooks/useNotificationSettings";
 import { useProfileVisible } from "@/app/hooks/useProfileVisible";
 import { useUserProfileFields } from "@/app/hooks/useUserProfileFields";
+import { useShowQrzLink } from "@/app/hooks/useShowQrzLink";
 import { useAttendanceContext } from "@/app/contexts/AttendanceContext";
 import { Conference } from "@/types/conference";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
@@ -79,6 +80,7 @@ export function ProfilePage() {
   const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore, emailEnabled, setEmailEnabled, cloudAlertsEnabled, setCloudAlertsEnabled } =
     useNotificationSettings();
   const { profileVisible, setProfileVisible } = useProfileVisible();
+  const { showQrzLink, setShowQrzLink } = useShowQrzLink();
   const {
     callsign,
     setCallsign,
@@ -188,6 +190,8 @@ export function ProfilePage() {
         onPasswordReset={handlePasswordReset}
         callsign={callsign}
         onCallsignChange={setCallsign}
+        showQrzLink={showQrzLink}
+        onShowQrzLinkChange={setShowQrzLink}
         displayName={displayName}
         onDisplayNameChange={setDisplayName}
         displayProfile={displayProfile}
