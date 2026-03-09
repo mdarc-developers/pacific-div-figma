@@ -4,6 +4,7 @@ import { execSync } from "child_process";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import eslint from "@nabla/vite-plugin-eslint";
+import { VitePWA } from "vite-plugin-pwa";
 
 function getGitSha(): string {
   try {
@@ -22,6 +23,50 @@ export default defineConfig({
     // Skip the ESLint plugin during test runs — its file-system watchers keep
     // the Vitest process alive after tests complete (37 dangling FILEHANDLE).
     ...(process.env.VITEST ? [] : [eslint()]),
+    VitePWA({
+      registerType: "autoUpdate",
+      // Precache the app shell; exclude large maps, PDFs, and programs
+      // that are better served fresh on demand.
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff2}"],
+        globIgnores: [
+          "**/assets/maps/**",
+          "**/assets/programs/**",
+          "**/assets/prizes/**",
+        ],
+      },
+      includeAssets: ["favicon.png", "icons/apple-touch-icon.png"],
+      manifest: {
+        name: "Amateur Radio Conference Companion",
+        short_name: "Ham Radio",
+        description:
+          "Schedule, maps, exhibitors, and prizes for amateur radio conferences.",
+        theme_color: "#030213",
+        background_color: "#ffffff",
+        display: "standalone",
+        scope: "/",
+        start_url: "/",
+        orientation: "portrait-primary",
+        icons: [
+          {
+            src: "icons/pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "icons/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "icons/pwa-512x512-maskable.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+    }),
   ],
   define: {
     // Bake the current git commit SHA and build timestamp into the bundle at
