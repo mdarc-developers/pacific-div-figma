@@ -1,6 +1,7 @@
 import { beforeUserCreated } from "firebase-functions/v2/identity";
 import {
   onDocumentCreated,
+  onDocumentDeleted,
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
 import { logger } from "firebase-functions";
@@ -160,6 +161,81 @@ export const incrementSignupCounter = onDocumentCreated(
       logger.info("incrementSignupCounter: counter incremented", { uid });
     } catch (err) {
       logger.error("incrementSignupCounter: failed to increment counter", {
+        uid,
+        err,
+      });
+    }
+  },
+);
+
+/**
+ * Increments the attendeeCounter field on conferences/{conferenceId} whenever
+ * a new attendee document is created at conferences/{conferenceId}/attendees/{uid}.
+ *
+ * The counter lives at:
+ *   Firestore → conferences → {conferenceId} → { attendeeCounter: <number> }
+ *
+ * Using FieldValue.increment with merge:true is self-initializing: on the
+ * first attendee the field is created with value 1; subsequent writes
+ * atomically increment the existing value.  No manual Firestore initialization
+ * is required before deployment.
+ */
+export const incrementAttendeeCounter = onDocumentCreated(
+  "conferences/{conferenceId}/attendees/{uid}",
+  async (event) => {
+    const { conferenceId, uid } = event.params;
+    const conferenceRef = admin
+      .firestore()
+      .collection("conferences")
+      .doc(conferenceId);
+
+    try {
+      await conferenceRef.set(
+        { attendeeCounter: admin.firestore.FieldValue.increment(1) },
+        { merge: true },
+      );
+      logger.info("incrementAttendeeCounter: counter incremented", {
+        conferenceId,
+        uid,
+      });
+    } catch (err) {
+      logger.error("incrementAttendeeCounter: failed to increment counter", {
+        conferenceId,
+        uid,
+        err,
+      });
+    }
+  },
+);
+
+/**
+ * Decrements the attendeeCounter field on conferences/{conferenceId} whenever
+ * an attendee document is deleted at conferences/{conferenceId}/attendees/{uid}.
+ *
+ * The counter is decremented by 1, keeping it in sync with the actual number
+ * of attendees who have marked themselves as attending.
+ */
+export const decrementAttendeeCounter = onDocumentDeleted(
+  "conferences/{conferenceId}/attendees/{uid}",
+  async (event) => {
+    const { conferenceId, uid } = event.params;
+    const conferenceRef = admin
+      .firestore()
+      .collection("conferences")
+      .doc(conferenceId);
+
+    try {
+      await conferenceRef.set(
+        { attendeeCounter: admin.firestore.FieldValue.increment(-1) },
+        { merge: true },
+      );
+      logger.info("decrementAttendeeCounter: counter decremented", {
+        conferenceId,
+        uid,
+      });
+    } catch (err) {
+      logger.error("decrementAttendeeCounter: failed to decrement counter", {
+        conferenceId,
         uid,
         err,
       });

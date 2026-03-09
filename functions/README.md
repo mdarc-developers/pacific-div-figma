@@ -4,11 +4,13 @@ This directory contains the Firebase Cloud Functions for the Pacific Division Co
 
 ## Functions
 
-| Function                  | Trigger                            | Purpose                                                                            |
-| ------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
-| `sendWelcomeEmail`        | `beforeUserCreated` (blocking, v2) | Sends a welcome email via the Gmail API when a new Firebase Auth user is created.  |
-| `incrementSignupCounter`  | `onDocumentCreated("users/{uid}")` | Increments `stats/signupCounter.count` in Firestore whenever a new user document is created. |
-| `notifyPrizeWinner`       | `onDocumentCreated("prizeWinners/{winnerId}")` | Sends SMS via Twilio and email via Gmail API to the attendee whose raffle ticket matches a newly drawn prize winner. |
+| Function                     | Trigger                            | Purpose                                                                            |
+| ---------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `sendWelcomeEmail`           | `beforeUserCreated` (blocking, v2) | Sends a welcome email via the Gmail API when a new Firebase Auth user is created.  |
+| `incrementSignupCounter`     | `onDocumentCreated("users/{uid}")` | Increments `stats/signupCounter.count` in Firestore whenever a new user document is created. |
+| `notifyPrizeWinner`          | `onDocumentCreated("prizeWinners/{winnerId}")` | Sends SMS via Twilio and email via Gmail API to the attendee whose raffle ticket matches a newly drawn prize winner. |
+| `incrementAttendeeCounter`   | `onDocumentCreated("conferences/{conferenceId}/attendees/{uid}")` | Increments `conferences/{conferenceId}.attendeeCounter` when a user marks themselves as attending. |
+| `decrementAttendeeCounter`   | `onDocumentDeleted("conferences/{conferenceId}/attendees/{uid}")` | Decrements `conferences/{conferenceId}.attendeeCounter` when a user removes their attendance. |
 
 ### `sendWelcomeEmail`
 
@@ -25,6 +27,19 @@ A **Firestore trigger** (`onDocumentCreated`) that fires whenever a new document
 - Atomically increments `count` in the `stats/signupCounter` Firestore document.
 - Self-initializing: creates the counter document on the first signup if it does not exist.
 - The counter is displayed in the `AdminStatsBar` component visible to mdarc-developer users.
+
+### `incrementAttendeeCounter`
+
+A **Firestore trigger** (`onDocumentCreated`) that fires whenever a new document is created in the `conferences/{conferenceId}/attendees/{uid}` sub-collection.
+
+- Atomically increments the `attendeeCounter` field on the parent `conferences/{conferenceId}` document.
+- Self-initializing: creates the field on the first attendee if it does not exist.
+
+### `decrementAttendeeCounter`
+
+A **Firestore trigger** (`onDocumentDeleted`) that fires whenever a document is deleted from the `conferences/{conferenceId}/attendees/{uid}` sub-collection.
+
+- Atomically decrements the `attendeeCounter` field on the parent `conferences/{conferenceId}` document.
 
 ### `notifyPrizeWinner`
 
@@ -231,6 +246,34 @@ onDocumentCreated fires (Firestore trigger)
        │
        ▼
 stats/signupCounter.count += 1   (FieldValue.increment, merge:true)
+```
+
+No secrets or environment variables are required for this function.
+
+### `incrementAttendeeCounter`
+
+```
+New document created in conferences/{conferenceId}/attendees/{uid}
+       │
+       ▼
+onDocumentCreated fires (Firestore trigger)
+       │
+       ▼
+conferences/{conferenceId}.attendeeCounter += 1   (FieldValue.increment, merge:true)
+```
+
+No secrets or environment variables are required for this function.
+
+### `decrementAttendeeCounter`
+
+```
+Document deleted from conferences/{conferenceId}/attendees/{uid}
+       │
+       ▼
+onDocumentDeleted fires (Firestore trigger)
+       │
+       ▼
+conferences/{conferenceId}.attendeeCounter -= 1   (FieldValue.increment, merge:true)
 ```
 
 No secrets or environment variables are required for this function.

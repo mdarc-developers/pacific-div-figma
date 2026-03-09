@@ -465,10 +465,12 @@ firebase deploy --only functions
 
 Deployed functions:
 
-| Function                 | Trigger                               | Purpose                                                       |
-| ------------------------ | ------------------------------------- | ------------------------------------------------------------- |
-| `sendWelcomeEmail`       | `beforeUserCreated` (blocking, v2)    | Sends a welcome email via the Gmail API on new registration.  |
-| `incrementSignupCounter` | `onDocumentCreated("users/{uid}") v2` | Atomically increments `stats/signupCounter.count` in Firestore. |
+| Function                     | Trigger                               | Purpose                                                       |
+| ---------------------------- | ------------------------------------- | ------------------------------------------------------------- |
+| `sendWelcomeEmail`           | `beforeUserCreated` (blocking, v2)    | Sends a welcome email via the Gmail API on new registration.  |
+| `incrementSignupCounter`     | `onDocumentCreated("users/{uid}") v2` | Atomically increments `stats/signupCounter.count` in Firestore. |
+| `incrementAttendeeCounter`   | `onDocumentCreated("conferences/{conferenceId}/attendees/{uid}") v2` | Increments `conferences/{conferenceId}.attendeeCounter` when a user marks themselves as attending. |
+| `decrementAttendeeCounter`   | `onDocumentDeleted("conferences/{conferenceId}/attendees/{uid}") v2` | Decrements `conferences/{conferenceId}.attendeeCounter` when a user removes their attendance. |
 
 > **Note:** Cloud Functions and Firestore rules are never deployed automatically by CI. Always deploy them manually after reviewing the changes.
 
