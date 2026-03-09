@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Session } from "@/types/conference";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -16,7 +16,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { CalendarDays, Pencil, PlusCircle, Trash2 } from "lucide-react";
+import { CalendarDays, MapPin, Pencil, PlusCircle, Tag, Trash2 } from "lucide-react";
+import { useConference } from "@/app/contexts/ConferenceContext";
+import { ROOM_DATA } from "@/lib/sessionData";
+import { isSessionWithinConference } from "@/lib/overrideUtils";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -259,12 +262,64 @@ export function SessionAdminView({
   conferenceId,
   initialSessions,
 }: SessionAdminViewProps) {
+  const { activeConference } = useConference();
   const [sessions, setSessions] = useState<Session[]>(initialSessions);
   const [form, setForm] = useState<{ open: boolean; item: Session | null }>({
     open: false,
     item: null,
   });
   const [deleteTarget, setDeleteTarget] = useState<Session | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<string>("all");
+  const [selectedTrack, setSelectedTrack] = useState<string>("all");
+  const [selectedDate, setSelectedDate] = useState<string>("all");
+
+  // Collect defined room names from ROOM_DATA for this conference
+  const validRoomNames = useMemo(() => {
+    const roomEntries = ROOM_DATA[conferenceId] ?? [];
+    return new Set(roomEntries.flatMap(([, rooms]) => rooms.map((r) => r.name)));
+  }, [conferenceId]);
+
+  // Collect unique filter options from all sessions
+  const allRooms = useMemo(
+    () =>
+      [...new Set(sessions.map((s) => s.location).filter(Boolean))].sort(),
+    [sessions],
+  );
+  const allTracks = useMemo(
+    () =>
+      [...new Set(sessions.flatMap((s) => s.track ?? []))].sort(),
+    [sessions],
+  );
+  const allDates = useMemo(
+    () =>
+      [
+        ...new Set(
+          sessions.map((s) => s.startTime.split("T")[0]).filter(Boolean),
+        ),
+      ].sort(),
+    [sessions],
+  );
+
+  // Apply active filters
+  const filteredSessions = useMemo(() => {
+    let result = sessions;
+    if (selectedRoom !== "all")
+      result = result.filter((s) => s.location === selectedRoom);
+    if (selectedTrack !== "all")
+      result = result.filter((s) => (s.track ?? []).includes(selectedTrack));
+    if (selectedDate !== "all")
+      result = result.filter((s) => s.startTime.startsWith(selectedDate));
+    return result;
+  }, [sessions, selectedRoom, selectedTrack, selectedDate]);
+
+  // Returns true when the room has not been assigned or is not in the defined rooms list
+  const isRoomUndefined = (location: string) =>
+    !location?.trim() ||
+    (validRoomNames.size > 0 && !validRoomNames.has(location));
+
+  // Returns true when the session start/end date is outside the conference date range
+  const isDateOutOfRange = (session: Session) =>
+    !isSessionWithinConference(session, activeConference);
 
   const saveSession = (session: Session) => {
     setSessions((prev) => {
@@ -298,9 +353,104 @@ export function SessionAdminView({
         </Button>
       </div>
 
+      {/* Room filter */}
+      {allRooms.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            variant={selectedRoom === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedRoom("all")}
+            className="flex items-center gap-1"
+          >
+            <MapPin className="h-4 w-4" />
+            All Rooms
+          </Button>
+          {allRooms.map((room) => (
+            <Button
+              key={room}
+              variant={selectedRoom === room ? "default" : "outline"}
+              size="sm"
+              onClick={() =>
+                setSelectedRoom(selectedRoom === room ? "all" : room)
+              }
+              className={`flex items-center gap-1 ${isRoomUndefined(room) ? "text-red-500 border-red-400 hover:text-red-600" : ""}`}
+            >
+              <MapPin className="h-4 w-4" />
+              {room || <span className="italic">undefined</span>}
+            </Button>
+          ))}
+        </div>
+      )}
+
+      {/* Track filter */}
+      {allTracks.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            variant={selectedTrack === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedTrack("all")}
+            className="flex items-center gap-1"
+          >
+            <Tag className="h-4 w-4" />
+            All Tracks
+          </Button>
+          {allTracks.map((track) => (
+            <Button
+              key={track}
+              variant={selectedTrack === track ? "default" : "outline"}
+              size="sm"
+              onClick={() =>
+                setSelectedTrack(selectedTrack === track ? "all" : track)
+              }
+              className="flex items-center gap-1"
+            >
+              <Tag className="h-4 w-4" />
+              {track}
+            </Button>
+          ))}
+        </div>
+      )}
+
+      {/* Date filter */}
+      {allDates.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            variant={selectedDate === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedDate("all")}
+            className="flex items-center gap-1"
+          >
+            <CalendarDays className="h-4 w-4" />
+            All Dates
+          </Button>
+          {allDates.map((date) => {
+            const dateOutOfRange =
+              date < activeConference.startDate ||
+              date > activeConference.endDate;
+            return (
+              <Button
+                key={date}
+                variant={selectedDate === date ? "default" : "outline"}
+                size="sm"
+                onClick={() =>
+                  setSelectedDate(selectedDate === date ? "all" : date)
+                }
+                className={`flex items-center gap-1 ${dateOutOfRange ? "text-red-500 border-red-400 hover:text-red-600" : ""}`}
+              >
+                <CalendarDays className="h-4 w-4" />
+                {date}
+              </Button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Session cards */}
       <div className="grid gap-4">
-        {sessions.map((session) => (
+        {filteredSessions.map((session) => {
+          const roomBad = isRoomUndefined(session.location);
+          const dateBad = isDateOutOfRange(session);
+          return (
           <Card key={session.id}>
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">
@@ -336,19 +486,26 @@ export function SessionAdminView({
                   <strong>Speaker(s):</strong> {session.speaker.join(", ")}
                 </p>
               )}
-              {session.location && (
-                <p>
-                  <strong>Location:</strong> {session.location}
-                </p>
-              )}
+              <p>
+                <strong>Location:</strong>{" "}
+                <span className={roomBad ? "text-red-500 font-medium" : ""}>
+                  {session.location || <em>not defined</em>}
+                </span>
+              </p>
               {session.startTime && (
                 <p>
-                  <strong>Start:</strong> {session.startTime}
+                  <strong>Start:</strong>{" "}
+                  <span className={dateBad ? "text-red-500 font-medium" : ""}>
+                    {session.startTime}
+                  </span>
                 </p>
               )}
               {session.endTime && (
                 <p>
-                  <strong>End:</strong> {session.endTime}
+                  <strong>End:</strong>{" "}
+                  <span className={dateBad ? "text-red-500 font-medium" : ""}>
+                    {session.endTime}
+                  </span>
                 </p>
               )}
               {session.category && (
@@ -364,9 +521,14 @@ export function SessionAdminView({
               <p className="text-xs text-gray-400">ID: {session.id}</p>
             </CardContent>
           </Card>
-        ))}
-        {sessions.length === 0 && (
-          <p className="text-gray-500 text-sm">No sessions yet.</p>
+          );
+        })}
+        {filteredSessions.length === 0 && (
+          <p className="text-gray-500 text-sm">
+            {sessions.length === 0
+              ? "No sessions yet."
+              : "No sessions match the active filters."}
+          </p>
         )}
       </div>
 
