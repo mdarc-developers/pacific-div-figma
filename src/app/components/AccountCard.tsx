@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IdCard, KeyRound, Mail, MailCheck, Save, User as UserIcon, Users } from "lucide-react";
+import { ExternalLink, IdCard, KeyRound, Mail, MailCheck, Save, User as UserIcon, Users } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -24,6 +24,8 @@ interface AccountCardProps {
   onPasswordReset: () => void;
   callsign: string;
   onCallsignChange: (value: string) => void;
+  showQrzLink: boolean;
+  onShowQrzLinkChange: (value: boolean) => void;
   displayName: string;
   onDisplayNameChange: (value: string) => void;
   displayProfile: string;
@@ -48,6 +50,8 @@ export function AccountCard({
   onPasswordReset,
   callsign,
   onCallsignChange,
+  showQrzLink,
+  onShowQrzLinkChange,
   displayName,
   onDisplayNameChange,
   displayProfile,
@@ -116,6 +120,38 @@ export function AccountCard({
             </Button>
           </div>
         </div>
+        <div className="flex items-center gap-2 justify-end">
+          <Label htmlFor="show-qrz-link" className="text-sm font-medium cursor-pointer flex items-center gap-1.5">
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            Show QRZ.com link for my callsign
+          </Label>
+          <Checkbox
+            id="show-qrz-link"
+            checked={showQrzLink}
+            onCheckedChange={(checked) => onShowQrzLinkChange(checked === true)}
+            disabled={!pendingCallsign.trim()}
+            aria-describedby={!pendingCallsign.trim() ? "show-qrz-link-hint" : undefined}
+          />
+        </div>
+        {!pendingCallsign.trim() && (
+          <p id="show-qrz-link-hint" className="text-xs text-muted-foreground text-right">
+            Enter a callsign above to enable the QRZ.com link.
+          </p>
+        )}
+        {showQrzLink && pendingCallsign.trim() && (
+          <div className="flex justify-end">
+            <a
+              href={`https://www.qrz.com/db/${pendingCallsign.trim()}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+              aria-label={`Look up ${pendingCallsign.trim()} on QRZ.com`}
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              qrz.com/db/{pendingCallsign.trim()}
+            </a>
+          </div>
+        )}
         <Separator />
         <div className="space-y-1">
           <Label htmlFor="display-name" className="text-sm font-medium">

@@ -136,6 +136,7 @@ export interface UserProfile {
   prizesDonated?: string[];
   prizeWinnerId?: string[];
   profileVisible?: boolean; // whether the user's profile appears in /attendees
+  showQrzLink?: boolean; // whether to show a QRZ.com lookup link for the callsign
 }
 
 /**

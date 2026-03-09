@@ -315,6 +315,27 @@ export async function setUserProfileVisible(
   );
 }
 
+export async function getUserShowQrzLink(
+  uid: string,
+): Promise<boolean | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  const val = snap.data()?.showQrzLink;
+  if (typeof val === "boolean") return val;
+  return null;
+}
+
+export async function setUserShowQrzLink(
+  uid: string,
+  showQrzLink: boolean,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { showQrzLink },
+    { merge: true },
+  );
+}
+
 export async function setUserActivitySections(
   uid: string,
   sections: ActivitySections,
