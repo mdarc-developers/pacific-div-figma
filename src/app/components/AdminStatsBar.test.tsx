@@ -153,4 +153,22 @@ describe("AdminStatsBar", () => {
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
+
+  it("renders a link to Google Cloud Monitoring", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: 5,
+      signupCount: 10,
+      loading: false,
+      error: null,
+    });
+    render(<AdminStatsBar />);
+    const link = screen.getByTestId("admin-cloud-monitoring-link");
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      "href",
+      "https://console.cloud.google.com/monitoring?project=pacific-div",
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
 });
