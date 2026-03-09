@@ -8,6 +8,7 @@ This directory contains the Firebase Cloud Functions for the Pacific Division Co
 | ------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
 | `sendWelcomeEmail`        | `beforeUserCreated` (blocking, v2) | Sends a welcome email via the Gmail API when a new Firebase Auth user is created.  |
 | `incrementSignupCounter`  | `onDocumentCreated("users/{uid}")` | Increments `stats/signupCounter.count` in Firestore whenever a new user document is created. |
+| `notifyPrizeWinner`       | `onDocumentCreated("prizeWinners/{winnerId}")` | Sends SMS via Twilio and email via Gmail API to the attendee whose raffle ticket matches a newly drawn prize winner. |
 
 ### `sendWelcomeEmail`
 
@@ -24,6 +25,15 @@ A **Firestore trigger** (`onDocumentCreated`) that fires whenever a new document
 - Atomically increments `count` in the `stats/signupCounter` Firestore document.
 - Self-initializing: creates the counter document on the first signup if it does not exist.
 - The counter is displayed in the `AdminStatsBar` component visible to mdarc-developer users.
+
+### `notifyPrizeWinner`
+
+A **Firestore trigger** (`onDocumentCreated`) that fires whenever a new document is created in the `prizeWinners/{winnerId}` collection.
+
+- Queries all user documents to find the attendee whose `raffleTickets.{conferenceId}` array contains the winning ticket number.
+- Sends an **SMS** via Twilio if the matched user has `smsNotifications: true` and a `phoneNumber` set in their profile.
+- Sends an **email** via the Gmail API if the matched user has an email address and Gmail secrets are configured.
+- Updates the winner document with a `notifiedAt` timestamp after all notifications are dispatched.
 
 ---
 
@@ -104,7 +114,7 @@ npm install
 
 ### 2. Store secrets in Firebase Secret Manager
 
-The `sendWelcomeEmail` function reads two secrets at runtime. Provision them once before the first deployment:
+The `sendWelcomeEmail` function reads two secrets at runtime, and `notifyPrizeWinner` reads three required secrets (plus two optional Gmail secrets shared with `sendWelcomeEmail`). Provision them once before the first deployment:
 
 ```bash
 # From the repo root (firebase.json must be present)
@@ -113,6 +123,15 @@ firebase functions:secrets:set GMAIL_SERVICE_ACCOUNT_JSON
 
 # Enter the sender email address (e.g. no-reply@yourdomain.com) when prompted
 firebase functions:secrets:set GMAIL_SENDER_EMAIL
+
+# Twilio credentials for SMS prize winner notifications (notifyPrizeWinner)
+# Account SID and Auth Token: https://console.twilio.com → Account Dashboard
+firebase functions:secrets:set TWILIO_ACCOUNT_SID
+firebase functions:secrets:set TWILIO_AUTH_TOKEN
+
+# Twilio "From" phone number in E.164 format (e.g. +12125551234)
+# Must be a Twilio-purchased or verified number with SMS capability
+firebase functions:secrets:set TWILIO_PHONE_NUMBER
 ```
 
 ### 3. Build and deploy
@@ -216,6 +235,46 @@ stats/signupCounter.count += 1   (FieldValue.increment, merge:true)
 
 No secrets or environment variables are required for this function.
 
+### `notifyPrizeWinner`
+
+```
+New document created in prizeWinners/{winnerId}
+       │
+       ▼
+onDocumentCreated fires (Firestore trigger)
+       │
+       ├─ No winningTicket? → warn + exit
+       │
+       ▼
+Fetch prize name from prizes/{prizeId}
+       │
+       ▼
+Query all users — find those whose raffleTickets.{conferenceId} contains winningTicket
+       │
+       ├─ smsNotifications=true && phoneNumber set?
+       │      └─ Twilio client.messages.create()
+       │           ├─ Success → log info
+       │           └─ Failure → log error (notifications continue)
+       │
+       ├─ email set?
+       │      └─ Gmail API gmail.users.messages.send()
+       │           ├─ Success → log info
+       │           └─ Failure → log error (notifications continue)
+       │
+       ▼
+prizeWinners/{winnerId}.notifiedAt = ISO timestamp
+```
+
+Required Firebase Secrets:
+
+| Name | Description |
+|------|-------------|
+| `TWILIO_ACCOUNT_SID` | Twilio Account SID (starts with "AC…") — Account Dashboard |
+| `TWILIO_AUTH_TOKEN` | Twilio Auth Token — Account Dashboard |
+| `TWILIO_PHONE_NUMBER` | Twilio "From" number in E.164 format (e.g. `+12125551234`) |
+| `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account (shared with `sendWelcomeEmail`; skip if email notifications are not needed) |
+| `GMAIL_SENDER_EMAIL` | The "From" address for prize winner emails (shared with `sendWelcomeEmail`; skip if email notifications are not needed) |
+
 ---
 
 ## Directory structure
@@ -223,9 +282,10 @@ No secrets or environment variables are required for this function.
 ```
 functions/
 ├── src/
-│   ├── index.ts          # Exported Cloud Function definitions
-│   ├── welcomeEmail.ts   # Email content helpers (subject, HTML builder, base64 encoder)
-│   └── index.test.ts     # Vitest unit tests
+│   ├── index.ts               # Exported Cloud Function definitions
+│   ├── welcomeEmail.ts        # Email content helpers (subject, HTML builder, base64 encoder)
+│   ├── prizeNotification.ts   # notifyPrizeWinner trigger (SMS via Twilio + email via Gmail API)
+│   └── index.test.ts          # Vitest unit tests
 ├── .env.example          # Template for required environment variables
 ├── .gitignore
 ├── package.json
