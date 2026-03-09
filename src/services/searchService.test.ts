@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { searchService } from "@/services/searchService";
-import type { Session } from "@/types/conference";
+import type { Session, Exhibitor } from "@/types/conference";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -176,5 +176,103 @@ describe("search", () => {
     for (const r of results) {
       expect(r.session.endTime <= "2026-10-16T10:00:00").toBe(true);
     }
+  });
+});
+
+// ── Exhibitor helpers ─────────────────────────────────────────────────────────
+
+function makeExhibitor(overrides: Partial<Exhibitor> = {}): Exhibitor {
+  return {
+    id: "e1",
+    name: "ARRL",
+    description: "American Radio Relay League",
+    boothName: "Booth 101",
+    location: [101],
+    type: "Non-Profit",
+    ...overrides,
+  };
+}
+
+const exhibitors: Exhibitor[] = [
+  makeExhibitor({ id: "e1", name: "ARRL", type: "Non-Profit" }),
+  makeExhibitor({ id: "e2", name: "Yaesu Radios", type: "Vendor", description: "HF and VHF radio equipment" }),
+  makeExhibitor({ id: "e3", name: "Elecraft", type: "Vendor", description: "High performance transceivers" }),
+];
+
+// ── buildExhibitorIndex ───────────────────────────────────────────────────────
+
+describe("buildExhibitorIndex", () => {
+  it("does not throw when called with exhibitors", () => {
+    expect(() => searchService.buildExhibitorIndex(exhibitors)).not.toThrow();
+  });
+
+  it("populates the index so getAllExhibitors returns the provided exhibitors", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    expect(searchService.getAllExhibitors()).toHaveLength(exhibitors.length);
+    expect(searchService.getAllExhibitors()).toEqual(exhibitors);
+  });
+
+  it("handles an empty array gracefully (no exhibitors are indexed)", () => {
+    searchService.buildExhibitorIndex([]);
+    expect(searchService.getAllExhibitors()).toEqual([]);
+  });
+});
+
+// ── searchExhibitors ──────────────────────────────────────────────────────────
+
+describe("searchExhibitors", () => {
+  it("returns an empty array when no index has been built", () => {
+    expect(searchService.searchExhibitors("ARRL")).toEqual([]);
+  });
+
+  it("returns an empty array for an empty query string", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    expect(searchService.searchExhibitors("")).toEqual([]);
+  });
+
+  it("returns results matching the exhibitor name", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    const results = searchService.searchExhibitors("ARRL");
+    expect(results.length).toBeGreaterThan(0);
+    expect(results[0].exhibitor.id).toBe("e1");
+  });
+
+  it("returns results matching the exhibitor description", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    const results = searchService.searchExhibitors("transceiver");
+    expect(results.length).toBeGreaterThan(0);
+    expect(results[0].exhibitor.id).toBe("e3");
+  });
+
+  it("each result has an exhibitor and a numeric score", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    const results = searchService.searchExhibitors("Radio");
+    expect(results.length).toBeGreaterThan(0);
+    for (const r of results) {
+      expect(r).toHaveProperty("exhibitor");
+      expect(typeof r.score).toBe("number");
+    }
+  });
+
+  it("respects the limit parameter", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    const results = searchService.searchExhibitors("Radio", 1);
+    expect(results.length).toBeLessThanOrEqual(1);
+  });
+});
+
+// ── clearIndex clears exhibitor index too ─────────────────────────────────────
+
+describe("clearIndex (exhibitor)", () => {
+  it("empties the exhibitors list", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    searchService.clearIndex();
+    expect(searchService.getAllExhibitors()).toEqual([]);
+  });
+
+  it("causes subsequent exhibitor searches to return empty results", () => {
+    searchService.buildExhibitorIndex(exhibitors);
+    searchService.clearIndex();
+    expect(searchService.searchExhibitors("ARRL")).toEqual([]);
   });
 });
