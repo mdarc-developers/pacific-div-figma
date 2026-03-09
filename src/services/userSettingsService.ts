@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { type Theme } from "@/app/contexts/ThemeContext";
 import { type ActivitySections } from "@/app/contexts/ActivitySectionsContext";
 
@@ -207,6 +207,7 @@ export interface NotificationSettings {
   phoneNumber: string;
   minutesBefore: number;
   emailEnabled: boolean;
+  cloudAlertsEnabled: boolean;
 }
 
 export async function getUserNotificationSettings(
@@ -227,6 +228,10 @@ export async function getUserNotificationSettings(
       typeof data?.emailNotifications === "boolean"
         ? data.emailNotifications
         : true,
+    cloudAlertsEnabled:
+      typeof data?.cloudNotifications === "boolean"
+        ? data.cloudNotifications
+        : false,
   };
 }
 
@@ -258,6 +263,7 @@ export async function setUserNotificationSettings(
       phoneNumber: settings.phoneNumber,
       minutesBefore: settings.minutesBefore,
       emailNotifications: settings.emailEnabled,
+      cloudNotifications: settings.cloudAlertsEnabled,
     },
     { merge: true },
   );
@@ -367,6 +373,36 @@ export async function setUserRaffleTickets(
   await setDoc(
     doc(db, "users", uid),
     { raffleTickets: { [conferenceId]: tickets } },
+    { merge: true },
+  );
+}
+
+/**
+ * Adds an FCM registration token to the user's `fcmTokens` array in Firestore.
+ * Using arrayUnion ensures the same token is never duplicated.
+ */
+export async function addUserFcmToken(
+  uid: string,
+  token: string,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { fcmTokens: arrayUnion(token) },
+    { merge: true },
+  );
+}
+
+/**
+ * Removes an FCM registration token from the user's `fcmTokens` array in
+ * Firestore (e.g. when the user disables cloud alerts or logs out).
+ */
+export async function removeUserFcmToken(
+  uid: string,
+  token: string,
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { fcmTokens: arrayRemove(token) },
     { merge: true },
   );
 }

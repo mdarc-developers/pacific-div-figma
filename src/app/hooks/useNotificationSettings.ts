@@ -4,12 +4,19 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import {
   getUserNotificationSettings,
   setUserNotificationSettings,
+  addUserFcmToken,
+  removeUserFcmToken,
 } from "@/services/userSettingsService";
+import {
+  requestFcmToken,
+  deleteFcmToken,
+} from "@/lib/messaging";
 
 const SMS_ENABLED_KEY = "sms_notifications_enabled";
 const PHONE_NUMBER_KEY = "sms_phone_number";
 const MINUTES_BEFORE_KEY = "notification_minutes_before";
 const EMAIL_ENABLED_KEY = "email_notifications_enabled";
+const CLOUD_ALERTS_ENABLED_KEY = "cloud_alerts_enabled";
 
 export function useNotificationSettings(): {
   smsEnabled: boolean;
@@ -20,6 +27,8 @@ export function useNotificationSettings(): {
   setMinutesBefore: (value: number) => void;
   emailEnabled: boolean;
   setEmailEnabled: (value: boolean) => void;
+  cloudAlertsEnabled: boolean;
+  setCloudAlertsEnabled: (value: boolean) => void;
 } {
   const { user } = useAuth();
 
@@ -35,12 +44,16 @@ export function useNotificationSettings(): {
   const [emailEnabled, setEmailEnabledState] = useState<boolean>(() =>
     loadFromStorage<boolean>(EMAIL_ENABLED_KEY, true),
   );
+  const [cloudAlertsEnabled, setCloudAlertsEnabledState] = useState<boolean>(
+    () => loadFromStorage<boolean>(CLOUD_ALERTS_ENABLED_KEY, false),
+  );
 
   // Refs for use inside callbacks to avoid stale closures
   const smsEnabledRef = useRef(smsEnabled);
   const phoneNumberRef = useRef(phoneNumber);
   const minutesBeforeRef = useRef(minutesBefore);
   const emailEnabledRef = useRef(emailEnabled);
+  const cloudAlertsEnabledRef = useRef(cloudAlertsEnabled);
   useEffect(() => {
     smsEnabledRef.current = smsEnabled;
   }, [smsEnabled]);
@@ -53,6 +66,9 @@ export function useNotificationSettings(): {
   useEffect(() => {
     emailEnabledRef.current = emailEnabled;
   }, [emailEnabled]);
+  useEffect(() => {
+    cloudAlertsEnabledRef.current = cloudAlertsEnabled;
+  }, [cloudAlertsEnabled]);
 
   // Track the uid we have loaded settings for, so we only load once per login
   const loadedForUidRef = useRef<string | null>(null);
@@ -75,10 +91,12 @@ export function useNotificationSettings(): {
         setPhoneNumberState(settings.phoneNumber);
         setMinutesBeforeState(settings.minutesBefore);
         setEmailEnabledState(settings.emailEnabled);
+        setCloudAlertsEnabledState(settings.cloudAlertsEnabled);
         saveToStorage(SMS_ENABLED_KEY, settings.smsEnabled);
         saveToStorage(PHONE_NUMBER_KEY, settings.phoneNumber);
         saveToStorage(MINUTES_BEFORE_KEY, settings.minutesBefore);
         saveToStorage(EMAIL_ENABLED_KEY, settings.emailEnabled);
+        saveToStorage(CLOUD_ALERTS_ENABLED_KEY, settings.cloudAlertsEnabled);
       })
       .catch(console.error)
       .finally(() => {
@@ -100,6 +118,7 @@ export function useNotificationSettings(): {
           phoneNumber: phoneNumberRef.current,
           minutesBefore: minutesBeforeRef.current,
           emailEnabled: emailEnabledRef.current,
+          cloudAlertsEnabled: cloudAlertsEnabledRef.current,
         }).catch(console.error);
       }
     },
@@ -116,6 +135,7 @@ export function useNotificationSettings(): {
           phoneNumber: value,
           minutesBefore: minutesBeforeRef.current,
           emailEnabled: emailEnabledRef.current,
+          cloudAlertsEnabled: cloudAlertsEnabledRef.current,
         }).catch(console.error);
       }
     },
@@ -132,6 +152,7 @@ export function useNotificationSettings(): {
           phoneNumber: phoneNumberRef.current,
           minutesBefore: value,
           emailEnabled: emailEnabledRef.current,
+          cloudAlertsEnabled: cloudAlertsEnabledRef.current,
         }).catch(console.error);
       }
     },
@@ -148,11 +169,77 @@ export function useNotificationSettings(): {
           phoneNumber: phoneNumberRef.current,
           minutesBefore: minutesBeforeRef.current,
           emailEnabled: value,
+          cloudAlertsEnabled: cloudAlertsEnabledRef.current,
         }).catch(console.error);
       }
     },
     [user],
   );
 
-  return { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore, emailEnabled, setEmailEnabled };
+  const setCloudAlertsEnabled = useCallback(
+    (value: boolean) => {
+      if (value) {
+        // Optimistically update state, then request FCM permission.
+        // If permission is denied the state reverts to false.
+        setCloudAlertsEnabledState(true);
+        saveToStorage(CLOUD_ALERTS_ENABLED_KEY, true);
+
+        requestFcmToken()
+          .then((token) => {
+            if (!token) {
+              // Permission denied or unsupported — revert
+              setCloudAlertsEnabledState(false);
+              saveToStorage(CLOUD_ALERTS_ENABLED_KEY, false);
+              return;
+            }
+            if (user) {
+              addUserFcmToken(user.uid, token).catch(console.error);
+              setUserNotificationSettings(user.uid, {
+                smsEnabled: smsEnabledRef.current,
+                phoneNumber: phoneNumberRef.current,
+                minutesBefore: minutesBeforeRef.current,
+                emailEnabled: emailEnabledRef.current,
+                cloudAlertsEnabled: true,
+              }).catch(console.error);
+            }
+          })
+          .catch(console.error);
+      } else {
+        setCloudAlertsEnabledState(false);
+        saveToStorage(CLOUD_ALERTS_ENABLED_KEY, false);
+
+        // Revoke FCM token in the background
+        deleteFcmToken()
+          .then((token) => {
+            if (user && token) {
+              removeUserFcmToken(user.uid, token).catch(console.error);
+            }
+            if (user) {
+              setUserNotificationSettings(user.uid, {
+                smsEnabled: smsEnabledRef.current,
+                phoneNumber: phoneNumberRef.current,
+                minutesBefore: minutesBeforeRef.current,
+                emailEnabled: emailEnabledRef.current,
+                cloudAlertsEnabled: false,
+              }).catch(console.error);
+            }
+          })
+          .catch(console.error);
+      }
+    },
+    [user],
+  );
+
+  return {
+    smsEnabled,
+    setSmsEnabled,
+    phoneNumber,
+    setPhoneNumber,
+    minutesBefore,
+    setMinutesBefore,
+    emailEnabled,
+    setEmailEnabled,
+    cloudAlertsEnabled,
+    setCloudAlertsEnabled,
+  };
 }

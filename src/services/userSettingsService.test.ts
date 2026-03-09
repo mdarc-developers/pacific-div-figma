@@ -367,13 +367,14 @@ describe("getUserNotificationSettings", () => {
 
   it("returns the stored notification settings", async () => {
     mockGetDoc.mockResolvedValue(
-      snap({ smsNotifications: true, phoneNumber: "+15095551234", minutesBefore: 15, emailNotifications: false }),
+      snap({ smsNotifications: true, phoneNumber: "+15095551234", minutesBefore: 15, emailNotifications: false, cloudNotifications: false }),
     );
     expect(await getUserNotificationSettings("uid1")).toEqual({
       smsEnabled: true,
       phoneNumber: "+15095551234",
       minutesBefore: 15,
       emailEnabled: false,
+      cloudAlertsEnabled: false,
     });
   });
 
@@ -400,6 +401,18 @@ describe("getUserNotificationSettings", () => {
     const result = await getUserNotificationSettings("uid1");
     expect(result!.emailEnabled).toBe(true);
   });
+
+  it("defaults cloudAlertsEnabled to false when the field is missing", async () => {
+    mockGetDoc.mockResolvedValue(snap({ smsNotifications: false, phoneNumber: "", minutesBefore: 10 }));
+    const result = await getUserNotificationSettings("uid1");
+    expect(result!.cloudAlertsEnabled).toBe(false);
+  });
+
+  it("reads cloudAlertsEnabled from cloudNotifications field", async () => {
+    mockGetDoc.mockResolvedValue(snap({ cloudNotifications: true }));
+    const result = await getUserNotificationSettings("uid1");
+    expect(result!.cloudAlertsEnabled).toBe(true);
+  });
 });
 
 describe("setUserNotificationSettings", () => {
@@ -409,6 +422,7 @@ describe("setUserNotificationSettings", () => {
       phoneNumber: "+15095551234",
       minutesBefore: 20,
       emailEnabled: false,
+      cloudAlertsEnabled: true,
     };
     await setUserNotificationSettings("uid1", settings);
     expect(mockSetDoc).toHaveBeenCalledWith(
@@ -418,6 +432,7 @@ describe("setUserNotificationSettings", () => {
         phoneNumber: "+15095551234",
         minutesBefore: 20,
         emailNotifications: false,
+        cloudNotifications: true,
       },
       { merge: true },
     );
