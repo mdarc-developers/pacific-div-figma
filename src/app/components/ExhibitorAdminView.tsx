@@ -23,11 +23,11 @@ import { AlertTriangle, Building2, Pencil, PlusCircle, Search, Trash2, X } from 
 // ---------------------------------------------------------------------------
 
 const ALPHA_GROUPS: { label: string; letters: string[] }[] = [
-  { label: "A–E", letters: ["A", "B", "C", "D", "E"] },
-  { label: "F–J", letters: ["F", "G", "H", "I", "J"] },
-  { label: "K–O", letters: ["K", "L", "M", "N", "O"] },
-  { label: "P–T", letters: ["P", "Q", "R", "S", "T"] },
-  { label: "U–Z", letters: ["U", "V", "W", "X", "Y", "Z"] },
+  { label: "A B C D E", letters: ["A", "B", "C", "D", "E"] },
+  { label: "F G H I J", letters: ["F", "G", "H", "I", "J"] },
+  { label: "K L M N O", letters: ["K", "L", "M", "N", "O"] },
+  { label: "P Q R S T", letters: ["P", "Q", "R", "S", "T"] },
+  { label: "U V W X Y Z", letters: ["U", "V", "W", "X", "Y", "Z"] },
 ];
 
 // ---------------------------------------------------------------------------
