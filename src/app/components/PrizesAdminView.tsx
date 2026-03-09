@@ -40,6 +40,10 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/app/components/ui/tooltip";
+import {
+  savePrizeWinnerToFirestore,
+  deletePrizeWinnerFromFirestore,
+} from "@/services/prizeWinnersService";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -549,19 +553,30 @@ export function PrizesAdminView({
   const [winnerDelete, setWinnerDelete] = useState<PrizeWinner | null>(null);
 
   const saveWinner = (winner: PrizeWinner) => {
+    const winnerWithConference: PrizeWinner = { ...winner, conferenceId };
     setWinners((prev) => {
       const idx = prev.findIndex((w) => w.id === winner.id);
       if (idx >= 0) {
         const next = [...prev];
-        next[idx] = winner;
+        next[idx] = winnerWithConference;
         return next;
       }
-      return [...prev, winner];
+      return [...prev, winnerWithConference];
+    });
+    savePrizeWinnerToFirestore(winnerWithConference).catch((err) => {
+      console.error("PrizesAdminView: failed to save winner to Firestore", err);
     });
   };
 
-  const deleteWinner = (id: string) =>
+  const deleteWinner = (id: string) => {
     setWinners((prev) => prev.filter((w) => w.id !== id));
+    deletePrizeWinnerFromFirestore(id).catch((err) => {
+      console.error(
+        "PrizesAdminView: failed to delete winner from Firestore",
+        err,
+      );
+    });
+  };
 
   // ----- upload state -----
   const [uploading, setUploading] = useState(false);

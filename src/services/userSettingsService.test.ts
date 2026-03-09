@@ -47,6 +47,8 @@ import {
   setUserActivitySections,
   getUserProfileVisible,
   setUserProfileVisible,
+  getUserRaffleTickets,
+  setUserRaffleTickets,
 } from "@/services/userSettingsService";
 import type { NotificationSettings } from "@/services/userSettingsService";
 import type { ActivitySections } from "@/app/contexts/ActivitySectionsContext";
@@ -537,6 +539,57 @@ describe("setUserProfileVisible", () => {
     expect(mockSetDoc).toHaveBeenCalledWith(
       expect.objectContaining({ path: "users/uid1" }),
       { profileVisible: true },
+      { merge: true },
+    );
+  });
+});
+
+// ── getUserRaffleTickets / setUserRaffleTickets ────────────────────────────────
+
+describe("getUserRaffleTickets", () => {
+  it("returns an empty array when the user document does not exist", async () => {
+    mockGetDoc.mockResolvedValue(noSnap());
+    expect(await getUserRaffleTickets("uid1", "conf-2026")).toEqual([]);
+  });
+
+  it("returns an empty array when raffleTickets field is missing", async () => {
+    mockGetDoc.mockResolvedValue(snap({}));
+    expect(await getUserRaffleTickets("uid1", "conf-2026")).toEqual([]);
+  });
+
+  it("returns the tickets array for the given conferenceId", async () => {
+    mockGetDoc.mockResolvedValue(
+      snap({ raffleTickets: { "conf-2026": ["1001", "1002"] } }),
+    );
+    expect(await getUserRaffleTickets("uid1", "conf-2026")).toEqual([
+      "1001",
+      "1002",
+    ]);
+  });
+
+  it("returns an empty array when conferenceId is not present in the map", async () => {
+    mockGetDoc.mockResolvedValue(
+      snap({ raffleTickets: { "other-conf": ["9999"] } }),
+    );
+    expect(await getUserRaffleTickets("uid1", "conf-2026")).toEqual([]);
+  });
+});
+
+describe("setUserRaffleTickets", () => {
+  it("calls setDoc with raffleTickets keyed by conferenceId and merge:true", async () => {
+    await setUserRaffleTickets("uid1", "conf-2026", ["1001", "1002"]);
+    expect(mockSetDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "users/uid1" }),
+      { raffleTickets: { "conf-2026": ["1001", "1002"] } },
+      { merge: true },
+    );
+  });
+
+  it("calls setDoc with an empty array when tickets is empty", async () => {
+    await setUserRaffleTickets("uid1", "conf-2026", []);
+    expect(mockSetDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "users/uid1" }),
+      { raffleTickets: { "conf-2026": [] } },
       { merge: true },
     );
   });

@@ -98,6 +98,7 @@ export interface PrizeWinner {
   id: string; // multiple ids for multiple prizes won
   prizeId: string[]; // I think just string
   winningTicket: string; // public
+  conferenceId?: string; // which conference this winner belongs to
   winnerCallsign?: string; // not public
   winnerEmail?: string; // not public
   winnerName?: string; // not public

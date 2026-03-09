@@ -15,6 +15,7 @@ import {
   buildWelcomeEmailHtml,
 } from "./welcomeEmail";
 export { purgeExpiredUserData } from "./dataRetention";
+export { notifyPrizeWinner } from "./prizeNotification";
 
 admin.initializeApp();
 

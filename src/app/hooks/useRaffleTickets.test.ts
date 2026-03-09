@@ -1,6 +1,40 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useRaffleTickets, MAX_RANGE_SIZE } from "@/app/hooks/useRaffleTickets";
+
+// ── Mock Firebase so AuthContext initialises without credentials ──────────────
+vi.mock("@/lib/firebase", () => ({
+  auth: {
+    onAuthStateChanged: vi.fn((_a: unknown, cb: (u: null) => void) => {
+      cb(null);
+      return () => {};
+    }),
+  },
+  db: {},
+  storage: {},
+}));
+
+vi.mock("firebase/auth", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("firebase/auth")>();
+  return {
+    ...actual,
+    onAuthStateChanged: vi.fn((_a: unknown, cb: (u: null) => void) => {
+      cb(null);
+      return () => {};
+    }),
+  };
+});
+
+// ── Mock AuthContext — no logged-in user (localStorage-only behaviour) ────────
+vi.mock("@/app/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: null }),
+}));
+
+// ── Mock Firestore service — not called when user is null ─────────────────────
+vi.mock("@/services/userSettingsService", () => ({
+  getUserRaffleTickets: vi.fn().mockResolvedValue([]),
+  setUserRaffleTickets: vi.fn().mockResolvedValue(undefined),
+}));
 
 const CONF_ID = "test-conf-2026";
 const STORAGE_KEY = `raffle_tickets_${CONF_ID}`;

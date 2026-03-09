@@ -14,6 +14,16 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/groups/mdarc-developers).data.members.get(request.auth.uid, false) == true;
     }
 
+    // Helper: returns true when the authenticated user is listed in the
+    // groups/prize-admin document.  That document must be created via the
+    // Firebase Console or admin SDK with the same structure as mdarc-developers:
+    //   { members: { "<uid>": true, "<uid2>": true, ... } }
+    // See FIREBASE_SETUP.md §5 for setup instructions.
+    function isPrizeAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/groups/prize-admin).data.members.get(request.auth.uid, false) == true;
+    }
+
     // ── Conferences, Sessions, Maps — public read ─────────────────────────
     match /conferences/{conferenceId} {
       allow read: if true;
@@ -85,9 +95,10 @@ service cloud.firestore {
     match /prizeWinners/{winnerId} {
       allow read: if request.auth != null
         && (resource.data.winnerEmail == request.auth.token.email
-          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
-      allow write: if request.auth != null
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true
+          || isPrizeAdmin()
+          || isMdarcDeveloper());
+      allow write: if isPrizeAdmin() || isMdarcDeveloper();
     }
 
     // ── Bookmark counts — public read; authenticated write ────────────────
