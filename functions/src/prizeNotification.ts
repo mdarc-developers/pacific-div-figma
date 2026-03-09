@@ -35,6 +35,8 @@ interface UserData {
   phoneNumber?: string;
   email?: string;
   emailNotifications?: boolean;
+  cloudNotifications?: boolean;
+  fcmTokens?: string[];
   raffleTickets?: Record<string, string[]>;
   displayName?: string;
   callsign?: string;
@@ -186,9 +188,43 @@ export function buildPrizeWinnerEmailHtml(
   `.trim();
 }
 
-// ---------------------------------------------------------------------------
-// Cloud Function
-// ---------------------------------------------------------------------------
+/**
+ * Sends an FCM push notification to a list of registration tokens via
+ * Firebase Admin SDK's Messaging service.
+ */
+async function sendFcmNotifications(
+  tokens: string[],
+  winningTicket: string,
+  prizeName: string,
+): Promise<void> {
+  if (tokens.length === 0) return;
+
+  const message = {
+    notification: {
+      title: "🎉 Prize Winner!",
+      body:
+        `Your raffle ticket #${winningTicket} won: ${prizeName}. ` +
+        "Visit the app to claim your prize!",
+    },
+    tokens,
+  };
+
+  const response = await admin.messaging().sendEachForMulticast(message);
+  response.responses.forEach(
+    (resp: admin.messaging.SendResponse, idx: number) => {
+      if (resp.success) {
+        logger.info("notifyPrizeWinner: FCM sent", { token: tokens[idx] });
+      } else {
+        logger.warn("notifyPrizeWinner: FCM failed", {
+          token: tokens[idx],
+          error: resp.error?.message,
+        });
+      }
+    },
+  );
+}
+
+
 
 /**
  * Triggers whenever a new prize winner document is created in the
@@ -367,6 +403,31 @@ export const notifyPrizeWinner = onDocumentCreated(
             { uid },
           );
         }
+      }
+
+      // Send FCM push notification if the user has cloud alerts enabled
+      if (
+        userData.cloudNotifications === true &&
+        Array.isArray(userData.fcmTokens) &&
+        userData.fcmTokens.length > 0
+      ) {
+        notificationPromises.push(
+          sendFcmNotifications(userData.fcmTokens, winningTicket, prizeName)
+            .then(() => {
+              logger.info("notifyPrizeWinner: FCM notifications dispatched", {
+                uid,
+                winningTicket,
+                tokenCount: userData.fcmTokens!.length,
+              });
+            })
+            .catch((err: unknown) => {
+              logger.error("notifyPrizeWinner: FCM notifications failed", {
+                uid,
+                winningTicket,
+                err,
+              });
+            }),
+        );
       }
     }
 
