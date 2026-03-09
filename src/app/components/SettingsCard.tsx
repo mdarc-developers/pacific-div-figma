@@ -1,4 +1,4 @@
-import { MonitorCog, Moon, Sun } from "lucide-react";
+import { MonitorCog, Moon, Settings, Sun } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 import {
   Card,
@@ -21,7 +21,10 @@ export function SettingsCard({ theme, onThemeChange }: SettingsCardProps) {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Settings</CardTitle>
+        <CardTitle className="text-base flex items-center gap-1.5">
+          <Settings className="h-3.5 w-3.5" aria-hidden="true" />
+          Settings
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between gap-2">

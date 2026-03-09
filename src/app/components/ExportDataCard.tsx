@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download } from "lucide-react";
+import { ArrowRightFromLine, Download } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -34,7 +34,10 @@ export function ExportDataCard({ uid }: ExportDataCardProps) {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Export My Data</CardTitle>
+        <CardTitle className="text-base flex items-center gap-1.5">
+          <ArrowRightFromLine className="h-3.5 w-3.5" aria-hidden="true" />
+          Export My Data
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">

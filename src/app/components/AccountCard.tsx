@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { KeyRound, MailCheck, Save } from "lucide-react";
+import { IdCard, KeyRound, MailCheck, Save, User as UserIcon, Users } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -68,10 +68,13 @@ export function AccountCard({
     <Card>
       <CardHeader className="pb-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <CardTitle className="text-base">Account</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <UserIcon className="h-3.5 w-3.5" aria-hidden="true" />
+            Account
+          </CardTitle>
           <div className="flex items-center gap-2">
             <Label htmlFor="profile-visible" className="text-sm font-medium cursor-pointer">
-              Make Profile Visible in /attendees
+              /attendees visible profile
             </Label>
             <Checkbox
               id="profile-visible"
@@ -85,7 +88,8 @@ export function AccountCard({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-1">
-          <Label htmlFor="callsign" className="text-sm font-medium">
+          <Label htmlFor="callsign" className="text-sm font-medium items-center flex gap-2">
+            <IdCard className="h-3.5 w-3.5" aria-hidden="true" />
             Callsign
           </Label>
           <div className="flex gap-2">
@@ -225,7 +229,10 @@ export function AccountCard({
           <>
             <Separator />
             <div className="gap-3 px-3 py-1.5 mb-2 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200">
-              <p className="text-xs text-muted-foreground mb-1.5">Groups</p>
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5">
+                <Users className="h-3.5 w-3.5" aria-hidden="true" />
+                Groups
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {groups.map((group) => (
                   <Badge key={group} variant="secondary" className="text-xs">

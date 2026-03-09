@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { Trash2, TriangleAlert } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -26,7 +26,8 @@ export function DeleteAccountCard({ onDeleteAccount }: DeleteAccountCardProps) {
   return (
     <Card className="border-destructive/40">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base text-destructive">
+        <CardTitle className="text-base text-destructive flex items-center gap-1.5 ">
+          <TriangleAlert className="h-3.5 w-3.5" aria-hidden="true" />
           Danger Zone
         </CardTitle>
       </CardHeader>
