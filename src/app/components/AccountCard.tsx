@@ -224,7 +224,7 @@ export function AccountCard({
         {groups && groups.length > 0 && (
           <>
             <Separator />
-            <div className="bg-amber-50 dark:bg-amber-950">
+            <div className="gap-3 px-3 py-1.5 mb-2 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200">
               <p className="text-xs text-muted-foreground mb-1.5">Groups</p>
               <div className="flex flex-wrap gap-1.5">
                 {groups.map((group) => (
