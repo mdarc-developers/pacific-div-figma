@@ -51,12 +51,12 @@ export function AttendanceCard({
       <CardHeader className="pb-2">
         <CardTitle className="text-base flex items-center gap-2">
           <CalendarCheck className="h-4 w-4" />
-          My Conferences
+          Conference Attendance
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-xs text-muted-foreground">
-          Conferences you are attending. Visible only to you.
+          Conferences you are attending.
         </p>
 
         {attendance.length === 0 ? (
