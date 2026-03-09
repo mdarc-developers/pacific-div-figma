@@ -5,6 +5,38 @@ import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { ActivitySectionsProvider } from "@/app/contexts/ActivitySectionsContext";
 import { Session } from "@/types/conference";
 
+// ── Mock Firebase so the useRaffleTickets → AuthContext → firebase chain works ─
+vi.mock("@/lib/firebase", () => ({
+  auth: {
+    onAuthStateChanged: vi.fn((_a: unknown, cb: (u: null) => void) => {
+      cb(null);
+      return () => {};
+    }),
+  },
+  db: {},
+  storage: {},
+}));
+
+vi.mock("firebase/auth", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("firebase/auth")>();
+  return {
+    ...actual,
+    onAuthStateChanged: vi.fn((_a: unknown, cb: (u: null) => void) => {
+      cb(null);
+      return () => {};
+    }),
+  };
+});
+
+vi.mock("@/app/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: null }),
+}));
+
+vi.mock("@/services/userSettingsService", () => ({
+  getUserRaffleTickets: vi.fn().mockResolvedValue([]),
+  setUserRaffleTickets: vi.fn().mockResolvedValue(undefined),
+}));
+
 /** Wraps the component with the required context providers. */
 function renderCard(ui: React.ReactElement) {
   return render(<ActivitySectionsProvider>{ui}</ActivitySectionsProvider>);

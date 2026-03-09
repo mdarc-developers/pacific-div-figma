@@ -340,3 +340,27 @@ export async function setUserProfileFields(
 ): Promise<void> {
   await setDoc(doc(db, "users", uid), fields, { merge: true });
 }
+
+export async function getUserRaffleTickets(
+  uid: string,
+  conferenceId: string,
+): Promise<string[]> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return [];
+  const data = snap.data();
+  return Array.isArray(data?.raffleTickets?.[conferenceId])
+    ? (data.raffleTickets[conferenceId] as string[])
+    : [];
+}
+
+export async function setUserRaffleTickets(
+  uid: string,
+  conferenceId: string,
+  tickets: string[],
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { raffleTickets: { [conferenceId]: tickets } },
+    { merge: true },
+  );
+}
