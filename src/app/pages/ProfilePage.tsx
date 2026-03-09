@@ -76,7 +76,7 @@ export function ProfilePage() {
     removeRaffleTicket,
     addRaffleTicketRange,
   ] = useRaffleTickets(activeConference.id);
-  const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore } =
+  const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore, emailEnabled, setEmailEnabled } =
     useNotificationSettings();
   const { profileVisible, setProfileVisible } = useProfileVisible();
   const {
@@ -203,6 +203,8 @@ export function ProfilePage() {
         onSmsEnabledChange={setSmsEnabled}
         onPhoneNumberChange={setPhoneNumber}
         onMinutesBeforeChange={setMinutesBefore}
+        emailEnabled={emailEnabled}
+        onEmailEnabledChange={setEmailEnabled}
       />
 
       <AttendanceCard
