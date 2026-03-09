@@ -11,19 +11,24 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
-import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Building2, Pencil, PlusCircle, Search, Trash2, X } from "lucide-react";
+import { AlertTriangle, Building2, Pencil, PlusCircle, Search, Trash2, X } from "lucide-react";
+
+// ---------------------------------------------------------------------------
+// Alphabetical filter groups
+// ---------------------------------------------------------------------------
+
+const ALPHA_GROUPS: { label: string; letters: string[] }[] = [
+  { label: "A–E", letters: ["A", "B", "C", "D", "E"] },
+  { label: "F–J", letters: ["F", "G", "H", "I", "J"] },
+  { label: "K–O", letters: ["K", "L", "M", "N", "O"] },
+  { label: "P–T", letters: ["P", "Q", "R", "S", "T"] },
+  { label: "U–Z", letters: ["U", "V", "W", "X", "Y", "Z"] },
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -215,6 +220,7 @@ export function ExhibitorAdminView({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedZone, setSelectedZone] = useState("all");
+  const [selectedAlphaGroup, setSelectedAlphaGroup] = useState<string | null>(null);
 
   const saveExhibitor = (exhibitor: Exhibitor) => {
     setExhibitors((prev) => {
@@ -278,6 +284,9 @@ export function ExhibitorAdminView({
 
   const filteredExhibitors = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
+    const alphaLetters = selectedAlphaGroup
+      ? ALPHA_GROUPS.find((g) => g.label === selectedAlphaGroup)?.letters ?? null
+      : null;
     return exhibitors
       .filter((e) => {
         if (q && !e.name.toLowerCase().includes(q) && !e.description?.toLowerCase().includes(q)) {
@@ -289,18 +298,23 @@ export function ExhibitorAdminView({
         if (selectedZone !== "all") {
           if (!getExhibitorZones(e).includes(selectedZone)) return false;
         }
+        if (alphaLetters) {
+          const firstLetter = e.name.trim().charAt(0).toUpperCase();
+          if (!alphaLetters.includes(firstLetter)) return false;
+        }
         return true;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [exhibitors, searchQuery, selectedType, selectedZone, boothZoneMap]);
+  }, [exhibitors, searchQuery, selectedType, selectedZone, selectedAlphaGroup, boothZoneMap]);
 
   const hasActiveFilter =
-    searchQuery.trim() !== "" || selectedType !== "all" || selectedZone !== "all";
+    searchQuery.trim() !== "" || selectedType !== "all" || selectedZone !== "all" || selectedAlphaGroup !== null;
 
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedType("all");
     setSelectedZone("all");
+    setSelectedAlphaGroup(null);
   };
 
   return (
@@ -321,7 +335,8 @@ export function ExhibitorAdminView({
       </div>
 
       {/* Filter bar */}
-      <div className="flex flex-wrap gap-3 items-end">
+      <div className="space-y-3">
+        {/* Search */}
         <div className="relative flex-1 min-w-[180px]">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
@@ -332,34 +347,88 @@ export function ExhibitorAdminView({
             aria-label="Search exhibitors"
           />
         </div>
-        <Select value={selectedType} onValueChange={setSelectedType}>
-          <SelectTrigger className="w-[150px]" aria-label="Filter by type">
-            <SelectValue placeholder="All Types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
+
+        {/* Type filter buttons */}
+        {allTypes.length > 0 && (
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs text-muted-foreground font-medium shrink-0">Type:</span>
+            <Button
+              size="sm"
+              variant={selectedType === "all" ? "default" : "outline"}
+              onClick={() => setSelectedType("all")}
+              aria-pressed={selectedType === "all"}
+            >
+              All
+            </Button>
             {allTypes.map((type) => (
-              <SelectItem key={type} value={type}>
+              <Button
+                key={type}
+                size="sm"
+                variant={selectedType === type ? "default" : "outline"}
+                onClick={() => setSelectedType(type)}
+                aria-pressed={selectedType === type}
+              >
                 {type}
-              </SelectItem>
+              </Button>
             ))}
-          </SelectContent>
-        </Select>
-        {allZones.length > 0 && (
-          <Select value={selectedZone} onValueChange={setSelectedZone}>
-            <SelectTrigger className="w-[150px]" aria-label="Filter by zone">
-              <SelectValue placeholder="All Zones" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Zones</SelectItem>
-              {allZones.map((zone) => (
-                <SelectItem key={zone} value={zone}>
-                  {zone}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          </div>
         )}
+
+        {/* Zone filter buttons */}
+        {allZones.length > 0 && (
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs text-muted-foreground font-medium shrink-0">Zone:</span>
+            <Button
+              size="sm"
+              variant={selectedZone === "all" ? "default" : "outline"}
+              onClick={() => setSelectedZone("all")}
+              aria-pressed={selectedZone === "all"}
+            >
+              All
+            </Button>
+            {allZones.map((zone) => (
+              <Button
+                key={zone}
+                size="sm"
+                variant={selectedZone === zone ? "default" : "outline"}
+                onClick={() => setSelectedZone(zone)}
+                aria-pressed={selectedZone === zone}
+              >
+                {zone}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        {/* Alphabetical filter buttons */}
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-xs text-muted-foreground font-medium shrink-0">A–Z:</span>
+          <Button
+            size="sm"
+            variant={selectedAlphaGroup === null ? "default" : "outline"}
+            onClick={() => setSelectedAlphaGroup(null)}
+            aria-pressed={selectedAlphaGroup === null}
+          >
+            All
+          </Button>
+          {ALPHA_GROUPS.map((group) => (
+            <Button
+              key={group.label}
+              size="sm"
+              variant={selectedAlphaGroup === group.label ? "default" : "outline"}
+              onClick={() =>
+                setSelectedAlphaGroup(
+                  selectedAlphaGroup === group.label ? null : group.label,
+                )
+              }
+              aria-pressed={selectedAlphaGroup === group.label}
+            >
+              {group.label}
+            </Button>
+          ))}
+        </div>
+
+        {/* Clear filters */}
         {hasActiveFilter && (
           <Button
             variant="ghost"
@@ -369,7 +438,7 @@ export function ExhibitorAdminView({
             aria-label="Clear filters"
           >
             <X className="h-4 w-4" />
-            Clear
+            Clear filters
           </Button>
         )}
       </div>
@@ -417,9 +486,14 @@ export function ExhibitorAdminView({
             </CardHeader>
             <CardContent className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
               {exhibitor.description && <p>{exhibitor.description}</p>}
-              {exhibitor.boothName && (
+              {exhibitor.boothName ? (
                 <p>
                   <strong>Booth:</strong> {exhibitor.boothName}
+                </p>
+              ) : (
+                <p className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
+                  <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                  Missing booth assignment
                 </p>
               )}
               {zones.length > 0 && (
