@@ -84,6 +84,17 @@ export function AdminStatsBar() {
           firebase
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
+        <a
+          data-testid="admin-twilio-console-link"
+          href="https://console.twilio.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
+          title="console.twilio.com"
+        >
+          twilio
+          <ExternalLink className="h-3 w-3" aria-hidden="true" />
+        </a>
       </span>
     </div>
   );
