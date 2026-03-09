@@ -565,6 +565,8 @@ export function PrizesAdminView({
     });
     savePrizeWinnerToFirestore(winnerWithConference).catch((err) => {
       console.error("PrizesAdminView: failed to save winner to Firestore", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setFirestoreError(`Failed to save winner (notifications may not send): ${msg}`);
     });
   };
 
@@ -575,12 +577,15 @@ export function PrizesAdminView({
         "PrizesAdminView: failed to delete winner from Firestore",
         err,
       );
+      const msg = err instanceof Error ? err.message : String(err);
+      setFirestoreError(`Failed to delete winner from database: ${msg}`);
     });
   };
 
   // ----- upload state -----
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [firestoreError, setFirestoreError] = useState<string | null>(null);
 
   const handleSaveToStorage = async () => {
     setUploading(true);
@@ -610,6 +615,9 @@ export function PrizesAdminView({
           {uploading ? "Uploading…" : "Save to drive"}
         </Button>
         {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
+        {firestoreError && (
+          <p className="text-sm text-red-500">{firestoreError}</p>
+        )}
       </div>
 
       {/* ---- Prizes section ---- */}

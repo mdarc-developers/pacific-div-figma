@@ -76,17 +76,17 @@ async function sendEmailNotification(
   senderEmail: string,
   serviceAccountJson: string,
 ): Promise<void> {
-  let credentials: Record<string, unknown>;
+  let serviceAccountCredentials: Record<string, unknown>;
   try {
-    credentials = JSON.parse(serviceAccountJson) as Record<string, unknown>;
+    serviceAccountCredentials = JSON.parse(serviceAccountJson) as Record<string, unknown>;
   } catch {
     logger.error("notifyPrizeWinner: failed to parse GMAIL_SERVICE_ACCOUNT_JSON");
     return;
   }
 
   const authClient = new JWT({
-    email: credentials.client_email as string,
-    key: credentials.private_key as string,
+    email: serviceAccountCredentials.client_email as string,
+    key: serviceAccountCredentials.private_key as string,
     scopes: ["https://www.googleapis.com/auth/gmail.send"],
     subject: senderEmail,
   });
@@ -245,8 +245,8 @@ export const notifyPrizeWinner = onDocumentCreated(
     });
 
     // Resolve prize name for the notification message
-    let prizeName = prizeId?.[0] ?? "a prize";
-    if (conferenceId && prizeId?.[0]) {
+    let prizeName = "a prize";
+    if (prizeId?.[0]) {
       try {
         const prizeSnap = await admin
           .firestore()
