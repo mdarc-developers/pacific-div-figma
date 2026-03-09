@@ -64,6 +64,28 @@ export function NotificationsCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <Label
+              htmlFor="email-alerts"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Prize email alerts
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Receive prize winner notifications by email
+            </p>
+          </div>
+          <Checkbox
+            id="email-alerts"
+            checked={emailEnabled}
+            onCheckedChange={(checked) =>
+              onEmailEnabledChange(checked === true)
+            }
+            aria-label="Enable email alerts"
+          />
+        </div>
+        <Separator />
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div>
@@ -71,7 +93,7 @@ export function NotificationsCard({
                 htmlFor="sms-alerts"
                 className="text-sm font-medium cursor-pointer"
               >
-                SMS alerts
+                Prize SMS alerts
               </Label>
               <p className="text-xs text-muted-foreground">
                 Receive prize winner notifications by text
@@ -128,7 +150,7 @@ export function NotificationsCard({
               htmlFor="minutes-before"
               className="text-sm font-medium cursor-pointer"
             >
-              Minutes before session
+              Minutes before session notification
             </Label>
             <p className="text-xs text-muted-foreground">
               Notify this many minutes before a bookmarked session or forum
@@ -155,28 +177,6 @@ export function NotificationsCard({
               ))}
             </SelectContent>
           </Select>
-        </div>
-        <Separator />
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <Label
-              htmlFor="email-alerts"
-              className="text-sm font-medium cursor-pointer"
-            >
-              Email alerts
-            </Label>
-            <p className="text-xs text-muted-foreground">
-              Receive prize winner notifications by email
-            </p>
-          </div>
-          <Checkbox
-            id="email-alerts"
-            checked={emailEnabled}
-            onCheckedChange={(checked) =>
-              onEmailEnabledChange(checked === true)
-            }
-            aria-label="Enable email alerts"
-          />
         </div>
       </CardContent>
     </Card>
