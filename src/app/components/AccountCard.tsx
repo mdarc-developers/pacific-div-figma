@@ -225,7 +225,7 @@ export function AccountCard({
           <>
             <Separator />
             <div>
-              <p className="text-xs text-muted-foreground mb-1.5">Groups</p>
+              <p className="text-xs text-muted-foreground mb-1.5 bg-color-amber-50 dark:bg-amber-950">Groups</p>
               <div className="flex flex-wrap gap-1.5">
                 {groups.map((group) => (
                   <Badge key={group} variant="secondary" className="text-xs">
