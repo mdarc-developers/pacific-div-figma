@@ -24,7 +24,7 @@ vi.mock("firebase/auth", async (importOriginal) => {
     signInWithPopup: mockSignInWithPopup,
     signInWithRedirect: mockSignInWithRedirect,
     getRedirectResult: mockGetRedirectResult,
-    GoogleAuthProvider: vi.fn(function () {}),
+    GoogleAuthProvider: vi.fn(),
     signInWithEmailAndPassword: vi.fn(),
     createUserWithEmailAndPassword: vi.fn(),
     signOut: vi.fn(),
@@ -114,8 +114,10 @@ describe("AuthContext — redirect result handling on init", () => {
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
     });
+    await waitFor(() => {
+      expect(mockGetDoc).toHaveBeenCalled();
+    });
     // setDoc should NOT be called since the doc already exists.
-    await new Promise((r) => setTimeout(r, 50));
     expect(mockSetDoc).not.toHaveBeenCalled();
   });
 
@@ -134,7 +136,7 @@ describe("AuthContext — redirect result handling on init", () => {
 
     // Give the rejected promise time to settle.
     await act(async () => {
-      await new Promise((r) => setTimeout(r, 50));
+      await waitFor(() => expect(mockGetRedirectResult).toHaveBeenCalledTimes(1));
     });
   });
 
