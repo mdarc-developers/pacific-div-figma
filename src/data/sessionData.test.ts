@@ -370,11 +370,11 @@ describe("warnOutOfRangeSessions", () => {
     vi.restoreAllMocks();
   });
 
-  it("emits console.warn for seapac-2026 sessions outside the conference date range", () => {
+  it("does not emit console.warn for seapac-2026 sessions. all are within the conference date range", () => {
     const seapac = allConferences.find((c) => c.id === "seapac-2026")!;
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     warnOutOfRangeSessions("seapac-2026", mapSessions[1], seapac);
-    expect(warnSpy).toHaveBeenCalled();
+    expect(warnSpy).not.toHaveBeenCalled();
     const messages = warnSpy.mock.calls.map((args) => String(args[0]));
     expect(messages.every((m) => m.includes("[sessionData]"))).toBe(true);
   });
@@ -422,12 +422,12 @@ describe("conference date-range checks for real session data", () => {
     expect(seapac).toBeDefined();
   });
 
-  it("seapac-2026 sessions contain dates outside the conference date range", () => {
+  it("seapac-2026 sessions contain no dates outside the conference date range", () => {
     const seapac = allConferences.find((c) => c.id === "seapac-2026")!;
     const outsideRange = mapSessions[1].filter(
       (s) => !isSessionWithinConference(s, seapac),
     );
-    expect(outsideRange.length).toBeGreaterThan(0);
+    expect(outsideRange.length).toBe(0);
   });
 
   it("quartzfest-2027 conference is defined in allConferences", () => {

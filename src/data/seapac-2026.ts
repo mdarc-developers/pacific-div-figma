@@ -331,6 +331,12 @@ export const mapExhibitors: [string, Exhibitor[]] = [
   ],
 ];
 
+//export interface Booth {
+//  id: number;
+//  coords: [number, number][];
+//  locationZone: string;
+//}
+
 //export const mapBooths: [string, Booth[]] = [
 //  "/assets/maps/seapac-exhibitors-20260227.png",
 //  // must match mapExhibitors URL
@@ -338,7 +344,8 @@ export const mapExhibitors: [string, Exhibitor[]] = [
 //  // SVG viewBox 0 0 724.2 378.4  →  image 1166 × 609
 //  // Coords format: [[y_bottom, x_left], [y_top, x_left], [y_top, x_right], [y_bottom, x_right]]
 //  // All y values measured from the bottom; all x values measured from the left.
-//  [],
+//  [
+//  ],
 //];
 
 // Define your room polygons here
