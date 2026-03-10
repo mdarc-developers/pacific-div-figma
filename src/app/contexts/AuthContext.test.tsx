@@ -254,65 +254,6 @@ describe("AuthContext — signInWithGoogle popup → redirect fallback", () => {
     expect(mockSignInWithRedirect).toHaveBeenCalledTimes(1);
   });
 
-  it("silently ignores auth/popup-closed-by-user (user closed the popup)", async () => {
-    const closedError = Object.assign(new Error("Popup closed"), {
-      code: "auth/popup-closed-by-user",
-    });
-    mockSignInWithPopup.mockRejectedValue(closedError);
-
-    const { AuthProvider, useAuth } = await import("./AuthContext");
-
-    let signInFn!: () => Promise<void>;
-    function Capture() {
-      signInFn = useAuth().signInWithGoogle;
-      return null;
-    }
-
-    render(
-      <AuthProvider>
-        <Capture />
-      </AuthProvider>,
-    );
-
-    // Should resolve without throwing — closing the popup is not an error.
-    await expect(
-      act(async () => {
-        await signInFn();
-      }),
-    ).resolves.not.toThrow();
-
-    expect(mockSignInWithRedirect).not.toHaveBeenCalled();
-  });
-
-  it("silently ignores auth/cancelled-popup-request (second popup cancelled first)", async () => {
-    const cancelledError = Object.assign(new Error("Cancelled popup"), {
-      code: "auth/cancelled-popup-request",
-    });
-    mockSignInWithPopup.mockRejectedValue(cancelledError);
-
-    const { AuthProvider, useAuth } = await import("./AuthContext");
-
-    let signInFn!: () => Promise<void>;
-    function Capture() {
-      signInFn = useAuth().signInWithGoogle;
-      return null;
-    }
-
-    render(
-      <AuthProvider>
-        <Capture />
-      </AuthProvider>,
-    );
-
-    await expect(
-      act(async () => {
-        await signInFn();
-      }),
-    ).resolves.not.toThrow();
-
-    expect(mockSignInWithRedirect).not.toHaveBeenCalled();
-  });
-
   it("rethrows non-popup-blocked errors from signInWithPopup", async () => {
     const networkError = Object.assign(new Error("Network failure"), {
       code: "auth/network-request-failed",

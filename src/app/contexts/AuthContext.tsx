@@ -29,15 +29,6 @@ const POPUP_BLOCKED_CODES = new Set([
   "auth/popup-failed-to-open",
 ]);
 
-// Firebase Auth error codes that indicate the user deliberately dismissed the
-// popup (closed it, or opened a second popup which cancelled the first). These
-// are not errors from the user's perspective and should be silently ignored
-// rather than surfaced as an error message in the UI.
-const POPUP_DISMISSED_CODES = new Set([
-  "auth/popup-closed-by-user",
-  "auth/cancelled-popup-request",
-]);
-
 // Creates the Firestore users/{uid} document for a new Google sign-in if one
 // does not already exist. Non-fatal — the user is already authenticated.
 async function ensureUserDoc(user: User): Promise<void> {
@@ -139,10 +130,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           : "";
       if (POPUP_BLOCKED_CODES.has(code)) {
         await signInWithRedirect(auth, provider);
-        return;
-      }
-      // User deliberately closed or cancelled the popup — not an error.
-      if (POPUP_DISMISSED_CODES.has(code)) {
         return;
       }
       throw err;
