@@ -9,7 +9,13 @@ import {
   signInWithPopup,
   deleteUser,
 } from "firebase/auth";
-import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  deleteDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { auth, db } from "../../lib/firebase";
 import { writeAuditLog } from "@/services/exportDataService";
 

@@ -117,9 +117,7 @@ describe("PrizesAdminPage (authenticated, non-admin)", () => {
     mockLoading = false;
     mockIsPrizesAdmin = false;
     renderPrizesAdminPage();
-    expect(
-      screen.queryByTestId("prizes-admin-view"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("prizes-admin-view")).not.toBeInTheDocument();
   });
 });
 

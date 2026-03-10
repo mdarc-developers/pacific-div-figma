@@ -16,7 +16,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { AlertTriangle, Building2, Pencil, PlusCircle, Search, Trash2, X } from "lucide-react";
+import {
+  AlertTriangle,
+  Building2,
+  Pencil,
+  PlusCircle,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Alphabetical filter groups
@@ -220,7 +228,9 @@ export function ExhibitorAdminView({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedZone, setSelectedZone] = useState("all");
-  const [selectedAlphaGroup, setSelectedAlphaGroup] = useState<string | null>(null);
+  const [selectedAlphaGroup, setSelectedAlphaGroup] = useState<string | null>(
+    null,
+  );
 
   const saveExhibitor = (exhibitor: Exhibitor) => {
     setExhibitors((prev) => {
@@ -285,11 +295,16 @@ export function ExhibitorAdminView({
   const filteredExhibitors = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     const alphaLetters = selectedAlphaGroup
-      ? ALPHA_GROUPS.find((g) => g.label === selectedAlphaGroup)?.letters ?? null
+      ? (ALPHA_GROUPS.find((g) => g.label === selectedAlphaGroup)?.letters ??
+        null)
       : null;
     return exhibitors
       .filter((e) => {
-        if (q && !e.name.toLowerCase().includes(q) && !e.description?.toLowerCase().includes(q)) {
+        if (
+          q &&
+          !e.name.toLowerCase().includes(q) &&
+          !e.description?.toLowerCase().includes(q)
+        ) {
           return false;
         }
         if (selectedType !== "all" && (e.type ?? "") !== selectedType) {
@@ -305,10 +320,20 @@ export function ExhibitorAdminView({
         return true;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [exhibitors, searchQuery, selectedType, selectedZone, selectedAlphaGroup, boothZoneMap]);
+  }, [
+    exhibitors,
+    searchQuery,
+    selectedType,
+    selectedZone,
+    selectedAlphaGroup,
+    boothZoneMap,
+  ]);
 
   const hasActiveFilter =
-    searchQuery.trim() !== "" || selectedType !== "all" || selectedZone !== "all" || selectedAlphaGroup !== null;
+    searchQuery.trim() !== "" ||
+    selectedType !== "all" ||
+    selectedZone !== "all" ||
+    selectedAlphaGroup !== null;
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -351,7 +376,9 @@ export function ExhibitorAdminView({
         {/* Type filter buttons */}
         {allTypes.length > 0 && (
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs text-muted-foreground font-medium shrink-0">Type:</span>
+            <span className="text-xs text-muted-foreground font-medium shrink-0">
+              Type:
+            </span>
             <Button
               size="sm"
               variant={selectedType === "all" ? "default" : "outline"}
@@ -377,7 +404,9 @@ export function ExhibitorAdminView({
         {/* Zone filter buttons */}
         {allZones.length > 0 && (
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs text-muted-foreground font-medium shrink-0">Zone:</span>
+            <span className="text-xs text-muted-foreground font-medium shrink-0">
+              Zone:
+            </span>
             <Button
               size="sm"
               variant={selectedZone === "all" ? "default" : "outline"}
@@ -402,7 +431,9 @@ export function ExhibitorAdminView({
 
         {/* Alphabetical filter buttons */}
         <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-muted-foreground font-medium shrink-0">A–Z:</span>
+          <span className="text-xs text-muted-foreground font-medium shrink-0">
+            A–Z:
+          </span>
           <Button
             size="sm"
             variant={selectedAlphaGroup === null ? "default" : "outline"}
@@ -415,7 +446,9 @@ export function ExhibitorAdminView({
             <Button
               key={group.label}
               size="sm"
-              variant={selectedAlphaGroup === group.label ? "default" : "outline"}
+              variant={
+                selectedAlphaGroup === group.label ? "default" : "outline"
+              }
               onClick={() =>
                 setSelectedAlphaGroup(
                   selectedAlphaGroup === group.label ? null : group.label,
@@ -456,77 +489,79 @@ export function ExhibitorAdminView({
         {filteredExhibitors.map((exhibitor) => {
           const zones = getExhibitorZones(exhibitor);
           return (
-          <Card key={exhibitor.id}>
-            <CardHeader className="pb-2">
-              <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-base leading-tight">
-                  {exhibitor.name}
-                </CardTitle>
-                <div className="flex gap-1 shrink-0">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7"
-                    onClick={() => setForm({ open: true, item: exhibitor })}
-                    aria-label={`Edit ${exhibitor.name}`}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7 text-red-500 hover:text-red-600"
-                    onClick={() => setDeleteTarget(exhibitor)}
-                    aria-label={`Delete ${exhibitor.name}`}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+            <Card key={exhibitor.id}>
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="text-base leading-tight">
+                    {exhibitor.name}
+                  </CardTitle>
+                  <div className="flex gap-1 shrink-0">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7"
+                      onClick={() => setForm({ open: true, item: exhibitor })}
+                      aria-label={`Edit ${exhibitor.name}`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 text-red-500 hover:text-red-600"
+                      onClick={() => setDeleteTarget(exhibitor)}
+                      aria-label={`Delete ${exhibitor.name}`}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
-              {exhibitor.description && <p>{exhibitor.description}</p>}
-              {exhibitor.boothName ? (
-                <p>
-                  <strong>Booth:</strong> {exhibitor.boothName}
-                </p>
-              ) : (
-                <p className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
-                  <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                  Missing booth assignment
-                </p>
-              )}
-              {zones.length > 0 && (
-                <p>
-                  <strong>Zone:</strong> {zones.join(", ")}
-                </p>
-              )}
-              {exhibitor.type && (
-                <p>
-                  <strong>Type:</strong> {exhibitor.type}
-                </p>
-              )}
-              {exhibitor.url && (
-                <p>
-                  <strong>URL:</strong>{" "}
-                  <a
-                    href={exhibitor.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 underline break-all"
-                  >
-                    {exhibitor.url}
-                  </a>
-                </p>
-              )}
-              <p className="text-xs text-gray-400">ID: {exhibitor.id}</p>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
+                {exhibitor.description && <p>{exhibitor.description}</p>}
+                {exhibitor.boothName ? (
+                  <p>
+                    <strong>Booth:</strong> {exhibitor.boothName}
+                  </p>
+                ) : (
+                  <p className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    Missing booth assignment
+                  </p>
+                )}
+                {zones.length > 0 && (
+                  <p>
+                    <strong>Zone:</strong> {zones.join(", ")}
+                  </p>
+                )}
+                {exhibitor.type && (
+                  <p>
+                    <strong>Type:</strong> {exhibitor.type}
+                  </p>
+                )}
+                {exhibitor.url && (
+                  <p>
+                    <strong>URL:</strong>{" "}
+                    <a
+                      href={exhibitor.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 underline break-all"
+                    >
+                      {exhibitor.url}
+                    </a>
+                  </p>
+                )}
+                <p className="text-xs text-gray-400">ID: {exhibitor.id}</p>
+              </CardContent>
+            </Card>
           );
         })}
         {filteredExhibitors.length === 0 && (
           <p className="text-gray-500 text-sm col-span-2">
-            {hasActiveFilter ? "No exhibitors match the current filters." : "No exhibitors yet."}
+            {hasActiveFilter
+              ? "No exhibitors match the current filters."
+              : "No exhibitors yet."}
           </p>
         )}
       </div>

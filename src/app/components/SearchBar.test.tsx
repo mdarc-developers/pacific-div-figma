@@ -242,9 +242,7 @@ describe("SearchBar — search results", () => {
     });
 
     // The dropdown is only opened when results exist, so no results panel appears
-    expect(
-      screen.queryByText(/no results found for/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/no results found for/i)).not.toBeInTheDocument();
   });
 
   it("calls onSearch with session results after debounce", () => {
@@ -411,7 +409,7 @@ describe("SearchBar — keyboard navigation", () => {
     const input = screen.getByRole("textbox");
     fireEvent.keyDown(input, { key: "ArrowDown" }); // index 0
     fireEvent.keyDown(input, { key: "ArrowDown" }); // index 1
-    fireEvent.keyDown(input, { key: "ArrowUp" });   // back to index 0
+    fireEvent.keyDown(input, { key: "ArrowUp" }); // back to index 0
     fireEvent.keyDown(input, { key: "Enter" });
 
     expect(onSelectSession).toHaveBeenCalledWith(session1);

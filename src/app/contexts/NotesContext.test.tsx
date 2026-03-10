@@ -104,9 +104,7 @@ describe("NotesContext", () => {
 
   it("throws if used outside a NotesProvider", () => {
     // Suppress the expected error output in test console
-    const consoleSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     function BadConsumer() {
       useNotesContext();

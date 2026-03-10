@@ -73,7 +73,11 @@ function download(url, dest) {
   return new Promise((resolve, reject) => {
     const getter = url.startsWith("https://") ? httpsGet : httpGet;
     getter(url, (res) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+      if (
+        res.statusCode >= 300 &&
+        res.statusCode < 400 &&
+        res.headers.location
+      ) {
         // Follow redirect
         download(res.headers.location, dest).then(resolve).catch(reject);
         return;
@@ -94,7 +98,9 @@ async function main() {
   let anyFailure = false;
   for (const { conferenceId, filename, sourceUrl } of PROGRAMS) {
     const dest = resolve(OUTPUT_DIR, filename);
-    process.stdout.write(`[${conferenceId}] Fetching ${sourceUrl} → ${filename} … `);
+    process.stdout.write(
+      `[${conferenceId}] Fetching ${sourceUrl} → ${filename} … `,
+    );
     try {
       await download(sourceUrl, dest);
       console.log("✓");

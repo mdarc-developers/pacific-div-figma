@@ -72,10 +72,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         }
 
         const sessionResults = searchService.search(searchQuery, undefined, 7);
-        const exhibitorResults = searchService.searchExhibitors(
-          searchQuery,
-          5,
-        );
+        const exhibitorResults = searchService.searchExhibitors(searchQuery, 5);
         const combined: CombinedResult[] = [
           ...sessionResults.map(
             (r): CombinedResult => ({ kind: "session", result: r }),

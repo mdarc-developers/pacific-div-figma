@@ -15,7 +15,8 @@ const getErrorMessage = (err: unknown): string => {
 
 export function SignUpPage() {
   const location = useLocation();
-  const prefillEmail = (location.state as { email?: string } | null)?.email ?? "";
+  const prefillEmail =
+    (location.state as { email?: string } | null)?.email ?? "";
   const [email, setEmail] = useState(prefillEmail);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

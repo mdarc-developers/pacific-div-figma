@@ -26,7 +26,10 @@ import {
   buildExpiredFieldRemovals,
   getRaffleTicketsFromStorage,
 } from "@/services/exportDataService";
-import type { UserExportData, UserFirestoreData } from "@/services/exportDataService";
+import type {
+  UserExportData,
+  UserFirestoreData,
+} from "@/services/exportDataService";
 
 // ── Shared sample data ────────────────────────────────────────────────────────
 
@@ -58,7 +61,10 @@ describe("formatAsJson", () => {
   });
 
   it("includes all top-level keys", () => {
-    const parsed = JSON.parse(formatAsJson(sampleData)) as Record<string, unknown>;
+    const parsed = JSON.parse(formatAsJson(sampleData)) as Record<
+      string,
+      unknown
+    >;
     expect(parsed).toHaveProperty("exportedAt");
     expect(parsed).toHaveProperty("uid");
     expect(parsed).toHaveProperty("profile");
@@ -224,10 +230,7 @@ describe("getRaffleTicketsFromStorage", () => {
   });
 
   it("returns raffle tickets keyed by conferenceId", () => {
-    localStorage.setItem(
-      "raffle_tickets_conf-1",
-      JSON.stringify(["10", "11"]),
-    );
+    localStorage.setItem("raffle_tickets_conf-1", JSON.stringify(["10", "11"]));
     const result = getRaffleTicketsFromStorage();
     expect(result).toEqual({ "conf-1": ["10", "11"] });
   });

@@ -81,9 +81,14 @@ async function sendEmailNotification(
 ): Promise<void> {
   let serviceAccountCredentials: Record<string, unknown>;
   try {
-    serviceAccountCredentials = JSON.parse(serviceAccountJson) as Record<string, unknown>;
+    serviceAccountCredentials = JSON.parse(serviceAccountJson) as Record<
+      string,
+      unknown
+    >;
   } catch {
-    logger.error("notifyPrizeWinner: failed to parse GMAIL_SERVICE_ACCOUNT_JSON");
+    logger.error(
+      "notifyPrizeWinner: failed to parse GMAIL_SERVICE_ACCOUNT_JSON",
+    );
     return;
   }
 
@@ -224,8 +229,6 @@ async function sendFcmNotifications(
   );
 }
 
-
-
 /**
  * Triggers whenever a new prize winner document is created in the
  * `prizeWinners/{winnerId}` Firestore collection.
@@ -323,20 +326,25 @@ export const notifyPrizeWinner = onDocumentCreated(
       let hasTicket = false;
       if (conferenceId) {
         const conferenceTickets = userData.raffleTickets?.[conferenceId];
-        hasTicket = Array.isArray(conferenceTickets)
-          && conferenceTickets.includes(winningTicket);
+        hasTicket =
+          Array.isArray(conferenceTickets) &&
+          conferenceTickets.includes(winningTicket);
       } else {
         // No conferenceId — search all conferences
         const allTickets = userData.raffleTickets ?? {};
         hasTicket = Object.values(allTickets).some(
-          (tickets) => Array.isArray(tickets) && tickets.includes(winningTicket),
+          (tickets) =>
+            Array.isArray(tickets) && tickets.includes(winningTicket),
         );
       }
 
       if (!hasTicket) continue;
 
       matchCount++;
-      logger.info("notifyPrizeWinner: found matching user", { uid, winningTicket });
+      logger.info("notifyPrizeWinner: found matching user", {
+        uid,
+        winningTicket,
+      });
 
       // Send SMS if enabled
       if (userData.smsNotifications && userData.phoneNumber) {
@@ -440,10 +448,13 @@ export const notifyPrizeWinner = onDocumentCreated(
           { notifiedAt: new Date().toISOString() },
           { merge: true },
         );
-        logger.info("notifyPrizeWinner: notifications sent and notifiedAt set", {
-          winnerId,
-          matchCount,
-        });
+        logger.info(
+          "notifyPrizeWinner: notifications sent and notifiedAt set",
+          {
+            winnerId,
+            matchCount,
+          },
+        );
       } catch (err) {
         logger.error("notifyPrizeWinner: failed to set notifiedAt", {
           winnerId,
@@ -451,10 +462,11 @@ export const notifyPrizeWinner = onDocumentCreated(
         });
       }
     } else {
-      logger.info(
-        "notifyPrizeWinner: no matching users found for ticket",
-        { winnerId, winningTicket, conferenceId },
-      );
+      logger.info("notifyPrizeWinner: no matching users found for ticket", {
+        winnerId,
+        winningTicket,
+        conferenceId,
+      });
     }
   },
 );

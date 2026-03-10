@@ -77,8 +77,8 @@ export function FirebaseAttendanceSync() {
     return () => {
       cancelled = true;
     };
-  // attendance intentionally omitted: we only want to snapshot it at login time,
-  // not re-run the load on every local change.
+    // attendance intentionally omitted: we only want to snapshot it at login time,
+    // not re-run the load on every local change.
   }, [user, overrideAttendance]);
 
   // Persist to Firestore whenever attendance changes (only after initial load).

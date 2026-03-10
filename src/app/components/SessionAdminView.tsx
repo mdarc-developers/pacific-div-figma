@@ -16,7 +16,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { CalendarDays, MapPin, Pencil, PlusCircle, Tag, Trash2 } from "lucide-react";
+import {
+  CalendarDays,
+  MapPin,
+  Pencil,
+  PlusCircle,
+  Tag,
+  Trash2,
+} from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { ROOM_DATA } from "@/lib/sessionData";
 import { isSessionWithinConference } from "@/lib/overrideUtils";
@@ -53,7 +60,9 @@ function SessionForm({ open, initial, onSave, onClose }: SessionFormProps) {
     url: "",
     track: [],
   };
-  const [form, setForm] = useState<Session & { speakerRaw: string; trackRaw: string }>(
+  const [form, setForm] = useState<
+    Session & { speakerRaw: string; trackRaw: string }
+  >(
     initial
       ? {
           ...initial,
@@ -108,9 +117,7 @@ function SessionForm({ open, initial, onSave, onClose }: SessionFormProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {initial ? "Edit Session" : "Add Session"}
-          </DialogTitle>
+          <DialogTitle>{initial ? "Edit Session" : "Add Session"}</DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-4 py-2">
@@ -276,18 +283,18 @@ export function SessionAdminView({
   // Collect defined room names from ROOM_DATA for this conference
   const validRoomNames = useMemo(() => {
     const roomEntries = ROOM_DATA[conferenceId] ?? [];
-    return new Set(roomEntries.flatMap(([, rooms]) => rooms.map((r) => r.name)));
+    return new Set(
+      roomEntries.flatMap(([, rooms]) => rooms.map((r) => r.name)),
+    );
   }, [conferenceId]);
 
   // Collect unique filter options from all sessions
   const allRooms = useMemo(
-    () =>
-      [...new Set(sessions.map((s) => s.location).filter(Boolean))].sort(),
+    () => [...new Set(sessions.map((s) => s.location).filter(Boolean))].sort(),
     [sessions],
   );
   const allTracks = useMemo(
-    () =>
-      [...new Set(sessions.flatMap((s) => s.track ?? []))].sort(),
+    () => [...new Set(sessions.flatMap((s) => s.track ?? []))].sort(),
     [sessions],
   );
   const allDates = useMemo(
@@ -456,76 +463,76 @@ export function SessionAdminView({
           const roomBad = isRoomUndefined(session.location);
           const dateBad = isDateOutOfRange(session);
           return (
-          <Card key={session.id}>
-            <CardHeader className="pb-2">
-              <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-base leading-tight">
-                  {session.title}
-                </CardTitle>
-                <div className="flex gap-1 shrink-0">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7"
-                    onClick={() => setForm({ open: true, item: session })}
-                    aria-label={`Edit ${session.title}`}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7 text-red-500 hover:text-red-600"
-                    onClick={() => setDeleteTarget(session)}
-                    aria-label={`Delete ${session.title}`}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+            <Card key={session.id}>
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="text-base leading-tight">
+                    {session.title}
+                  </CardTitle>
+                  <div className="flex gap-1 shrink-0">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7"
+                      onClick={() => setForm({ open: true, item: session })}
+                      aria-label={`Edit ${session.title}`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 text-red-500 hover:text-red-600"
+                      onClick={() => setDeleteTarget(session)}
+                      aria-label={`Delete ${session.title}`}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
-              {session.description && <p>{session.description}</p>}
-              {session.speaker.length > 0 && (
+              </CardHeader>
+              <CardContent className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
+                {session.description && <p>{session.description}</p>}
+                {session.speaker.length > 0 && (
+                  <p>
+                    <strong>Speaker(s):</strong> {session.speaker.join(", ")}
+                  </p>
+                )}
                 <p>
-                  <strong>Speaker(s):</strong> {session.speaker.join(", ")}
-                </p>
-              )}
-              <p>
-                <strong>Location:</strong>{" "}
-                <span className={roomBad ? "text-red-500 font-medium" : ""}>
-                  {session.location || <em>not defined</em>}
-                </span>
-              </p>
-              {session.startTime && (
-                <p>
-                  <strong>Start:</strong>{" "}
-                  <span className={dateBad ? "text-red-500 font-medium" : ""}>
-                    {session.startTime}
+                  <strong>Location:</strong>{" "}
+                  <span className={roomBad ? "text-red-500 font-medium" : ""}>
+                    {session.location || <em>not defined</em>}
                   </span>
                 </p>
-              )}
-              {session.endTime && (
-                <p>
-                  <strong>End:</strong>{" "}
-                  <span className={dateBad ? "text-red-500 font-medium" : ""}>
-                    {session.endTime}
-                  </span>
-                </p>
-              )}
-              {session.category && (
-                <p>
-                  <strong>Category:</strong> {session.category}
-                </p>
-              )}
-              {session.track && session.track.length > 0 && (
-                <p>
-                  <strong>Track(s):</strong> {session.track.join(", ")}
-                </p>
-              )}
-              <p className="text-xs text-gray-400">ID: {session.id}</p>
-            </CardContent>
-          </Card>
+                {session.startTime && (
+                  <p>
+                    <strong>Start:</strong>{" "}
+                    <span className={dateBad ? "text-red-500 font-medium" : ""}>
+                      {session.startTime}
+                    </span>
+                  </p>
+                )}
+                {session.endTime && (
+                  <p>
+                    <strong>End:</strong>{" "}
+                    <span className={dateBad ? "text-red-500 font-medium" : ""}>
+                      {session.endTime}
+                    </span>
+                  </p>
+                )}
+                {session.category && (
+                  <p>
+                    <strong>Category:</strong> {session.category}
+                  </p>
+                )}
+                {session.track && session.track.length > 0 && (
+                  <p>
+                    <strong>Track(s):</strong> {session.track.join(", ")}
+                  </p>
+                )}
+                <p className="text-xs text-gray-400">ID: {session.id}</p>
+              </CardContent>
+            </Card>
           );
         })}
         {filteredSessions.length === 0 && (

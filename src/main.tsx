@@ -33,21 +33,21 @@ createRoot(document.getElementById("root")!).render(
                   <VoteCountsProvider>
                     <NotesProvider>
                       <ExhibitorNotesProvider>
-                      <HeaderCollapsedProvider>
-                      <ActivitySectionsProvider>
-                      <AttendanceProvider>
-                      <AlertHistoryProvider>
-                        <AuthProvider>
-                          <SearchProvider>
-                            <BrowserRouter>
-                              <App />
-                            </BrowserRouter>
-                          </SearchProvider>
-                        </AuthProvider>
-                      </AlertHistoryProvider>
-                      </AttendanceProvider>
-                      </ActivitySectionsProvider>
-                      </HeaderCollapsedProvider>
+                        <HeaderCollapsedProvider>
+                          <ActivitySectionsProvider>
+                            <AttendanceProvider>
+                              <AlertHistoryProvider>
+                                <AuthProvider>
+                                  <SearchProvider>
+                                    <BrowserRouter>
+                                      <App />
+                                    </BrowserRouter>
+                                  </SearchProvider>
+                                </AuthProvider>
+                              </AlertHistoryProvider>
+                            </AttendanceProvider>
+                          </ActivitySectionsProvider>
+                        </HeaderCollapsedProvider>
                       </ExhibitorNotesProvider>
                     </NotesProvider>
                   </VoteCountsProvider>

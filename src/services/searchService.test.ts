@@ -19,9 +19,21 @@ function makeSession(overrides: Partial<Session> = {}): Session {
 }
 
 const sessions: Session[] = [
-  makeSession({ id: "s1", title: "Introduction to Ham Radio", category: "Technical" }),
-  makeSession({ id: "s2", title: "Advanced CW Operating", category: "Operating" }),
-  makeSession({ id: "s3", title: "Digital Modes Workshop", category: "Technical" }),
+  makeSession({
+    id: "s1",
+    title: "Introduction to Ham Radio",
+    category: "Technical",
+  }),
+  makeSession({
+    id: "s2",
+    title: "Advanced CW Operating",
+    category: "Operating",
+  }),
+  makeSession({
+    id: "s3",
+    title: "Digital Modes Workshop",
+    category: "Technical",
+  }),
 ];
 
 // ── Test suite ────────────────────────────────────────────────────────────────
@@ -129,7 +141,9 @@ describe("search", () => {
   it("excludes results whose category does not match the filter", () => {
     searchService.buildIndex(sessions);
     // "CW Operating" only exists in the "Operating" category
-    const results = searchService.search("CW Operating", { category: "Technical" });
+    const results = searchService.search("CW Operating", {
+      category: "Technical",
+    });
     for (const r of results) {
       expect(r.session.category).toBe("Technical");
     }
@@ -154,11 +168,21 @@ describe("search", () => {
 
   it("returns results within startTime bound", () => {
     const timed = [
-      makeSession({ id: "early", title: "Early Session", startTime: "2026-10-16T07:00:00" }),
-      makeSession({ id: "late",  title: "Late Session",  startTime: "2026-10-16T15:00:00" }),
+      makeSession({
+        id: "early",
+        title: "Early Session",
+        startTime: "2026-10-16T07:00:00",
+      }),
+      makeSession({
+        id: "late",
+        title: "Late Session",
+        startTime: "2026-10-16T15:00:00",
+      }),
     ];
     searchService.buildIndex(timed);
-    const results = searchService.search("Session", { startTime: "2026-10-16T08:00:00" });
+    const results = searchService.search("Session", {
+      startTime: "2026-10-16T08:00:00",
+    });
     // Only the "late" session starts after the filter boundary
     for (const r of results) {
       expect(r.session.startTime >= "2026-10-16T08:00:00").toBe(true);
@@ -167,11 +191,21 @@ describe("search", () => {
 
   it("returns results within endTime bound", () => {
     const timed = [
-      makeSession({ id: "short", title: "Short Session", endTime: "2026-10-16T09:30:00" }),
-      makeSession({ id: "long",  title: "Long Session",  endTime: "2026-10-16T17:00:00" }),
+      makeSession({
+        id: "short",
+        title: "Short Session",
+        endTime: "2026-10-16T09:30:00",
+      }),
+      makeSession({
+        id: "long",
+        title: "Long Session",
+        endTime: "2026-10-16T17:00:00",
+      }),
     ];
     searchService.buildIndex(timed);
-    const results = searchService.search("Session", { endTime: "2026-10-16T10:00:00" });
+    const results = searchService.search("Session", {
+      endTime: "2026-10-16T10:00:00",
+    });
     // Only the "short" session ends before the filter boundary
     for (const r of results) {
       expect(r.session.endTime <= "2026-10-16T10:00:00").toBe(true);
@@ -195,8 +229,18 @@ function makeExhibitor(overrides: Partial<Exhibitor> = {}): Exhibitor {
 
 const exhibitors: Exhibitor[] = [
   makeExhibitor({ id: "e1", name: "ARRL", type: "Non-Profit" }),
-  makeExhibitor({ id: "e2", name: "Yaesu Radios", type: "Vendor", description: "HF and VHF radio equipment" }),
-  makeExhibitor({ id: "e3", name: "Elecraft", type: "Vendor", description: "High performance transceivers" }),
+  makeExhibitor({
+    id: "e2",
+    name: "Yaesu Radios",
+    type: "Vendor",
+    description: "HF and VHF radio equipment",
+  }),
+  makeExhibitor({
+    id: "e3",
+    name: "Elecraft",
+    type: "Vendor",
+    description: "High performance transceivers",
+  }),
 ];
 
 // ── buildExhibitorIndex ───────────────────────────────────────────────────────

@@ -131,9 +131,7 @@ export function formatAsCsv(data: UserExportData): string {
       if (entries.length === 0) {
         rows.push([prefix, ""]);
       } else {
-        entries.forEach(([k, v]) =>
-          flatten(v, prefix ? `${prefix}.${k}` : k),
-        );
+        entries.forEach(([k, v]) => flatten(v, prefix ? `${prefix}.${k}` : k));
       }
     } else {
       rows.push([prefix, String(obj)]);
@@ -208,11 +206,7 @@ export async function exportAndDownloadUserData(
 
   if (format === "json") {
     const content = formatAsJson(data);
-    triggerDownload(
-      content,
-      `user-data-${timestamp}.json`,
-      "application/json",
-    );
+    triggerDownload(content, `user-data-${timestamp}.json`, "application/json");
   } else {
     const content = formatAsCsv(data);
     triggerDownload(content, `user-data-${timestamp}.csv`, "text/csv");
@@ -252,9 +246,7 @@ export function buildExpiredFieldRemovals(
   const removals: Record<string, unknown> = {};
 
   for (const field of CONFERENCE_KEYED_FIELDS) {
-    const value = userData[field] as
-      | Record<string, unknown>
-      | undefined;
+    const value = userData[field] as Record<string, unknown> | undefined;
     if (!value) continue;
     for (const conferenceId of expiredConferenceIds) {
       if (conferenceId in value) {

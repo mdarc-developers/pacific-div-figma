@@ -17,7 +17,9 @@ export function ProfileView() {
       setLoading(true);
       await signInWithGoogle();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to sign in with Google");
+      setError(
+        err instanceof Error ? err.message : "Failed to sign in with Google",
+      );
     } finally {
       setLoading(false);
     }

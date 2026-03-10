@@ -92,9 +92,6 @@ describe("AlertsPage", () => {
   it("shows empty-state message when there are no alerts", () => {
     mockUser = { email: "ham@example.com" };
     renderAlertsPage();
-    expect(
-      screen.getByText(/no alerts yet/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/no alerts yet/i)).toBeInTheDocument();
   });
 });
-

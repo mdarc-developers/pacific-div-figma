@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 
 const STORAGE_KEY = "attendance";
 
@@ -83,7 +78,12 @@ export function AttendanceProvider({
 
   return (
     <AttendanceContext.Provider
-      value={{ attendance, addConference, removeConference, overrideAttendance }}
+      value={{
+        attendance,
+        addConference,
+        removeConference,
+        overrideAttendance,
+      }}
     >
       {children}
     </AttendanceContext.Provider>

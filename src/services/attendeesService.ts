@@ -1,5 +1,11 @@
 import { db } from "@/lib/firebase";
-import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { loadFromStorage, saveToStorage } from "@/lib/localStorage";
 import { PublicAttendeeProfile } from "@/types/conference";
 

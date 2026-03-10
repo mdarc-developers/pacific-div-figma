@@ -15,9 +15,7 @@ export async function getUserAttendance(uid: string): Promise<string[]> {
   const snap = await getDoc(doc(db, "users", uid));
   if (!snap.exists()) return [];
   const data = snap.data();
-  return Array.isArray(data?.attendance)
-    ? (data.attendance as string[])
-    : [];
+  return Array.isArray(data?.attendance) ? (data.attendance as string[]) : [];
 }
 
 /**

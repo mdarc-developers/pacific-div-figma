@@ -73,7 +73,9 @@ describe("AttendeesPage (unauthenticated)", () => {
 
   it("shows a link to the profile page in the access-denied message", async () => {
     renderAttendeesPage();
-    const profileLinks = await screen.findAllByRole("link", { name: /profile page/i });
+    const profileLinks = await screen.findAllByRole("link", {
+      name: /profile page/i,
+    });
     expect(profileLinks.length).toBeGreaterThan(0);
     profileLinks.forEach((link) =>
       expect(link).toHaveAttribute("href", "/profile"),

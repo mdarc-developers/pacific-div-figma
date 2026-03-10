@@ -91,7 +91,8 @@ export const mapExhibitors: [string, Exhibitor[]] = [
     {
       id: "2",
       name: "Amateur Radio Relay Group",
-      description: "ARRG owns and operates the eighteen plus VHF and UHF repeaters that make up the statewide K7RPT Repeater system.",
+      description:
+        "ARRG owns and operates the eighteen plus VHF and UHF repeaters that make up the statewide K7RPT Repeater system.",
       boothName: "2",
       location: [2],
       url: "https://www.arrg.org",

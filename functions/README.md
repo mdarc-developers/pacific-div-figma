@@ -4,13 +4,13 @@ This directory contains the Firebase Cloud Functions for the Pacific Division Co
 
 ## Functions
 
-| Function                     | Trigger                            | Purpose                                                                            |
-| ---------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
-| `sendWelcomeEmail`           | `beforeUserCreated` (blocking, v2) | Sends a welcome email via the Gmail API when a new Firebase Auth user is created.  |
-| `incrementSignupCounter`     | `onDocumentCreated("users/{uid}")` | Increments `stats/signupCounter.count` in Firestore whenever a new user document is created. |
-| `notifyPrizeWinner`          | `onDocumentCreated("prizeWinners/{winnerId}")` | Sends SMS via Twilio and email via Gmail API to the attendee whose raffle ticket matches a newly drawn prize winner. |
-| `incrementAttendeeCounter`   | `onDocumentCreated("conferences/{conferenceId}/attendees/{uid}")` | Increments `conferences/{conferenceId}.attendeeCounter` when a user marks themselves as attending. |
-| `decrementAttendeeCounter`   | `onDocumentDeleted("conferences/{conferenceId}/attendees/{uid}")` | Decrements `conferences/{conferenceId}.attendeeCounter` when a user removes their attendance. |
+| Function                   | Trigger                                                           | Purpose                                                                                                              |
+| -------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `sendWelcomeEmail`         | `beforeUserCreated` (blocking, v2)                                | Sends a welcome email via the Gmail API when a new Firebase Auth user is created.                                    |
+| `incrementSignupCounter`   | `onDocumentCreated("users/{uid}")`                                | Increments `stats/signupCounter.count` in Firestore whenever a new user document is created.                         |
+| `notifyPrizeWinner`        | `onDocumentCreated("prizeWinners/{winnerId}")`                    | Sends SMS via Twilio and email via Gmail API to the attendee whose raffle ticket matches a newly drawn prize winner. |
+| `incrementAttendeeCounter` | `onDocumentCreated("conferences/{conferenceId}/attendees/{uid}")` | Increments `conferences/{conferenceId}.attendeeCounter` when a user marks themselves as attending.                   |
+| `decrementAttendeeCounter` | `onDocumentDeleted("conferences/{conferenceId}/attendees/{uid}")` | Decrements `conferences/{conferenceId}.attendeeCounter` when a user removes their attendance.                        |
 
 ### `sendWelcomeEmail`
 
@@ -160,6 +160,7 @@ firebase deploy --only functions
 ```
 
 > **Tip:** You can also use the convenience script defined in `package.json`:
+>
 > ```bash
 > npm run deploy
 > ```
@@ -230,11 +231,11 @@ gmail.users.messages.send()
 
 Configuration is injected at runtime from Firebase Secret Manager:
 
-| Name | Description |
-|------|-------------|
-| `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account |
-| `GMAIL_SENDER_EMAIL` | The "From" address (must be the account the service account delegates on behalf of) |
-| `FUNCTION_SERVICE_ACCOUNT` | Compute Engine default SA email — set in `functions/.env` (see Prerequisites §6) |
+| Name                         | Description                                                                         |
+| ---------------------------- | ----------------------------------------------------------------------------------- |
+| `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account                         |
+| `GMAIL_SENDER_EMAIL`         | The "From" address (must be the account the service account delegates on behalf of) |
+| `FUNCTION_SERVICE_ACCOUNT`   | Compute Engine default SA email — set in `functions/.env` (see Prerequisites §6)    |
 
 ### `incrementSignupCounter`
 
@@ -310,13 +311,13 @@ prizeWinners/{winnerId}.notifiedAt = ISO timestamp
 
 Required Firebase Secrets:
 
-| Name | Description |
-|------|-------------|
-| `TWILIO_ACCOUNT_SID` | Twilio Account SID (starts with "AC…") — Account Dashboard |
-| `TWILIO_AUTH_TOKEN` | Twilio Auth Token — Account Dashboard |
-| `TWILIO_PHONE_NUMBER` | Twilio "From" number in E.164 format (e.g. `+12125551234`) |
+| Name                         | Description                                                                                                                              |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `TWILIO_ACCOUNT_SID`         | Twilio Account SID (starts with "AC…") — Account Dashboard                                                                               |
+| `TWILIO_AUTH_TOKEN`          | Twilio Auth Token — Account Dashboard                                                                                                    |
+| `TWILIO_PHONE_NUMBER`        | Twilio "From" number in E.164 format (e.g. `+12125551234`)                                                                               |
 | `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account (shared with `sendWelcomeEmail`; skip if email notifications are not needed) |
-| `GMAIL_SENDER_EMAIL` | The "From" address for prize winner emails (shared with `sendWelcomeEmail`; skip if email notifications are not needed) |
+| `GMAIL_SENDER_EMAIL`         | The "From" address for prize winner emails (shared with `sendWelcomeEmail`; skip if email notifications are not needed)                  |
 
 ---
 

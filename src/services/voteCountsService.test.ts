@@ -107,7 +107,9 @@ describe("loadExhibitorVoteCountsFromLS", () => {
       "exhibitor_vote_counts_conf-1",
       JSON.stringify({ "exhibitor-x": 7 }),
     );
-    expect(loadExhibitorVoteCountsFromLS("conf-1")).toEqual({ "exhibitor-x": 7 });
+    expect(loadExhibitorVoteCountsFromLS("conf-1")).toEqual({
+      "exhibitor-x": 7,
+    });
   });
 
   it("returns an empty object when the stored value is malformed JSON", () => {
@@ -128,7 +130,9 @@ describe("saveExhibitorVoteCountsToLS", () => {
   it("overwrites previously saved exhibitor counts", () => {
     saveExhibitorVoteCountsToLS("conf-1", { "exhibitor-x": 4 });
     saveExhibitorVoteCountsToLS("conf-1", { "exhibitor-x": 1 });
-    expect(loadExhibitorVoteCountsFromLS("conf-1")).toEqual({ "exhibitor-x": 1 });
+    expect(loadExhibitorVoteCountsFromLS("conf-1")).toEqual({
+      "exhibitor-x": 1,
+    });
   });
 });
 
@@ -167,7 +171,11 @@ describe("getVoteCounts", () => {
   it("reads from the voteCounts/{conferenceId} path", async () => {
     mockGetDoc.mockResolvedValue({ exists: () => false });
     await getVoteCounts("conf-abc");
-    expect(mockDoc).toHaveBeenCalledWith(expect.anything(), "voteCounts", "conf-abc");
+    expect(mockDoc).toHaveBeenCalledWith(
+      expect.anything(),
+      "voteCounts",
+      "conf-abc",
+    );
   });
 });
 

@@ -45,8 +45,8 @@ export interface UsePublicAttendeesResult {
  */
 export function usePublicAttendees(): UsePublicAttendeesResult {
   const { user, loading: authLoading } = useAuth();
-  const [attendees, setAttendees] = useState<PublicAttendeeProfile[]>(
-    () => loadAttendeesFromStorage(),
+  const [attendees, setAttendees] = useState<PublicAttendeeProfile[]>(() =>
+    loadAttendeesFromStorage(),
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,5 +90,12 @@ export function usePublicAttendees(): UsePublicAttendeesResult {
     };
   }, [fetchTick, user]);
 
-  return { attendees, loading, error, refresh, hasAccess: !!(user && user.emailVerified), authLoading };
+  return {
+    attendees,
+    loading,
+    error,
+    refresh,
+    hasAccess: !!(user && user.emailVerified),
+    authLoading,
+  };
 }

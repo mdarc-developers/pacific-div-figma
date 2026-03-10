@@ -105,13 +105,18 @@ export const purgeExpiredUserData = onSchedule(
     try {
       conferenceEndDates = await loadConferenceEndDates();
     } catch (err) {
-      logger.error("purgeExpiredUserData: failed to load conference end dates", err);
+      logger.error(
+        "purgeExpiredUserData: failed to load conference end dates",
+        err,
+      );
       return;
     }
 
     const expiredIds = getExpiredConferenceIds(conferenceEndDates);
     if (expiredIds.length === 0) {
-      logger.info("purgeExpiredUserData: no expired conferences found, nothing to do");
+      logger.info(
+        "purgeExpiredUserData: no expired conferences found, nothing to do",
+      );
       return;
     }
 

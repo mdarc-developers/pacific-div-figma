@@ -118,7 +118,9 @@ describe("getUserActiveConferenceId", () => {
   });
 
   it("returns the conference id string when set", async () => {
-    mockGetDoc.mockResolvedValue(snap({ activeConferenceId: "pacificon-2026" }));
+    mockGetDoc.mockResolvedValue(
+      snap({ activeConferenceId: "pacificon-2026" }),
+    );
     expect(await getUserActiveConferenceId("uid1")).toBe("pacificon-2026");
   });
 
@@ -253,7 +255,9 @@ describe("getUserNotes", () => {
   });
 
   it("returns an empty object when the notes field is an array (malformed)", async () => {
-    mockGetDoc.mockResolvedValue(snap({ notes: { "conf-1": ["not-an-object"] } }));
+    mockGetDoc.mockResolvedValue(
+      snap({ notes: { "conf-1": ["not-an-object"] } }),
+    );
     expect(await getUserNotes("uid1", "conf-1")).toEqual({});
   });
 });
@@ -289,7 +293,9 @@ describe("getUserExhibitorNotes", () => {
 
 describe("setUserExhibitorNotes", () => {
   it("calls setDoc with exhibitorNotes nested under the conferenceId", async () => {
-    await setUserExhibitorNotes("uid1", "conf-1", { "exhibitor-a": "nice booth" });
+    await setUserExhibitorNotes("uid1", "conf-1", {
+      "exhibitor-a": "nice booth",
+    });
     expect(mockSetDoc).toHaveBeenCalledWith(
       expect.objectContaining({ path: "users/uid1" }),
       { exhibitorNotes: { "conf-1": { "exhibitor-a": "nice booth" } } },
@@ -367,7 +373,13 @@ describe("getUserNotificationSettings", () => {
 
   it("returns the stored notification settings", async () => {
     mockGetDoc.mockResolvedValue(
-      snap({ smsNotifications: true, phoneNumber: "+15095551234", minutesBefore: 15, emailNotifications: false, cloudNotifications: false }),
+      snap({
+        smsNotifications: true,
+        phoneNumber: "+15095551234",
+        minutesBefore: 15,
+        emailNotifications: false,
+        cloudNotifications: false,
+      }),
     );
     expect(await getUserNotificationSettings("uid1")).toEqual({
       smsEnabled: true,
@@ -379,31 +391,41 @@ describe("getUserNotificationSettings", () => {
   });
 
   it("defaults smsEnabled to false when the field is missing", async () => {
-    mockGetDoc.mockResolvedValue(snap({ phoneNumber: "+15095551234", minutesBefore: 5 }));
+    mockGetDoc.mockResolvedValue(
+      snap({ phoneNumber: "+15095551234", minutesBefore: 5 }),
+    );
     const result = await getUserNotificationSettings("uid1");
     expect(result!.smsEnabled).toBe(false);
   });
 
   it("defaults phoneNumber to empty string when the field is missing", async () => {
-    mockGetDoc.mockResolvedValue(snap({ smsNotifications: false, minutesBefore: 5 }));
+    mockGetDoc.mockResolvedValue(
+      snap({ smsNotifications: false, minutesBefore: 5 }),
+    );
     const result = await getUserNotificationSettings("uid1");
     expect(result!.phoneNumber).toBe("");
   });
 
   it("defaults minutesBefore to 10 when the field is missing", async () => {
-    mockGetDoc.mockResolvedValue(snap({ smsNotifications: false, phoneNumber: "" }));
+    mockGetDoc.mockResolvedValue(
+      snap({ smsNotifications: false, phoneNumber: "" }),
+    );
     const result = await getUserNotificationSettings("uid1");
     expect(result!.minutesBefore).toBe(10);
   });
 
   it("defaults emailEnabled to true when the field is missing", async () => {
-    mockGetDoc.mockResolvedValue(snap({ smsNotifications: false, phoneNumber: "", minutesBefore: 10 }));
+    mockGetDoc.mockResolvedValue(
+      snap({ smsNotifications: false, phoneNumber: "", minutesBefore: 10 }),
+    );
     const result = await getUserNotificationSettings("uid1");
     expect(result!.emailEnabled).toBe(true);
   });
 
   it("defaults cloudAlertsEnabled to false when the field is missing", async () => {
-    mockGetDoc.mockResolvedValue(snap({ smsNotifications: false, phoneNumber: "", minutesBefore: 10 }));
+    mockGetDoc.mockResolvedValue(
+      snap({ smsNotifications: false, phoneNumber: "", minutesBefore: 10 }),
+    );
     const result = await getUserNotificationSettings("uid1");
     expect(result!.cloudAlertsEnabled).toBe(false);
   });

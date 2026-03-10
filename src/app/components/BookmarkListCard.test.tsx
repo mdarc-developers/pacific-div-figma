@@ -295,7 +295,9 @@ describe("BookmarkListCard — collapsible sections", () => {
     fireEvent.click(
       screen.getByRole("button", { name: /collapse bookmarked sessions/i }),
     );
-    const stored = JSON.parse(localStorage.getItem("activity-sections") ?? "{}");
+    const stored = JSON.parse(
+      localStorage.getItem("activity-sections") ?? "{}",
+    );
     expect(stored.bookmarkedSessions).toBe(false);
   });
 

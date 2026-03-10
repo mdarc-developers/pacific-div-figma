@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { ExternalLink, IdCard, KeyRound, Mail, MailCheck, Save, User as UserIcon, Users } from "lucide-react";
+import {
+  ExternalLink,
+  IdCard,
+  KeyRound,
+  Mail,
+  MailCheck,
+  Save,
+  User as UserIcon,
+  Users,
+} from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -59,7 +68,8 @@ export function AccountCard({
 }: AccountCardProps) {
   const [pendingCallsign, setPendingCallsign] = useState(callsign);
   const [pendingDisplayName, setPendingDisplayName] = useState(displayName);
-  const [pendingDisplayProfile, setPendingDisplayProfile] = useState(displayProfile);
+  const [pendingDisplayProfile, setPendingDisplayProfile] =
+    useState(displayProfile);
 
   // Sync local inputs when values load from Firestore
   useEffect(() => {
@@ -80,7 +90,10 @@ export function AccountCard({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center gap-2 justify-end">
-          <Label htmlFor="profile-visible" className="text-sm font-medium cursor-pointer">
+          <Label
+            htmlFor="profile-visible"
+            className="text-sm font-medium cursor-pointer"
+          >
             Make your callsign, name and about visible to /attendees
           </Label>
           <Checkbox
@@ -93,7 +106,10 @@ export function AccountCard({
         </div>
         <Separator />
         <div className="flex items-center gap-2">
-          <Label htmlFor="callsign" className="text-sm font-medium items-center flex gap-2 shrink-0">
+          <Label
+            htmlFor="callsign"
+            className="text-sm font-medium items-center flex gap-2 shrink-0"
+          >
             <IdCard className="h-3.5 w-3.5" aria-hidden="true" />
             Callsign
           </Label>
@@ -104,7 +120,10 @@ export function AccountCard({
               value={pendingCallsign}
               onChange={(e) => setPendingCallsign(e.target.value.toUpperCase())}
               onKeyDown={(e) => {
-                if (e.key === "Enter") { e.preventDefault(); onCallsignChange(pendingCallsign.trim()); }
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onCallsignChange(pendingCallsign.trim());
+                }
               }}
               className="text-sm"
               aria-label="Amateur radio callsign"
@@ -121,7 +140,10 @@ export function AccountCard({
           </div>
         </div>
         <div className="flex items-center gap-2 justify-end">
-          <Label htmlFor="show-qrz-link" className="text-sm font-medium cursor-pointer flex items-center gap-1.5">
+          <Label
+            htmlFor="show-qrz-link"
+            className="text-sm font-medium cursor-pointer flex items-center gap-1.5"
+          >
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
             Show QRZ.com link for my callsign
           </Label>
@@ -130,11 +152,16 @@ export function AccountCard({
             checked={showQrzLink}
             onCheckedChange={(checked) => onShowQrzLinkChange(checked === true)}
             disabled={!pendingCallsign.trim()}
-            aria-describedby={!pendingCallsign.trim() ? "show-qrz-link-hint" : undefined}
+            aria-describedby={
+              !pendingCallsign.trim() ? "show-qrz-link-hint" : undefined
+            }
           />
         </div>
         {!pendingCallsign.trim() && (
-          <p id="show-qrz-link-hint" className="text-xs text-muted-foreground text-right">
+          <p
+            id="show-qrz-link-hint"
+            className="text-xs text-muted-foreground text-right"
+          >
             Enter a callsign above to enable the QRZ.com link.
           </p>
         )}
@@ -164,7 +191,10 @@ export function AccountCard({
               value={pendingDisplayName}
               onChange={(e) => setPendingDisplayName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") { e.preventDefault(); onDisplayNameChange(pendingDisplayName.trim()); }
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onDisplayNameChange(pendingDisplayName.trim());
+                }
               }}
               className="text-sm"
               aria-label="Display name"
@@ -199,7 +229,9 @@ export function AccountCard({
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => onDisplayProfileChange(pendingDisplayProfile.trim())}
+              onClick={() =>
+                onDisplayProfileChange(pendingDisplayProfile.trim())
+              }
               aria-label="Save profile bio"
             >
               <Save className="h-4 w-4" />
@@ -212,7 +244,8 @@ export function AccountCard({
           <div className="min-w-0">
             <p className="text-sm font-medium flex items-center gap-2">
               <Mail className="h-3.5 w-3.5" aria-hidden="true" />
-              Email</p>
+              Email
+            </p>
             <p className="text-sm text-muted-foreground truncate">
               {user.email}
             </p>

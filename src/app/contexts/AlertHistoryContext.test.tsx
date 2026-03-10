@@ -86,7 +86,10 @@ describe("AlertHistoryContext", () => {
     const { result } = renderHook(() => useAlertHistoryContext(), { wrapper });
     act(() => result.current.addAlert(makeAlert("old")));
     act(() =>
-      result.current.overrideAlertHistory([makeAlert("new1"), makeAlert("new2")]),
+      result.current.overrideAlertHistory([
+        makeAlert("new1"),
+        makeAlert("new2"),
+      ]),
     );
     expect(result.current.alertHistory).toHaveLength(2);
     expect(result.current.alertHistory[0].id).toBe("new1");

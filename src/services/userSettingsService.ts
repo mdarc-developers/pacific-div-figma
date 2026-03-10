@@ -1,5 +1,11 @@
 import { db } from "@/lib/firebase";
-import { doc, getDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 import { type Theme } from "@/app/contexts/ThemeContext";
 import { type ActivitySections } from "@/app/contexts/ActivitySectionsContext";
 import { type AlertHistoryItem } from "@/types/conference";
@@ -250,7 +256,11 @@ export async function setUserHeaderCollapsed(
   uid: string,
   collapsed: boolean,
 ): Promise<void> {
-  await setDoc(doc(db, "users", uid), { headerCollapsed: collapsed }, { merge: true });
+  await setDoc(
+    doc(db, "users", uid),
+    { headerCollapsed: collapsed },
+    { merge: true },
+  );
 }
 
 export async function setUserNotificationSettings(
@@ -289,7 +299,8 @@ export async function getUserActivitySections(
     votedExhibitors:
       typeof s.votedExhibitors === "boolean" ? s.votedExhibitors : true,
     myNotes: typeof s.myNotes === "boolean" ? s.myNotes : true,
-    raffleTickets: typeof s.raffleTickets === "boolean" ? s.raffleTickets : true,
+    raffleTickets:
+      typeof s.raffleTickets === "boolean" ? s.raffleTickets : true,
     myExhibitorNotes:
       typeof s.myExhibitorNotes === "boolean" ? s.myExhibitorNotes : true,
   };
@@ -309,16 +320,10 @@ export async function setUserProfileVisible(
   uid: string,
   profileVisible: boolean,
 ): Promise<void> {
-  await setDoc(
-    doc(db, "users", uid),
-    { profileVisible },
-    { merge: true },
-  );
+  await setDoc(doc(db, "users", uid), { profileVisible }, { merge: true });
 }
 
-export async function getUserShowQrzLink(
-  uid: string,
-): Promise<boolean | null> {
+export async function getUserShowQrzLink(uid: string): Promise<boolean | null> {
   const snap = await getDoc(doc(db, "users", uid));
   if (!snap.exists()) return null;
   const val = snap.data()?.showQrzLink;
@@ -330,11 +335,7 @@ export async function setUserShowQrzLink(
   uid: string,
   showQrzLink: boolean,
 ): Promise<void> {
-  await setDoc(
-    doc(db, "users", uid),
-    { showQrzLink },
-    { merge: true },
-  );
+  await setDoc(doc(db, "users", uid), { showQrzLink }, { merge: true });
 }
 
 export async function setUserActivitySections(

@@ -7,10 +7,7 @@ import {
   addUserFcmToken,
   removeUserFcmToken,
 } from "@/services/userSettingsService";
-import {
-  requestFcmToken,
-  deleteFcmToken,
-} from "@/lib/messaging";
+import { requestFcmToken, deleteFcmToken } from "@/lib/messaging";
 
 const SMS_ENABLED_KEY = "sms_notifications_enabled";
 const PHONE_NUMBER_KEY = "sms_phone_number";

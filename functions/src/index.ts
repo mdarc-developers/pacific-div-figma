@@ -309,7 +309,11 @@ export const syncPublicProfile = onDocumentWritten(
     // email, groups, sessions, exhibitors, and prizesDonated are intentionally
     // excluded to minimise exposure of attendee data.
     const publicData: Record<string, unknown> = { uid };
-    const allowedStringFields = ["displayName", "callsign", "displayProfile"] as const;
+    const allowedStringFields = [
+      "displayName",
+      "callsign",
+      "displayProfile",
+    ] as const;
     for (const field of allowedStringFields) {
       if (typeof data[field] === "string" && data[field]) {
         publicData[field] = data[field];

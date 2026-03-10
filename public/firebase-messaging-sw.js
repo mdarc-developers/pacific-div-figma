@@ -9,13 +9,13 @@
 // the main application (package.json / firebase.json). Update both together
 // when upgrading Firebase.
 
-importScripts('/__/firebase/12.8.0/firebase-app-compat.js');
-importScripts('/__/firebase/12.8.0/firebase-messaging-compat.js');
+importScripts("/__/firebase/12.8.0/firebase-app-compat.js");
+importScripts("/__/firebase/12.8.0/firebase-messaging-compat.js");
 
 // Use Firebase Hosting auto-config (available in production).
 // Silently skipped during local development where this endpoint is absent.
 try {
-  importScripts('/__/firebase/init.js');
+  importScripts("/__/firebase/init.js");
 } catch (_) {
   // Local development — Firebase Hosting config not available.
 }
@@ -25,12 +25,12 @@ if (firebase.apps.length > 0) {
   const messaging = firebase.messaging();
 
   messaging.onBackgroundMessage((payload) => {
-    const title = payload.notification?.title ?? '🎉 Prize Winner!';
+    const title = payload.notification?.title ?? "🎉 Prize Winner!";
     const options = {
       body:
         payload.notification?.body ??
-        'You have won a prize! Visit the app to claim it.',
-      icon: '/favicon.png',
+        "You have won a prize! Visit the app to claim it.",
+      icon: "/favicon.png",
     };
     self.registration.showNotification(title, options);
   });

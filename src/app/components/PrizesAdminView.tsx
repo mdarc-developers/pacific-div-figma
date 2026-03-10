@@ -566,7 +566,9 @@ export function PrizesAdminView({
     savePrizeWinnerToFirestore(winnerWithConference).catch((err) => {
       console.error("PrizesAdminView: failed to save winner to Firestore", err);
       const msg = err instanceof Error ? err.message : String(err);
-      setFirestoreError(`Failed to save winner (notifications may not send): ${msg}`);
+      setFirestoreError(
+        `Failed to save winner (notifications may not send): ${msg}`,
+      );
     });
   };
 

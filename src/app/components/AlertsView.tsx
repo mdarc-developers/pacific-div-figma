@@ -20,7 +20,9 @@ export function AlertsView() {
       setLoading(true);
       await signInWithGoogle();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to sign in with Google");
+      setError(
+        err instanceof Error ? err.message : "Failed to sign in with Google",
+      );
     } finally {
       setLoading(false);
     }
@@ -137,7 +139,8 @@ export function AlertHistoryView({
         <div className="bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
           <Bell className="h-12 w-12 mx-auto mb-3 text-gray-300" />
           <p className="text-gray-500 dark:text-gray-400">
-            No alerts yet. You&apos;ll see prize notifications here when they arrive.
+            No alerts yet. You&apos;ll see prize notifications here when they
+            arrive.
           </p>
         </div>
       ) : (
@@ -166,4 +169,3 @@ export function AlertHistoryView({
     </div>
   );
 }
-

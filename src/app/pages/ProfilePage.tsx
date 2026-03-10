@@ -34,10 +34,7 @@ import { Conference } from "@/types/conference";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
-import {
-  sendEmailVerification,
-  sendPasswordResetEmail,
-} from "firebase/auth";
+import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Toaster, toast } from "sonner";
 
@@ -77,8 +74,18 @@ export function ProfilePage() {
     removeRaffleTicket,
     addRaffleTicketRange,
   ] = useRaffleTickets(activeConference.id);
-  const { smsEnabled, setSmsEnabled, phoneNumber, setPhoneNumber, minutesBefore, setMinutesBefore, emailEnabled, setEmailEnabled, cloudAlertsEnabled, setCloudAlertsEnabled } =
-    useNotificationSettings();
+  const {
+    smsEnabled,
+    setSmsEnabled,
+    phoneNumber,
+    setPhoneNumber,
+    minutesBefore,
+    setMinutesBefore,
+    emailEnabled,
+    setEmailEnabled,
+    cloudAlertsEnabled,
+    setCloudAlertsEnabled,
+  } = useNotificationSettings();
   const { profileVisible, setProfileVisible } = useProfileVisible();
   const { showQrzLink, setShowQrzLink } = useShowQrzLink();
   const {
@@ -215,7 +222,9 @@ export function ProfilePage() {
 
       <AttendanceCard
         attendance={attendance}
-        allConferences={allConferencesList.filter((c) => c.id !== "---") as Conference[]}
+        allConferences={
+          allConferencesList.filter((c) => c.id !== "---") as Conference[]
+        }
         onAddConference={addAttendedConference}
         onRemoveConference={removeAttendedConference}
       />

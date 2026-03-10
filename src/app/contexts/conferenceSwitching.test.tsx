@@ -38,8 +38,14 @@ vi.mock("@/services/userSettingsService", () => ({
 }));
 
 // Static imports must come after vi.mock() calls (Vitest hoists mocks)
-import { ConferenceProvider, useConference } from "@/app/contexts/ConferenceContext";
-import { BookmarkProvider, useBookmarkContext } from "@/app/contexts/BookmarkContext";
+import {
+  ConferenceProvider,
+  useConference,
+} from "@/app/contexts/ConferenceContext";
+import {
+  BookmarkProvider,
+  useBookmarkContext,
+} from "@/app/contexts/BookmarkContext";
 import {
   ExhibitorBookmarkProvider,
   useExhibitorBookmarkContext,
@@ -76,8 +82,14 @@ const DATA_A = {
   exhibitorBookmarks: ["exhibitor-a1"],
   sessionVotes: ["session-a3"],
   exhibitorVotes: ["exhibitor-a4"],
-  sessionNotes: { "session-a5": "Note for session A5" } as Record<string, string>,
-  exhibitorNotes: { "exhibitor-a6": "Note for exhibitor A6" } as Record<string, string>,
+  sessionNotes: { "session-a5": "Note for session A5" } as Record<
+    string,
+    string
+  >,
+  exhibitorNotes: { "exhibitor-a6": "Note for exhibitor A6" } as Record<
+    string,
+    string
+  >,
 };
 
 /** Data pre-seeded in localStorage for conference B. */
@@ -88,7 +100,10 @@ const DATA_B = {
   sessionVotes: ["session-b3", "session-b4"],
   exhibitorVotes: ["exhibitor-b5"],
   sessionNotes: {} as Record<string, string>,
-  exhibitorNotes: { "exhibitor-b7": "Note for exhibitor B7" } as Record<string, string>,
+  exhibitorNotes: { "exhibitor-b7": "Note for exhibitor B7" } as Record<
+    string,
+    string
+  >,
 };
 
 // ── Helper: compute prizes won from raffle tickets ────────────────────────────
@@ -153,30 +168,60 @@ describe("Conference switching", () => {
     localStorage.setItem("activeConference", CONF_A_ID);
 
     // Seed conference A data into localStorage
-    localStorage.setItem(`raffle_tickets_${CONF_A_ID}`, JSON.stringify(DATA_A.raffleTickets));
-    localStorage.setItem(`bookmarks_${CONF_A_ID}`, JSON.stringify(DATA_A.bookmarks));
+    localStorage.setItem(
+      `raffle_tickets_${CONF_A_ID}`,
+      JSON.stringify(DATA_A.raffleTickets),
+    );
+    localStorage.setItem(
+      `bookmarks_${CONF_A_ID}`,
+      JSON.stringify(DATA_A.bookmarks),
+    );
     localStorage.setItem(
       `exhibitor_bookmarks_${CONF_A_ID}`,
       JSON.stringify(DATA_A.exhibitorBookmarks),
     );
-    localStorage.setItem(`session_votes_${CONF_A_ID}`, JSON.stringify(DATA_A.sessionVotes));
-    localStorage.setItem(`exhibitor_votes_${CONF_A_ID}`, JSON.stringify(DATA_A.exhibitorVotes));
-    localStorage.setItem(`notes_${CONF_A_ID}`, JSON.stringify(DATA_A.sessionNotes));
+    localStorage.setItem(
+      `session_votes_${CONF_A_ID}`,
+      JSON.stringify(DATA_A.sessionVotes),
+    );
+    localStorage.setItem(
+      `exhibitor_votes_${CONF_A_ID}`,
+      JSON.stringify(DATA_A.exhibitorVotes),
+    );
+    localStorage.setItem(
+      `notes_${CONF_A_ID}`,
+      JSON.stringify(DATA_A.sessionNotes),
+    );
     localStorage.setItem(
       `exhibitor_notes_${CONF_A_ID}`,
       JSON.stringify(DATA_A.exhibitorNotes),
     );
 
     // Seed conference B data into localStorage
-    localStorage.setItem(`raffle_tickets_${CONF_B_ID}`, JSON.stringify(DATA_B.raffleTickets));
-    localStorage.setItem(`bookmarks_${CONF_B_ID}`, JSON.stringify(DATA_B.bookmarks));
+    localStorage.setItem(
+      `raffle_tickets_${CONF_B_ID}`,
+      JSON.stringify(DATA_B.raffleTickets),
+    );
+    localStorage.setItem(
+      `bookmarks_${CONF_B_ID}`,
+      JSON.stringify(DATA_B.bookmarks),
+    );
     localStorage.setItem(
       `exhibitor_bookmarks_${CONF_B_ID}`,
       JSON.stringify(DATA_B.exhibitorBookmarks),
     );
-    localStorage.setItem(`session_votes_${CONF_B_ID}`, JSON.stringify(DATA_B.sessionVotes));
-    localStorage.setItem(`exhibitor_votes_${CONF_B_ID}`, JSON.stringify(DATA_B.exhibitorVotes));
-    localStorage.setItem(`notes_${CONF_B_ID}`, JSON.stringify(DATA_B.sessionNotes));
+    localStorage.setItem(
+      `session_votes_${CONF_B_ID}`,
+      JSON.stringify(DATA_B.sessionVotes),
+    );
+    localStorage.setItem(
+      `exhibitor_votes_${CONF_B_ID}`,
+      JSON.stringify(DATA_B.exhibitorVotes),
+    );
+    localStorage.setItem(
+      `notes_${CONF_B_ID}`,
+      JSON.stringify(DATA_B.sessionNotes),
+    );
     localStorage.setItem(
       `exhibitor_notes_${CONF_B_ID}`,
       JSON.stringify(DATA_B.exhibitorNotes),
@@ -194,7 +239,9 @@ describe("Conference switching", () => {
     expect(result.current.activeConference.id).toBe(CONF_A_ID);
     expect(result.current.raffleTickets).toEqual(DATA_A.raffleTickets);
     expect(result.current.bookmarkedItems).toEqual(DATA_A.bookmarks);
-    expect(result.current.bookmarkedExhibitors).toEqual(DATA_A.exhibitorBookmarks);
+    expect(result.current.bookmarkedExhibitors).toEqual(
+      DATA_A.exhibitorBookmarks,
+    );
     expect(result.current.votedSessions).toEqual(DATA_A.sessionVotes);
     expect(result.current.votedExhibitors).toEqual(DATA_A.exhibitorVotes);
     expect(result.current.sessionNotes).toEqual(DATA_A.sessionNotes);
@@ -214,7 +261,9 @@ describe("Conference switching", () => {
     expect(result.current.activeConference.id).toBe(CONF_B_ID);
     expect(result.current.raffleTickets).toEqual(DATA_B.raffleTickets);
     expect(result.current.bookmarkedItems).toEqual(DATA_B.bookmarks);
-    expect(result.current.bookmarkedExhibitors).toEqual(DATA_B.exhibitorBookmarks);
+    expect(result.current.bookmarkedExhibitors).toEqual(
+      DATA_B.exhibitorBookmarks,
+    );
     expect(result.current.votedSessions).toEqual(DATA_B.sessionVotes);
     expect(result.current.votedExhibitors).toEqual(DATA_B.exhibitorVotes);
     expect(result.current.sessionNotes).toEqual(DATA_B.sessionNotes);
@@ -227,7 +276,10 @@ describe("Conference switching", () => {
     });
 
     // Conference A: ticket 1001 matches winner w1
-    const prizesWonA = computePrizesWon(result.current.raffleTickets, SAMPLE_PRIZE_WINNERS);
+    const prizesWonA = computePrizesWon(
+      result.current.raffleTickets,
+      SAMPLE_PRIZE_WINNERS,
+    );
     expect(prizesWonA).toHaveLength(1);
     expect(prizesWonA[0].winningTicket).toBe("1001");
 
@@ -238,7 +290,10 @@ describe("Conference switching", () => {
     });
 
     // Conference B: ticket 2001 matches winner w2
-    const prizesWonB = computePrizesWon(result.current.raffleTickets, SAMPLE_PRIZE_WINNERS);
+    const prizesWonB = computePrizesWon(
+      result.current.raffleTickets,
+      SAMPLE_PRIZE_WINNERS,
+    );
     expect(prizesWonB).toHaveLength(1);
     expect(prizesWonB[0].winningTicket).toBe("2001");
 

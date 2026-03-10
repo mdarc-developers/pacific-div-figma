@@ -1,6 +1,4 @@
-import {
-  Session,
-} from "@/types/conference";
+import { Session } from "@/types/conference";
 
 export const mapSessions: [string, Session[]] = [
   "/assets/maps/hamcation-2026-pavilion.png",
@@ -92,4 +90,3 @@ export const mapSessions: [string, Session[]] = [
     },
   ],
 ];
-

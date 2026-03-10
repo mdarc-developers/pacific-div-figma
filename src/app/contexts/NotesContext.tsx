@@ -105,7 +105,9 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <NotesContext.Provider value={{ notes, setNote, deleteNote, overrideNotes }}>
+    <NotesContext.Provider
+      value={{ notes, setNote, deleteNote, overrideNotes }}
+    >
       {children}
     </NotesContext.Provider>
   );

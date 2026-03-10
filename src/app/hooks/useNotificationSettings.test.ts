@@ -149,8 +149,8 @@ describe("useNotificationSettings — other settings persist via localStorage", 
       result.current.setEmailEnabled(false);
     });
     expect(result.current.emailEnabled).toBe(false);
-    expect(JSON.parse(localStorage.getItem("email_notifications_enabled")!)).toBe(
-      false,
-    );
+    expect(
+      JSON.parse(localStorage.getItem("email_notifications_enabled")!),
+    ).toBe(false);
   });
 });

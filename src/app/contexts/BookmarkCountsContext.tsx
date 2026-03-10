@@ -118,7 +118,13 @@ export function BookmarkCountsProvider({
 
   return (
     <BookmarkCountsContext.Provider
-      value={{ sessionCounts, exhibitorCounts, overrideCounts, adjustSessionCount, adjustExhibitorCount }}
+      value={{
+        sessionCounts,
+        exhibitorCounts,
+        overrideCounts,
+        adjustSessionCount,
+        adjustExhibitorCount,
+      }}
     >
       {children}
     </BookmarkCountsContext.Provider>

@@ -88,12 +88,9 @@ export function FirebaseBookmarkSync() {
         // If the local state differed from Firestore, persist the merged set
         // and update aggregate bookmark counts for newly added items.
         if (addedLocally.length > 0 || removedLocally.length > 0) {
-          setUserBookmarks(
-            uidToLoad,
-            conferenceId,
-            merged,
-            mergedPrev,
-          ).catch(console.error);
+          setUserBookmarks(uidToLoad, conferenceId, merged, mergedPrev).catch(
+            console.error,
+          );
           addedLocally.forEach((id) => {
             adjustSessionCount(id, 1);
             incrementSessionBookmarkCount(conferenceId, id, 1).catch(
@@ -148,7 +145,14 @@ export function FirebaseBookmarkSync() {
       bookmarkedItems,
       prevBookmarkedItems,
     ).catch(console.error);
-  }, [user, loadKey, conferenceId, bookmarkedItems, prevBookmarkedItems, adjustSessionCount]);
+  }, [
+    user,
+    loadKey,
+    conferenceId,
+    bookmarkedItems,
+    prevBookmarkedItems,
+    adjustSessionCount,
+  ]);
 
   return null;
 }

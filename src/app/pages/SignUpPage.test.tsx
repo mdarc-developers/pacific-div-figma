@@ -63,7 +63,9 @@ describe("SignUpPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/^password$/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/confirm password/i)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/confirm password/i),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /sign up$/i }),
     ).toBeInTheDocument();

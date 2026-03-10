@@ -113,9 +113,7 @@ describe("SessionAdminPage (authenticated, non-admin)", () => {
     mockLoading = false;
     mockIsSessionAdmin = false;
     renderSessionAdminPage();
-    expect(
-      screen.queryByTestId("session-admin-view"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("session-admin-view")).not.toBeInTheDocument();
   });
 });
 

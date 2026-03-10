@@ -33,9 +33,9 @@ interface ExhibitorVoteContextType {
   overrideExhibitorVotes: (items: string[]) => void;
 }
 
-const ExhibitorVoteContext = createContext<ExhibitorVoteContextType | undefined>(
-  undefined,
-);
+const ExhibitorVoteContext = createContext<
+  ExhibitorVoteContextType | undefined
+>(undefined);
 
 export function useExhibitorVoteContext(): ExhibitorVoteContextType {
   const ctx = useContext(ExhibitorVoteContext);

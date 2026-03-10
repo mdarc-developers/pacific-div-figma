@@ -15,7 +15,15 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { Bookmark, Clock, MapPin, Mic, StickyNote, Star, Zap } from "lucide-react";
+import {
+  Bookmark,
+  Clock,
+  MapPin,
+  Mic,
+  StickyNote,
+  Star,
+  Zap,
+} from "lucide-react";
 import { Session, Conference } from "@/types/conference";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -260,7 +268,9 @@ function SessionCard({
                   onClick={() => setShowNoteEditor(true)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && setShowNoteEditor(true)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && setShowNoteEditor(true)
+                  }
                   aria-label="Edit note"
                 >
                   <div className="flex items-center gap-1 mb-1">

@@ -65,11 +65,11 @@ function renderProfilePage() {
                       <VoteCountsProvider>
                         <NotesProvider>
                           <ExhibitorNotesProvider>
-                          <ActivitySectionsProvider>
-                            <AttendanceProvider>
-                              <ProfilePage />
-                            </AttendanceProvider>
-                          </ActivitySectionsProvider>
+                            <ActivitySectionsProvider>
+                              <AttendanceProvider>
+                                <ProfilePage />
+                              </AttendanceProvider>
+                            </ActivitySectionsProvider>
                           </ExhibitorNotesProvider>
                         </NotesProvider>
                       </VoteCountsProvider>

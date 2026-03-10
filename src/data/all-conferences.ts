@@ -26,8 +26,7 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl:
-      "/assets/programs/hamvention-2026-program.pdf",
+    conferenceProgramUrl: "/assets/programs/hamvention-2026-program.pdf",
     conferenceProgramSourceUrl:
       "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf", // upstream filename reflects the year it was published, not the conference year
     conferenceAppPageUrl: "https://hamvention.org/getconnected/",
@@ -179,8 +178,7 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl:
-      "/assets/programs/hamcation-2026-program.pdf", // 2027 program not yet available; using 2026 as placeholder
+    conferenceProgramUrl: "/assets/programs/hamcation-2026-program.pdf", // 2027 program not yet available; using 2026 as placeholder
     conferenceProgramSourceUrl:
       "https://www.hamcation.com/PDF/HamCation-2027-Program.pdf", // run npm run fetch-programs when 2027 program is published
     conferenceAppPageUrl: "https://www.hamcation.com/app/",
@@ -269,8 +267,7 @@ Roadrunner Camping Area",
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
-    conferenceProgramUrl:
-      "/assets/programs/hamcation-2026-program.pdf",
+    conferenceProgramUrl: "/assets/programs/hamcation-2026-program.pdf",
     conferenceProgramSourceUrl:
       "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",
     conferenceAppPageUrl: "https://www.hamcation.com/app/",

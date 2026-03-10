@@ -81,7 +81,11 @@ export function HeaderCollapsedProvider({
 
   return (
     <HeaderCollapsedContext.Provider
-      value={{ isHeaderCollapsed, setIsHeaderCollapsed, overrideHeaderCollapsed }}
+      value={{
+        isHeaderCollapsed,
+        setIsHeaderCollapsed,
+        overrideHeaderCollapsed,
+      }}
     >
       {children}
     </HeaderCollapsedContext.Provider>

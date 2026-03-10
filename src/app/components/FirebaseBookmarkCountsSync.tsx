@@ -40,9 +40,9 @@ export function FirebaseBookmarkCountsSync() {
           (s) => s.id,
         );
         // EXHIBITOR_DATA entries are [mapUrl, exhibitors] tuples; index 1 is the array.
-        const exhibitorIds = (
-          EXHIBITOR_DATA[conferenceToLoad]?.[1] ?? []
-        ).map((e) => e.id);
+        const exhibitorIds = (EXHIBITOR_DATA[conferenceToLoad]?.[1] ?? []).map(
+          (e) => e.id,
+        );
         overrideCounts(
           withZeroFallbacks(sessionCounts, sessionIds),
           withZeroFallbacks(exhibitorCounts, exhibitorIds),
@@ -57,9 +57,9 @@ export function FirebaseBookmarkCountsSync() {
         const sessionIds = (SESSION_DATA[conferenceToLoad] ?? []).map(
           (s) => s.id,
         );
-        const exhibitorIds = (
-          EXHIBITOR_DATA[conferenceToLoad]?.[1] ?? []
-        ).map((e) => e.id);
+        const exhibitorIds = (EXHIBITOR_DATA[conferenceToLoad]?.[1] ?? []).map(
+          (e) => e.id,
+        );
         overrideCounts(
           withZeroFallbacks(
             loadSessionCountsFromLS(conferenceToLoad),

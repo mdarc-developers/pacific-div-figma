@@ -1,4 +1,11 @@
-import { Bell, Calendar, ExternalLink, FileDown, MapPin, User } from "lucide-react";
+import {
+  Bell,
+  Calendar,
+  ExternalLink,
+  FileDown,
+  MapPin,
+  User,
+} from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useHeaderCollapsed } from "@/app/contexts/HeaderCollapsedContext";
 import { NavLink } from "react-router-dom";
@@ -116,7 +123,9 @@ export function ConferenceHeader() {
           </a>
         </TooltipTrigger>
         <TooltipContent>
-          {isLocal ? "Conference Program (locally cached)" : "Conference Program"}
+          {isLocal
+            ? "Conference Program (locally cached)"
+            : "Conference Program"}
         </TooltipContent>
       </Tooltip>
     );

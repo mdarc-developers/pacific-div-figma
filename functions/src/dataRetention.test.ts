@@ -119,7 +119,9 @@ describe("buildExpiredFieldRemovals", () => {
       bookmarks: "malformed" as unknown as Record<string, string[]>,
     };
     expect(() =>
-      buildExpiredFieldRemovals(userData as Record<string, unknown>, ["conf-old"]),
+      buildExpiredFieldRemovals(userData as Record<string, unknown>, [
+        "conf-old",
+      ]),
     ).not.toThrow();
   });
 });

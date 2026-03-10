@@ -39,9 +39,8 @@ describe("PrivacyPage", () => {
 
   it("renders the contact email address", () => {
     renderPrivacyPage();
-    expect(screen.getByRole("link", { name: /info@mdarc\.org/i })).toHaveAttribute(
-      "href",
-      "mailto:info@mdarc.org",
-    );
+    expect(
+      screen.getByRole("link", { name: /info@mdarc\.org/i }),
+    ).toHaveAttribute("href", "mailto:info@mdarc.org");
   });
 });

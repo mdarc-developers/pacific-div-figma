@@ -6,9 +6,7 @@ import {
 } from "firebase/messaging";
 import app from "@/lib/firebase";
 
-const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY as
-  | string
-  | undefined;
+const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined;
 
 /**
  * Requests browser notification permission and returns an FCM registration

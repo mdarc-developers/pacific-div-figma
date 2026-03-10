@@ -70,7 +70,9 @@ export function useUserProfileFields(): {
       setCallsignState(value);
       saveToStorage(CALLSIGN_KEY, value);
       if (user) {
-        setUserProfileFields(user.uid, { callsign: value }).catch(console.error);
+        setUserProfileFields(user.uid, { callsign: value }).catch(
+          console.error,
+        );
       }
     },
     [user],
@@ -81,7 +83,9 @@ export function useUserProfileFields(): {
       setDisplayNameState(value);
       saveToStorage(DISPLAY_NAME_KEY, value);
       if (user) {
-        setUserProfileFields(user.uid, { displayName: value }).catch(console.error);
+        setUserProfileFields(user.uid, { displayName: value }).catch(
+          console.error,
+        );
       }
     },
     [user],
@@ -92,11 +96,20 @@ export function useUserProfileFields(): {
       setDisplayProfileState(value);
       saveToStorage(DISPLAY_PROFILE_KEY, value);
       if (user) {
-        setUserProfileFields(user.uid, { displayProfile: value }).catch(console.error);
+        setUserProfileFields(user.uid, { displayProfile: value }).catch(
+          console.error,
+        );
       }
     },
     [user],
   );
 
-  return { callsign, setCallsign, displayName, setDisplayName, displayProfile, setDisplayProfile };
+  return {
+    callsign,
+    setCallsign,
+    displayName,
+    setDisplayName,
+    displayProfile,
+    setDisplayProfile,
+  };
 }

@@ -57,7 +57,10 @@ describe("loadAttendeesFromStorage", () => {
   });
 
   it("returns the stored attendees", () => {
-    localStorage.setItem(ATTENDEES_STORAGE_KEY, JSON.stringify(sampleAttendees));
+    localStorage.setItem(
+      ATTENDEES_STORAGE_KEY,
+      JSON.stringify(sampleAttendees),
+    );
     expect(loadAttendeesFromStorage()).toEqual(sampleAttendees);
   });
 
@@ -177,7 +180,12 @@ describe("writePublicProfile", () => {
     await writePublicProfile("uid1", profile);
     expect(mockSetDoc).toHaveBeenCalledWith(
       expect.objectContaining({ path: "publicProfiles/uid1" }),
-      { uid: "uid1", displayName: "Alice", callsign: "W6ABC", displayProfile: "Ham radio operator" },
+      {
+        uid: "uid1",
+        displayName: "Alice",
+        callsign: "W6ABC",
+        displayProfile: "Ham radio operator",
+      },
       { merge: true },
     );
   });

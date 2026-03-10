@@ -159,7 +159,10 @@ describe("usePublicAttendees", () => {
   });
 
   it("does not fetch from Firestore when user email is not verified", () => {
-    mockUseAuth.mockReturnValue({ user: { uid: "uid1", emailVerified: false }, loading: false });
+    mockUseAuth.mockReturnValue({
+      user: { uid: "uid1", emailVerified: false },
+      loading: false,
+    });
     mockGetDocs.mockResolvedValue({ docs: [] });
 
     const { result } = renderHook(() => usePublicAttendees());
@@ -183,7 +186,10 @@ describe("usePublicAttendees", () => {
   });
 
   it("hasAccess is false when user email is not verified", () => {
-    mockUseAuth.mockReturnValue({ user: { uid: "uid1", emailVerified: false }, loading: false });
+    mockUseAuth.mockReturnValue({
+      user: { uid: "uid1", emailVerified: false },
+      loading: false,
+    });
     const { result } = renderHook(() => usePublicAttendees());
     expect(result.current.hasAccess).toBe(false);
   });

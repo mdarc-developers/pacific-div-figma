@@ -148,7 +148,9 @@ function ExhibitorCard({
                   variant="ghost"
                   size="icon"
                   onClick={() => onToggleVote(exhibitor.id)}
-                  aria-label={isVoted ? "Remove vote" : "Vote for this exhibitor"}
+                  aria-label={
+                    isVoted ? "Remove vote" : "Vote for this exhibitor"
+                  }
                 >
                   <Star
                     className={`h-5 w-5 ${
@@ -207,7 +209,9 @@ function ExhibitorCard({
                   onClick={() => setShowNoteEditor(true)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && setShowNoteEditor(true)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && setShowNoteEditor(true)
+                  }
                   aria-label="Edit note"
                 >
                   <div className="flex items-center gap-1 mb-1">
