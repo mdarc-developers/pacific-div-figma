@@ -263,15 +263,33 @@ A public-board or DM model. `isPublic` + optional `boardId` distinguish the two 
 
 ```
 Mount
-  └── onAuthStateChanged(auth, cb)   ← Firebase listener; sets user + clears loading
-       ├── user = null  →  renders login prompts in AlertsView / ProfileView
-       └── user = User  →  renders authenticated content
+  ├── onAuthStateChanged(auth, cb)   ← Firebase listener; sets user + clears loading
+  │    ├── user = null  →  renders login prompts in AlertsView / ProfileView
+  │    └── user = User  →  renders authenticated content
+  └── getRedirectResult(auth)        ← one-shot; handles any pending redirect sign-in
+       ├── result = null  →  no-op (no redirect was in progress)
+       └── result.user   →  creates Firestore users/{uid} doc if it doesn't exist yet
 
 signIn(email, password)        → signInWithEmailAndPassword
 signUp(email, password)        → createUserWithEmailAndPassword
-signInWithGoogle()             → GoogleAuthProvider + signInWithPopup
+signInWithGoogle()             → tries signInWithPopup; on auth/popup-blocked or
+                                 auth/popup-failed-to-open falls back to
+                                 signInWithRedirect (common on iOS Safari PWA)
 logout()                       → signOut
 ```
+
+### Google sign-in popup → redirect fallback
+
+`signInWithGoogle()` first attempts `signInWithPopup`. If Firebase returns
+`auth/popup-blocked` or `auth/popup-failed-to-open` (common in iOS Safari
+standalone PWA mode), it transparently falls back to `signInWithRedirect`.  The
+redirect result is processed on the next app load via `getRedirectResult(auth)`
+called inside the mount `useEffect`. This means:
+
+- The user navigates away to Google's OAuth page and then returns to the app.
+- No dedicated `/auth/callback` route is required — Firebase handles the round-trip internally.
+- The Firestore `users/{uid}` document is created on return (same as popup flow).
+- Errors from either flow are caught and logged without breaking the render tree.
 
 Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`import.meta.env.VITE_FIREBASE_*`), keeping secrets out of source.
 
