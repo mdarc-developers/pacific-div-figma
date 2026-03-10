@@ -92,10 +92,8 @@ export default function App() {
             <Route path="/admin/sessions" element={<SessionAdminPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-            <Route
-              path="/pacificonfloormap"
-              element={<PacificonSvgExhibitorMap />}
-            />
+            <Route path="/pacificonfloormap" element={<PacificonSvgExhibitorMap />} />
+            <Route path="/account-notifications.png" element="/assets/images/account-notifications.png" />
             {/* Conference slug redirect — must stay AFTER all static routes.
                 Any new static single-segment routes (e.g. /about) must be added ABOVE this line. */}
             <Route path="/:conferenceSlug" element={<ConferenceRedirectPage />} />
