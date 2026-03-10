@@ -34,6 +34,12 @@ export default defineConfig({
           "**/assets/programs/**",
           "**/assets/prizes/**",
         ],
+        // Prevent the service worker from intercepting Firebase Auth popup and
+        // Firebase Hosting config requests. Without these exclusions, the
+        // NavigationRoute catches all document navigations — including the
+        // OAuth popup's /__/auth/handler URL — and serves index.html, causing
+        // the app to load in the popup instead of the Google sign-in page.
+        navigateFallbackDenylist: [/^\/__\/auth\//, /^\/__\/firebase\//],
       },
       includeAssets: ["favicon.png", "icons/apple-touch-icon.png"],
       manifest: {
