@@ -20,7 +20,7 @@ export const allConferences: ConferenceListItem[] = [
     parkingWebsite: "https://hamvention.org/travel-parking/directions/",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "",
+    contactEmail: "info@hamvention.org",
     logoUrl: "/assets/images/hamvention_logo.png",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
@@ -78,7 +78,7 @@ export const allConferences: ConferenceListItem[] = [
     parkingWebsite: "https://hamfest.org/directions",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "",
+    contactEmail: "info@hamfest.org",
     logoUrl: "/assets/images/huntsville-logo.png",
     //mapSessionRooms?: [string, boolean, boolean];
     //mapExhibitorBooths?: [string, boolean, boolean];
@@ -172,7 +172,7 @@ Roadrunner Camping Area",
     parkingWebsite: "",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "",
+    contactEmail: "info@hamcation.com",
     logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
@@ -261,7 +261,7 @@ Roadrunner Camping Area",
     parkingWebsite: "",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "",
+    contactEmail: "info@hamcation.com",
     logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]

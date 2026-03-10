@@ -15,7 +15,7 @@ export function AdminCard({
   isSessionAdmin = false,
 }: AdminCardProps) {
   return (
-    <Card className="border-green-300 dark:border-green-800">
+    <Card className="flex flex-wrap gap-3 px-3 py-1.5 mb-2 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs font-medium">
       <CardContent className="pt-6">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">

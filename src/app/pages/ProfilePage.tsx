@@ -205,6 +205,15 @@ export function ProfilePage() {
         onDisplayProfileChange={setDisplayProfile}
       />
 
+      {/* Admin card */}
+      {(isPrizesAdmin || isExhibitorAdmin || isSessionAdmin) && (
+        <AdminCard
+          isPrizesAdmin={isPrizesAdmin}
+          isExhibitorAdmin={isExhibitorAdmin}
+          isSessionAdmin={isSessionAdmin}
+        />
+      )}
+
       <SettingsCard theme={theme} onThemeChange={setTheme} />
 
       <NotificationsCard
@@ -264,15 +273,6 @@ export function ProfilePage() {
         prizeWinners={PRIZE_WINNER_DATA[activeConference.id] ?? []}
         conferenceName={activeConference.name}
       />
-
-      {/* Admin card */}
-      {(isPrizesAdmin || isExhibitorAdmin || isSessionAdmin) && (
-        <AdminCard
-          isPrizesAdmin={isPrizesAdmin}
-          isExhibitorAdmin={isExhibitorAdmin}
-          isSessionAdmin={isSessionAdmin}
-        />
-      )}
 
       <ExportDataCard uid={user.uid} />
 
