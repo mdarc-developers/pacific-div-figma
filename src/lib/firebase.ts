@@ -63,11 +63,10 @@ if (!autoConfig) {
 
 // Use Firebase Hosting auto-config when available; fall back to env vars.
 // Do NOT override authDomain — using the project's own firebaseapp.com auth
-// domain ensures that the signInWithRedirect flow passes through a domain that
-// is NOT registered as a PWA. Pointing authDomain at the app's own hosting
-// domain (e.g. pacific-div.web.app) causes Chrome to intercept the OAuth
-// redirect as a navigation into the installed PWA instead of completing the
-// Google sign-in handshake.
+// domain ensures that signInWithPopup opens its window on a domain outside the
+// PWA's registered scope (pacific-div.web.app). Overriding authDomain to the
+// app's own hosting domain causes Chrome to intercept the OAuth popup as a
+// navigation into the installed PWA instead of completing the sign-in handshake.
 const firebaseConfig = {
   ...(autoConfig ?? envConfig),
 };

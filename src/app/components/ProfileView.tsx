@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LogIn, UserPlus, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/app/components/ui/button";
@@ -7,16 +7,9 @@ import { Separator } from "@/app/components/ui/separator";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export function ProfileView() {
-  const { signInWithGoogle, googleSignInError } = useAuth();
+  const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Surface any error returned after the Google redirect flow completes.
-  useEffect(() => {
-    if (googleSignInError) {
-      setError(googleSignInError);
-    }
-  }, [googleSignInError]);
 
   const handleGoogleSignIn = async () => {
     try {

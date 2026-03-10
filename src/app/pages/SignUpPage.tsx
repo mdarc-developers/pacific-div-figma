@@ -25,7 +25,7 @@ export function SignUpPage() {
   // Tracks whether a sign-up flow is currently in progress so that the
   // redirect effect does not fire before setSignedUp(true) is called.
   const isSigningUpRef = useRef(false);
-  const { signUp, signInWithGoogle, user, googleSignInError } = useAuth();
+  const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in (but not right after sign-up — let user see the confirmation)
@@ -34,13 +34,6 @@ export function SignUpPage() {
       navigate("/");
     }
   }, [user, navigate, signedUp]);
-
-  // Surface any error returned after the Google redirect flow completes.
-  useEffect(() => {
-    if (googleSignInError) {
-      setError(googleSignInError);
-    }
-  }, [googleSignInError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
