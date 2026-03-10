@@ -38,6 +38,15 @@ export function ConferenceFooter() {
             {activeConference.contactEmail}
           </a>
         </p>
+        <p className="mt-2">
+          App questions or suggestions?{" "}
+          <a
+            href={"mailto:pacific-div@mdarc.org"}
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            pacific-div@mdarc.org
+          </a>
+        </p>
         <p className="mt-2">Built for offline use</p>
         <p className="mt-2">
           <Link
