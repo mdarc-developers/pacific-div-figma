@@ -6,7 +6,8 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   deleteUser,
 } from "firebase/auth";
 import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
@@ -21,6 +22,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
+  googleSignInError: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,8 +38,34 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [googleSignInError, setGoogleSignInError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Process any pending Google redirect result (fires once on app startup
+    // after the user is returned from the Google OAuth page).
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          const userRef = doc(db, "users", result.user.uid);
+          getDoc(userRef)
+            .then((userSnap) => {
+              if (!userSnap.exists()) {
+                return setDoc(userRef, {
+                  email: result.user.email ?? "",
+                  displayName: result.user.displayName ?? null,
+                  createdAt: serverTimestamp(),
+                });
+              }
+            })
+            .catch(console.error);
+        }
+      })
+      .catch((err: unknown) => {
+        setGoogleSignInError(
+          err instanceof Error ? err.message : "Failed to sign in with Google",
+        );
+      });
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -64,19 +92,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    const credential = await signInWithPopup(auth, provider);
-    const userRef = doc(db, "users", credential.user.uid);
-    getDoc(userRef)
-      .then((userSnap) => {
-        if (!userSnap.exists()) {
-          return setDoc(userRef, {
-            email: credential.user.email ?? "",
-            displayName: credential.user.displayName ?? null,
-            createdAt: serverTimestamp(),
-          });
-        }
-      })
-      .catch(console.error);
+    // Use signInWithRedirect instead of signInWithPopup to avoid Chrome
+    // intercepting the OAuth popup as a PWA navigation on installed PWA sites.
+    await signInWithRedirect(auth, provider);
   };
 
   const logout = async () => {
@@ -102,6 +120,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signInWithGoogle,
     logout,
     deleteAccount,
+    googleSignInError,
   };
 
   return (

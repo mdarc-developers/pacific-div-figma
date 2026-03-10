@@ -15,7 +15,7 @@ export const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signInWithGoogle, user } = useAuth();
+  const { signIn, signInWithGoogle, user, googleSignInError } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -24,6 +24,13 @@ export const LoginPage = () => {
       navigate("/profile");
     }
   }, [user, navigate]);
+
+  // Surface any error that came back from the Google redirect flow.
+  useEffect(() => {
+    if (googleSignInError) {
+      setError(googleSignInError);
+    }
+  }, [googleSignInError]);
 
   const handleSignInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
