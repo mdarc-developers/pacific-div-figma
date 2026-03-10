@@ -23,8 +23,8 @@ export function ConferenceFooter() {
         minute: "2-digit",
         hour12: false,
         timeZone: "UTC",
-        timeZoneName: "shortGeneric",
-      }).format(new Date(buildDate))
+        timeZoneName: "short",
+      }).format(new Date(buildDate)).replace("GMT", "UTC")
     : null;
   return (
     <>
