@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { SearchBar } from "@/app/components/SearchBar";
 import { Navigation } from "@/app/components/Navigation";
 import { FirebaseThemeSync } from "@/app/components/FirebaseThemeSync";
@@ -46,7 +46,7 @@ const PrivacyPage = lazy(() => import("@/app/pages/PrivacyPage").then((m) => ({ 
 const TermsOfServicePage = lazy(() => import("@/app/pages/TermsOfServicePage").then((m) => ({ default: m.TermsOfServicePage })));
 const ConferenceRedirectPage = lazy(() => import("@/app/pages/ConferenceRedirectPage").then((m) => ({ default: m.ConferenceRedirectPage })));
 
-export default function App() {
+function AppLayout() {
   const isMdarcDeveloper = useMdarcDeveloper();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -73,36 +73,47 @@ export default function App() {
         <SearchBar />
         <Navigation />
 
-        <Suspense fallback={<div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" /></div>}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/schedule" replace />} />
-            <Route path="/maps" element={<MapsPage />} />
-            <Route path="/prizes" element={<PrizesPage />} />
-            <Route path="/attendees" element={<AttendeesPage />} />
-            <Route path="/exhibitors" element={<ExhibitorsPage />} />
-            <Route path="/schedule" element={<SchedulePage />} />
-            <Route path="/forums" element={<ForumsPage />} />
-            <Route path="/alerts" element={<AlertsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/admin/prizes" element={<PrizesAdminPage />} />
-            <Route path="/admin/exhibitors" element={<ExhibitorAdminPage />} />
-            <Route path="/admin/sessions" element={<SessionAdminPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-            <Route path="/pacificonfloormap" element={<PacificonSvgExhibitorMap />} />
-            <Route path="/account-notifications.png" element="/assets/images/account-notifications.png" />
-            {/* Conference slug redirect — must stay AFTER all static routes.
-                Any new static single-segment routes (e.g. /about) must be added ABOVE this line. */}
-            <Route path="/:conferenceSlug" element={<ConferenceRedirectPage />} />
-            <Route path="*" element={<Navigate to="/404.html" replace />} />
-          </Routes>
-        </Suspense>
+        <Outlet />
 
         <ConferenceFooter />
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Suspense fallback={<div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" /></div>}>
+      <Routes>
+        {/* Standalone route — renders just the image with no header or footer */}
+        <Route path="/account-notifications.png" element={<img src="/assets/images/account-notifications.png" alt="Account Notifications" className="max-w-full" />} />
+
+        {/* All other routes share the main layout (header, nav, footer) */}
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Navigate to="/schedule" replace />} />
+          <Route path="/maps" element={<MapsPage />} />
+          <Route path="/prizes" element={<PrizesPage />} />
+          <Route path="/attendees" element={<AttendeesPage />} />
+          <Route path="/exhibitors" element={<ExhibitorsPage />} />
+          <Route path="/schedule" element={<SchedulePage />} />
+          <Route path="/forums" element={<ForumsPage />} />
+          <Route path="/alerts" element={<AlertsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/admin/prizes" element={<PrizesAdminPage />} />
+          <Route path="/admin/exhibitors" element={<ExhibitorAdminPage />} />
+          <Route path="/admin/sessions" element={<SessionAdminPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+          <Route path="/pacificonfloormap" element={<PacificonSvgExhibitorMap />} />
+          {/* Conference slug redirect — must stay AFTER all static routes.
+              Any new static single-segment routes (e.g. /about) must be added ABOVE this line. */}
+          <Route path="/:conferenceSlug" element={<ConferenceRedirectPage />} />
+          <Route path="*" element={<Navigate to="/404.html" replace />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
