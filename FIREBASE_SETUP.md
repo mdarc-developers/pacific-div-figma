@@ -16,7 +16,69 @@ This application uses Firebase for backend services. Follow these steps to confi
 1. In Firebase Console, go to "Authentication"
 2. Click "Get Started"
 3. Enable "Email/Password" sign-in method
-4. Optionally enable "Google" sign-in for easier authentication
+4. Enable "Google" sign-in for Google OAuth
+
+## 2a. Configure Authorized Domains & OAuth Redirect URIs
+
+The app supports both popup-based and redirect-based Google sign-in. The redirect
+flow (`signInWithRedirect`) navigates the browser to Google's OAuth page and then
+back. Firebase must trust the domains it redirects back to, and Google's OAuth
+consent screen must allow the redirect URIs that Firebase uses.
+
+### Authorized domains (Firebase Console)
+
+Firebase Auth maintains an allowlist of domains that are permitted to host the
+sign-in flow. By default, `localhost` and `<project>.firebaseapp.com` are added
+automatically. For the live app you must add:
+
+1. Open **Firebase Console → Authentication → Settings → Authorized domains**.
+2. Verify these domains are listed (add any that are missing):
+   - `pacific-div.web.app` — primary Firebase Hosting domain
+   - `pacific-div.firebaseapp.com` — Firebase Auth / SDK domain (added by default)
+   - `localhost` — local development (added by default)
+3. If you use a custom domain (e.g. `conference.example.com`) add it here too.
+
+### OAuth redirect URIs (Google Cloud Console)
+
+Firebase Auth uses its own OAuth handler URL as the redirect URI when completing
+a Google sign-in. You need to allow this URI in your Google OAuth client:
+
+1. Open [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials).
+2. Click the **OAuth 2.0 Client ID** used by your Firebase project (it is named
+   after your project, e.g. `Web client (auto created by Google Service)`).
+3. Under **Authorised redirect URIs**, add:
+   ```
+   https://<YOUR_PROJECT_ID>.firebaseapp.com/__/auth/handler
+   ```
+   For this project that is:
+   ```
+   https://pacific-div.firebaseapp.com/__/auth/handler
+   ```
+4. Save. Changes propagate within a few minutes.
+
+> **Why `firebaseapp.com/__/auth/handler`?**  Firebase Auth routes the OAuth
+> callback through its own handler on the `firebaseapp.com` auth domain. This
+> domain is intentionally kept *separate* from the app's Hosting domain
+> (`pacific-div.web.app`) so Chrome does not intercept the OAuth popup or
+> redirect as a navigation into the installed PWA.
+
+### PWA standalone mode — redirect vs popup
+
+| Environment                          | Behaviour                                            |
+| ------------------------------------ | ---------------------------------------------------- |
+| Desktop Chrome / Firefox             | `signInWithPopup` succeeds — no redirect needed.    |
+| iOS Safari (browser tab)             | Popup usually works; redirect fallback available.    |
+| iOS Safari (installed PWA / A2HS)    | Popup blocked → app calls `signInWithRedirect` automatically. User is sent to Google, then returned to the app. `getRedirectResult()` finishes sign-in on app reload. |
+| Android Chrome (installed PWA)       | Popup usually works; redirect fallback available.    |
+
+**No infinite-redirect loop:** `getRedirectResult(auth)` is called exactly once
+at app startup. It resolves with `null` when no redirect is pending, and with the
+user credential after a completed redirect. Firebase clears the pending state
+after the first successful call, preventing any loop.
+
+**No dedicated callback route required:** Firebase handles the entire OAuth
+round-trip through `/__/auth/handler` on the `firebaseapp.com` domain. The app
+does not need a `/auth/callback` route.
 
 ### Firestore Database
 

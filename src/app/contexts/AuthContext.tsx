@@ -7,6 +7,8 @@ import {
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   deleteUser,
 } from "firebase/auth";
 import {
@@ -18,6 +20,27 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../../lib/firebase";
 import { writeAuditLog } from "@/services/exportDataService";
+
+// Firebase Auth error codes that indicate the popup was blocked or failed to
+// open. Common on iOS Safari in standalone PWA mode. When detected, the sign-in
+// flow falls back to signInWithRedirect.
+const POPUP_BLOCKED_CODES = new Set([
+  "auth/popup-blocked",
+  "auth/popup-failed-to-open",
+]);
+
+// Creates the Firestore users/{uid} document for a new Google sign-in if one
+// does not already exist. Non-fatal — the user is already authenticated.
+async function ensureUserDoc(user: User): Promise<void> {
+  const userSnap = await getDoc(doc(db, "users", user.uid));
+  if (!userSnap.exists()) {
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email ?? "",
+      displayName: user.displayName ?? null,
+      createdAt: serverTimestamp(),
+    });
+  }
+}
 
 interface AuthContextType {
   user: User | null;
@@ -48,6 +71,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(user);
       setLoading(false);
     });
+
+    // Process any pending redirect result from a prior signInWithRedirect call.
+    // This is a no-op when no redirect was in progress (resolves with null).
+    // Auth-state changes triggered by the result are handled by the
+    // onAuthStateChanged listener above; here we only ensure the Firestore
+    // user document exists for first-time Google sign-ins via redirect.
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          ensureUserDoc(result.user).catch(console.error);
+        }
+      })
+      .catch((err) => {
+        // Redirect errors (e.g. auth/invalid-credential) must not crash the
+        // app — log them and leave the UI in the unauthenticated state.
+        console.error("Redirect sign-in error:", err);
+      });
+
     return unsubscribe;
   }, []);
 
@@ -70,25 +111,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    // Use signInWithPopup so the OAuth flow opens in a separate window on the
-    // project's firebaseapp.com auth domain. That domain is outside the PWA's
-    // registered scope, so Chrome will not intercept the popup as a PWA
-    // navigation. signInWithRedirect is avoided because it depends on
-    // cross-site cookies that modern browsers increasingly block.
-    const credential = await signInWithPopup(auth, provider);
-    // Create a Firestore user document for new Google sign-ins. Errors here
-    // are non-fatal — the user is already authenticated via Google OAuth.
-    getDoc(doc(db, "users", credential.user.uid))
-      .then((userSnap) => {
-        if (!userSnap.exists()) {
-          return setDoc(doc(db, "users", credential.user.uid), {
-            email: credential.user.email ?? "",
-            displayName: credential.user.displayName ?? null,
-            createdAt: serverTimestamp(),
-          });
-        }
-      })
-      .catch(console.error);
+    try {
+      // Prefer popup-based sign-in. The OAuth flow opens in a separate window
+      // on the project's firebaseapp.com auth domain, which is outside the
+      // PWA's registered scope, so Chrome will not intercept it as a PWA
+      // navigation.
+      const credential = await signInWithPopup(auth, provider);
+      // Create the Firestore user document for new Google sign-ins. Errors
+      // here are non-fatal — the user is already authenticated via Google OAuth.
+      ensureUserDoc(credential.user).catch(console.error);
+    } catch (err) {
+      // Fall back to redirect-based sign-in when the popup was blocked or
+      // failed to open. Common on iOS Safari in standalone PWA mode. The auth
+      // result will be processed by getRedirectResult() on the next app load.
+      const code =
+        err && typeof err === "object" && "code" in err
+          ? (err as { code: string }).code
+          : "";
+      if (POPUP_BLOCKED_CODES.has(code)) {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+      throw err;
+    }
   };
 
   const logout = async () => {
