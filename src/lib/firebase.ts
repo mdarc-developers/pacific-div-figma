@@ -62,17 +62,14 @@ if (!autoConfig) {
 }
 
 // Use Firebase Hosting auto-config when available; fall back to env vars.
-// Override authDomain with the current hostname so that the Google OAuth
-// popup shares the same origin as the app. Without this, when the app is
-// served from a custom domain (e.g. pacific-div.web.app) but authDomain
-// resolves to the legacy Firebase domain (pacific-div.firebaseapp.com),
-// modern browsers block the cross-origin postMessage that Firebase uses to
-// relay the auth result back to the main window.
-const currentHostname =
-  typeof window !== "undefined" ? window.location.hostname : undefined;
+// Do NOT override authDomain — using the project's own firebaseapp.com auth
+// domain ensures that the signInWithRedirect flow passes through a domain that
+// is NOT registered as a PWA. Pointing authDomain at the app's own hosting
+// domain (e.g. pacific-div.web.app) causes Chrome to intercept the OAuth
+// redirect as a navigation into the installed PWA instead of completing the
+// Google sign-in handshake.
 const firebaseConfig = {
   ...(autoConfig ?? envConfig),
-  ...(currentHostname ? { authDomain: currentHostname } : {}),
 };
 
 // Initialize Firebase

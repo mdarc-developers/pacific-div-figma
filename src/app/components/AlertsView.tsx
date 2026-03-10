@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, LogIn, UserPlus, Trash2 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
@@ -10,9 +10,16 @@ import type { AlertHistoryItem } from "@/types/conference";
 // ── Unauthenticated state ─────────────────────────────────────────────────────
 
 export function AlertsView() {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, googleSignInError } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Surface any error returned after the Google redirect flow completes.
+  useEffect(() => {
+    if (googleSignInError) {
+      setError(googleSignInError);
+    }
+  }, [googleSignInError]);
 
   const handleGoogleSignIn = async () => {
     try {
