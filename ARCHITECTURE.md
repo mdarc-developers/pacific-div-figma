@@ -282,7 +282,7 @@ logout()                       → signOut
 
 `signInWithGoogle()` first attempts `signInWithPopup`. If Firebase returns
 `auth/popup-blocked` or `auth/popup-failed-to-open` (common in iOS Safari
-standalone PWA mode), it transparently falls back to `signInWithRedirect`.  The
+standalone PWA mode), it transparently falls back to `signInWithRedirect`. The
 redirect result is processed on the next app load via `getRedirectResult(auth)`
 called inside the mount `useEffect`. This means:
 

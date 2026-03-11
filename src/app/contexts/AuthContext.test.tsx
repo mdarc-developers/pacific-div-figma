@@ -85,7 +85,11 @@ describe("AuthContext — redirect result handling on init", () => {
     mockSetDoc.mockResolvedValue(undefined);
 
     const { AuthProvider } = await import("./AuthContext");
-    render(<AuthProvider><div /></AuthProvider>);
+    render(
+      <AuthProvider>
+        <div />
+      </AuthProvider>,
+    );
 
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
@@ -109,7 +113,11 @@ describe("AuthContext — redirect result handling on init", () => {
     mockSetDoc.mockResolvedValue(undefined);
 
     const { AuthProvider } = await import("./AuthContext");
-    render(<AuthProvider><div /></AuthProvider>);
+    render(
+      <AuthProvider>
+        <div />
+      </AuthProvider>,
+    );
 
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
@@ -131,12 +139,18 @@ describe("AuthContext — redirect result handling on init", () => {
     const { AuthProvider } = await import("./AuthContext");
     // Should render without throwing.
     expect(() =>
-      render(<AuthProvider><div data-testid="child" /></AuthProvider>),
+      render(
+        <AuthProvider>
+          <div data-testid="child" />
+        </AuthProvider>,
+      ),
     ).not.toThrow();
 
     // Give the rejected promise time to settle.
     await act(async () => {
-      await waitFor(() => expect(mockGetRedirectResult).toHaveBeenCalledTimes(1));
+      await waitFor(() =>
+        expect(mockGetRedirectResult).toHaveBeenCalledTimes(1),
+      );
     });
   });
 
@@ -144,7 +158,11 @@ describe("AuthContext — redirect result handling on init", () => {
     mockGetRedirectResult.mockResolvedValue(null);
 
     const { AuthProvider } = await import("./AuthContext");
-    render(<AuthProvider><div /></AuthProvider>);
+    render(
+      <AuthProvider>
+        <div />
+      </AuthProvider>,
+    );
 
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);

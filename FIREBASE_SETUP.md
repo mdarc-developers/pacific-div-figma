@@ -56,20 +56,20 @@ a Google sign-in. You need to allow this URI in your Google OAuth client:
    ```
 4. Save. Changes propagate within a few minutes.
 
-> **Why `firebaseapp.com/__/auth/handler`?**  Firebase Auth routes the OAuth
+> **Why `firebaseapp.com/__/auth/handler`?** Firebase Auth routes the OAuth
 > callback through its own handler on the `firebaseapp.com` auth domain. This
-> domain is intentionally kept *separate* from the app's Hosting domain
+> domain is intentionally kept _separate_ from the app's Hosting domain
 > (`pacific-div.web.app`) so Chrome does not intercept the OAuth popup or
 > redirect as a navigation into the installed PWA.
 
 ### PWA standalone mode — redirect vs popup
 
-| Environment                          | Behaviour                                            |
-| ------------------------------------ | ---------------------------------------------------- |
-| Desktop Chrome / Firefox             | `signInWithPopup` succeeds — no redirect needed.    |
-| iOS Safari (browser tab)             | Popup usually works; redirect fallback available.    |
-| iOS Safari (installed PWA / A2HS)    | Popup blocked → app calls `signInWithRedirect` automatically. User is sent to Google, then returned to the app. `getRedirectResult()` finishes sign-in on app reload. |
-| Android Chrome (installed PWA)       | Popup usually works; redirect fallback available.    |
+| Environment                       | Behaviour                                                                                                                                                             |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Desktop Chrome / Firefox          | `signInWithPopup` succeeds — no redirect needed.                                                                                                                      |
+| iOS Safari (browser tab)          | Popup usually works; redirect fallback available.                                                                                                                     |
+| iOS Safari (installed PWA / A2HS) | Popup blocked → app calls `signInWithRedirect` automatically. User is sent to Google, then returned to the app. `getRedirectResult()` finishes sign-in on app reload. |
+| Android Chrome (installed PWA)    | Popup usually works; redirect fallback available.                                                                                                                     |
 
 **No infinite-redirect loop:** `getRedirectResult(auth)` is called exactly once
 at app startup. It resolves with `null` when no redirect is pending, and with the
