@@ -28,6 +28,9 @@
         ],
         "pacificonRedirect": [
           "pacificon-redirect"
+        ],
+        "attendeeappRedirect": [
+          "attendeeapp-redirect"
         ]
       }
     }

@@ -136,6 +136,18 @@
           "type": 301
         }
       ]
+    },
+    {
+      "target": "attendeeappRedirect",
+      "public": "public-redirect",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://pacific-div.web.app/",
+          "type": 301
+        }
+      ]
     }
   ]
 }
