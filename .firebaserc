@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "pacific-div"
+  },
+  "targets": {
+    "pacific-div": {
+      "hosting": {
+        "app": [
+          "pacific-div"
+        ],
+        "pacificonRedirect": [
+          "pacificon-redirect"
+        ]
+      }
+    }
   }
 }

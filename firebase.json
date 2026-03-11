@@ -12,7 +12,9 @@
       "*.local"
     ]
   },
-  "hosting": {
+  "hosting": [
+  {
+    "target": "app",
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -50,5 +52,22 @@
         "destination": "/index.html"
       }
     ]
+  },
+  {
+    "target": "pacificonRedirect",
+    "public": "public-redirect",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "**",
+        "destination": "https://pacific-div.web.app/pacificon",
+        "type": 301
+      }
+    ]
   }
+  ]
 }
