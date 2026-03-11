@@ -54,6 +54,78 @@
       ]
     },
     {
+      "target": "quartzfestRedirect",
+      "public": "public-redirect",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://pacific-div.web.app/quartzfest",
+          "type": 301
+        }
+      ]
+    },
+    {
+      "target": "hamcationRedirect",
+      "public": "public-redirect",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://pacific-div.web.app/hamcation",
+          "type": 301
+        }
+      ]
+    },
+    {
+      "target": "yumaRedirect",
+      "public": "public-redirect",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://pacific-div.web.app/yuma",
+          "type": 301
+        }
+      ]
+    },
+    {
+      "target": "hamventionRedirect",
+      "public": "public-redirect",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://pacific-div.web.app/hamvention",
+          "type": 301
+        }
+      ]
+    },
+    {
+      "target": "seapacRedirect",
+      "public": "public-redirect",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://pacific-div.web.app/seapac",
+          "type": 301
+        }
+      ]
+    },
+    {
+      "target": "huntsvilleRedirect",
+      "public": "public-redirect",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://pacific-div.web.app/huntsville",
+          "type": 301
+        }
+      ]
+    },
+    {
       "target": "pacificonRedirect",
       "public": "public-redirect",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

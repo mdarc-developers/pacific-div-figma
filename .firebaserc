@@ -8,10 +8,29 @@
         "app": [
           "pacific-div"
         ],
+        "quartzfestRedirect": [
+          "quartzfest-redirect"
+        ],
+        "hamcationRedirect": [
+          "hamcation-redirect"
+        ],
+        "yumaRedirect": [
+          "yuma-redirect"
+        ],
+        "hamventionRedirect": [
+          "hamvention-redirect"
+        ],
+        "seapacRedirect": [
+          "seapac-redirect"
+        ],
+        "huntsvilleRedirect": [
+          "huntsville-redirect"
+        ],
         "pacificonRedirect": [
           "pacificon-redirect"
         ]
       }
     }
-  }
+  },
+  "etags": {}
 }
