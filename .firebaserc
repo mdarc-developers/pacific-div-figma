@@ -5,35 +5,16 @@
   "targets": {
     "pacific-div": {
       "hosting": {
-        "app": [
-          "pacific-div"
-        ],
-        "quartzfestRedirect": [
-          "quartzfest-redirect"
-        ],
-        "hamcationRedirect": [
-          "hamcation-redirect"
-        ],
-        "yumaRedirect": [
-          "yuma-redirect"
-        ],
-        "hamventionRedirect": [
-          "hamvention-redirect"
-        ],
-        "seapacRedirect": [
-          "seapac-redirect"
-        ],
-        "huntsvilleRedirect": [
-          "huntsville-redirect"
-        ],
-        "pacificonRedirect": [
-          "pacificon-redirect"
-        ],
-        "attendeeappRedirect": [
-          "attendeeapp-redirect"
-        ]
+        "app": [ "pacific-div" ],
+        "quartzfestRedirect": [ "quartzfest-redirect" ],
+        "hamcationRedirect": [ "hamcation-redirect" ],
+        "yumaRedirect": [ "yuma-redirect" ],
+        "hamventionRedirect": [ "hamvention-redirect" ],
+        "seapacRedirect": [ "seapac-redirect" ],
+        "huntsvilleRedirect": [ "huntsville-redirect" ],
+        "pacificonRedirect": [ "pacificon-redirect" ],
+        "attendeeappRedirect": [ "attendeeapp-redirect" ]
       }
     }
-  },
-  "etags": {}
+  }
 }
