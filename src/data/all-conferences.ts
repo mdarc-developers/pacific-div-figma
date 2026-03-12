@@ -123,7 +123,7 @@ export const allConferences: ConferenceListItem[] = [
       "https://drive.google.com/uc?export=download&id=1TlaEhDC0xvCEiQgJc5QUYApp0WIpHvNm",
     conferenceAppPageUrl: "https://www.pacificon.org/app/",
     firstConferenceYear: 1920,
-    estimatedAttendees: 1200,
+    estimatedAttendees: 1300,
   },
   {
     id: "quartzfest-2027",
