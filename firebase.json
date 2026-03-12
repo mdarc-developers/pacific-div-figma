@@ -60,7 +60,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/quartzfest",
+          "destination": "https://pacific-div.firebaseapp.com/quartzfest",
           "type": 301
         }
       ]
@@ -72,7 +72,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/hamcation",
+          "destination": "https://pacific-div.firebaseapp.com/hamcation",
           "type": 301
         }
       ]
@@ -84,7 +84,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/yuma",
+          "destination": "https://pacific-div.firebaseapp.com/yuma",
           "type": 301
         }
       ]
@@ -96,7 +96,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/hamvention",
+          "destination": "https://pacific-div.firebaseapp.com/hamvention",
           "type": 301
         }
       ]
@@ -108,7 +108,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/seapac",
+          "destination": "https://pacific-div.firebaseapp.com/seapac",
           "type": 301
         }
       ]
@@ -120,7 +120,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/huntsville",
+          "destination": "https://pacific-div.firebaseapp.com/huntsville",
           "type": 301
         }
       ]
@@ -132,7 +132,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/pacificon",
+          "destination": "https://pacific-div.firebaseapp.com/pacificon",
           "type": 301
         }
       ]
@@ -144,7 +144,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://pacific-div.web.app/",
+          "destination": "https://pacific-div.firebaseapp.com/",
           "type": 301
         }
       ]
