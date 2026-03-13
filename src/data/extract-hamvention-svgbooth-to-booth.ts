@@ -1,4 +1,5 @@
 // extract-hamvention-svgbooth-to-booth.ts
+// 20260306
 //
 // Tool: converts SvgBooth[] data (from extract-booth-from-svg.html) into
 //       a ready-to-check-in Booth[] TypeScript source module.
@@ -20,7 +21,9 @@
 // The generated file exports `mapBooths: [string, Booth[]]` — the same shape
 // used by the conferenceData loader in src/lib/conferenceData.ts.
 //
-// must change import and several hard coded variables at the bottom
+// when changing imported file one must
+// change import and several hard coded variables at the bottom
+// although they are mostly variables now
 
 import { readFileSync } from "node:fs";
 import type { Booth } from "@/types/conference";
