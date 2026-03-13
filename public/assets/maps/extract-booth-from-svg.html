@@ -1091,9 +1091,16 @@
           const [scx, scy] = applyMatrix(elMx, rcx, rcy);
           const corners = pts.map(([x, y]) => applyMatrix(elMx, x, y));
 
+          const pathId = el.getAttribute("id") || "";
+          const parsedNum = parseInt(pathId, 10);
+          const boothNum =
+            !isNaN(parsedNum) && parsedNum > 0 && String(parsedNum) === pathId
+              ? parsedNum
+              : idx++;
+
           const booth = {
-            booth_num: idx++,
-            path_id: el.getAttribute("id") || "",
+            booth_num: boothNum,
+            path_id: pathId,
             center_svg_x: scx,
             center_svg_y: scy,
             raw_cx: parseFloat(rcx.toFixed(2)),
@@ -1151,7 +1158,9 @@
 
       // --- RENDER CSV ---
       // Columns match the SvgBooth interface consumed by extract-hamvention-svgbooth-to-booth.ts:
-      //   booth_num       — sequential index (edit in a spreadsheet to assign real booth numbers)
+      //   booth_num       — real booth number from SVG path id when the id is a plain integer
+      //                     (e.g. id="1010" → 1010); falls back to sequential index when the
+      //                     id is non-numeric (e.g. Inkscape auto-ids like "path198")
       //   path_id         — SVG element id (if any)
       //   center_svg_x/y  — centroid in SVG coordinate space
       //   svgPoints       — corner points as "x,y x,y …" (y from top)
