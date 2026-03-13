@@ -39,8 +39,8 @@ Sample data has been loaded for:
 ## Development
 
 ```bash
-npm install        # install dependencies
-npm run dev        # Vite dev server with hot reload
+npm install        # install node_modules dependencies
+npm run dev        # Vite dev server with hot reload at localhost:5173
 ```
 
 ## Deploying
