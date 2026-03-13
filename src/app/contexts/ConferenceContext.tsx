@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Conference, ConferenceListItem } from "@/types/conference";
 import { allConferences } from "@/data/all-conferences";
 
-const CONFERENCE_STORAGE_KEY = "activeConference";
+export const CONFERENCE_STORAGE_KEY = "activeConference";
 
 interface ConferenceContextType {
   activeConference: Conference;
