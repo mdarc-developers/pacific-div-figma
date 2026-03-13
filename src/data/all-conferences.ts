@@ -6,6 +6,8 @@ import { ConferenceListItem } from "@/types/conference";
 //   via src/lib/sessionData.ts (named for first implemented of the four supplemental types
 //     session, booth, exhibitor and booth
 // code is still being updated
+//
+// Rooms and Booths lead the detection and display for /schedule and /exhibitors
 // 
 //interface ConferenceModule {
 //  conferenceMaps?: MapImage[]; // each "maps" is an array of url string and target[].
