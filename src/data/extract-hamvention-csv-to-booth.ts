@@ -1,18 +1,19 @@
-// extract-hamvention-svgbooth-to-booth.ts
+// extract-hamvention-csv-to-booth.ts
 // 20260306
+// 20260313
 //
 // Tool: converts SvgBooth[] data (from extract-booth-from-svg.html) into
 //       a ready-to-check-in Booth[] TypeScript source module.
 //
 // Usage (run as a script):
-//   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts \
+//   npx tsx src/data/extract-hamvention-csv-to-booth.ts \
 //     [-i | --input ]  <csv-file>   CSV produced by extract-booth-from-svg.html
 //     --building <zone>             location zone label (e.g. "building-1")
 //     --svg-url <url>               SVG asset URL (e.g. /assets/maps/foo.svg)
 //     [-v | --verbose]              print debug info to stderr
 //
 // Output is written to stdout; redirect to a dated data file:
-//   npx tsx src/data/extract-hamvention-svgbooth-to-booth.ts \
+//   npx tsx src/data/extract-hamvention-csv-to-booth.ts \
 //     --input  public/assets/maps/hamvention-2026-building-1-maxim-coords.csv \
 //     --building building-1 \
 //     --svg-url /assets/maps/hamvention-2026-building-1-maxim.svg \
