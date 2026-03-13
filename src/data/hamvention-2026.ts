@@ -119,7 +119,7 @@ export const mapExhibitors: [string, Exhibitor[]] = [
       location: [1402],
       boothName: "1402",
       type: "exhibitor-confirmed",
-      url: "ADSBexchange.com",
+      url: "https://www.adsbexchange.com",
     },
     {
       id: "arrl-the-national-association-for-amateur-radio",
@@ -192,7 +192,7 @@ export const mapExhibitors: [string, Exhibitor[]] = [
       boothName:
         "1207, 1208, 1209, 1210, 1303, 1304, 1305, 1306, 1307, 1308, 1309, 1310, 1311, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410, 1411, 1507, 1508, 1509, 1510, 1511, 1611",
       type: "exhibitor-confirmed",
-      url: "dxengineering.com",
+      url: "https://www.dxengineering.com",
     },
     {
       id: "dzkit",
@@ -458,7 +458,7 @@ export const mapExhibitors: [string, Exhibitor[]] = [
       location: [4005],
       boothName: "4005",
       type: "exhibitor-confirmed",
-      url: "SwapMyRigs.com",
+      url: "https://www.swapmyrigs.com",
     },
     {
       id: "tapr-tucson-amateur-packet-radio",

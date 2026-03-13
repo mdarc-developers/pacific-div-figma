@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Exhibitor, Booth } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
 import { BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { sanitizeExhibitorUrl } from "@/lib/urlUtils";
 
 interface ConferenceModule {
   mapExhibitors?: [string, Exhibitor[]];
@@ -324,5 +325,53 @@ describe("multi-map fallback: exhibitors matched by location when URL mismatches
     );
 
     expect(fallback).toHaveLength(0);
+  });
+});
+
+// ── sanitizeExhibitorUrl ───────────────────────────────────────────────────────
+// Ensures the URL guard used by ExhibitorCard prevents empty / protocol-less /
+// incomplete URLs from being rendered as anchor href values, which would
+// navigate the user away from the current page or change the active conference.
+describe("sanitizeExhibitorUrl", () => {
+  it("returns null for an empty string", () => {
+    expect(sanitizeExhibitorUrl("")).toBeNull();
+  });
+
+  it("returns null for a whitespace-only string", () => {
+    expect(sanitizeExhibitorUrl("   ")).toBeNull();
+  });
+
+  it("returns null for an incomplete URL like 'https://www.'", () => {
+    expect(sanitizeExhibitorUrl("https://www.")).toBeNull();
+  });
+
+  it("returns a fully-qualified URL unchanged", () => {
+    expect(sanitizeExhibitorUrl("https://www.arrl.org")).toBe(
+      "https://www.arrl.org",
+    );
+  });
+
+  it("prepends https:// to a protocol-less URL like 'ADSBexchange.com'", () => {
+    expect(sanitizeExhibitorUrl("ADSBexchange.com")).toBe(
+      "https://ADSBexchange.com",
+    );
+  });
+
+  it("prepends https:// to 'dxengineering.com'", () => {
+    expect(sanitizeExhibitorUrl("dxengineering.com")).toBe(
+      "https://dxengineering.com",
+    );
+  });
+
+  it("prepends https:// to 'SwapMyRigs.com'", () => {
+    expect(sanitizeExhibitorUrl("SwapMyRigs.com")).toBe(
+      "https://SwapMyRigs.com",
+    );
+  });
+
+  it("accepts http:// URLs", () => {
+    expect(sanitizeExhibitorUrl("http://example.com")).toBe(
+      "http://example.com",
+    );
   });
 });

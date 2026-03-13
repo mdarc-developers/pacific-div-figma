@@ -1,5 +1,4 @@
-import { useRef, useEffect } from "react";
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -21,6 +20,7 @@ import { Exhibitor } from "@/types/conference";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 import { EXHIBITOR_DATA } from "@/lib/sessionData";
+import { sanitizeExhibitorUrl } from "@/lib/urlUtils";
 
 interface ExhibitorViewProps {
   bookmarkedExhibitors?: string[];
@@ -98,6 +98,8 @@ function ExhibitorCard({
     setShowNoteEditor(false);
   };
 
+  const safeUrl = sanitizeExhibitorUrl(exhibitor.url);
+
   return (
     <div
       ref={exhibitorRef}
@@ -112,9 +114,13 @@ function ExhibitorCard({
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <a href={exhibitor.url} rel="noopener noreferrer" target="_blank">
+              {safeUrl ? (
+                <a href={safeUrl} rel="noopener noreferrer" target="_blank">
+                  <CardTitle className="text-lg mb-2">{exhibitor.name}</CardTitle>
+                </a>
+              ) : (
                 <CardTitle className="text-lg mb-2">{exhibitor.name}</CardTitle>
-              </a>
+              )}
               <div className="flex flex-wrap gap-2 mb-2">
                 <Badge variant="secondary">{exhibitor.type}</Badge>
               </div>
