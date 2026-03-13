@@ -1,5 +1,38 @@
 import { ConferenceListItem } from "@/types/conference";
 
+// moved from static mapSessionsUrl and mapExhibitorsUrl arrays on each conference
+//   to dynamically built arrays loaded from supplemental files
+//   in a big ConferenceModule for the activeConferenceId
+//   via src/lib/sessionData.ts (named for first implemented of the four supplemental types
+//     session, booth, exhibitor and booth
+// code is still being updated
+// 
+//interface ConferenceModule {
+//  conferenceMaps?: MapImage[]; // each "maps" is an array of url string and target[].
+//                                  each url string must be in this conferenceMaps array
+//  mapSessions?: [string, Session[]];
+//  mapRooms?: [string, Room[]];
+//  mapExhibitors?: [string, Exhibitor[]];
+//  mapBooths?: [string, Booth[]];
+//  [key: string]: unknown;
+//}
+//
+// as a check, the code uses dynamic mapSessionRooms to track if
+//   sessions and rooms were loaded for each mapUrl
+// as a check, the code uses dynamic mapExhibitorBooths to track if
+//   exhibitors and booths were loaded for each mapUrl
+//
+// for a file like hamvention-2026.ts a supplemental will
+//   override the data if the url matches
+//   and simply add the data if the mapUrl is different
+//
+// things are more complicated now that we handle multiple
+//   png/jpg image files different from
+//   pdf files different from
+//   svg files
+//
+
+
 export const allConferences: ConferenceListItem[] = [
   {
     id: "hamvention-2026",
@@ -24,8 +57,8 @@ export const allConferences: ConferenceListItem[] = [
     logoUrl: "/assets/images/hamvention_logo.png",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     conferenceProgramUrl: "/assets/programs/hamvention-2026-program.pdf",
     conferenceProgramSourceUrl:
       "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf", // upstream filename reflects the year it was published, not the conference year
@@ -54,8 +87,8 @@ export const allConferences: ConferenceListItem[] = [
     googlecalUrl: "",
     contactEmail: "info@seapac.org",
     logoUrl: "/assets/images/seapac-logo.png",
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     firstConferenceYear: 1982,
     estimatedAttendees: 2500,
   },
@@ -80,8 +113,8 @@ export const allConferences: ConferenceListItem[] = [
     googlecalUrl: "",
     contactEmail: "info@hamfest.org",
     logoUrl: "/assets/images/huntsville-logo.png",
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     conferenceProgramUrl:
       "/assets/programs/huntsville-hamfest-2026-program.pdf", // broadsheet for us
     conferenceProgramSourceUrl:
@@ -115,8 +148,8 @@ export const allConferences: ConferenceListItem[] = [
     logoUrl: "/assets/images/pacificon-2026-logo-208-110.jpg",
     //mapSessionsUrl: '/assets/maps/pacificon-hotel-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
     //mapExhibitorsUrl: ['/assets/maps/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     conferenceProgramUrl:
       "https://drive.google.com/file/d/1TlaEhDC0xvCEiQgJc5QUYApp0WIpHvNm/view", // broadsheet for us; run scripts/fetch-programs.mjs to cache locally
     conferenceProgramSourceUrl:
@@ -148,8 +181,8 @@ Roadrunner Camping Area",
     googlecalUrl: "",
     contactEmail: "hkey073@gmail.com",
     logoUrl: "/assets/images/quartzfest-logo-w1000_h1000.webp",
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     firstConferenceYear: 1997,
     estimatedAttendees: 450,
   },
@@ -176,8 +209,8 @@ Roadrunner Camping Area",
     logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     conferenceProgramUrl: "/assets/programs/hamcation-2026-program.pdf", // 2027 program not yet available; using 2026 as placeholder
     conferenceProgramSourceUrl:
       "https://www.hamcation.com/PDF/HamCation-2027-Program.pdf", // run npm run fetch-programs when 2027 program is published
@@ -208,8 +241,8 @@ Roadrunner Camping Area",
     logoUrl: "/assets/images/yuma-buzzard.webp",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     firstConferenceYear: 2005,
     estimatedAttendees: 1200,
   },
@@ -237,8 +270,8 @@ Roadrunner Camping Area",
     logoUrl: "/assets/images/yuma-buzzard.webp",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     firstConferenceYear: 2005,
     estimatedAttendees: 1200,
   },
@@ -265,8 +298,8 @@ Roadrunner Camping Area",
     logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean];
-    //mapExhibitorBooths?: [string, boolean, boolean];
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     conferenceProgramUrl: "/assets/programs/hamcation-2026-program.pdf",
     conferenceProgramSourceUrl:
       "https://www.hamcation.com/PDF/HamCation-2026-Program.pdf",

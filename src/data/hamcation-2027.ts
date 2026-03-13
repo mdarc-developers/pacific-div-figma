@@ -1,5 +1,4 @@
 import {
-  Session,
   MapImage,
   Room,
   Exhibitor,
@@ -199,6 +198,7 @@ export const mapRooms: [string, Room[]] = [
   ],
 ];
 
+// moved to a supplemental
 //export const mapSessions: [string, Session[]] = [
 //  "/assets/maps/hamcation-2026-pavilion.png",
 //  // must match mapRooms URL
