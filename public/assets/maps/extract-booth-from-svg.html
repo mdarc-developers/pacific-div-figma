@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SVG Booth Extractor v.3 20260306</title>
+    <title>SVG Booth Extractor v.4 20260313</title>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap"
       rel="stylesheet"
@@ -1071,10 +1071,35 @@
         return composed;
       }
 
+      // --- TEXT LABEL COLLECTION ---
+      // Collect all <text> and <tspan> elements from the SVG that contain a
+      // numeric booth number (drawn on top of booth shapes).  Each entry is:
+      //   { num, x, y }  — booth number and its transformed center in SVG space.
+      function collectTextLabels(doc, globalMx) {
+        const labels = [];
+        for (const el of doc.querySelectorAll("text,tspan")) {
+          const raw = (el.textContent || "").trim();
+          const n = parseInt(raw, 10);
+          if (isNaN(n) || n <= 0 || String(n) !== raw) continue;
+          // Get position from x/y attributes (or parent text element)
+          let px = parseFloat(el.getAttribute("x") || el.closest("text")?.getAttribute("x") || "0");
+          let py = parseFloat(el.getAttribute("y") || el.closest("text")?.getAttribute("y") || "0");
+          if (isNaN(px)) px = 0;
+          if (isNaN(py)) py = 0;
+          const elMx = getEffectiveMatrix(el, globalMx);
+          const [tx, ty] = applyMatrix(elMx, px, py);
+          labels.push({ num: n, x: tx, y: ty });
+        }
+        return labels;
+      }
+
       function runExtraction() {
         if (!svgDoc) return;
         const targetColor = normalizeColor(fillColorInput.value);
         const mx = getMatrix();
+
+        // Pre-collect any text labels drawn on top of booth shapes
+        const textLabels = collectTextLabels(svgDoc, mx);
 
         const elements = svgDoc.querySelectorAll("path,rect,polygon,polyline");
         extractedBooths = [];
@@ -1091,12 +1116,27 @@
           const [scx, scy] = applyMatrix(elMx, rcx, rcy);
           const corners = pts.map(([x, y]) => applyMatrix(elMx, x, y));
 
+          // Determine booth number: prefer plain-integer element id, then nearest
+          // <text> label whose centroid is within the booth polygon, then sequential.
           const pathId = el.getAttribute("id") || "";
           const parsedNum = parseInt(pathId, 10);
-          const boothNum =
-            !isNaN(parsedNum) && parsedNum > 0 && String(parsedNum) === pathId
-              ? parsedNum
-              : idx++;
+          let boothNum;
+          if (!isNaN(parsedNum) && parsedNum > 0 && String(parsedNum) === pathId) {
+            boothNum = parsedNum;
+          } else if (textLabels.length > 0) {
+            // Find the nearest text label to this booth's centroid
+            let minDist = Infinity;
+            let nearest = null;
+            for (const lbl of textLabels) {
+              const d = Math.hypot(lbl.x - scx, lbl.y - scy);
+              if (d < minDist) { minDist = d; nearest = lbl; }
+            }
+            // Accept label only when it is reasonably close (within ~10% of SVG width)
+            const threshold = svgWidth * 0.1;
+            boothNum = nearest && minDist <= threshold ? nearest.num : idx++;
+          } else {
+            boothNum = idx++;
+          }
 
           const booth = {
             booth_num: boothNum,
@@ -1158,9 +1198,10 @@
 
       // --- RENDER CSV ---
       // Columns match the SvgBooth interface consumed by extract-hamvention-svgbooth-to-booth.ts:
-      //   booth_num       — real booth number from SVG path id when the id is a plain integer
-      //                     (e.g. id="1010" → 1010); falls back to sequential index when the
-      //                     id is non-numeric (e.g. Inkscape auto-ids like "path198")
+      //   booth_num       — real booth number resolved in priority order:
+      //                     1. plain-integer SVG element id (e.g. id="1010" → 1010)
+      //                     2. nearest <text>/<tspan> label drawn on top of the shape
+      //                     3. sequential fallback index (1, 2, 3 …)
       //   path_id         — SVG element id (if any)
       //   center_svg_x/y  — centroid in SVG coordinate space
       //   svgPoints       — corner points as "x,y x,y …" (y from top)
