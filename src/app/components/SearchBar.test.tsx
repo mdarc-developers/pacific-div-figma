@@ -62,9 +62,10 @@ const makeSession = (overrides: Partial<Session> = {}): Session => ({
 const makeExhibitor = (overrides: Partial<Exhibitor> = {}): Exhibitor => ({
   id: "e1",
   name: "Radio World",
-  conferenceId: "pacificon-2026",
   type: "Vendor",
   description: "Ham radio equipment",
+  boothName: "e1",
+  location: [55],
   ...overrides,
 });
 
