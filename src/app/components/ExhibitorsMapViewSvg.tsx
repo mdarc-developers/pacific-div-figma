@@ -328,8 +328,11 @@ export function ExhibitorsMapViewSvg({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Building layout SVG as background */}
-        <image href={svgUrl} x={0} y={0} width={svgWidth} height={svgHeight} />
+        {/* Building layout SVG as background — preserveAspectRatio="none" stretches
+            the floor-plan SVG to fill the full coordinate space so that booth polygon
+            coordinates (generated against a 1056×816 canvas) align correctly, matching
+            the same scaling behaviour used by Leaflet imageOverlay for raster maps. */}
+        <image href={svgUrl} x={0} y={0} width={svgWidth} height={svgHeight} preserveAspectRatio="none" />
 
         {/* Booth polygon overlays */}
         {svgBooths.map((booth) => {
