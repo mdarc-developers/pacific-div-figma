@@ -5,8 +5,8 @@
 // svgPoints: polygon corners as "x,y" pairs for direct SVG rendering (y from top)
 // coords: polygon corners as [y_bottom, x] pairs for Booth[] (y from bottom, y = SVG_HEIGHT - svg_y)
 
-export const SVG_WIDTH = 1056;
-export const SVG_HEIGHT = 816;
+export const SVG_WIDTH = 239.6535;
+export const SVG_HEIGHT = 248.29472;
 export const SVG_URL = "/assets/maps/hamvention-2026-building-1-maxim.svg";
 
 export interface SvgBooth {
