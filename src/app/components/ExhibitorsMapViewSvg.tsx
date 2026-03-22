@@ -55,7 +55,7 @@ export interface ExhibitorsMapViewSvgProps {
   onHighlightChange: (id: string | undefined) => void;
 }
 
-interface SvgLayout {
+export interface SvgLayout {
   /** SVG viewBox width  (e.g. 239.6535) */
   vbW: number;
   /** SVG viewBox height (e.g. 248.29472) */
@@ -94,7 +94,7 @@ interface DragState {
 const svgLayoutCache = new Map<string, SvgLayout>();
 
 /** Parse corner points from a space-separated "x,y x,y …" string. */
-function parsePoints(svgPoints: string): [number, number][] {
+export function parsePoints(svgPoints: string): [number, number][] {
   return svgPoints
     .trim()
     .split(/\s+/)
@@ -105,7 +105,7 @@ function parsePoints(svgPoints: string): [number, number][] {
 }
 
 /** Compute bounding box of all corner points across all booths. */
-function detectBounds(booths: SvgMapBooth[]) {
+export function detectBounds(booths: SvgMapBooth[]) {
   let minX = Infinity,
     maxX = -Infinity,
     minY = Infinity,
@@ -124,7 +124,7 @@ function detectBounds(booths: SvgMapBooth[]) {
 /** Fallback layout when SVG fetch/parse fails.
  *  Estimates viewBox and translate purely from the booth data bounding box,
  *  adding a 10 % margin on each side so the building outline is visible. */
-function fallbackLayout(booths: SvgMapBooth[]): SvgLayout {
+export function fallbackLayout(booths: SvgMapBooth[]): SvgLayout {
   const bounds = detectBounds(booths);
   if (!bounds) return { vbW: 100, vbH: 100, translateX: 0, translateY: 0 };
   const { minX, maxX, minY, maxY } = bounds;

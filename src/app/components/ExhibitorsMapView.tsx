@@ -19,7 +19,7 @@ import {
  *  for Leaflet-based maps uses the opposite convention.  For SVG maps every
  *  coord pair is [x, y], matching the intermediate space used here.
  */
-function boothToSvgMapBooth(booth: Booth): SvgMapBooth {
+export function boothToSvgMapBooth(booth: Booth): SvgMapBooth {
   return {
     boothNum: booth.id,
     svgPoints: booth.coords.map(([x, y]) => `${x},${y}`).join(" "),
