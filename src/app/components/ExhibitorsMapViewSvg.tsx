@@ -1,23 +1,69 @@
 // ExhibitorsMapViewSvg.tsx
-// Generic SVG exhibitor map component.
+// Generic SVG exhibitor-map component.
 // Renders an arbitrary SVG floor-plan with interactive booth polygon overlays.
 // Supports mouse-wheel zoom, click-drag pan, and touch pinch-to-zoom / drag.
-import React, { useRef, useState } from "react";
-import type { SvgBooth } from "@/data/hamvention-2026-svgbooth-20260305";
+//
+// Coordinate model
+// ─────────────────
+// The hamvention SVG background files share a common Inkscape structure:
+//
+//   <svg viewBox="0 0 W H">
+//     <g transform="translate(-Tx,-Ty)">           ← root group
+//       <path … transform="matrix(0,s,s,0,0,0)" /> ← each element
+//     </g>
+//   </svg>
+//
+// Booth polygon data (Booth.coords) was extracted from those elements after
+// the per-element matrix was applied but *before* the root translate, so each
+// coordinate lives in an "intermediate" space:
+//
+//   intermediate_x  ≈  s × raw_path_y
+//   intermediate_y  ≈  s × raw_path_x
+//
+// To land polygons on top of the green booth outlines in the background SVG
+// the component fetches the SVG file, reads W, H, Tx, Ty, and wraps the
+// polygons in  <g transform="translate(-Tx,-Ty)">  so they shift into viewBox
+// space.
+//
+// Sanity checks
+// ─────────────
+// The component computes the bounding box of the supplied booth data at
+// runtime and logs console warnings when the data looks misaligned so that
+// data problems surface early without breaking the render.
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { Exhibitor } from "@/types/conference";
 
+// ── Types ────────────────────────────────────────────────────────────────────
+
+/** Minimal booth polygon type used by this component.
+ *  Converted from Booth.coords (x,y pairs) by the caller. */
+export interface SvgMapBooth {
+  /** Booth number as shown on the floor plan */
+  boothNum: number;
+  /** Space-separated "x,y" corner pairs in the intermediate coordinate space
+   *  (post per-element matrix, pre root-translate). */
+  svgPoints: string;
+}
+
 export interface ExhibitorsMapViewSvgProps {
-  /** SVG booth polygons extracted from the floor-plan */
-  svgBooths: SvgBooth[];
-  /** URL of the SVG background image */
+  /** Booth polygon data (converted from Booth.coords or SvgBooth.svgPoints) */
+  booths: SvgMapBooth[];
+  /** URL of the SVG background floor-plan (same URL used as map image) */
   svgUrl: string;
-  /** Natural width of the SVG canvas */
-  svgWidth: number;
-  /** Natural height of the SVG canvas */
-  svgHeight: number;
   mapExhibitors: Exhibitor[];
   highlightedExhibitorId: string | undefined;
   onHighlightChange: (id: string | undefined) => void;
+}
+
+export interface SvgLayout {
+  /** SVG viewBox width  (e.g. 239.6535) */
+  vbW: number;
+  /** SVG viewBox height (e.g. 248.29472) */
+  vbH: number;
+  /** Amount to subtract from booth x to reach viewBox space (abs of translate-x) */
+  translateX: number;
+  /** Amount to subtract from booth y to reach viewBox space (abs of translate-y) */
+  translateY: number;
 }
 
 interface Tooltip {
@@ -42,6 +88,102 @@ interface DragState {
   scaleY: number;
 }
 
+// ── Module-level SVG layout cache ─────────────────────────────────────────────
+// Avoids re-fetching the same SVG file when the user switches between maps or
+// the component remounts.  Populated on first successful parse.
+const svgLayoutCache = new Map<string, SvgLayout>();
+
+/** Parse corner points from a space-separated "x,y x,y …" string. */
+export function parsePoints(svgPoints: string): [number, number][] {
+  return svgPoints
+    .trim()
+    .split(/\s+/)
+    .flatMap((pair) => {
+      const [x, y] = pair.split(",").map(Number);
+      return isNaN(x) || isNaN(y) ? [] : [[x, y] as [number, number]];
+    });
+}
+
+/** Compute bounding box of all corner points across all booths. */
+export function detectBounds(booths: SvgMapBooth[]) {
+  let minX = Infinity,
+    maxX = -Infinity,
+    minY = Infinity,
+    maxY = -Infinity;
+  for (const booth of booths) {
+    for (const [x, y] of parsePoints(booth.svgPoints)) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  }
+  return isFinite(minX) ? { minX, maxX, minY, maxY } : null;
+}
+
+/** Fallback layout when SVG fetch/parse fails.
+ *  Estimates viewBox and translate purely from the booth data bounding box,
+ *  adding a 10 % margin on each side so the building outline is visible. */
+export function fallbackLayout(booths: SvgMapBooth[]): SvgLayout {
+  const bounds = detectBounds(booths);
+  if (!bounds) return { vbW: 100, vbH: 100, translateX: 0, translateY: 0 };
+  const { minX, maxX, minY, maxY } = bounds;
+  const rangeW = maxX - minX;
+  const rangeH = maxY - minY;
+  const pad = 0.1; // 10 % padding
+  const vbW = rangeW * (1 + 2 * pad);
+  const vbH = rangeH * (1 + 2 * pad);
+  // Place origin so the booth bounding box starts at (pad*rangeW, pad*rangeH)
+  const translateX = minX - rangeW * pad;
+  const translateY = minY - rangeH * pad;
+  return { vbW, vbH, translateX, translateY };
+}
+
+/** Fetch and parse the SVG file to extract viewBox dimensions and root-group
+ *  translate.  Populates svgLayoutCache on success. */
+async function fetchSvgLayout(url: string): Promise<SvgLayout> {
+  const cached = svgLayoutCache.get(url);
+  if (cached) return cached;
+
+  const text = await fetch(url).then((r) => {
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.text();
+  });
+
+  const doc = new DOMParser().parseFromString(text, "image/svg+xml");
+  const svgEl = doc.querySelector("svg");
+
+  // viewBox="minX minY width height" — we only need width and height
+  const vbParts = (svgEl?.getAttribute("viewBox") ?? "")
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  const vbW = vbParts[2] ?? 0;
+  const vbH = vbParts[3] ?? 0;
+
+  // Root direct-child group translate: translate(-Tx,-Ty)
+  const rootGroup = svgEl?.querySelector(":scope > g");
+  const txStr = rootGroup?.getAttribute("transform") ?? "";
+  const txMatch = txStr.match(
+    /translate\(\s*(-?[0-9.]+)\s*[,\s]+\s*(-?[0-9.]+)\s*\)/,
+  );
+  // The SVG stores negative values (translate(-244,-130)); we want the
+  // magnitude so we can subtract it from booth coords to reach viewBox space.
+  const translateX = txMatch ? -parseFloat(txMatch[1]) : 0;
+  const translateY = txMatch ? -parseFloat(txMatch[2]) : 0;
+
+  if (vbW <= 0 || vbH <= 0) {
+    throw new Error(
+      `Could not read valid viewBox from ${url} (got ${vbW}×${vbH})`,
+    );
+  }
+
+  const layout: SvgLayout = { vbW, vbH, translateX, translateY };
+  svgLayoutCache.set(url, layout);
+  return layout;
+}
+
+// ── Constants ────────────────────────────────────────────────────────────────
 const ZOOM_FACTOR_IN = 0.75;
 const ZOOM_FACTOR_OUT = 1 / ZOOM_FACTOR_IN;
 
@@ -49,42 +191,138 @@ function clamp(val: number, min: number, max: number) {
   return Math.max(min, Math.min(max, val));
 }
 
+// ── Component ─────────────────────────────────────────────────────────────────
 export function ExhibitorsMapViewSvg({
-  svgBooths,
+  booths,
   svgUrl,
-  svgWidth,
-  svgHeight,
   mapExhibitors,
   highlightedExhibitorId,
   onHighlightChange,
 }: ExhibitorsMapViewSvgProps) {
-  const minVbWidth = svgWidth / 10; // maximum 10× zoom
+  // ── SVG layout (fetched async from the SVG file) ────────────────────────
+  const [svgLayout, setSvgLayout] = useState<SvgLayout | null>(
+    () => svgLayoutCache.get(svgUrl) ?? null,
+  );
 
+  useEffect(() => {
+    let cancelled = false;
+    const cached = svgLayoutCache.get(svgUrl);
+    if (cached) {
+      setSvgLayout(cached);
+      return;
+    }
+    fetchSvgLayout(svgUrl)
+      .then((layout) => {
+        if (!cancelled) setSvgLayout(layout);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.warn(
+          `[ExhibitorsMapViewSvg] Failed to parse SVG layout for ${svgUrl}:`,
+          err,
+          "— falling back to booth-data bounding box.",
+        );
+        setSvgLayout(fallbackLayout(booths));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [svgUrl, booths]);
+
+  // ── Bounding-box detection & sanity checks ──────────────────────────────
+  // Runs whenever booth data or the parsed layout changes.  Emits warnings
+  // when the data looks misaligned so problems surface during development
+  // without crashing the render.
+  const detectedBounds = useMemo(() => {
+    const bounds = detectBounds(booths);
+    if (!bounds || !svgLayout) return bounds;
+
+    const { minX, maxX, minY, maxY } = bounds;
+    const { vbW, vbH, translateX, translateY } = svgLayout;
+
+    // Booth corners in viewBox space after applying the parsed translate
+    const vbMinX = minX - translateX;
+    const vbMaxX = maxX - translateX;
+    const vbMinY = minY - translateY;
+    const vbMaxY = maxY - translateY;
+
+    const tolerance = 1; // 1 SVG unit tolerance for rounding
+    const outsideViewBox =
+      vbMinX < -tolerance ||
+      vbMaxX > vbW + tolerance ||
+      vbMinY < -tolerance ||
+      vbMaxY > vbH + tolerance;
+
+    // Centering-estimate of the translate for comparison
+    const detectedTX = (minX + maxX) / 2 - vbW / 2;
+    const detectedTY = (minY + maxY) / 2 - vbH / 2;
+    const txDiff = Math.abs(detectedTX - translateX);
+    const tyDiff = Math.abs(detectedTY - translateY);
+    const significantDiff =
+      txDiff > vbW * 0.1 || tyDiff > vbH * 0.1;
+
+    const dataRangeW = (maxX - minX).toFixed(1);
+    const dataRangeH = (maxY - minY).toFixed(1);
+
+    if (outsideViewBox) {
+      console.warn(
+        `[ExhibitorsMapViewSvg] ${svgUrl}: booth polygons extend outside SVG ` +
+          `viewBox ${vbW.toFixed(2)}×${vbH.toFixed(2)}. ` +
+          `After translate they land at ` +
+          `x[${vbMinX.toFixed(1)},${vbMaxX.toFixed(1)}] ` +
+          `y[${vbMinY.toFixed(1)},${vbMaxY.toFixed(1)}]. ` +
+          `Detected data range ${dataRangeW}×${dataRangeH}. ` +
+          `Data may be inaccurate or need regeneration.`,
+      );
+    } else if (significantDiff) {
+      console.warn(
+        `[ExhibitorsMapViewSvg] ${svgUrl}: centering-estimated translate ` +
+          `(${detectedTX.toFixed(2)},${detectedTY.toFixed(2)}) differs from ` +
+          `SVG-parsed translate (${translateX},${translateY}) by >10 % of ` +
+          `viewBox size. Detected data range ${dataRangeW}×${dataRangeH}. ` +
+          `Data may be inaccurate or need regeneration.`,
+      );
+    }
+
+    return bounds;
+  }, [booths, svgLayout, svgUrl]);
+
+  // Suppress the unused-variable lint warning: detectedBounds is used for its
+  // console.warn side-effect inside useMemo, not in the render output.
+  void detectedBounds;
+
+  // ── Derived viewBox dimensions ──────────────────────────────────────────
+  const vbW = svgLayout?.vbW ?? 1;
+  const vbH = svgLayout?.vbH ?? 1;
+  const translateX = svgLayout?.translateX ?? 0;
+  const translateY = svgLayout?.translateY ?? 0;
+  const minVbWidth = vbW / 10; // maximum 10× zoom
+
+  // ── ViewBox state ───────────────────────────────────────────────────────
   function constrainVb(vb: ViewBox): ViewBox {
-    const w = clamp(vb.w, minVbWidth, svgWidth);
-    const h = (w / svgWidth) * svgHeight;
-    const x = clamp(vb.x, 0, svgWidth - w);
-    const y = clamp(vb.y, 0, svgHeight - h);
+    const w = clamp(vb.w, minVbWidth, vbW);
+    const h = (w / vbW) * vbH;
+    const x = clamp(vb.x, 0, vbW - w);
+    const y = clamp(vb.y, 0, vbH - h);
     return { x, y, w, h };
   }
 
   const [tip, setTip] = useState<Tooltip | null>(null);
-  const [vb, setVb] = useState<ViewBox>({
-    x: 0,
-    y: 0,
-    w: svgWidth,
-    h: svgHeight,
-  });
+  const [vb, setVb] = useState<ViewBox>({ x: 0, y: 0, w: vbW, h: vbH });
   const [isPanning, setIsPanning] = useState(false);
 
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<DragState | null>(null);
   const pinchDistRef = useRef<number | null>(null);
-  // Tracks whether the pointer actually moved during a drag so that a
-  // mouseup-then-click sequence does not accidentally toggle a booth.
   const hasDraggedRef = useRef(false);
-  // Keep a ref that always reflects the latest vb for use inside event handlers
   const vbRef = useRef<ViewBox>(vb);
+
+  // Reset viewBox whenever the SVG layout changes (new building selected)
+  useEffect(() => {
+    const next = { x: 0, y: 0, w: vbW, h: vbH };
+    vbRef.current = next;
+    setVb(next);
+  }, [vbW, vbH]);
 
   function applyVb(next: ViewBox) {
     const constrained = constrainVb(next);
@@ -94,8 +332,8 @@ export function ExhibitorsMapViewSvg({
 
   function zoomAround(factor: number, svgCx: number, svgCy: number) {
     const prev = vbRef.current;
-    const newW = clamp(prev.w * factor, minVbWidth, svgWidth);
-    const newH = (newW / svgWidth) * svgHeight;
+    const newW = clamp(prev.w * factor, minVbWidth, vbW);
+    const newH = (newW / vbW) * vbH;
     applyVb({
       x: svgCx - (svgCx - prev.x) * (newW / prev.w),
       y: svgCy - (svgCy - prev.y) * (newH / prev.h),
@@ -114,13 +352,14 @@ export function ExhibitorsMapViewSvg({
     };
   }
 
-  // Build booth-number → exhibitor lookup
-  const boothToExhibitor = new Map<number, Exhibitor>();
-  for (const ex of mapExhibitors) {
-    for (const loc of ex.location) {
-      boothToExhibitor.set(loc, ex);
+  // ── Booth → exhibitor lookup ──────────────────────────────────────────────
+  const boothToExhibitor = useMemo(() => {
+    const m = new Map<number, Exhibitor>();
+    for (const ex of mapExhibitors) {
+      for (const loc of ex.location) m.set(loc, ex);
     }
-  }
+    return m;
+  }, [mapExhibitors]);
 
   // ── Mouse wheel zoom ────────────────────────────────────────────────────────
   const handleWheel = (e: React.WheelEvent<SVGSVGElement>) => {
@@ -215,10 +454,10 @@ export function ExhibitorsMapViewSvg({
 
   // ── Tooltip ─────────────────────────────────────────────────────────────────
   const handleMouseEnter = (
-    booth: SvgBooth,
+    booth: SvgMapBooth,
     e: React.MouseEvent<SVGPolygonElement>,
   ) => {
-    if (dragRef.current) return; // suppress tooltip while panning
+    if (dragRef.current) return;
     const r = (e.currentTarget as Element)
       .closest<SVGSVGElement>("svg")
       ?.getBoundingClientRect();
@@ -230,10 +469,10 @@ export function ExhibitorsMapViewSvg({
     setTip({ label, sx: e.clientX - r.left + 10, sy: e.clientY - r.top - 32 });
   };
 
-  const handleClick = (booth: SvgBooth) => {
+  const handleClick = (booth: SvgMapBooth) => {
     if (hasDraggedRef.current) {
       hasDraggedRef.current = false;
-      return; // ignore click at end of a pan gesture
+      return;
     }
     const ex = boothToExhibitor.get(booth.boothNum);
     if (!ex) return;
@@ -248,15 +487,14 @@ export function ExhibitorsMapViewSvg({
     const cur = vbRef.current;
     zoomAround(ZOOM_FACTOR_OUT, cur.x + cur.w / 2, cur.y + cur.h / 2);
   };
-  const handleResetZoom = () =>
-    applyVb({ x: 0, y: 0, w: svgWidth, h: svgHeight });
+  const handleResetZoom = () => applyVb({ x: 0, y: 0, w: vbW, h: vbH });
 
   const handleSvgMouseLeave = () => {
     setTip(null);
     stopMouseDrag();
   };
 
-  const isZoomed = vb.w < svgWidth;
+  const isZoomed = vb.w < vbW;
 
   return (
     <div style={{ position: "relative", fontFamily: "Arial, sans-serif" }}>
@@ -312,7 +550,9 @@ export function ExhibitorsMapViewSvg({
         width="100%"
         style={{
           display: "block",
-          aspectRatio: `${svgWidth} / ${svgHeight}`,
+          // Aspect ratio is driven by the actual SVG viewBox read from the file,
+          // so the background image is never stretched or skewed.
+          aspectRatio: `${vbW} / ${vbH}`,
           border: "1px solid #bbb",
           background: "white",
           borderRadius: 2,
@@ -329,49 +569,67 @@ export function ExhibitorsMapViewSvg({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Building layout SVG as background — preserveAspectRatio="none" stretches
-            the floor-plan SVG to fill the full coordinate space so that booth polygon
-            coordinates (generated against a 1056×816 canvas) align correctly, matching
-            the same scaling behaviour used by Leaflet imageOverlay for raster maps. */}
-        <image href={svgUrl} x={0} y={0} width={svgWidth} height={svgHeight} preserveAspectRatio="none" />
+        {/* Background floor-plan SVG.
+            The <image> dimensions exactly match the outer viewBox (vbW × vbH),
+            which equals the background SVG's own viewBox — so preserveAspectRatio
+            "none" causes no distortion: there is nothing to stretch. */}
+        <image
+          href={svgUrl}
+          x={0}
+          y={0}
+          width={vbW}
+          height={vbH}
+          preserveAspectRatio="none"
+        />
 
-        {/* Booth polygon overlays */}
-        {svgBooths.map((booth) => {
-          const ex = boothToExhibitor.get(booth.boothNum);
-          const isHighlighted =
-            ex !== undefined && ex.id === highlightedExhibitorId;
-          const hasExhibitor = ex !== undefined;
-          return (
-            <polygon
-              key={booth.boothNum}
-              points={booth.svgPoints}
-              fill={isHighlighted ? "#f59e0b" : "white"}
-              fillOpacity={isHighlighted ? 0.55 : 0}
-              stroke={hasExhibitor ? "#1e40af" : "#aaa"}
-              strokeWidth={isHighlighted ? 2 : hasExhibitor ? 1.2 : 0.6}
-              strokeOpacity={hasExhibitor ? 0.7 : 0.3}
-              vectorEffect="non-scaling-stroke"
-              style={{ cursor: hasExhibitor ? "pointer" : "default" }}
-              onMouseEnter={(e) => handleMouseEnter(booth, e)}
-              onMouseLeave={() => setTip(null)}
-              onMouseOver={(e) => {
-                if (!isHighlighted)
-                  (e.currentTarget as SVGPolygonElement).setAttribute(
-                    "fill-opacity",
-                    "0.35",
-                  );
-              }}
-              onMouseOut={(e) => {
-                if (!isHighlighted)
-                  (e.currentTarget as SVGPolygonElement).setAttribute(
-                    "fill-opacity",
-                    "0",
-                  );
-              }}
-              onClick={() => handleClick(booth)}
-            />
-          );
-        })}
+        {/* Booth polygon overlays.
+            The <g> translate shifts polygons from intermediate coordinate space
+            (post per-element matrix, pre root-translate) into SVG viewBox space,
+            so each blue outline lands exactly on top of the corresponding green
+            booth shape in the background image.
+            Overlays are hidden until the SVG layout is parsed so that the first
+            paint shows a correctly-positioned background rather than a flash of
+            misaligned polygons. */}
+        {svgLayout && (
+          <g transform={`translate(${-translateX}, ${-translateY})`}>
+            {booths.map((booth) => {
+              const ex = boothToExhibitor.get(booth.boothNum);
+              const isHighlighted =
+                ex !== undefined && ex.id === highlightedExhibitorId;
+              const hasExhibitor = ex !== undefined;
+              return (
+                <polygon
+                  key={booth.boothNum}
+                  points={booth.svgPoints}
+                  fill={isHighlighted ? "#f59e0b" : "white"}
+                  fillOpacity={isHighlighted ? 0.55 : 0}
+                  stroke={hasExhibitor ? "#1e40af" : "#aaa"}
+                  strokeWidth={isHighlighted ? 2 : hasExhibitor ? 1.2 : 0.6}
+                  strokeOpacity={hasExhibitor ? 0.7 : 0.3}
+                  vectorEffect="non-scaling-stroke"
+                  style={{ cursor: hasExhibitor ? "pointer" : "default" }}
+                  onMouseEnter={(e) => handleMouseEnter(booth, e)}
+                  onMouseLeave={() => setTip(null)}
+                  onMouseOver={(e) => {
+                    if (!isHighlighted)
+                      (e.currentTarget as SVGPolygonElement).setAttribute(
+                        "fill-opacity",
+                        "0.35",
+                      );
+                  }}
+                  onMouseOut={(e) => {
+                    if (!isHighlighted)
+                      (e.currentTarget as SVGPolygonElement).setAttribute(
+                        "fill-opacity",
+                        "0",
+                      );
+                  }}
+                  onClick={() => handleClick(booth)}
+                />
+              );
+            })}
+          </g>
+        )}
       </svg>
 
       {tip && (

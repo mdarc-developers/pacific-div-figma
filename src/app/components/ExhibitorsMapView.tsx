@@ -2,29 +2,29 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapImage, Booth, Exhibitor } from "@/types/conference";
-import { ExhibitorsMapViewSvg } from "@/app/components/ExhibitorsMapViewSvg";
 import {
-  HAMVENTION_BUILDING1_BOOTHS,
-  SVG_URL as HAMVENTION_B1_SVG_URL,
-  SVG_WIDTH as HAMVENTION_B1_SVG_WIDTH,
-  SVG_HEIGHT as HAMVENTION_B1_SVG_HEIGHT,
-  type SvgBooth,
-} from "@/data/hamvention-2026-svgbooth-20260305";
+  ExhibitorsMapViewSvg,
+  type SvgMapBooth,
+} from "@/app/components/ExhibitorsMapViewSvg";
 
-/** Registry mapping each SVG floor-plan URL to its booth polygon data. */
-const SVG_MAP_REGISTRY = new Map<
-  string,
-  { booths: SvgBooth[]; svgWidth: number; svgHeight: number }
->([
-  [
-    HAMVENTION_B1_SVG_URL,
-    {
-      booths: HAMVENTION_BUILDING1_BOOTHS,
-      svgWidth: HAMVENTION_B1_SVG_WIDTH,
-      svgHeight: HAMVENTION_B1_SVG_HEIGHT,
-    },
-  ],
-]);
+/** Convert a Booth (from BOOTH_DATA) to the SvgMapBooth format expected by
+ *  ExhibitorsMapViewSvg.
+ *
+ *  Booth.coords stores polygon corners as [[x, y], …] in the intermediate
+ *  coordinate space (post per-element SVG matrix, pre root-group translate).
+ *  This is the same space used by SvgBooth.svgPoints — the format that
+ *  ExhibitorsMapViewSvg renders with a <g translate> overlay.
+ *
+ *  Note: Leaflet interprets coords as [lat, lng] = [y, x], so Booth.coords
+ *  for Leaflet-based maps uses the opposite convention.  For SVG maps every
+ *  coord pair is [x, y], matching the intermediate space used here.
+ */
+export function boothToSvgMapBooth(booth: Booth): SvgMapBooth {
+  return {
+    boothNum: booth.id,
+    svgPoints: booth.coords.map(([x, y]) => `${x},${y}`).join(" "),
+  };
+}
 
 interface ExhibitorsMapViewProps {
   exhibitorsMap: MapImage | undefined;
@@ -213,16 +213,16 @@ export function ExhibitorsMapView({
 
   if (!exhibitorsMap) return null;
 
-  // SVG maps: render using generic SVG component (no Leaflet) when booth data is registered
-  const svgData = SVG_MAP_REGISTRY.get(exhibitorsMap.url);
-  if (svgData) {
+  // SVG maps: detected by URL extension.  All Booth.coords data loaded from
+  // BOOTH_DATA (via the *-booth-*.ts supplemental glob) is already passed in
+  // as exhibitorBooths, so no separate registry is needed.
+  if (exhibitorsMap.url.endsWith(".svg")) {
+    const svgBooths: SvgMapBooth[] = exhibitorBooths.map(boothToSvgMapBooth);
     return (
       <>
         <ExhibitorsMapViewSvg
-          svgBooths={svgData.booths}
+          booths={svgBooths}
           svgUrl={exhibitorsMap.url}
-          svgWidth={svgData.svgWidth}
-          svgHeight={svgData.svgHeight}
           mapExhibitors={mapExhibitors}
           highlightedExhibitorId={highlightedExhibitorId}
           onHighlightChange={onHighlightChange}
