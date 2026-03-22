@@ -312,6 +312,7 @@ export function ExhibitorsMapViewSvg({
         width="100%"
         style={{
           display: "block",
+          aspectRatio: `${svgWidth} / ${svgHeight}`,
           border: "1px solid #bbb",
           background: "white",
           borderRadius: 2,
