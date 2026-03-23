@@ -3,19 +3,18 @@ import { ConferenceListItem } from "@/types/conference";
 // moved from static mapSessionsUrl and mapExhibitorsUrl arrays on each conference
 //   to dynamically built arrays loaded from supplemental files
 //   in a big ConferenceModule for the activeConferenceId
-//   via src/lib/sessionData.ts (named for first implemented of the four supplemental types
-//     session, booth, exhibitor and booth
+//   via src/lib/supplementalData.ts which reads session, booth, room and exhibitor
+//     supplemental files; conference-level functions live in src/lib/conferenceData.ts
 // code is still being updated
 //
 // Rooms and Booths lead the detection and display for /schedule and /exhibitors
-// 
+//
 //interface ConferenceModule {
-//  conferenceMaps?: MapImage[]; // each "maps" is an array of url string and target[].
-//                                  each url string must be in this conferenceMaps array
+//  conferenceMaps?: MapImage[]; // array of MapImage; each url must be unique within the conference
 //  mapSessions?: [string, Session[]];
 //  mapRooms?: [string, Room[]];
-//  mapExhibitors?: [string, Exhibitor[]];
-//  mapBooths?: [string, Booth[]];
+//  mapExhibitors?: [string, Exhibitor[]];  // array now supported via supplemental files
+//  mapBooths?: [string, Booth[]];          // array now supported via supplemental files
 //  [key: string]: unknown;
 //}
 //

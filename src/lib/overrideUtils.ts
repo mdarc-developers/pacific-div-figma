@@ -101,7 +101,7 @@ export function warnOutOfRangeSessions(
   sessions.forEach((session) => {
     if (!isSessionWithinConference(session, conference)) {
       console.warn(
-        `[sessionData] Session "${session.id}" in "${conferenceId}" is outside conference dates` +
+        `[supplementalData] Session "${session.id}" in "${conferenceId}" is outside conference dates` +
           ` (${conference.startDate}–${conference.endDate}):` +
           ` startTime=${session.startTime}`,
       );
@@ -117,7 +117,7 @@ export function warnOutOfRangeSessions(
  *
  * Examples:
  *   warnEmptyMapData("seapac-2026", "mapSessions", "/assets/maps/seapac-forums.png", [])
- *   → console.warn('[sessionData] "seapac-2026" mapSessions has an empty array for URL "/assets/maps/seapac-forums.png"')
+ *   → console.warn('[supplementalData] "seapac-2026" mapSessions has an empty array for URL "/assets/maps/seapac-forums.png"')
  */
 export function warnEmptyMapData(
   conferenceId: string,
@@ -127,7 +127,7 @@ export function warnEmptyMapData(
 ): void {
   if (items.length === 0) {
     console.warn(
-      `[sessionData] "${conferenceId}" ${type} has an empty array for URL "${url}"`,
+      `[supplementalData] "${conferenceId}" ${type} has an empty array for URL "${url}"`,
     );
   }
 }

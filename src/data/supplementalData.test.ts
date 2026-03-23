@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { allConferences } from "./all-conferences";
-import { BOOTH_DATA, ROOM_DATA } from "@/lib/sessionData"; // ensure side-effects run and export BOOTH_DATA
+import { BOOTH_DATA, ROOM_DATA } from "@/lib/supplementalData"; // ensure side-effects run and export BOOTH_DATA
 import {
   formatUpdateToken,
   formatUpdateTokenDetail,
@@ -19,12 +19,12 @@ interface SupplementalBoothModule {
   mapBooths?: [string, Booth[]];
 }
 
-// Supplemental session files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
+// Supplemental session files loaded via glob (mirrors the pattern in src/lib/supplementalData.ts)
 const supplementalSessionModules = import.meta.glob("./*-session-*.ts", {
   eager: true,
 }) as Record<string, SupplementalSessionModule>;
 
-// Supplemental booth files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
+// Supplemental booth files loaded via glob (mirrors the pattern in src/lib/supplementalData.ts)
 const supplementalBoothModules = import.meta.glob("./*-booth-*.ts", {
   eager: true,
 }) as Record<string, SupplementalBoothModule>;
@@ -131,7 +131,7 @@ describe("supplemental session override logic", () => {
 });
 
 // ── resolveSessionEndTime ─────────────────────────────────────────────────────
-// Validates the end-time normalisation helper used by sessionData.ts to ensure
+// Validates the end-time normalisation helper used by supplementalData.ts to ensure
 // sessions with missing or invalid endTimes are displayed with a sensible
 // 1-hour default instead of "Invalid Date".
 describe("resolveSessionEndTime", () => {
@@ -376,7 +376,7 @@ describe("warnOutOfRangeSessions", () => {
     warnOutOfRangeSessions("seapac-2026", mapSessions[1], seapac);
     expect(warnSpy).not.toHaveBeenCalled();
     const messages = warnSpy.mock.calls.map((args) => String(args[0]));
-    expect(messages.every((m) => m.includes("[sessionData]"))).toBe(true);
+    expect(messages.every((m) => m.includes("[supplementalData]"))).toBe(true);
   });
 
   it("does not emit console.warn for quartzfest-2027 sessions (all are within the conference date range)", () => {
@@ -456,10 +456,10 @@ describe("conference date-range checks for real session data", () => {
 });
 
 // ── mapSessionRooms population ────────────────────────────────────────────────
-// Verifies that sessionData.ts populates mapSessionRooms on Conference objects
+// Verifies that supplementalData.ts populates mapSessionRooms on Conference objects
 // in allConferences when base conference modules have both mapSessions and mapRooms.
-// The top-level `import "@/lib/sessionData"` at the top of this file triggers the
-// population side-effects; sessionData.ts mutates allConferences in-place so the
+// The top-level `import "@/lib/supplementalData"` at the top of this file triggers the
+// population side-effects; supplementalData.ts mutates allConferences in-place so the
 // updated fields are visible through the same cached module instance.
 describe("mapSessionRooms population", () => {
   // Every conference data file exports both mapSessions and mapRooms, so every
@@ -505,10 +505,10 @@ describe("mapSessionRooms population", () => {
 });
 
 // ── mapExhibitorBooths population ─────────────────────────────────────────────
-// Verifies that sessionData.ts populates mapExhibitorBooths on Conference objects
+// Verifies that supplementalData.ts populates mapExhibitorBooths on Conference objects
 // in allConferences when base conference modules have both mapExhibitors and mapBooths.
-// The top-level `import "@/lib/sessionData"` at the top of this file triggers the
-// population side-effects; sessionData.ts mutates allConferences in-place so the
+// The top-level `import "@/lib/supplementalData"` at the top of this file triggers the
+// population side-effects; supplementalData.ts mutates allConferences in-place so the
 // updated fields are visible through the same cached module instance.
 describe("mapExhibitorBooths population", () => {
   // Conferences that export both mapExhibitors and mapBooths should have
@@ -585,7 +585,7 @@ describe("warnEmptyMapData", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     warnEmptyMapData("test-conf", "mapSessions", "/assets/maps/test.png", []);
     expect(warnSpy).toHaveBeenCalledOnce();
-    expect(String(warnSpy.mock.calls[0][0])).toContain("[sessionData]");
+    expect(String(warnSpy.mock.calls[0][0])).toContain("[supplementalData]");
     expect(String(warnSpy.mock.calls[0][0])).toContain("test-conf");
     expect(String(warnSpy.mock.calls[0][0])).toContain("mapSessions");
     expect(String(warnSpy.mock.calls[0][0])).toContain("/assets/maps/test.png");
@@ -654,7 +654,7 @@ describe("hamcation-2026-booth supplemental file", () => {
 });
 
 // ── BOOTH_DATA multi-entry (hamcation-2026) ───────────────────────────────────
-// Verifies that sessionData.ts accumulates multiple booth entries for conferences
+// Verifies that supplementalData.ts accumulates multiple booth entries for conferences
 // that have both a base booth file and one or more supplemental booth files.
 describe("BOOTH_DATA multi-entry (hamcation-2026)", () => {
   it("hamcation-2026 BOOTH_DATA has two entries", () => {
@@ -679,7 +679,7 @@ describe("BOOTH_DATA multi-entry (hamcation-2026)", () => {
 });
 
 // ── ROOM_DATA multi-entry (pacificon-2026) ────────────────────────────────────
-// Verifies that sessionData.ts accumulates multiple room entries for conferences
+// Verifies that supplementalData.ts accumulates multiple room entries for conferences
 // that have both a base room (mapRooms in pacificon-2026.ts) and one or more
 // supplemental room files (e.g. pacificon-2026-room-20260302.ts).
 describe("ROOM_DATA multi-entry (pacificon-2026)", () => {

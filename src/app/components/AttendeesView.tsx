@@ -30,7 +30,7 @@ import {
   ATTENDEE_DATA,
   ATTENDEE_SUPPLEMENTAL_TOKEN,
 } from "@/lib/userProfileData";
-import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { PRIZE_DATA } from "@/lib/prizesData";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";

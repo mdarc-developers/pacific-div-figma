@@ -19,7 +19,7 @@ import { Exhibitor } from "@/types/conference";
 //import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
-import { EXHIBITOR_DATA } from "@/lib/sessionData";
+import { EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { sanitizeExhibitorUrl } from "@/lib/urlUtils";
 
 interface ExhibitorViewProps {

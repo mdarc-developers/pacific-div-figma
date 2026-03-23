@@ -31,7 +31,7 @@ import { useUserProfileFields } from "@/app/hooks/useUserProfileFields";
 import { useShowQrzLink } from "@/app/hooks/useShowQrzLink";
 import { useAttendanceContext } from "@/app/contexts/AttendanceContext";
 import { Conference } from "@/types/conference";
-import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
 import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";

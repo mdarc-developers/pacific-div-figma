@@ -8,7 +8,7 @@ import {
   loadSessionCountsFromLS,
   loadExhibitorCountsFromLS,
 } from "@/services/bookmarkCountsService";
-import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 
 /**
  * Headless sync component.

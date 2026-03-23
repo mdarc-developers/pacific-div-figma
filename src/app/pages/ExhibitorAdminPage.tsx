@@ -5,7 +5,7 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { useExhibitorAdmin } from "@/app/hooks/useExhibitorAdmin";
 import { ExhibitorAdminView } from "@/app/components/ExhibitorAdminView";
 import { Button } from "@/app/components/ui/button";
-import { BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 
 export function ExhibitorAdminPage() {
   const { user, loading } = useAuth();

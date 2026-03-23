@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Calendar, Map, Mic, SquareUser, Trophy, User } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { BOOTH_DATA } from "@/lib/sessionData";
+import { BOOTH_DATA } from "@/lib/supplementalData";
 
 export function Navigation() {
   const { activeConference } = useConference();

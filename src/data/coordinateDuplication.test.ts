@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { BOOTH_DATA, ROOM_DATA } from "@/lib/sessionData";
+import { BOOTH_DATA, ROOM_DATA } from "@/lib/supplementalData";
 
 /**
  * Serialise a coords array to a canonical string for exact-match comparison.
