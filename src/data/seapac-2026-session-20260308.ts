@@ -26,7 +26,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A",
       startTime: "2026-06-06T10:00:00",
       endTime: "2026-06-06T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "1A",
     },
     {
@@ -38,7 +38,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside B",
       startTime: "2026-06-06T10:00:00",
       endTime: "2026-06-06T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "1B",
     },
     {
@@ -50,7 +50,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-06T10:00:00",
       endTime: "2026-06-06T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "1C",
     },
     {
@@ -62,7 +62,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A",
       startTime: "2026-06-06T10:00:00",
       endTime: "2026-06-06T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "1D",
     },
     {
@@ -74,7 +74,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside B",
       startTime: "2026-06-06T10:00:00",
       endTime: "2026-06-06T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "1E",
     },
     {
@@ -86,7 +86,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-06T10:00:00",
       endTime: "2026-06-06T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "1F",
     },
     {
@@ -98,7 +98,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Sunrise",
       startTime: "2026-06-06T10:00:00",
       endTime: "2026-06-06T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "1G",
     },
     {
@@ -110,7 +110,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A",
       startTime: "2026-06-06T11:00:00",
       endTime: "2026-06-06T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "2A",
     },
     {
@@ -122,7 +122,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside B",
       startTime: "2026-06-06T11:00:00",
       endTime: "2026-06-06T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "2B",
     },
     {
@@ -134,7 +134,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-06T11:00:00",
       endTime: "2026-06-06T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "2C",
     },
     {
@@ -146,7 +146,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A",
       startTime: "2026-06-06T11:00:00",
       endTime: "2026-06-06T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "2D",
     },
     {
@@ -158,7 +158,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside B",
       startTime: "2026-06-06T11:00:00",
       endTime: "2026-06-06T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "2E",
     },
     {
@@ -170,7 +170,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-06T11:00:00",
       endTime: "2026-06-06T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "2F",
     },
     {
@@ -182,7 +182,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Sunrise",
       startTime: "2026-06-06T11:00:00",
       endTime: "2026-06-06T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "2G",
     },
     {
@@ -194,7 +194,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A",
       startTime: "2026-06-06T12:00:00",
       endTime: "2026-06-06T12:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "3A",
     },
     {
@@ -206,7 +206,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside B",
       startTime: "2026-06-06T12:00:00",
       endTime: "2026-06-06T12:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "3B",
     },
     {
@@ -218,7 +218,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-06T12:00:00",
       endTime: "2026-06-06T12:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "3C",
     },
     {
@@ -230,7 +230,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A",
       startTime: "2026-06-06T12:00:00",
       endTime: "2026-06-06T12:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "3D",
     },
     {
@@ -242,7 +242,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside B",
       startTime: "2026-06-06T12:00:00",
       endTime: "2026-06-06T12:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "3E",
     },
     {
@@ -254,7 +254,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-06T12:00:00",
       endTime: "2026-06-06T12:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "3F",
     },
     {
@@ -266,7 +266,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Sunrise",
       startTime: "2026-06-06T12:00:00",
       endTime: "2026-06-06T12:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "3G",
     },
     {
@@ -277,7 +277,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A",
       startTime: "2026-06-06T13:00:00",
       endTime: "2026-06-06T13:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "4A",
     },
     {
@@ -289,7 +289,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A/B",
       startTime: "2026-06-06T13:00:00",
       endTime: "2026-06-06T13:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "4B",
     },
     {
@@ -301,7 +301,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-06T13:00:00",
       endTime: "2026-06-06T13:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "4C",
     },
     {
@@ -313,7 +313,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A",
       startTime: "2026-06-06T13:00:00",
       endTime: "2026-06-06T13:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "4D",
     },
     {
@@ -325,7 +325,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside B",
       startTime: "2026-06-06T13:00:00",
       endTime: "2026-06-06T13:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "4E",
     },
     {
@@ -337,7 +337,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-06T13:00:00",
       endTime: "2026-06-06T13:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "4F",
     },
     {
@@ -349,7 +349,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A",
       startTime: "2026-06-06T15:10:00",
       endTime: "2026-06-06T16:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "5A",
     },
     {
@@ -361,7 +361,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside B",
       startTime: "2026-06-06T15:10:00",
       endTime: "2026-06-06T16:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "5B",
     },
     {
@@ -373,7 +373,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-06T15:10:00",
       endTime: "2026-06-06T16:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "5C",
     },
     {
@@ -385,7 +385,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A",
       startTime: "2026-06-06T15:10:00",
       endTime: "2026-06-06T16:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "5D",
     },
     {
@@ -397,7 +397,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside B",
       startTime: "2026-06-06T15:10:00",
       endTime: "2026-06-06T16:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "5E",
     },
     {
@@ -409,7 +409,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-06T15:10:00",
       endTime: "2026-06-06T16:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "5F",
     },
     {
@@ -421,7 +421,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Sunrise",
       startTime: "2026-06-06T15:10:00",
       endTime: "2026-06-06T16:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "5G",
     },
     {
@@ -433,7 +433,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A",
       startTime: "2026-06-06T16:10:00",
       endTime: "2026-06-06T17:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "6A",
     },
     {
@@ -445,7 +445,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside B",
       startTime: "2026-06-06T16:10:00",
       endTime: "2026-06-06T17:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "6B",
     },
     {
@@ -457,7 +457,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-06T16:10:00",
       endTime: "2026-06-06T17:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "6C",
     },
     {
@@ -469,7 +469,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A",
       startTime: "2026-06-06T16:10:00",
       endTime: "2026-06-06T17:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "6D",
     },
     {
@@ -481,7 +481,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside B",
       startTime: "2026-06-06T16:10:00",
       endTime: "2026-06-06T17:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "6E",
     },
     {
@@ -493,7 +493,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-06T16:10:00",
       endTime: "2026-06-06T17:00:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "6F",
     },
     {
@@ -505,7 +505,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A/B",
       startTime: "2026-06-07T10:00:00",
       endTime: "2026-06-07T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "7A",
     },
     {
@@ -516,7 +516,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A/B",
       startTime: "2026-06-07T11:00:00",
       endTime: "2026-06-07T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "7B",
     },
     {
@@ -528,7 +528,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-07T10:00:00",
       endTime: "2026-06-07T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "7C",
     },
     {
@@ -540,7 +540,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A/B",
       startTime: "2026-06-07T10:00:00",
       endTime: "2026-06-07T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "7D",
     },
     {
@@ -552,7 +552,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A/B",
       startTime: "2026-06-07T11:00:00",
       endTime: "2026-06-07T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "7E",
     },
     {
@@ -564,7 +564,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-07T10:00:00",
       endTime: "2026-06-07T10:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "7F",
     },
     {
@@ -575,7 +575,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A/B",
       startTime: "2026-06-07T11:00:00",
       endTime: "2026-06-07T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "8A",
     },
     {
@@ -586,7 +586,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside A/B",
       startTime: "2026-06-07T11:00:00",
       endTime: "2026-06-07T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "8B",
     },
     {
@@ -598,7 +598,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Riverside C",
       startTime: "2026-06-07T11:00:00",
       endTime: "2026-06-07T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "8C",
     },
     {
@@ -610,7 +610,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside A/B",
       startTime: "2026-06-07T11:00:00",
       endTime: "2026-06-07T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "8D",
     },
     {
@@ -622,7 +622,7 @@ export const mapSessions: [string, Session[]] = [
       location: "Seaside C",
       startTime: "2026-06-07T11:00:00",
       endTime: "2026-06-07T11:50:00",
-      category: "Seminars",
+      category: "Forums",
       gridKey: "8E",
     },
   ],
