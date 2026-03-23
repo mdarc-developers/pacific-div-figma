@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Exhibitor, Booth } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
-import { BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { sanitizeExhibitorUrl } from "@/lib/urlUtils";
 
 interface ConferenceModule {
@@ -9,7 +9,7 @@ interface ConferenceModule {
   mapBooths?: [string, Booth[]];
 }
 
-// Supplemental exhibitor files loaded via glob (mirrors the pattern in src/lib/sessionData.ts)
+// Supplemental exhibitor files loaded via glob (mirrors the pattern in src/lib/supplementalData.ts)
 const supplementalExhibitorModules = import.meta.glob("./*-exhibitor-*.ts", {
   eager: true,
 }) as Record<string, ConferenceModule>;

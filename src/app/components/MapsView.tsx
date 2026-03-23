@@ -11,7 +11,7 @@ import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Map as MapIcon } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
-import { MAP_DATA, ROOM_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { MAP_DATA, ROOM_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { useNavigate } from "react-router-dom";
 
 /**

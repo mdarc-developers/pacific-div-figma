@@ -25,7 +25,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { ROOM_DATA } from "@/lib/sessionData";
+import { ROOM_DATA } from "@/lib/supplementalData";
 import { isSessionWithinConference } from "@/lib/overrideUtils";
 
 // ---------------------------------------------------------------------------

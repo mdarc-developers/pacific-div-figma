@@ -9,7 +9,7 @@ import { useNotesContext } from "@/app/contexts/NotesContext";
 import { useVoteContext } from "@/app/contexts/VoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
-import { MAP_DATA, ROOM_DATA, SESSION_DATA } from "@/lib/sessionData";
+import { MAP_DATA, ROOM_DATA, SESSION_DATA } from "@/lib/supplementalData";
 
 export function ForumsPage() {
   const isMdarcDeveloper = useMdarcDeveloper();

@@ -9,7 +9,7 @@ import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useExhibitorNotesContext } from "@/app/contexts/ExhibitorNotesContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { useSearchParams } from "react-router-dom";
-import { MAP_DATA, BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { MAP_DATA, BOOTH_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 
 export function ExhibitorsPage() {
   const isMdarcDeveloper = useMdarcDeveloper();

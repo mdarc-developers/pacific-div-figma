@@ -6,8 +6,8 @@ import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 import { Session, Exhibitor } from "@/types/conference";
 import { SearchResult, ExhibitorSearchResult } from "@/services/searchService";
 
-// ── Mock sessionData so tests run without the full generated dataset ──────────
-vi.mock("@/lib/sessionData", () => ({
+// ── Mock supplementalData so tests run without the full generated dataset ──────────
+vi.mock("@/lib/supplementalData", () => ({
   SESSION_DATA: {},
   EXHIBITOR_DATA: {},
 }));

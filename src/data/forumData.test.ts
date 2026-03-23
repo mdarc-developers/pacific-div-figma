@@ -19,13 +19,13 @@ const CONFERENCE_MODULES: [string, ConferenceModule][] = Object.entries(
 });
 
 // Supplemental session files: URL must match the base conference's mapRooms URL.
-// Uses the same glob pattern as sessionData.ts.
+// Uses the same glob pattern as supplementalData.ts.
 const supplementalSessionModules = import.meta.glob("./*-session-*.ts", {
   eager: true,
 }) as Record<string, ConferenceModule>;
 
 // Supplemental exhibitor files: URL must match the base conference's mapBooths URL.
-// Uses the same glob pattern as sessionData.ts.
+// Uses the same glob pattern as supplementalData.ts.
 const supplementalExhibitorModules = import.meta.glob("./*-exhibitor-*.ts", {
   eager: true,
 }) as Record<string, ConferenceModule>;

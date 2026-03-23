@@ -5,7 +5,7 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSessionAdmin } from "@/app/hooks/useSessionAdmin";
 import { SessionAdminView } from "@/app/components/SessionAdminView";
 import { Button } from "@/app/components/ui/button";
-import { SESSION_DATA } from "@/lib/sessionData";
+import { SESSION_DATA } from "@/lib/supplementalData";
 
 export function SessionAdminPage() {
   const { user, loading } = useAuth();

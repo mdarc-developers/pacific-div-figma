@@ -9,7 +9,7 @@ import { Session, Exhibitor } from "@/types/conference";
 import { Button } from "@/app/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/sessionData";
+import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 
 type CombinedResult =
   | { kind: "session"; result: SearchResult }
