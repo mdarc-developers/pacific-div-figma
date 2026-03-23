@@ -115,34 +115,75 @@ pacific-div-figma/
 │   │       └── SignUpPage.tsx         # Email/password + Google sign-up; client-side validation
 │   ├── data/
 │   │   ├── all-conferences.ts                  # Master list used by ConferenceContext
+│   │   │
+│   │   │   ── Base conference files (one per conference-year, loaded by conferenceData.ts glob *-20[0-9][0-9].ts)
 │   │   ├── hamcation-2026.ts                   # Feb Orlando, FL — Hamcation 2026
-│   │   ├── hamcation-2026-exhibitor-*.ts        # Exhibitor override/supplemental data
 │   │   ├── hamcation-2027.ts                   # Feb Orlando, FL — Hamcation 2027
 │   │   ├── hamvention-2026.ts                  # May Dayton, OH — Hamvention 2026
-│   │   ├── huntsville-hamfest-2026.ts           # Aug Huntsville, AL — Hamfest 2026
+│   │   ├── huntsville-2026.ts                  # Aug Huntsville, AL — Hamfest 2026
 │   │   ├── pacificon-2026.ts                   # Oct San Ramon, CA — Pacificon 2026
-│   │   ├── pacificonSvgExhibitorMapData.ts                    # SVG booth/room data for PacificonSvgExhibitorMap
 │   │   ├── quartzfest-2027.ts                  # Jan Quartzsite, AZ — Quartzfest 2027
-│   │   ├── quartzfest-2027-session-*.ts         # Session override/supplemental data
-│   │   ├── quartzfest-2027-userprofile-*.ts     # Attendee override/supplemental data
 │   │   ├── seapac-2026.ts                      # Jun Portland, OR — SeaPac 2026
-│   │   ├── seapac-2026-session-*.ts             # Session override/supplemental data
 │   │   ├── yuma-2026.ts                        # Feb Yuma, AZ — Yuma Hamfest 2026
-│   │   ├── yuma-2026-prize-*.ts                # Prize override/supplemental data
-│   │   ├── yuma-2026-prizewinner-*.ts           # Prize winner override/supplemental data
 │   │   ├── yuma-2027.ts                        # Feb Yuma, AZ — Yuma Hamfest 2027
+│   │   │
+│   │   │   ── Supplemental/override files — filename pattern: {conferenceId}-{type}-{YYYYMMDD[THHmmss]}.ts
+│   │   │      Booth files may include an extra slug before the timestamp (e.g. -building-1-) to support
+│   │   │      per-building maps. The timestamp token after the last "-" drives freshness ordering.
+│   │   │
+│   │   │   Session overrides (replace mapSessions in SESSION_DATA; glob: *-session-*.ts):
+│   │   ├── hamcation-2027-session-20260310.ts
+│   │   ├── hamvention-2026-session-20260307.ts
+│   │   ├── quartzfest-2027-session-20260307.ts
+│   │   ├── seapac-2026-session-20260308.ts
+│   │   ├── yuma-2026-session-20260301.ts
+│   │   ├── yuma-2027-session-20260302.ts
+│   │   │
+│   │   │   Room data (appended to ROOM_DATA; glob: *-room-*.ts):
+│   │   │      Each file supplies a [mapUrl, Room[]] tuple. mapUrl MUST match conferenceMaps and mapSessions.
+│   │   ├── huntsville-2026-room-20260303.ts
+│   │   ├── pacificon-2026-room-20260302.ts
+│   │   │
+│   │   │   Booth data (appended to BOOTH_DATA; glob: *-booth-*.ts):
+│   │   │      Each file supplies a [mapUrl, Booth[]] tuple. mapUrl defines which map image the booth
+│   │   │      polygons render on top of. Multiple files per conference are supported (e.g. one per building).
+│   │   ├── hamcation-2026-booth-20260302.ts
+│   │   ├── hamcation-2027-booth-20260302.ts
+│   │   ├── hamvention-2026-booth-building-1-20260313.ts
+│   │   ├── hamvention-2026-booth-building-2-20260313.ts
+│   │   ├── hamvention-2026-booth-building-3-20260313.ts
+│   │   ├── hamvention-2026-booth-building-4-20260313.ts
+│   │   ├── hamvention-2026-booth-building-5-20260313.ts
+│   │   │
+│   │   │   Exhibitor overrides (replace mapExhibitors in EXHIBITOR_DATA; glob: *-exhibitor-*.ts):
+│   │   ├── hamcation-2026-exhibitor-20260301.ts
+│   │   ├── hamvention-2026-exhibitor-20260312.ts
+│   │   │
+│   │   │   Prize overrides (replace samplePrizes in PRIZE_DATA; glob: *-prize-*.ts):
+│   │   ├── yuma-2026-prize-20260227T132422.ts
+│   │   │
+│   │   │   Prize winner overrides (replace samplePrizeWinners in PRIZE_WINNER_DATA; glob: *-prizewinner-*.ts):
+│   │   ├── yuma-2026-prizewinner-20260227T132422.ts
+│   │   │
+│   │   │   Attendee profile overrides (replace mapUserProfiles in ATTENDEE_DATA; glob: *-userprofile-*.ts):
+│   │   ├── quartzfest-2027-userprofile-20260301.ts
+│   │   │
+│   │   ├── pacificonSvgExhibitorMapData.ts      # SVG booth/room data for PacificonSvgExhibitorMap
+│   │   ├── hamvention-2026-svgbooth-20260305.ts # SVG booth overlay data for Hamvention
+│   │   ├── convert-*.sh                        # Shell scripts to extract/convert conference data from source PDFs/HTML
 │   │   ├── extract-*.html                      # One-off data-extraction helper pages (not bundled)
 │   │   └── *.test.ts                           # Vitest unit tests for data integrity
 │   ├── lib/
 │   │   ├── colorUtils.ts      # contrastingColor() and related WCAG helpers
-│   │   ├── conferenceData.ts  # Vite glob import — loads all *-20XX.ts data files eagerly
+│   │   ├── conferenceData.ts  # Vite glob import — loads all *-20[0-9][0-9].ts base data files eagerly
 │   │   ├── firebase.ts        # initializeApp; exports auth, db, storage singletons
 │   │   ├── googleDrive.ts     # Helpers for Google Drive asset access (planned)
 │   │   ├── localStorage.ts    # loadFromStorage / saveToStorage generic helpers
-│   │   ├── overrideUtils.ts   # Merges supplemental/override data into base conference data
+│   │   ├── overrideUtils.ts   # resolveSessionEndTime, warnOutOfRangeSessions, warnEmptyMapData, formatUpdateToken
 │   │   ├── prizesData.ts      # Aggregates PRIZE_DATA and PRIZE_WINNER_DATA from all conference modules
-│   │   ├── sessionData.ts     # Aggregates SESSION_DATA, map images, rooms, booths, exhibitors; populates mapSessionRooms / mapExhibitorBooths on Conference objects as a side effect
-│   │   └── userProfileData.ts # Aggregates ALL_USER_PROFILES and ATTENDEE_DATA
+│   │   ├── sessionData.ts     # Aggregates SESSION_DATA, MAP_DATA, ROOM_DATA, BOOTH_DATA, EXHIBITOR_DATA;
+│   │   │                      #   populates mapSessionRooms / mapExhibitorBooths on Conference objects as a side effect
+│   │   └── userProfileData.ts # Aggregates ALL_USER_PROFILES, ALL_USER_PROFILE_GROUPS, and ATTENDEE_DATA
 │   ├── services/
 │   │   ├── searchService.ts       # Fuse.js search index; buildIndex / search / applyFilters
 │   │   └── userSettingsService.ts # getUserTheme / setUserTheme via Firestore userSettings collection
@@ -257,6 +298,66 @@ A public-board or DM model. `isPublic` + optional `boardId` distinguish the two 
 
 ---
 
+## 5.5. Conference Data Module Structure & Import Pattern
+
+Each conference-year base file (e.g. `pacificon-2026.ts`) and every supplemental file conforms to a shared `ConferenceModule` shape. `src/lib/conferenceData.ts` loads all base files eagerly via a Vite glob; `src/lib/sessionData.ts` processes them into per-type lookup objects.
+
+### ConferenceModule interface
+
+```typescript
+interface ConferenceModule {
+  conferenceMaps?: MapImage[];               // venue / session / exhibitor map images
+  mapSessions?:   [string, Session[]];       // [mapUrl, sessions]
+  mapRooms?:      [string, Room[]];          // [mapUrl, rooms]   — mapUrl MUST equal mapSessions[0]
+  mapBooths?:     [string, Booth[]];         // [mapUrl, booths]  — mapUrl defines which map the polygons render on
+  mapExhibitors?: [string, Exhibitor[]];     // [mapUrl, exhibitors] — mapUrl should equal mapBooths[0] (advisory)
+  samplePrizes?:         Prize[];
+  samplePrizeWinners?:   PrizeWinner[];
+  mapUserProfiles?:      UserProfile[];
+  mapUserProfileGroups?: UserProfileGroups[];
+  [key: string]: unknown;
+}
+```
+
+### Data lookup exports (`src/lib/sessionData.ts`)
+
+| Export | Type | Notes |
+|--------|------|-------|
+| `SESSION_DATA` | `Record<string, Session[]>` | Latest supplemental session file wins; not tied to a single map URL |
+| `MAP_DATA` | `Record<string, MapImage[]>` | All `conferenceMaps` entries for a conference |
+| `ROOM_DATA` | `Record<string, [string, Room[]][]>` | **Array** of `[mapUrl, rooms]` tuples — one entry per map URL. `mapUrl` must match a `conferenceMaps` entry and must equal `mapSessions[0]` |
+| `BOOTH_DATA` | `Record<string, [string, Booth[]][]>` | **Array** of `[mapUrl, booths]` tuples — one entry per map URL. Multiple supplemental files can each target a different URL (e.g. one file per building) |
+| `EXHIBITOR_DATA` | `Record<string, [string, Exhibitor[]]>` | Single `[mapUrl, exhibitors]` tuple; latest supplemental file replaces the previous value |
+
+### Map URL coupling rules
+
+| Data type | Map URL constraint |
+|-----------|-------------------|
+| **Session** (`mapSessions`) | `mapSessions[0]` must equal `mapRooms[0]` for the same conference. Enforced by a hard assertion in `forumData.test.ts`. |
+| **Room** (`mapRooms`) | `mapRooms[0]` must equal `mapSessions[0]` (same constraint from the other side). The URL must also match a `conferenceMaps` entry that has `origWidthNum` and `origHeightNum` set (required for Leaflet overlay). |
+| **Booth** (`mapBooths`) | `mapBooths[0]` identifies which `conferenceMaps` image the booth polygons are rendered on top of. Each supplemental booth file may use a different URL to add an entirely new map. No requirement to match any session or exhibitor URL. |
+| **Exhibitor** (`mapExhibitors`) | `mapExhibitors[0]` *should* equal the primary `mapBooths[0]`. A mismatch is **advisory** — `ExhibitorsPage` falls back to matching exhibitors to booth maps by location IDs. The mismatch triggers a `console.warn` and a test warning but does not fail CI. |
+| **Prize / session / attendee** | Not tied to any map URL. Supplemental files replace the base data unconditionally. |
+
+### Supplemental file loading
+
+`src/lib/sessionData.ts` uses four separate `import.meta.glob` calls — one per supplemental type — to load files outside the base `*-20[0-9][0-9].ts` glob:
+
+| Glob pattern | Behaviour |
+|---|---|
+| `../data/*-session-*.ts` | Replaces `SESSION_DATA[conferenceId]` (latest timestamp wins) |
+| `../data/*-room-*.ts` | Appends a new `[mapUrl, rooms]` tuple to `ROOM_DATA[conferenceId]` |
+| `../data/*-booth-*.ts` | Appends a new `[mapUrl, booths]` tuple to `BOOTH_DATA[conferenceId]` |
+| `../data/*-exhibitor-*.ts` | Replaces `EXHIBITOR_DATA[conferenceId]` (latest timestamp wins) |
+
+Prize, prize-winner, and attendee-profile supplemental files follow the same replace-on-latest-timestamp pattern and are handled by `prizesData.ts` and `userProfileData.ts` respectively.
+
+The `conferenceId` is extracted from the filename by matching everything before the first `-session-`, `-room-`, `-booth-`, or `-exhibitor-` segment. Booth files may include an extra identifying slug between the conference ID and the timestamp (e.g. `hamvention-2026-booth-building-1-20260313.ts`) — the regex `^(.+)-booth-` still captures the correct conference ID.
+
+After all files are loaded, `warnEmptyMapData()` (from `overrideUtils.ts`) emits a `console.warn` for any data array that remains empty, so data editors know a placeholder file was never filled in.
+
+---
+
 ## 6. Authentication Flow (`AuthContext`) & Theme
 
 `src/app/contexts/AuthContext.tsx` wraps the app and exposes four async actions plus the current `user` and a `loading` flag.
@@ -312,7 +413,7 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
 
 ### 7.1 Maps (`/maps`)
 
-- `MapsPage` loads `conferenceMaps` from the active conference data (via `SESSION_DATA` aggregated in `src/lib/sessionData.ts`) and passes them to `MapsView`.
+- `MapsPage` loads `conferenceMaps` from `MAP_DATA[activeConference.id]` (populated by `src/lib/sessionData.ts` from the active conference module's `conferenceMaps` export) and passes them to `MapsView`.
 - `MapsView` renders a **Radix Tabs** component. Each tab shows one `<ImageWithFallback>` inside a `<Card>`.
 - Maps are sorted by their `order` field.
 - `ImageWithFallback` catches `onError` and replaces the broken image with a base64-encoded inline SVG placeholder, preserving the original URL as a `data-original-url` attribute for debugging.
@@ -328,15 +429,17 @@ Config values (`apiKey`, `projectId`, etc.) are read from **Vite env vars** (`im
 ### 7.3 Forums (`/forums`)
 
 - `ForumsPage` shows a `ForumsMapView` (Leaflet-based room map) alongside a `ScheduleView` scoped to forum sessions.
-- The forum map URL and room overlays are sourced from `ROOM_DATA[activeConference.id]` (a `[mapImageUrl, Room[]]` tuple exported by the conference module as `mapRooms`). The matching `MapImage` is resolved from `MAP_DATA` by URL; a hard-coded fallback is used when no match is found.
+- Room overlays are sourced from `ROOM_DATA[activeConference.id]`, which is an **array** of `[mapImageUrl, Room[]]` tuples (one entry per map URL). The matching `MapImage` is resolved from `MAP_DATA` by URL.
+- When `activeConference.mapSessionRooms` has exactly **one** entry (`numSRurls === 1`), `ForumsPage` renders a single `ForumsMapView` using `roomEntry[0]`. When there are **multiple** entries, only maps whose `MapImage.category` includes `"Forums"` are rendered (one `ForumsMapView` per qualifying map).
 - `mapSessionRooms` on the active `Conference` object tracks whether both `mapSessions` and `mapRooms` have been loaded for each map URL; it is populated by `sessionData.ts` as a side effect and is visible in the developer debug panel on `ForumsPage` when the `mdarc-developer` role is active.
 - Room names from the map can be highlighted via `SearchContext.highlightForumRoomName`.
 
 ### 7.4 Exhibitors (`/exhibitors`)
 
 - `ExhibitorsPage` shows an `ExhibitorsMapView` (Leaflet-based booth map) and an `ExhibitorView` for detail.
-- The booth map URL and booth overlays are sourced from `BOOTH_DATA[activeConference.id]` (a `[mapImageUrl, Booth[]]` tuple exported by the conference module as `mapBooths`). Exhibitor data comes from `EXHIBITOR_DATA[activeConference.id]`.
-- `ExhibitorsPage` reads `activeConference.mapExhibitorBooths?.length` as `numEmaps` and only renders `ExhibitorsMapView` when `numEmaps === 1` (single-map assumption). Multi-map support is scaffolded but currently disabled behind comments.
+- Booth overlays are sourced from `BOOTH_DATA[activeConference.id]`, which is an **array** of `[mapImageUrl, Booth[]]` tuples. Exhibitor data comes from `EXHIBITOR_DATA[activeConference.id]`, which is a **single** `[mapImageUrl, Exhibitor[]]` tuple.
+- When `activeConference.mapExhibitorBooths` has exactly **one** entry (`numEBurls === 1`), `ExhibitorsPage` renders a single `ExhibitorsMapView` using `boothEntry[0]`. When there are **multiple** entries, one `ExhibitorsMapView` is rendered per booth map URL (`boothEntry.map(([boothUrl, booths]) => ...)`).
+- **Exhibitor-to-booth matching (multi-map):** Each map instance uses exhibitors whose `mapExhibitors[0]` URL matches the current booth URL. If no URL match is found, `ExhibitorsPage` falls back to including any exhibitor whose `location` IDs are present in the booth map, and logs a `console.warn` so data editors know to update the `mapExhibitors` URL.
 - `mapExhibitorBooths` on the active `Conference` object is populated by `sessionData.ts` as a side effect (via `updateMapExhibitorBooths()`). A developer debug panel displaying the tuples is rendered when the `mdarc-developer` role is active.
 - Exhibitor booths can be highlighted via `SearchContext.highlightExhibitorId`.
 
@@ -539,6 +642,8 @@ Firebase config values must be provided as environment variables prefixed `VITE_
 10. **Bookmarks and raffle tickets use localStorage.** `useBookmarks` and `useRaffleTickets` both store data in `localStorage` keyed by conference ID. They reload automatically when `activeConference` changes. Firestore persistence is planned but not yet wired.
 
 11. **`mapSessionRooms` and `mapExhibitorBooths` are populated as module-load side effects.** `src/lib/sessionData.ts` mutates the matching `Conference` objects in `allConferences` in-place when it processes each loaded conference module. `updateMapSessionRooms()` is called whenever `mapSessions` or `mapRooms` is found in a module; `updateMapExhibitorBooths()` is called whenever `mapExhibitors` or `mapBooths` is found. Both functions are idempotent for supplemental files (the `isSupplemental` flag bypasses the duplicate-load guard). Because both functions mutate the shared `allConferences` array, the populated fields are immediately visible to any consumer that imports `allConferences` after `sessionData.ts` has been imported (e.g., test files that `import "@/lib/sessionData"` at the top to trigger the side effects).
+
+12. **Map URL coupling: rooms and booths require a URL; sessions and exhibitors are flexible.** `ROOM_DATA` and `BOOTH_DATA` are arrays of `[mapUrl, items[]]` tuples — the URL is the key that determines which `MapImage` the Leaflet overlay is drawn on top of. The `mapUrl` in a room file must exist in `conferenceMaps` (with `origWidthNum`/`origHeightNum` set) and must match `mapSessions[0]`. Booth files each carry their own URL independently; multiple supplemental booth files may target different map images. `EXHIBITOR_DATA` carries a URL too, but a mismatch between `mapExhibitors[0]` and `mapBooths[0]` is advisory rather than fatal — `ExhibitorsPage` falls back to matching exhibitors to whichever booth map contains their location IDs. Session data (`SESSION_DATA`) and prize/attendee data are not tied to any map URL at all.
 
 ## 13. How Firestore settings sync works
 
