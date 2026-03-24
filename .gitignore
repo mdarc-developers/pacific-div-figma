@@ -2,6 +2,7 @@ node_modules
 dist
 .env
 .env.test
+.env.local
 .eslintcache
 playwright-report
 test-results/*
