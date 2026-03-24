@@ -45,10 +45,10 @@ export function Navigation() {
             <span
               key={to}
               title={`${label} not available for this conference`}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-red-400 dark:text-red-600 cursor-not-allowed opacity-60"
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50"
             >
               <Icon className="h-4 w-4" />
-              <span className="line-through">{label}</span>
+              <span>{label}</span>
             </span>
           ) : (
             <NavLink
