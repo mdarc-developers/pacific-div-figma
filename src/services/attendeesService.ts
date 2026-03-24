@@ -53,6 +53,9 @@ export async function fetchPublicAttendees(): Promise<PublicAttendeeProfile[]> {
       ...(typeof data.displayProfile === "string" && data.displayProfile
         ? { displayProfile: data.displayProfile }
         : {}),
+      ...(Array.isArray(data.exhibitors) && data.exhibitors.length > 0
+        ? { exhibitors: data.exhibitors as string[] }
+        : {}),
     } satisfies PublicAttendeeProfile;
   });
 }
@@ -62,19 +65,20 @@ export async function fetchPublicAttendees(): Promise<PublicAttendeeProfile[]> {
  * Called client-side when a user enables profile visibility so the UI
  * reflects the change immediately without waiting for the Cloud Function.
  *
- * Only the allowed fields (displayName, callsign, displayProfile) are written.
- * Sensitive fields are stripped before the Firestore write.
+ * Only the allowed fields (displayName, callsign, displayProfile, exhibitors)
+ * are written. Sensitive fields are stripped before the Firestore write.
  */
 export async function writePublicProfile(
   uid: string,
   profile: PublicAttendeeProfile,
 ): Promise<void> {
   // Destructure only the allowed public fields; discard anything else.
-  const { displayName, callsign, displayProfile } = profile;
+  const { displayName, callsign, displayProfile, exhibitors } = profile;
   const safeProfile: PublicAttendeeProfile = { uid };
   if (displayName !== undefined) safeProfile.displayName = displayName;
   if (callsign !== undefined) safeProfile.callsign = callsign;
   if (displayProfile !== undefined) safeProfile.displayProfile = displayProfile;
+  if (exhibitors !== undefined) safeProfile.exhibitors = exhibitors;
   await setDoc(doc(db, "publicProfiles", uid), safeProfile, { merge: true });
 }
 

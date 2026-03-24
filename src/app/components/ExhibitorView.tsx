@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -14,12 +15,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { Bookmark, MapPin, Star, StickyNote } from "lucide-react";
-import { Exhibitor } from "@/types/conference";
+import { Bookmark, MapPin, Star, StickyNote, User } from "lucide-react";
+import { Exhibitor, UserProfile } from "@/types/conference";
 //import { EventInput } from "@fullcalendar/core";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 import { EXHIBITOR_DATA } from "@/lib/supplementalData";
+import { ATTENDEE_DATA } from "@/lib/userProfileData";
 import { sanitizeExhibitorUrl } from "@/lib/urlUtils";
 
 interface ExhibitorViewProps {
@@ -52,6 +54,8 @@ interface ExhibitorCardProps {
   voteCount?: number;
   note?: string;
   onSaveNote?: (exhibitorId: string, text: string) => void;
+  /** Attendee profiles associated with this exhibitor. */
+  staffProfiles?: UserProfile[];
 }
 
 function ExhibitorCard({
@@ -66,6 +70,7 @@ function ExhibitorCard({
   voteCount,
   note,
   onSaveNote,
+  staffProfiles = [],
 }: ExhibitorCardProps) {
   const exhibitorRef = useRef<HTMLDivElement>(null);
   const [showNoteEditor, setShowNoteEditor] = useState(false);
@@ -208,6 +213,45 @@ function ExhibitorCard({
               <span>{exhibitor.boothName}</span>
             </div>
           </div>
+          {/* Staff profiles section */}
+          {staffProfiles.length > 0 && (
+            <div className="mt-3 space-y-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Staff
+              </p>
+              {staffProfiles.map((person) => {
+                const isPublic = person.profileVisible !== false;
+                // Only show a public link when the person has an identifiable label.
+                // Private profiles are always shown as a grayed-out placeholder.
+                const label = person.displayName || person.callsign;
+                if (isPublic && !label) return null;
+                return isPublic ? (
+                  <Link
+                    key={person.uid}
+                    to={`/attendees#attendee-${person.uid}`}
+                    className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 hover:underline"
+                  >
+                    <User className="h-4 w-4 shrink-0" />
+                    <span>{label}</span>
+                    {person.callsign && person.displayName && (
+                      <span className="text-xs text-muted-foreground">
+                        {person.callsign}
+                      </span>
+                    )}
+                  </Link>
+                ) : (
+                  <div
+                    key={person.uid}
+                    className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-600 cursor-default select-none"
+                    aria-label="Private profile"
+                  >
+                    <User className="h-4 w-4 shrink-0" />
+                    <span className="italic">Private Profile</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           {/* Notes section — only shown when the parent provides a save handler */}
           {onSaveNote && (
             <div className="mt-3">
@@ -292,6 +336,24 @@ export function ExhibitorView({
   const exhibitorEntry = EXHIBITOR_DATA[activeConference.id];
   const exhibitors: Exhibitor[] = exhibitorEntry ? exhibitorEntry[1] : [];
 
+  // Build a map from exhibitor ID → associated attendee profiles.
+  // Includes ALL profiles (visible and non-visible) so grayed-out private
+  // entries can be shown alongside clickable public ones.
+  const allAttendeeProfiles: UserProfile[] = useMemo(
+    () => ATTENDEE_DATA[activeConference.id] ?? [],
+    [activeConference.id],
+  );
+  const staffByExhibitor = useMemo(() => {
+    const map: Record<string, UserProfile[]> = {};
+    allAttendeeProfiles.forEach((profile) => {
+      profile.exhibitors?.forEach((exhibitorId) => {
+        if (!map[exhibitorId]) map[exhibitorId] = [];
+        map[exhibitorId].push(profile);
+      });
+    });
+    return map;
+  }, [allAttendeeProfiles]);
+
   // Group exhibitors by type
   const groupExhibitorsByType = (exhibitors: Exhibitor[]) => {
     const grouped: Record<string, Exhibitor[]> = {};
@@ -351,6 +413,7 @@ export function ExhibitorView({
                     voteCount={exhibitorVoteCounts[exhibitor.id]}
                     note={exhibitorNotes[exhibitor.id]}
                     onSaveNote={onSaveExhibitorNote}
+                    staffProfiles={staffByExhibitor[exhibitor.id] ?? []}
                   />
                 ))}
             </div>
@@ -375,6 +438,7 @@ export function ExhibitorView({
                   voteCount={exhibitorVoteCounts[exhibitor.id]}
                   note={exhibitorNotes[exhibitor.id]}
                   onSaveNote={onSaveExhibitorNote}
+                  staffProfiles={staffByExhibitor[exhibitor.id] ?? []}
                 />
               ))}
           </TabsContent>
