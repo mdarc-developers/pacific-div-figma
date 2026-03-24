@@ -400,6 +400,34 @@ export async function setUserRaffleTickets(
   );
 }
 
+export interface ExhibitorMemberSettings {
+  isExhibitorMember: boolean;
+  exhibitorMemberId: string;
+}
+
+export async function getUserExhibitorMember(
+  uid: string,
+): Promise<ExhibitorMemberSettings | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return {
+    isExhibitorMember:
+      typeof data?.isExhibitorMember === "boolean"
+        ? data.isExhibitorMember
+        : false,
+    exhibitorMemberId:
+      typeof data?.exhibitorMemberId === "string" ? data.exhibitorMemberId : "",
+  };
+}
+
+export async function setUserExhibitorMember(
+  uid: string,
+  settings: Partial<ExhibitorMemberSettings>,
+): Promise<void> {
+  await setDoc(doc(db, "users", uid), settings, { merge: true });
+}
+
 /**
  * Adds an FCM registration token to the user's `fcmTokens` array in Firestore.
  * Using arrayUnion ensures the same token is never duplicated.
