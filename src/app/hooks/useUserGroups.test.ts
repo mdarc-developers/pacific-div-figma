@@ -83,6 +83,45 @@ describe("useUserGroups", () => {
     expect(result.current).toEqual(["prize-admin", "mdarc-developers"]);
   });
 
+  it("collects groups from ALL profiles matching the user's email (multi-conference)", () => {
+    // Simulates grantbow@mdarc.org having profiles in multiple conference files:
+    // hamcation-2027 (prize-admin, mdarc-developers) and loomis-2026
+    // (prize-admin, forums-admin, exhibitor-admin, more-admin).
+    // The hook must collect groups from every matching profile, not just the first.
+    mockUser.current = { uid: "uid-nobody", email: "grantbow@mdarc.org" };
+    mockAllUserProfileGroups.splice(0);
+    mockAllUserProfiles.splice(0);
+    mockAllUserProfiles.push(
+      {
+        uid: "uid-ham",
+        email: "grantbow@mdarc.org",
+        darkMode: false,
+        bookmarkedSessions: [],
+        notificationsEnabled: true,
+        smsNotifications: true,
+        groups: ["prize-admin", "mdarc-developers"],
+      },
+      {
+        uid: "uid-loomis",
+        email: "grantbow@mdarc.org",
+        darkMode: false,
+        bookmarkedSessions: [],
+        notificationsEnabled: true,
+        smsNotifications: true,
+        groups: ["prize-admin", "forums-admin", "exhibitor-admin", "more-admin"],
+      },
+    );
+
+    const { result } = renderHook(() => useUserGroups());
+    expect(result.current).toContain("more-admin");
+    expect(result.current).toContain("prize-admin");
+    expect(result.current).toContain("mdarc-developers");
+    expect(result.current).toContain("forums-admin");
+    expect(result.current).toContain("exhibitor-admin");
+    // Deduplication: prize-admin appears in both profiles but only once in result
+    expect(result.current.filter((g) => g === "prize-admin").length).toBe(1);
+  });
+
   it("returns empty array when user has no email and no uid match", () => {
     mockUser.current = { uid: "uid-nobody", email: null };
     mockAllUserProfileGroups.splice(0);

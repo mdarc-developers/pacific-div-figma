@@ -28,10 +28,13 @@ export function useUserGroups(): string[] {
     const byUid = ALL_USER_PROFILE_GROUPS.find((g) => g.uid === user.uid);
     byUid?.groups?.forEach((g) => collected.add(g));
 
-    // Check by email via mapUserProfiles
+    // Check by email via mapUserProfiles — scan ALL matching profiles so that
+    // group memberships from every conference data file are collected (a user
+    // may appear in multiple conference files, each with different groups).
     if (user.email) {
-      const profile = ALL_USER_PROFILES.find((p) => p.email === user.email);
-      profile?.groups?.forEach((g) => collected.add(g));
+      ALL_USER_PROFILES.filter((p) => p.email === user.email).forEach(
+        (profile) => profile?.groups?.forEach((g) => collected.add(g)),
+      );
     }
 
     return Array.from(collected);
