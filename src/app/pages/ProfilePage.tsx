@@ -8,6 +8,8 @@ import { AttendanceCard } from "@/app/components/AttendanceCard";
 import { AdminCard } from "@/app/components/AdminCard";
 import { DeleteAccountCard } from "@/app/components/DeleteAccountCard";
 import { ExportDataCard } from "@/app/components/ExportDataCard";
+import { SpeakerCard } from "@/app/components/SpeakerCard";
+import { useSpeakerSessions } from "@/app/hooks/useSpeakerSessions";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
@@ -101,6 +103,8 @@ export function ProfilePage() {
     addConference: addAttendedConference,
     removeConference: removeAttendedConference,
   } = useAttendanceContext();
+  const { speakerSessions, addSpeakerSession, removeSpeakerSession } =
+    useSpeakerSessions(activeConference.id);
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -236,6 +240,13 @@ export function ProfilePage() {
         }
         onAddConference={addAttendedConference}
         onRemoveConference={removeAttendedConference}
+      />
+
+      <SpeakerCard
+        speakerSessions={speakerSessions}
+        allSessions={SESSION_DATA[activeConference.id] ?? []}
+        onAddSession={addSpeakerSession}
+        onRemoveSession={removeSpeakerSession}
       />
 
       {/* Prizes & Activity card */}
