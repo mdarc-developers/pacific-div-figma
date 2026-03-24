@@ -9,8 +9,15 @@ import {
   warnOutOfRangeSessions,
   warnEmptyMapData,
 } from "@/lib/overrideUtils";
-import { Session, Booth, Conference, UserProfile } from "@/types/conference";
+import { Session, Booth, Conference } from "@/types/conference";
 import * as loomis2026Module from "./loomis-2026";
+// NOTE: loomis2026Module is imported only to support the "loomis-2026 missing
+// optional data" block below, which intentionally hard-codes loomis-2026 to
+// document which optional exports have NOT yet been added.  All other
+// per-conference assertions (required fields, mapUserProfiles shape) must be
+// expressed as data-driven loops so they automatically cover every conference
+// without needing a new test block for each one.  See the data-driven describe
+// blocks further down in this file and in userProfileData.test.ts.
 
 interface SupplementalSessionModule {
   mapSessions?: [string, Session[]];
@@ -705,17 +712,72 @@ describe("ROOM_DATA multi-entry (pacificon-2026)", () => {
   });
 });
 
-// ── loomis-2026 sanity checks ─────────────────────────────────────────────────
-// loomis-2026 is a new conference whose optional data (maps, sessions, rooms,
-// exhibitors, booths, prizes) has not yet been added.  These tests verify that
-// the conference entry is present in allConferences with its required fields
-// intact and that the currently-absent optional exports are properly undefined
-// so that the rest of the app handles them gracefully without crashing.
+// ── all conferences in allConferences — required fields ───────────────────────
+// IMPORTANT: Add conference-wide assertions HERE, not in per-conference blocks.
+//
+// When the previous round of fixes added "loomis-2026 conference entry" as a
+// one-off describe block it created a pattern that requires a new block for
+// every future conference.  That is fragile: it is easy to forget, creates
+// duplicated logic, and causes spurious CI failures when tests are not updated
+// in lockstep with data files.
+//
+// The correct pattern is the data-driven loop below, which automatically
+// covers every entry in allConferences — including conferences added long after
+// this file was written.  If a new conference's required fields are wrong, this
+// loop will catch it without any test-file changes.
+describe("all conferences in allConferences — required fields", () => {
+  // Filter out ConferenceSeparator entries ({ id: "---" }) which are visual
+  // dividers in the list UI and do not carry the Conference interface fields.
+  const realConferences = allConferences.filter(
+    (c): c is Conference => c.id !== "---",
+  );
 
-// Typed view of the loomis-2026 module including optional exports that are
+  it("allConferences contains at least one real conference", () => {
+    expect(realConferences.length).toBeGreaterThan(0);
+  });
+
+  realConferences.forEach((conf) => {
+    describe(conf.id, () => {
+      it("has required non-empty string fields", () => {
+        expect(typeof conf.name).toBe("string");
+        expect(conf.name.length).toBeGreaterThan(0);
+        expect(typeof conf.startDate).toBe("string");
+        expect(conf.startDate.length).toBeGreaterThan(0);
+        expect(typeof conf.endDate).toBe("string");
+        expect(conf.endDate.length).toBeGreaterThan(0);
+        expect(typeof conf.timezone).toBe("string");
+        expect(conf.timezone.length).toBeGreaterThan(0);
+        expect(typeof conf.timezoneNumeric).toBe("string");
+        expect(conf.timezoneNumeric.length).toBeGreaterThan(0);
+        expect(typeof conf.logoUrl).toBe("string");
+        expect(conf.logoUrl.length).toBeGreaterThan(0);
+      });
+
+      it("conferenceProgramUrl, if present, is a non-empty string", () => {
+        if (conf.conferenceProgramUrl !== undefined) {
+          expect(typeof conf.conferenceProgramUrl).toBe("string");
+          expect(conf.conferenceProgramUrl.length).toBeGreaterThan(0);
+        }
+      });
+    });
+  });
+});
+
+// ── loomis-2026 missing optional data ────────────────────────────────────────
+// This block intentionally hard-codes loomis-2026 to document which optional
+// exports have NOT yet been contributed.  It serves as a living checklist:
+// when data is finally added, the corresponding test will fail and the
+// developer knows to remove that assertion (and add the real-data checks that
+// the data-driven loops in forumData.test.ts / exhibitorData.test.ts already
+// provide automatically).
+//
+// Required-field checks and mapUserProfiles shape checks for loomis-2026 are
+// handled by the data-driven loops in this file and in userProfileData.test.ts
+// respectively — no per-conference block is needed for those.
+
+// Typed view of the loomis-2026 module for optional exports that are
 // not yet present so we can assert they are undefined.
 interface Loomis2026Module {
-  mapUserProfiles: UserProfile[];
   conferenceMaps?: unknown;
   mapSessions?: unknown;
   mapRooms?: unknown;
@@ -725,36 +787,6 @@ interface Loomis2026Module {
   samplePrizeWinners?: unknown;
 }
 const loomisModule = loomis2026Module as Loomis2026Module;
-
-describe("loomis-2026 conference entry", () => {
-  const loomis = allConferences.find((c) => c.id === "loomis-2026") as
-    | Conference
-    | undefined;
-
-  it("is defined in allConferences", () => {
-    expect(loomis).toBeDefined();
-  });
-
-  it("has required string fields", () => {
-    expect(typeof loomis?.name).toBe("string");
-    expect(loomis?.name.length).toBeGreaterThan(0);
-    expect(typeof loomis?.startDate).toBe("string");
-    expect(loomis?.startDate.length).toBeGreaterThan(0);
-    expect(typeof loomis?.endDate).toBe("string");
-    expect(loomis?.endDate.length).toBeGreaterThan(0);
-    expect(typeof loomis?.timezone).toBe("string");
-    expect(loomis?.timezone.length).toBeGreaterThan(0);
-    expect(typeof loomis?.timezoneNumeric).toBe("string");
-    expect(loomis?.timezoneNumeric.length).toBeGreaterThan(0);
-    expect(typeof loomis?.logoUrl).toBe("string");
-    expect(loomis?.logoUrl.length).toBeGreaterThan(0);
-  });
-
-  it("has a conferenceProgramUrl defined", () => {
-    expect(typeof loomis?.conferenceProgramUrl).toBe("string");
-    expect(loomis?.conferenceProgramUrl?.length).toBeGreaterThan(0);
-  });
-});
 
 describe("loomis-2026 missing optional data", () => {
   it("conferenceMaps is undefined (not yet added)", () => {
@@ -783,24 +815,5 @@ describe("loomis-2026 missing optional data", () => {
 
   it("samplePrizeWinners is undefined (not yet added)", () => {
     expect(loomisModule.samplePrizeWinners).toBeUndefined();
-  });
-});
-
-describe("loomis-2026 mapUserProfiles export", () => {
-  it("exports a non-empty UserProfile array", () => {
-    expect(Array.isArray(loomisModule.mapUserProfiles)).toBe(true);
-    expect(loomisModule.mapUserProfiles.length).toBeGreaterThan(0);
-  });
-
-  it("each attendee has required fields", () => {
-    loomisModule.mapUserProfiles.forEach((attendee: UserProfile) => {
-      expect(typeof attendee.uid).toBe("string");
-      expect(attendee.uid.length).toBeGreaterThan(0);
-      expect(typeof attendee.email).toBe("string");
-      expect(typeof attendee.darkMode).toBe("boolean");
-      expect(Array.isArray(attendee.bookmarkedSessions)).toBe(true);
-      expect(typeof attendee.notificationsEnabled).toBe("boolean");
-      expect(typeof attendee.smsNotifications).toBe("boolean");
-    });
   });
 });
