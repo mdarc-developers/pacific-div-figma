@@ -1,7 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { UserProfile, UserProfileGroups } from "@/types/conference";
-import { ALL_USER_PROFILE_GROUPS } from "@/lib/userProfileData";
+import { ALL_USER_PROFILE_GROUPS, KNOWN_GROUPS } from "@/lib/userProfileData";
 import { conferenceModules } from "@/lib/conferenceData";
+import { warnUnknownGroups } from "@/lib/overrideUtils";
+import * as loomis2026Module from "./loomis-2026";
 
 // Interface used when accessing optional exports from conference data modules.
 interface ConferenceModuleWithProfiles {
@@ -173,5 +175,107 @@ describe("ALL_USER_PROFILE_GROUPS", () => {
     );
     expect(mdarcEntry).toBeDefined();
     expect(mdarcEntry?.groups).toContain("mdarc-developers");
+  });
+});
+
+// ── KNOWN_GROUPS constant ────────────────────────────────────────────────────
+describe("KNOWN_GROUPS", () => {
+  it("is a Set", () => {
+    expect(KNOWN_GROUPS).toBeInstanceOf(Set);
+  });
+
+  it("contains the expected canonical group names", () => {
+    expect(KNOWN_GROUPS.has("prize-admin")).toBe(true);
+    expect(KNOWN_GROUPS.has("session-admin")).toBe(true);
+    expect(KNOWN_GROUPS.has("exhibitor-admin")).toBe(true);
+    expect(KNOWN_GROUPS.has("mdarc-developers")).toBe(true);
+    expect(KNOWN_GROUPS.has("forums-admin")).toBe(true);
+  });
+
+  it("does not contain typo variants", () => {
+    expect(KNOWN_GROUPS.has("mdarc-developer")).toBe(false);
+    expect(KNOWN_GROUPS.has("prizes-admin")).toBe(false);
+  });
+});
+
+// ── warnUnknownGroups ─────────────────────────────────────────────────────────
+describe("warnUnknownGroups", () => {
+  it("emits console.warn for each group not in KNOWN_GROUPS", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnUnknownGroups("loomis-2026", "grantbow@mdarc.org", [
+      "prize-admin",
+      "more-admin",
+    ]);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[userProfile] "loomis-2026" user "grantbow@mdarc.org" has unrecognised group "more-admin"',
+    );
+    warnSpy.mockRestore();
+  });
+
+  it("does not emit console.warn when all groups are known", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnUnknownGroups("pacificon-2026", "someone@example.com", [
+      "prize-admin",
+      "session-admin",
+      "exhibitor-admin",
+      "mdarc-developers",
+      "forums-admin",
+    ]);
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  it("emits a warning for every unrecognised group in a list", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnUnknownGroups("test-conf", "user@example.com", [
+      "alpha-unknown",
+      "beta-unknown",
+    ]);
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+    warnSpy.mockRestore();
+  });
+
+  it("emits no warnings for an empty groups array", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnUnknownGroups("test-conf", "user@example.com", []);
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+});
+
+// ── loomis-2026 more-admin edge case ─────────────────────────────────────────
+// Validates that "more-admin" is present in loomis-2026 and that it correctly
+// triggers a warning via warnUnknownGroups.
+describe("loomis-2026 more-admin edge case", () => {
+  interface Loomis2026ModuleWithProfiles {
+    mapUserProfiles?: UserProfile[];
+  }
+  const loomisProfiles =
+    (loomis2026Module as Loomis2026ModuleWithProfiles).mapUserProfiles ?? [];
+
+  it("grantbow@mdarc.org has 'more-admin' in their loomis-2026 groups", () => {
+    const profile = loomisProfiles.find(
+      (p) => p.email === "grantbow@mdarc.org",
+    );
+    expect(profile).toBeDefined();
+    expect(profile?.groups).toContain("more-admin");
+  });
+
+  it("warnUnknownGroups warns about 'more-admin' for loomis-2026 grantbow@mdarc.org", () => {
+    const profile = loomisProfiles.find(
+      (p) => p.email === "grantbow@mdarc.org",
+    );
+    const groups = profile?.groups ?? [];
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    warnUnknownGroups("loomis-2026", "grantbow@mdarc.org", groups);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[userProfile] "loomis-2026" user "grantbow@mdarc.org" has unrecognised group "more-admin"',
+    );
+    warnSpy.mockRestore();
+  });
+
+  it("'more-admin' is not in KNOWN_GROUPS", () => {
+    expect(KNOWN_GROUPS.has("more-admin")).toBe(false);
   });
 });

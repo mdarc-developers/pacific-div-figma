@@ -1,5 +1,7 @@
 import { UserProfile, UserProfileGroups } from "@/types/conference";
 import { conferenceModules } from "@/lib/conferenceData";
+import { warnUnknownGroups } from "@/lib/overrideUtils";
+export { KNOWN_GROUPS } from "@/lib/groupsData";
 
 interface ProfileModule {
   mapUserProfiles?: UserProfile[];
@@ -9,10 +11,15 @@ interface ProfileModule {
 
 // Collect all mapUserProfiles exports from every conference data file.
 export const ALL_USER_PROFILES: UserProfile[] = [];
-Object.values(conferenceModules).forEach((module) => {
+Object.entries(conferenceModules).forEach(([path, module]) => {
+  const conferenceId = path.split("/").pop()?.replace(".ts", "") ?? "";
   const typedModule = module as ProfileModule;
   if (typedModule.mapUserProfiles) {
     ALL_USER_PROFILES.push(...typedModule.mapUserProfiles);
+    // Warn at module load time about any group names not in KNOWN_GROUPS.
+    typedModule.mapUserProfiles.forEach((profile) => {
+      warnUnknownGroups(conferenceId, profile.email, profile.groups ?? []);
+    });
   }
 });
 
