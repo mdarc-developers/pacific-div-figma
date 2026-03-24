@@ -16,7 +16,7 @@
     "test": "vitest run --config vitest.config.ts"
   },
   "engines": {
-    "node": "25"
+    "node": "24"
   },
   "dependencies": {
     "firebase-admin": "^13.7.0",
@@ -26,7 +26,7 @@
     "twilio": "^5.12.2"
   },
   "devDependencies": {
-    "@types/node": "^25.2.3",
+    "@types/node": "^24",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
