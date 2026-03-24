@@ -39,6 +39,7 @@ function wrapper({ children }: { children: React.ReactNode }) {
 describe("BookmarkContext", () => {
   beforeEach(() => {
     localStorageMock.clear();
+    localStorageMock.setItem("activeConference", "hamvention-2026");
   });
 
   it("throws when used outside BookmarkProvider", () => {

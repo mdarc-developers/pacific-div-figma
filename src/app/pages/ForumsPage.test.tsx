@@ -161,6 +161,20 @@ import { NotesProvider } from "@/app/contexts/NotesContext";
 import { VoteProvider } from "@/app/contexts/VoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 
+// ── Pin the active conference to hamvention-2026 for all tests in this file ───
+// The mock for SESSION_DATA and MAP_DATA targets hamvention-2026, and the
+// developer-panel tests require the mapSessionRooms that hamvention-2026 carries
+// from its supplemental session file.  Without this, ConferenceProvider would
+// default to the first conference in allConferences (loomis-2026), which has no
+// sessions or maps, causing all category-filter and developer-panel tests to fail.
+beforeEach(() => {
+  localStorage.setItem("activeConference", "hamvention-2026");
+});
+
+afterEach(() => {
+  localStorage.removeItem("activeConference");
+});
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function renderForumsPage() {
   return render(
