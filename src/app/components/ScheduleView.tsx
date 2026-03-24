@@ -644,7 +644,9 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
-                    sessionPresenters={sessionPresentersMap.get(session.id)}
+                    sessionPresenters={
+                      sessionPresentersMap.get(session.id) ?? []
+                    }
                     currentUserIsSpeaker={userSpeakerSessions.includes(
                       session.id,
                     )}
@@ -686,7 +688,9 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
-                    sessionPresenters={sessionPresentersMap.get(session.id)}
+                    sessionPresenters={
+                      sessionPresentersMap.get(session.id) ?? []
+                    }
                     currentUserIsSpeaker={userSpeakerSessions.includes(
                       session.id,
                     )}
