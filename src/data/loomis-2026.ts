@@ -1,6 +1,6 @@
 import {
   //  Session,
-  //  MapImage,
+    MapImage,
   //  Room,
   //  Exhibitor,
   //  Booth,
@@ -10,16 +10,16 @@ import {
 } from "@/types/conference";
 
 // map images - in production these may be bundled images
-//export const conferenceMaps: MapImage[] = [
-//  {
-//    id: "map-1",
-//    name: "",
-//    url: "/assets/maps/.png",
-//    order: 1,
-//    origWidthNum: 1166,
-//    origHeightNum: 609,
-//  },
-//];
+export const conferenceMaps: MapImage[] = [
+  {
+    id: "map-1",
+    name: "Parking",
+    url: "/assets/maps/loomis-parking-20260323.png",
+    order: 1,
+    origWidthNum: 1548,
+    origHeightNum: 843,
+  },
+];
 
 //export const samplePrizes: Prize[] = [
 //];
