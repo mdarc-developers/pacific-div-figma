@@ -67,6 +67,9 @@ This deploys `firestore.rules` from the repo root. Run this whenever the rules f
 See [`functions/README.md`](functions/README.md) for full setup instructions (secrets, service account, `.env`).
 
 ```bash
+cd functions
+npm install
+npm run build
 firebase deploy --only functions
 ```
 
