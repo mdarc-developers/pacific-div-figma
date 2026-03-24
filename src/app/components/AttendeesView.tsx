@@ -272,10 +272,13 @@ export function AttendeesView({ highlightAttendeeId }: AttendeesViewProps) {
           callsign: fa.callsign,
           displayProfile: fa.displayProfile,
           profileVisible: true,
+          // Map conference-scoped speakerSessions to the flat sessions field
+          // so the Speaker category and speaker links render correctly.
+          sessions: fa.speakerSessions?.[activeConference.id],
         }),
       );
     return [...staticAttendees, ...firestoreOnly];
-  }, [staticAttendees, firestoreAttendees, staticUids]);
+  }, [staticAttendees, firestoreAttendees, staticUids, activeConference.id]);
 
   // Build lookup maps for sessions, exhibitors, and prizes (memoized per conference)
   const sessionMap = useMemo(
