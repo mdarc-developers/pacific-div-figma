@@ -11,4 +11,5 @@ export const KNOWN_GROUPS: ReadonlySet<string> = new Set([
   "exhibitor-admin",
   "mdarc-developers",
   "forums-admin",
+  "more-admin",
 ]);

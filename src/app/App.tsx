@@ -79,6 +79,11 @@ const SessionAdminPage = lazy(() =>
     default: m.SessionAdminPage,
   })),
 );
+const MoreAdminPage = lazy(() =>
+  import("@/app/pages/MoreAdminPage").then((m) => ({
+    default: m.MoreAdminPage,
+  })),
+);
 const PacificonSvgExhibitorMap = lazy(() =>
   import("@/app/components/PacificonSvgExhibitorMap").then((m) => ({
     default: m.PacificonSvgExhibitorMap,
@@ -172,6 +177,7 @@ export default function App() {
           <Route path="/admin/prizes" element={<PrizesAdminPage />} />
           <Route path="/admin/exhibitors" element={<ExhibitorAdminPage />} />
           <Route path="/admin/sessions" element={<SessionAdminPage />} />
+          <Route path="/admin/more" element={<MoreAdminPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route
