@@ -101,8 +101,9 @@ describe("fetchPublicAttendees", () => {
           data: () => ({
             displayName: "Alice Smith",
             callsign: "W6ABC",
-            // email, groups, sessions, exhibitors, prizesDonated are stored in
-            // Firestore but should NOT be returned by fetchPublicAttendees
+            // email, groups, sessions, prizesDonated are stored in
+            // Firestore but should NOT be returned by fetchPublicAttendees.
+            // exhibitors is now included as a non-sensitive affiliation field.
             email: "alice@example.com",
             groups: ["organizers"],
             sessions: ["session-1"],
@@ -121,16 +122,17 @@ describe("fetchPublicAttendees", () => {
 
     const result = await fetchPublicAttendees();
     expect(result).toHaveLength(2);
-    // Sensitive fields must be absent from the result
+    // exhibitors is now a public field (organisational affiliation)
     expect(result[0]).toEqual({
       uid: "uid1",
       displayName: "Alice Smith",
       callsign: "W6ABC",
+      exhibitors: ["exhibitor-1"],
     });
+    // Sensitive fields must remain absent
     expect(result[0]).not.toHaveProperty("email");
     expect(result[0]).not.toHaveProperty("groups");
     expect(result[0]).not.toHaveProperty("sessions");
-    expect(result[0]).not.toHaveProperty("exhibitors");
     expect(result[0]).not.toHaveProperty("prizesDonated");
     expect(result[1]).toEqual({ uid: "uid2", displayName: "Bob Jones" });
   });
@@ -185,6 +187,27 @@ describe("writePublicProfile", () => {
         displayName: "Alice",
         callsign: "W6ABC",
         displayProfile: "Ham radio operator",
+      },
+      { merge: true },
+    );
+  });
+
+  it("includes exhibitors when present", async () => {
+    mockSetDoc.mockResolvedValue(undefined);
+    const profile: PublicAttendeeProfile = {
+      uid: "uid3",
+      displayName: "Carol",
+      callsign: "KD6XYZ",
+      exhibitors: ["flexradio", "arrl"],
+    };
+    await writePublicProfile("uid3", profile);
+    expect(mockSetDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "publicProfiles/uid3" }),
+      {
+        uid: "uid3",
+        displayName: "Carol",
+        callsign: "KD6XYZ",
+        exhibitors: ["flexradio", "arrl"],
       },
       { merge: true },
     );
