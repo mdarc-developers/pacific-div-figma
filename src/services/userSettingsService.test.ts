@@ -49,6 +49,8 @@ import {
   setUserProfileVisible,
   getUserRaffleTickets,
   setUserRaffleTickets,
+  getUserSpeakerSessions,
+  setUserSpeakerSessions,
 } from "@/services/userSettingsService";
 import type { NotificationSettings } from "@/services/userSettingsService";
 import type { ActivitySections } from "@/app/contexts/ActivitySectionsContext";
@@ -636,6 +638,57 @@ describe("setUserRaffleTickets", () => {
     expect(mockSetDoc).toHaveBeenCalledWith(
       expect.objectContaining({ path: "users/uid1" }),
       { raffleTickets: { "conf-2026": [] } },
+      { merge: true },
+    );
+  });
+});
+
+// ── getUserSpeakerSessions / setUserSpeakerSessions ───────────────────────────
+
+describe("getUserSpeakerSessions", () => {
+  it("returns an empty array when the user document does not exist", async () => {
+    mockGetDoc.mockResolvedValue(noSnap());
+    expect(await getUserSpeakerSessions("uid1", "conf-1")).toEqual([]);
+  });
+
+  it("returns the speaker sessions for the conference", async () => {
+    mockGetDoc.mockResolvedValue(
+      snap({ speakerSessions: { "conf-1": ["session-a", "session-b"] } }),
+    );
+    expect(await getUserSpeakerSessions("uid1", "conf-1")).toEqual([
+      "session-a",
+      "session-b",
+    ]);
+  });
+
+  it("returns an empty array when the conference key is absent", async () => {
+    mockGetDoc.mockResolvedValue(snap({ speakerSessions: {} }));
+    expect(await getUserSpeakerSessions("uid1", "conf-1")).toEqual([]);
+  });
+
+  it("returns an empty array when the value is not an array", async () => {
+    mockGetDoc.mockResolvedValue(
+      snap({ speakerSessions: { "conf-1": "bad" } }),
+    );
+    expect(await getUserSpeakerSessions("uid1", "conf-1")).toEqual([]);
+  });
+});
+
+describe("setUserSpeakerSessions", () => {
+  it("calls setDoc with speakerSessions nested under the conferenceId", async () => {
+    await setUserSpeakerSessions("uid1", "conf-1", ["session-a", "session-b"]);
+    expect(mockSetDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "users/uid1" }),
+      { speakerSessions: { "conf-1": ["session-a", "session-b"] } },
+      { merge: true },
+    );
+  });
+
+  it("calls setDoc with an empty array when sessions is empty", async () => {
+    await setUserSpeakerSessions("uid1", "conf-1", []);
+    expect(mockSetDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "users/uid1" }),
+      { speakerSessions: { "conf-1": [] } },
       { merge: true },
     );
   });

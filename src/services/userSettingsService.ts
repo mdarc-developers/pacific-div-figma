@@ -400,6 +400,28 @@ export async function setUserRaffleTickets(
   );
 }
 
+export async function getUserSpeakerSessions(
+  uid: string,
+  conferenceId: string,
+): Promise<string[]> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return [];
+  const data = snap.data();
+  return Array.isArray(data?.speakerSessions?.[conferenceId])
+    ? (data.speakerSessions[conferenceId] as string[])
+    : [];
+}
+
+export async function setUserSpeakerSessions(
+  uid: string,
+  conferenceId: string,
+  sessions: string[],
+): Promise<void> {
+  await setDoc(
+    doc(db, "users", uid),
+    { speakerSessions: { [conferenceId]: sessions } },
+    { merge: true },
+  );
 export interface ExhibitorMemberSettings {
   isExhibitorMember: boolean;
   exhibitorMemberId: string;
