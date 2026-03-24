@@ -33,7 +33,6 @@ import { ConferenceListItem } from "@/types/conference";
 //   svg files
 //
 
-
 export const allConferences: ConferenceListItem[] = [
   {
     id: "loomis-2026",
@@ -49,7 +48,8 @@ export const allConferences: ConferenceListItem[] = [
     venuePhone: "+1-916-652-1840",
     venueGPS: "38.8213,-121.1932",
     venueGridSquare: "CM98jt",
-    venueWebsite: "https://loomis.ca.gov/locations/historic-loomis-train-depot-plaza/",
+    venueWebsite:
+      "https://loomis.ca.gov/locations/historic-loomis-train-depot-plaza/",
     timezoneNumeric: "-0700", // PDT in March (Pacific Daylight Time)
     parkingWebsite: "",
     icalUrl: "",
@@ -60,7 +60,8 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
     //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
-    conferenceProgramUrl: "/assets/programs/2026_loomishamfest_03082026_01-scaled.png",
+    conferenceProgramUrl:
+      "/assets/programs/2026_loomishamfest_03082026_01-scaled.png",
     conferenceProgramSourceUrl:
       "https://www.w6ek.org/wp-content/uploads/2023/02/2026_loomishamfest_03082026_01-scaled.png", // upstream filename reflects the year it was published, not the conference year
     conferenceAppPageUrl: "https://pacific-div.web.app/",

@@ -85,7 +85,8 @@ vi.mock("@/app/components/ScheduleView", () => ({
 
 // ── Mock SESSION_DATA so category filter tests are deterministic ──────────────
 vi.mock("@/lib/supplementalData", async (importOriginal) => {
-  const original = await importOriginal<typeof import("@/lib/supplementalData")>();
+  const original =
+    await importOriginal<typeof import("@/lib/supplementalData")>();
   return {
     ...original,
     // Add category to the hamvention forums map so developer panel tests can

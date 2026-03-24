@@ -618,31 +618,31 @@ export function BookmarkListCard({
         {sections.votedSessions && votedSessionList.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-sessions-list">
             {votedSessionList.map((session) => (
-                <li
-                  key={session.id}
-                  className="flex items-center justify-between gap-2 text-sm"
-                >
-                  <span className="flex-1 truncate">{session.title}</span>
-                  <div className="flex items-center gap-1 shrink-0">
-                    {sessionVoteCounts[session.id] !== undefined &&
-                      sessionVoteCounts[session.id] >= 0 && (
-                        <span className="text-xs text-muted-foreground tabular-nums">
-                          {sessionVoteCounts[session.id]}
-                        </span>
-                      )}
-                    {onToggleSessionVote && (
-                      <button
-                        type="button"
-                        onClick={() => onToggleSessionVote(session.id)}
-                        aria-label={`Remove vote for ${session.title}`}
-                        className="text-yellow-500 hover:text-muted-foreground"
-                      >
-                        <Star className="h-4 w-4 fill-current" />
-                      </button>
+              <li
+                key={session.id}
+                className="flex items-center justify-between gap-2 text-sm"
+              >
+                <span className="flex-1 truncate">{session.title}</span>
+                <div className="flex items-center gap-1 shrink-0">
+                  {sessionVoteCounts[session.id] !== undefined &&
+                    sessionVoteCounts[session.id] >= 0 && (
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {sessionVoteCounts[session.id]}
+                      </span>
                     )}
-                  </div>
-                </li>
-              ))}
+                  {onToggleSessionVote && (
+                    <button
+                      type="button"
+                      onClick={() => onToggleSessionVote(session.id)}
+                      aria-label={`Remove vote for ${session.title}`}
+                      className="text-yellow-500 hover:text-muted-foreground"
+                    >
+                      <Star className="h-4 w-4 fill-current" />
+                    </button>
+                  )}
+                </div>
+              </li>
+            ))}
           </ul>
         )}
 
@@ -660,31 +660,31 @@ export function BookmarkListCard({
         {sections.votedExhibitors && votedExhibitorList.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-exhibitors-list">
             {votedExhibitorList.map((exhibitor) => (
-                <li
-                  key={exhibitor.id}
-                  className="flex items-center justify-between gap-2 text-sm"
-                >
-                  <span className="flex-1 truncate">{exhibitor.name}</span>
-                  <div className="flex items-center gap-1 shrink-0">
-                    {exhibitorVoteCounts[exhibitor.id] !== undefined &&
-                      exhibitorVoteCounts[exhibitor.id] >= 0 && (
-                        <span className="text-xs text-muted-foreground tabular-nums">
-                          {exhibitorVoteCounts[exhibitor.id]}
-                        </span>
-                      )}
-                    {onToggleExhibitorVote && (
-                      <button
-                        type="button"
-                        onClick={() => onToggleExhibitorVote(exhibitor.id)}
-                        aria-label={`Remove vote for ${exhibitor.name}`}
-                        className="text-yellow-500 hover:text-muted-foreground"
-                      >
-                        <Star className="h-4 w-4 fill-current" />
-                      </button>
+              <li
+                key={exhibitor.id}
+                className="flex items-center justify-between gap-2 text-sm"
+              >
+                <span className="flex-1 truncate">{exhibitor.name}</span>
+                <div className="flex items-center gap-1 shrink-0">
+                  {exhibitorVoteCounts[exhibitor.id] !== undefined &&
+                    exhibitorVoteCounts[exhibitor.id] >= 0 && (
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {exhibitorVoteCounts[exhibitor.id]}
+                      </span>
                     )}
-                  </div>
-                </li>
-              ))}
+                  {onToggleExhibitorVote && (
+                    <button
+                      type="button"
+                      onClick={() => onToggleExhibitorVote(exhibitor.id)}
+                      aria-label={`Remove vote for ${exhibitor.name}`}
+                      className="text-yellow-500 hover:text-muted-foreground"
+                    >
+                      <Star className="h-4 w-4 fill-current" />
+                    </button>
+                  )}
+                </div>
+              </li>
+            ))}
           </ul>
         )}
 

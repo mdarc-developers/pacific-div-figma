@@ -1,11 +1,11 @@
 import {
-//  Session,
-//  MapImage,
-//  Room,
-//  Exhibitor,
-//  Booth,
-//  Prize,
-//  PrizeWinner,
+  //  Session,
+  //  MapImage,
+  //  Room,
+  //  Exhibitor,
+  //  Booth,
+  //  Prize,
+  //  PrizeWinner,
   UserProfile,
 } from "@/types/conference";
 

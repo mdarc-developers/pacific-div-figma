@@ -306,14 +306,14 @@ Each conference-year base file (e.g. `pacificon-2026.ts`) and every supplemental
 
 ```typescript
 interface ConferenceModule {
-  conferenceMaps?: MapImage[];               // venue / session / exhibitor map images
-  mapSessions?:   [string, Session[]];       // [mapUrl, sessions]
-  mapRooms?:      [string, Room[]];          // [mapUrl, rooms]   — mapUrl MUST equal mapSessions[0]
-  mapBooths?:     [string, Booth[]];         // [mapUrl, booths]  — mapUrl defines which map the polygons render on
-  mapExhibitors?: [string, Exhibitor[]];     // [mapUrl, exhibitors] — mapUrl should equal mapBooths[0] (advisory)
-  samplePrizes?:         Prize[];
-  samplePrizeWinners?:   PrizeWinner[];
-  mapUserProfiles?:      UserProfile[];
+  conferenceMaps?: MapImage[]; // venue / session / exhibitor map images
+  mapSessions?: [string, Session[]]; // [mapUrl, sessions]
+  mapRooms?: [string, Room[]]; // [mapUrl, rooms]   — mapUrl MUST equal mapSessions[0]
+  mapBooths?: [string, Booth[]]; // [mapUrl, booths]  — mapUrl defines which map the polygons render on
+  mapExhibitors?: [string, Exhibitor[]]; // [mapUrl, exhibitors] — mapUrl should equal mapBooths[0] (advisory)
+  samplePrizes?: Prize[];
+  samplePrizeWinners?: PrizeWinner[];
+  mapUserProfiles?: UserProfile[];
   mapUserProfileGroups?: UserProfileGroups[];
   [key: string]: unknown;
 }
@@ -321,34 +321,34 @@ interface ConferenceModule {
 
 ### Data lookup exports (`src/lib/sessionData.ts`)
 
-| Export | Type | Notes |
-|--------|------|-------|
-| `SESSION_DATA` | `Record<string, Session[]>` | Latest supplemental session file wins; not tied to a single map URL |
-| `MAP_DATA` | `Record<string, MapImage[]>` | All `conferenceMaps` entries for a conference |
-| `ROOM_DATA` | `Record<string, [string, Room[]][]>` | **Array** of `[mapUrl, rooms]` tuples — one entry per map URL. `mapUrl` must match a `conferenceMaps` entry and must equal `mapSessions[0]` |
-| `BOOTH_DATA` | `Record<string, [string, Booth[]][]>` | **Array** of `[mapUrl, booths]` tuples — one entry per map URL. Multiple supplemental files can each target a different URL (e.g. one file per building) |
-| `EXHIBITOR_DATA` | `Record<string, [string, Exhibitor[]]>` | Single `[mapUrl, exhibitors]` tuple; latest supplemental file replaces the previous value |
+| Export           | Type                                    | Notes                                                                                                                                                    |
+| ---------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SESSION_DATA`   | `Record<string, Session[]>`             | Latest supplemental session file wins; not tied to a single map URL                                                                                      |
+| `MAP_DATA`       | `Record<string, MapImage[]>`            | All `conferenceMaps` entries for a conference                                                                                                            |
+| `ROOM_DATA`      | `Record<string, [string, Room[]][]>`    | **Array** of `[mapUrl, rooms]` tuples — one entry per map URL. `mapUrl` must match a `conferenceMaps` entry and must equal `mapSessions[0]`              |
+| `BOOTH_DATA`     | `Record<string, [string, Booth[]][]>`   | **Array** of `[mapUrl, booths]` tuples — one entry per map URL. Multiple supplemental files can each target a different URL (e.g. one file per building) |
+| `EXHIBITOR_DATA` | `Record<string, [string, Exhibitor[]]>` | Single `[mapUrl, exhibitors]` tuple; latest supplemental file replaces the previous value                                                                |
 
 ### Map URL coupling rules
 
-| Data type | Map URL constraint |
-|-----------|-------------------|
-| **Session** (`mapSessions`) | `mapSessions[0]` must equal `mapRooms[0]` for the same conference. Enforced by a hard assertion in `forumData.test.ts`. |
-| **Room** (`mapRooms`) | `mapRooms[0]` must equal `mapSessions[0]` (same constraint from the other side). The URL must also match a `conferenceMaps` entry that has `origWidthNum` and `origHeightNum` set (required for Leaflet overlay). |
-| **Booth** (`mapBooths`) | `mapBooths[0]` identifies which `conferenceMaps` image the booth polygons are rendered on top of. Each supplemental booth file may use a different URL to add an entirely new map. No requirement to match any session or exhibitor URL. |
-| **Exhibitor** (`mapExhibitors`) | `mapExhibitors[0]` *should* equal the primary `mapBooths[0]`. A mismatch is **advisory** — `ExhibitorsPage` falls back to matching exhibitors to booth maps by location IDs. The mismatch triggers a `console.warn` and a test warning but does not fail CI. |
-| **Prize / session / attendee** | Not tied to any map URL. Supplemental files replace the base data unconditionally. |
+| Data type                       | Map URL constraint                                                                                                                                                                                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Session** (`mapSessions`)     | `mapSessions[0]` must equal `mapRooms[0]` for the same conference. Enforced by a hard assertion in `forumData.test.ts`.                                                                                                                                      |
+| **Room** (`mapRooms`)           | `mapRooms[0]` must equal `mapSessions[0]` (same constraint from the other side). The URL must also match a `conferenceMaps` entry that has `origWidthNum` and `origHeightNum` set (required for Leaflet overlay).                                            |
+| **Booth** (`mapBooths`)         | `mapBooths[0]` identifies which `conferenceMaps` image the booth polygons are rendered on top of. Each supplemental booth file may use a different URL to add an entirely new map. No requirement to match any session or exhibitor URL.                     |
+| **Exhibitor** (`mapExhibitors`) | `mapExhibitors[0]` _should_ equal the primary `mapBooths[0]`. A mismatch is **advisory** — `ExhibitorsPage` falls back to matching exhibitors to booth maps by location IDs. The mismatch triggers a `console.warn` and a test warning but does not fail CI. |
+| **Prize / session / attendee**  | Not tied to any map URL. Supplemental files replace the base data unconditionally.                                                                                                                                                                           |
 
 ### Supplemental file loading
 
 `src/lib/sessionData.ts` uses four separate `import.meta.glob` calls — one per supplemental type — to load files outside the base `*-20[0-9][0-9].ts` glob:
 
-| Glob pattern | Behaviour |
-|---|---|
-| `../data/*-session-*.ts` | Replaces `SESSION_DATA[conferenceId]` (latest timestamp wins) |
-| `../data/*-room-*.ts` | Appends a new `[mapUrl, rooms]` tuple to `ROOM_DATA[conferenceId]` |
-| `../data/*-booth-*.ts` | Appends a new `[mapUrl, booths]` tuple to `BOOTH_DATA[conferenceId]` |
-| `../data/*-exhibitor-*.ts` | Replaces `EXHIBITOR_DATA[conferenceId]` (latest timestamp wins) |
+| Glob pattern               | Behaviour                                                            |
+| -------------------------- | -------------------------------------------------------------------- |
+| `../data/*-session-*.ts`   | Replaces `SESSION_DATA[conferenceId]` (latest timestamp wins)        |
+| `../data/*-room-*.ts`      | Appends a new `[mapUrl, rooms]` tuple to `ROOM_DATA[conferenceId]`   |
+| `../data/*-booth-*.ts`     | Appends a new `[mapUrl, booths]` tuple to `BOOTH_DATA[conferenceId]` |
+| `../data/*-exhibitor-*.ts` | Replaces `EXHIBITOR_DATA[conferenceId]` (latest timestamp wins)      |
 
 Prize, prize-winner, and attendee-profile supplemental files follow the same replace-on-latest-timestamp pattern and are handled by `prizesData.ts` and `userProfileData.ts` respectively.
 

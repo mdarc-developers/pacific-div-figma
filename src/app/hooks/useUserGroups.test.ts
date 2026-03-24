@@ -108,7 +108,12 @@ describe("useUserGroups", () => {
         bookmarkedSessions: [],
         notificationsEnabled: true,
         smsNotifications: true,
-        groups: ["prize-admin", "forums-admin", "exhibitor-admin", "more-admin"],
+        groups: [
+          "prize-admin",
+          "forums-admin",
+          "exhibitor-admin",
+          "more-admin",
+        ],
       },
     );
 

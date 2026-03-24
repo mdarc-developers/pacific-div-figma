@@ -1,6 +1,4 @@
-import {
-  Exhibitor,
-} from "@/types/conference";
+import { Exhibitor } from "@/types/conference";
 
 export const mapExhibitors: [string, Exhibitor[]] = [
   //"/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
@@ -1448,4 +1446,3 @@ export const mapExhibitors: [string, Exhibitor[]] = [
     },
   ],
 ];
-

@@ -258,8 +258,7 @@ export function ExhibitorsMapViewSvg({
     const detectedTY = (minY + maxY) / 2 - vbH / 2;
     const txDiff = Math.abs(detectedTX - translateX);
     const tyDiff = Math.abs(detectedTY - translateY);
-    const significantDiff =
-      txDiff > vbW * 0.1 || tyDiff > vbH * 0.1;
+    const significantDiff = txDiff > vbW * 0.1 || tyDiff > vbH * 0.1;
 
     const dataRangeW = (maxX - minX).toFixed(1);
     const dataRangeH = (maxY - minY).toFixed(1);

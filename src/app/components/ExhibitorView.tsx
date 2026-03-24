@@ -116,7 +116,9 @@ function ExhibitorCard({
             <div className="flex-1">
               {safeUrl ? (
                 <a href={safeUrl} rel="noopener noreferrer" target="_blank">
-                  <CardTitle className="text-lg mb-2">{exhibitor.name}</CardTitle>
+                  <CardTitle className="text-lg mb-2">
+                    {exhibitor.name}
+                  </CardTitle>
                 </a>
               ) : (
                 <CardTitle className="text-lg mb-2">{exhibitor.name}</CardTitle>

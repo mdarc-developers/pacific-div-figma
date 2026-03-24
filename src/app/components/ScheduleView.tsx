@@ -40,7 +40,10 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/app/components/ui/tooltip";
-import { SESSION_DATA, SESSION_SUPPLEMENTAL_TOKEN } from "@/lib/supplementalData";
+import {
+  SESSION_DATA,
+  SESSION_SUPPLEMENTAL_TOKEN,
+} from "@/lib/supplementalData";
 
 interface CalendarProps {
   events: EventInput[];

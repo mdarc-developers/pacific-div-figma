@@ -1082,8 +1082,16 @@
           const n = parseInt(raw, 10);
           if (isNaN(n) || n <= 0 || String(n) !== raw) continue;
           // Get position from x/y attributes (or parent text element)
-          let px = parseFloat(el.getAttribute("x") || el.closest("text")?.getAttribute("x") || "0");
-          let py = parseFloat(el.getAttribute("y") || el.closest("text")?.getAttribute("y") || "0");
+          let px = parseFloat(
+            el.getAttribute("x") ||
+              el.closest("text")?.getAttribute("x") ||
+              "0",
+          );
+          let py = parseFloat(
+            el.getAttribute("y") ||
+              el.closest("text")?.getAttribute("y") ||
+              "0",
+          );
           if (isNaN(px)) px = 0;
           if (isNaN(py)) py = 0;
           const elMx = getEffectiveMatrix(el, globalMx);
@@ -1121,7 +1129,11 @@
           const pathId = el.getAttribute("id") || "";
           const parsedNum = parseInt(pathId, 10);
           let boothNum;
-          if (!isNaN(parsedNum) && parsedNum > 0 && String(parsedNum) === pathId) {
+          if (
+            !isNaN(parsedNum) &&
+            parsedNum > 0 &&
+            String(parsedNum) === pathId
+          ) {
             boothNum = parsedNum;
           } else if (textLabels.length > 0) {
             // Find the nearest text label to this booth's centroid
@@ -1129,7 +1141,10 @@
             let nearest = null;
             for (const lbl of textLabels) {
               const d = Math.hypot(lbl.x - scx, lbl.y - scy);
-              if (d < minDist) { minDist = d; nearest = lbl; }
+              if (d < minDist) {
+                minDist = d;
+                nearest = lbl;
+              }
             }
             // Accept label only when it is reasonably close (within ~10% of SVG width)
             const threshold = svgWidth * 0.1;

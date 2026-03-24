@@ -86,7 +86,12 @@ describe("detectBounds", () => {
 describe("fallbackLayout", () => {
   it("returns a default layout for empty booths", () => {
     const layout = fallbackLayout([]);
-    expect(layout).toEqual({ vbW: 100, vbH: 100, translateX: 0, translateY: 0 });
+    expect(layout).toEqual({
+      vbW: 100,
+      vbH: 100,
+      translateX: 0,
+      translateY: 0,
+    });
   });
 
   it("adds 10 % margin around the bounding box", () => {
@@ -175,7 +180,9 @@ describe("boothToSvgMapBooth", () => {
         [518, 118],
       ]),
     );
-    const pairs = result.svgPoints.split(" ").map((p) => p.split(",").map(Number));
+    const pairs = result.svgPoints
+      .split(" ")
+      .map((p) => p.split(",").map(Number));
     // first value of each pair should equal the original coords[i][0]
     expect(pairs[0][0]).toBe(507);
     expect(pairs[1][0]).toBe(518);

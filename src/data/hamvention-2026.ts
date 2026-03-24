@@ -76,23 +76,23 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 // moved to supplemental, mapped to only one map
 //export const mapExhibitors: [string, Exhibitor[]] = [
-  ////"/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
-  //"/assets/maps/hamvention-2026-building-1-maxim.svg",
-  //// must match mapBooths URL
-  //[
-    //export interface Exhibitor {
-    //  id: string;                    ? auto assign ? use name
-    //  name: string;                  good
-    //  description: string;           ? '', as of updated
-    // vendorContactName: string ?
-    //  location: number[];            good, but ranges are a bit crazy
-    //  boothName: string;             ? string(location)
-    //  type: string;                  exhibitor-confirmed, exhibitor-reserved
-    //  url: string;                   ? a few who must pay more
-    //  color: string;                 ?
-    //}
-    // Extracted exhibitor data for Hamvention 2026
-  //],
+////"/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf",
+//"/assets/maps/hamvention-2026-building-1-maxim.svg",
+//// must match mapBooths URL
+//[
+//export interface Exhibitor {
+//  id: string;                    ? auto assign ? use name
+//  name: string;                  good
+//  description: string;           ? '', as of updated
+// vendorContactName: string ?
+//  location: number[];            good, but ranges are a bit crazy
+//  boothName: string;             ? string(location)
+//  type: string;                  exhibitor-confirmed, exhibitor-reserved
+//  url: string;                   ? a few who must pay more
+//  color: string;                 ?
+//}
+// Extracted exhibitor data for Hamvention 2026
+//],
 //];
 
 // PDF with Booth[] not working yet so comment it out

@@ -56,7 +56,9 @@ describe("all conference modules — mapUserProfiles shape", () => {
         UserProfile[] | undefined,
       ];
     })
-    .filter((entry): entry is [string, UserProfile[]] => entry[1] !== undefined);
+    .filter(
+      (entry): entry is [string, UserProfile[]] => entry[1] !== undefined,
+    );
 
   it("at least one conference module exports mapUserProfiles", () => {
     expect(modulesWithProfiles.length).toBeGreaterThan(0);
