@@ -23,6 +23,7 @@ import { Label } from "@/app/components/ui/label";
 import { Separator } from "@/app/components/ui/separator";
 import { Textarea } from "@/app/components/ui/textarea";
 import type { User } from "firebase/auth";
+import { KNOWN_GROUPS } from "@/lib/groupsData";
 
 interface AccountCardProps {
   user: User;
@@ -306,11 +307,22 @@ export function AccountCard({
                 Groups
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {groups.map((group) => (
-                  <Badge key={group} variant="secondary" className="text-xs">
-                    {group}
-                  </Badge>
-                ))}
+                {groups.map((group) =>
+                  KNOWN_GROUPS.has(group) ? (
+                    <Badge key={group} variant="secondary" className="text-xs">
+                      {group}
+                    </Badge>
+                  ) : (
+                    <Badge
+                      key={group}
+                      variant="outline"
+                      className="text-xs text-muted-foreground"
+                      title="This group is not yet recognised by the app"
+                    >
+                      {group}
+                    </Badge>
+                  ),
+                )}
               </div>
             </div>
           </>

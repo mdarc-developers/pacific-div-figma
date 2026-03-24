@@ -1,4 +1,5 @@
 import { Conference, Session } from "@/types/conference";
+import { KNOWN_GROUPS } from "@/lib/groupsData";
 
 /**
  * Format a supplemental-file timestamp token for brief display.
@@ -151,4 +152,27 @@ export function formatUpdateTokenDetail(token: string): string {
   const minute = token.slice(11, 13);
   const sec = token.slice(13, 15);
   return `${year}-${month}-${day} ${hour}:${minute}:${sec}`;
+}
+
+/**
+ * Emit a console warning for every group name that is not in the KNOWN_GROUPS
+ * set.  This is intentionally non-fatal — the warning is informational and
+ * does not prevent the group from being displayed on the profile page.
+ *
+ * Examples:
+ *   warnUnknownGroups("loomis-2026", "user@example.com", ["prize-admin", "more-admin"])
+ *   → console.warn('[userProfile] "loomis-2026" user "user@example.com" has unrecognised group "more-admin"')
+ */
+export function warnUnknownGroups(
+  conferenceId: string,
+  userEmail: string,
+  groups: string[],
+): void {
+  groups.forEach((group) => {
+    if (!KNOWN_GROUPS.has(group)) {
+      console.warn(
+        `[userProfile] "${conferenceId}" user "${userEmail}" has unrecognised group "${group}"`,
+      );
+    }
+  });
 }

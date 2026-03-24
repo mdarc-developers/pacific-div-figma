@@ -67,7 +67,7 @@ export const mapUserProfiles: UserProfile[] = [
     bookmarkedSessions: [],
     notificationsEnabled: true,
     smsNotifications: true,
-    groups: ["prize-admin", "forums-admin", "exhibitor-admin"],
+    groups: ["prize-admin", "forums-admin", "exhibitor-admin", "more-admin"],
     displayName: "Grant B",
     callsign: "K6CBK",
   },
