@@ -5,9 +5,12 @@ import { SettingsCard } from "@/app/components/SettingsCard";
 import { NotificationsCard } from "@/app/components/NotificationsCard";
 import { BookmarkListCard } from "@/app/components/BookmarkListCard";
 import { AttendanceCard } from "@/app/components/AttendanceCard";
+import { ExhibitorMemberCard } from "@/app/components/ExhibitorMemberCard";
 import { AdminCard } from "@/app/components/AdminCard";
 import { DeleteAccountCard } from "@/app/components/DeleteAccountCard";
 import { ExportDataCard } from "@/app/components/ExportDataCard";
+import { SpeakerCard } from "@/app/components/SpeakerCard";
+import { useSpeakerSessions } from "@/app/hooks/useSpeakerSessions";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
@@ -30,6 +33,7 @@ import { useProfileVisible } from "@/app/hooks/useProfileVisible";
 import { useUserProfileFields } from "@/app/hooks/useUserProfileFields";
 import { useShowQrzLink } from "@/app/hooks/useShowQrzLink";
 import { useAttendanceContext } from "@/app/contexts/AttendanceContext";
+import { useExhibitorMember } from "@/app/hooks/useExhibitorMember";
 import { Conference } from "@/types/conference";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
@@ -101,6 +105,14 @@ export function ProfilePage() {
     addConference: addAttendedConference,
     removeConference: removeAttendedConference,
   } = useAttendanceContext();
+  const { speakerSessions, addSpeakerSession, removeSpeakerSession } =
+    useSpeakerSessions(activeConference.id);
+  const {
+    isExhibitorMember,
+    setIsExhibitorMember,
+    exhibitorMemberId,
+    setExhibitorMemberId,
+  } = useExhibitorMember();
 
   if (!user) {
     //return <div>Loading...</div>;
@@ -236,6 +248,20 @@ export function ProfilePage() {
         }
         onAddConference={addAttendedConference}
         onRemoveConference={removeAttendedConference}
+      />
+
+      <SpeakerCard
+        speakerSessions={speakerSessions}
+        allSessions={SESSION_DATA[activeConference.id] ?? []}
+        onAddSession={addSpeakerSession}
+        onRemoveSession={removeSpeakerSession}
+      />
+      <ExhibitorMemberCard
+        isExhibitorMember={isExhibitorMember}
+        onIsExhibitorMemberChange={setIsExhibitorMember}
+        exhibitorMemberId={exhibitorMemberId}
+        onExhibitorMemberIdChange={setExhibitorMemberId}
+        exhibitors={EXHIBITOR_DATA[activeConference.id]?.[1] ?? []}
       />
 
       {/* Prizes & Activity card */}

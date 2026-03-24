@@ -248,7 +248,7 @@ export const decrementAttendeeCounter = onDocumentDeleted(
  * document is written.
  *
  * - If `profileVisible` is `true` the non-sensitive display fields
- *   (displayName, callsign, displayProfile) are copied to
+ *   (displayName, callsign, displayProfile, exhibitors) are copied to
  *   `publicProfiles/{uid}`.
  * - If `profileVisible` is falsy, or the user document is deleted, any
  *   existing `publicProfiles/{uid}` entry is removed.
@@ -305,8 +305,8 @@ export const syncPublicProfile = onDocumentWritten(
     }
 
     // Build the safe-to-share subset of the user document.
-    // Only displayName, callsign, and displayProfile are included.
-    // email, groups, sessions, exhibitors, and prizesDonated are intentionally
+    // displayName, callsign, displayProfile, exhibitors, and speakerSessions
+    // are included. email, groups, and prizesDonated are intentionally
     // excluded to minimise exposure of attendee data.
     const publicData: Record<string, unknown> = { uid };
     const allowedStringFields = [
@@ -318,6 +318,22 @@ export const syncPublicProfile = onDocumentWritten(
       if (typeof data[field] === "string" && data[field]) {
         publicData[field] = data[field];
       }
+    }
+    // Include exhibitors array if present and non-empty.
+    // This lets the /exhibitors page show staff profiles for each exhibitor.
+    if (Array.isArray(data["exhibitors"]) && (data["exhibitors"] as unknown[]).length > 0) {
+      publicData["exhibitors"] = data["exhibitors"];
+    }
+    // Include speakerSessions map if present and non-empty.
+    // This lets /schedule and /forums show self-registered presenters per session.
+    const speakerSessions = data["speakerSessions"];
+    if (
+      speakerSessions !== null &&
+      typeof speakerSessions === "object" &&
+      !Array.isArray(speakerSessions) &&
+      Object.keys(speakerSessions as object).length > 0
+    ) {
+      publicData["speakerSessions"] = speakerSessions;
     }
 
     try {
