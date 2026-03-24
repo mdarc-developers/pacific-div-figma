@@ -1,16 +1,30 @@
 import { NavLink } from "react-router-dom";
 import { Calendar, Map, Mic, SquareUser, Trophy, User } from "lucide-react";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { BOOTH_DATA } from "@/lib/supplementalData";
+import {
+  BOOTH_DATA,
+  MAP_DATA,
+  ROOM_DATA,
+  SESSION_DATA,
+} from "@/lib/supplementalData";
+import { PRIZE_DATA } from "@/lib/prizesData";
 
 export function Navigation() {
   const { activeConference } = useConference();
-  const hasBooths = (BOOTH_DATA[activeConference.id]?.length ?? 0) > 0;
+  const id = activeConference.id;
+  const hasBooths = (BOOTH_DATA[id]?.length ?? 0) > 0;
+  const hasMaps = (MAP_DATA[id]?.length ?? 0) > 0;
+  const hasPrizes = (PRIZE_DATA[id]?.length ?? 0) > 0;
+  const hasForumSessions = (SESSION_DATA[id] ?? []).some(
+    (s) => s.category?.toLowerCase() === "forums",
+  );
+  const hasForumRooms = (ROOM_DATA[id]?.length ?? 0) > 0;
+  const hasForums = hasForumSessions || hasForumRooms;
 
   const navItems = [
     { to: "/schedule", icon: Calendar, label: "Schedule" },
-    { to: "/forums", icon: Mic, label: "Forums" },
-    { to: "/maps", icon: Map, label: "Maps" },
+    { to: "/forums", icon: Mic, label: "Forums", disabled: !hasForums },
+    { to: "/maps", icon: Map, label: "Maps", disabled: !hasMaps },
     //{ to: '/alerts', icon: Bell, label: 'Prizes' },
     //{ to: '/profile', icon: User, label: 'Profile' },
     {
@@ -19,7 +33,7 @@ export function Navigation() {
       label: "Exhibitors",
       disabled: !hasBooths,
     },
-    { to: "/prizes", icon: Trophy, label: "Prizes" },
+    { to: "/prizes", icon: Trophy, label: "Prizes", disabled: !hasPrizes },
     { to: "/attendees", icon: User, label: "Attendees" },
   ];
 
@@ -30,10 +44,11 @@ export function Navigation() {
           disabled ? (
             <span
               key={to}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50"
+              title={`${label} not available for this conference`}
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-red-400 dark:text-red-600 cursor-not-allowed opacity-60"
             >
               <Icon className="h-4 w-4" />
-              <span>{label}</span>
+              <span className="line-through">{label}</span>
             </span>
           ) : (
             <NavLink
