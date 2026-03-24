@@ -9,7 +9,8 @@ import {
   warnOutOfRangeSessions,
   warnEmptyMapData,
 } from "@/lib/overrideUtils";
-import { Session, Booth } from "@/types/conference";
+import { Session, Booth, Conference, UserProfile } from "@/types/conference";
+import * as loomis2026Module from "./loomis-2026";
 
 interface SupplementalSessionModule {
   mapSessions?: [string, Session[]];
@@ -700,6 +701,106 @@ describe("ROOM_DATA multi-entry (pacificon-2026)", () => {
     entries.forEach(([url, rooms]) => {
       expect(url.startsWith("/")).toBe(true);
       expect(rooms.length).toBeGreaterThan(0);
+    });
+  });
+});
+
+// ── loomis-2026 sanity checks ─────────────────────────────────────────────────
+// loomis-2026 is a new conference whose optional data (maps, sessions, rooms,
+// exhibitors, booths, prizes) has not yet been added.  These tests verify that
+// the conference entry is present in allConferences with its required fields
+// intact and that the currently-absent optional exports are properly undefined
+// so that the rest of the app handles them gracefully without crashing.
+
+// Typed view of the loomis-2026 module including optional exports that are
+// not yet present so we can assert they are undefined.
+interface Loomis2026Module {
+  mapUserProfiles: UserProfile[];
+  conferenceMaps?: unknown;
+  mapSessions?: unknown;
+  mapRooms?: unknown;
+  mapExhibitors?: unknown;
+  mapBooths?: unknown;
+  samplePrizes?: unknown;
+  samplePrizeWinners?: unknown;
+}
+const loomisModule = loomis2026Module as Loomis2026Module;
+
+describe("loomis-2026 conference entry", () => {
+  const loomis = allConferences.find((c) => c.id === "loomis-2026") as
+    | Conference
+    | undefined;
+
+  it("is defined in allConferences", () => {
+    expect(loomis).toBeDefined();
+  });
+
+  it("has required string fields", () => {
+    expect(typeof loomis?.name).toBe("string");
+    expect(loomis?.name.length).toBeGreaterThan(0);
+    expect(typeof loomis?.startDate).toBe("string");
+    expect(loomis?.startDate.length).toBeGreaterThan(0);
+    expect(typeof loomis?.endDate).toBe("string");
+    expect(loomis?.endDate.length).toBeGreaterThan(0);
+    expect(typeof loomis?.timezone).toBe("string");
+    expect(loomis?.timezone.length).toBeGreaterThan(0);
+    expect(typeof loomis?.timezoneNumeric).toBe("string");
+    expect(loomis?.timezoneNumeric.length).toBeGreaterThan(0);
+    expect(typeof loomis?.logoUrl).toBe("string");
+    expect(loomis?.logoUrl.length).toBeGreaterThan(0);
+  });
+
+  it("has a conferenceProgramUrl defined", () => {
+    expect(typeof loomis?.conferenceProgramUrl).toBe("string");
+    expect(loomis?.conferenceProgramUrl?.length).toBeGreaterThan(0);
+  });
+});
+
+describe("loomis-2026 missing optional data", () => {
+  it("conferenceMaps is undefined (not yet added)", () => {
+    expect(loomisModule.conferenceMaps).toBeUndefined();
+  });
+
+  it("mapSessions is undefined (not yet added)", () => {
+    expect(loomisModule.mapSessions).toBeUndefined();
+  });
+
+  it("mapRooms is undefined (not yet added)", () => {
+    expect(loomisModule.mapRooms).toBeUndefined();
+  });
+
+  it("mapExhibitors is undefined (not yet added)", () => {
+    expect(loomisModule.mapExhibitors).toBeUndefined();
+  });
+
+  it("mapBooths is undefined (not yet added)", () => {
+    expect(loomisModule.mapBooths).toBeUndefined();
+  });
+
+  it("samplePrizes is undefined (not yet added)", () => {
+    expect(loomisModule.samplePrizes).toBeUndefined();
+  });
+
+  it("samplePrizeWinners is undefined (not yet added)", () => {
+    expect(loomisModule.samplePrizeWinners).toBeUndefined();
+  });
+});
+
+describe("loomis-2026 mapUserProfiles export", () => {
+  it("exports a non-empty UserProfile array", () => {
+    expect(Array.isArray(loomisModule.mapUserProfiles)).toBe(true);
+    expect(loomisModule.mapUserProfiles.length).toBeGreaterThan(0);
+  });
+
+  it("each attendee has required fields", () => {
+    loomisModule.mapUserProfiles.forEach((attendee: UserProfile) => {
+      expect(typeof attendee.uid).toBe("string");
+      expect(attendee.uid.length).toBeGreaterThan(0);
+      expect(typeof attendee.email).toBe("string");
+      expect(typeof attendee.darkMode).toBe("boolean");
+      expect(Array.isArray(attendee.bookmarkedSessions)).toBe(true);
+      expect(typeof attendee.notificationsEnabled).toBe("boolean");
+      expect(typeof attendee.smsNotifications).toBe("boolean");
     });
   });
 });

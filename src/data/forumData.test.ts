@@ -33,6 +33,7 @@ const supplementalExhibitorModules = import.meta.glob("./*-exhibitor-*.ts", {
 // ── conferenceMaps shape ──────────────────────────────────────────────────────
 describe("conferenceMaps export", () => {
   CONFERENCE_MODULES.forEach(([confId, mod]) => {
+    if (!mod.conferenceMaps) return;
     describe(confId, () => {
       it("exports a non-empty MapImage array", () => {
         expect(mod.conferenceMaps).toBeDefined();
