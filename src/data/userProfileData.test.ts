@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { UserProfile, UserProfileGroups } from "@/types/conference";
 import { ALL_USER_PROFILE_GROUPS } from "@/lib/userProfileData";
+import { conferenceModules } from "@/lib/conferenceData";
+
+// Interface used when accessing optional exports from conference data modules.
+interface ConferenceModuleWithProfiles {
+  mapUserProfiles?: UserProfile[];
+  [key: string]: unknown;
+}
 
 interface SupplementalAttendeeModule {
   mapUserProfiles?: UserProfile[];
@@ -19,6 +26,61 @@ const mapUserProfiles: UserProfile[] = quartzfest2027ProfilePath
   ? (supplementalAttendeeModules[quartzfest2027ProfilePath].mapUserProfiles ??
     [])
   : [];
+
+// ── all conference modules — mapUserProfiles shape ────────────────────────────
+// IMPORTANT: Add per-attendee shape checks HERE using the data-driven loop, not
+// in per-conference describe blocks.
+//
+// Previous iterations of this test suite added a "loomis-2026 mapUserProfiles
+// export" block directly in supplementalData.test.ts for a single conference.
+// That approach requires a new block for every future conference, is easy to
+// forget, and duplicates the same shape assertions.  The loop below
+// automatically covers every base conference file that exports mapUserProfiles
+// — including conferences that have not been added yet — without any changes to
+// this test file.
+//
+// Supplemental userprofile override files (e.g. quartzfest-2027-userprofile-*)
+// are tested separately in the "quartzfest-2027-userprofile supplemental file"
+// block because that block also verifies the override semantics.
+describe("all conference modules — mapUserProfiles shape", () => {
+  const modulesWithProfiles: [string, UserProfile[]][] = Object.entries(
+    conferenceModules,
+  )
+    .map(([path, module]) => {
+      const confId = path.split("/").pop()?.replace(".ts", "") ?? "";
+      const typedModule = module as ConferenceModuleWithProfiles;
+      return [confId, typedModule.mapUserProfiles] as [
+        string,
+        UserProfile[] | undefined,
+      ];
+    })
+    .filter((entry): entry is [string, UserProfile[]] => entry[1] !== undefined);
+
+  it("at least one conference module exports mapUserProfiles", () => {
+    expect(modulesWithProfiles.length).toBeGreaterThan(0);
+  });
+
+  modulesWithProfiles.forEach(([confId, profiles]) => {
+    describe(confId, () => {
+      it("exports a non-empty UserProfile array", () => {
+        expect(Array.isArray(profiles)).toBe(true);
+        expect(profiles.length).toBeGreaterThan(0);
+      });
+
+      it("each attendee has required fields", () => {
+        profiles.forEach((attendee: UserProfile) => {
+          expect(typeof attendee.uid).toBe("string");
+          expect(attendee.uid.length).toBeGreaterThan(0);
+          expect(typeof attendee.email).toBe("string");
+          expect(typeof attendee.darkMode).toBe("boolean");
+          expect(Array.isArray(attendee.bookmarkedSessions)).toBe(true);
+          expect(typeof attendee.notificationsEnabled).toBe("boolean");
+          expect(typeof attendee.smsNotifications).toBe("boolean");
+        });
+      });
+    });
+  });
+});
 
 // ── quartzfest-2027 supplemental userprofile file ─────────────────────────────
 // Guards the shape and presence of the supplemental userprofile export that
