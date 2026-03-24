@@ -229,6 +229,16 @@ export function BookmarkListCard({
     .map((id) => exhibitorMap.get(id))
     .filter((e): e is Exhibitor => e !== undefined);
 
+  // Pre-compute voted lists filtered to only items that exist in the current
+  // conference's data so that counts and displayed items stay in sync.
+  const votedSessionList = votedSessionIds
+    .map((id) => sessionMap.get(id))
+    .filter((s): s is Session => s !== undefined);
+
+  const votedExhibitorList = votedExhibitorIds
+    .map((id) => exhibitorMap.get(id))
+    .filter((e): e is Exhibitor => e !== undefined);
+
   // Build the list of sessions that have notes, preserving note text
   const notedSessions = Object.entries(notes)
     .filter(([, text]) => text.trim().length > 0)
@@ -599,18 +609,15 @@ export function BookmarkListCard({
         {/* Voted Sessions section */}
         <SectionHeader
           title="Voted Sessions"
-          count={votedSessionIds.length}
+          count={votedSessionList.length}
           isOpen={sections.votedSessions}
           onToggle={() => toggleSection("votedSessions")}
           icon={<Star className="h-4 w-4 text-yellow-500" />}
         />
 
-        {sections.votedSessions && votedSessionIds.length > 0 && (
+        {sections.votedSessions && votedSessionList.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-sessions-list">
-            {votedSessionIds
-              .map((id) => sessionMap.get(id))
-              .filter((s): s is Session => s !== undefined)
-              .map((session) => (
+            {votedSessionList.map((session) => (
                 <li
                   key={session.id}
                   className="flex items-center justify-between gap-2 text-sm"
@@ -644,18 +651,15 @@ export function BookmarkListCard({
         {/* Voted Exhibitors section */}
         <SectionHeader
           title="Voted Exhibitors"
-          count={votedExhibitorIds.length}
+          count={votedExhibitorList.length}
           isOpen={sections.votedExhibitors}
           onToggle={() => toggleSection("votedExhibitors")}
           icon={<Star className="h-4 w-4 text-yellow-500" />}
         />
 
-        {sections.votedExhibitors && votedExhibitorIds.length > 0 && (
+        {sections.votedExhibitors && votedExhibitorList.length > 0 && (
           <ul className="space-y-2 mt-1" data-testid="voted-exhibitors-list">
-            {votedExhibitorIds
-              .map((id) => exhibitorMap.get(id))
-              .filter((e): e is Exhibitor => e !== undefined)
-              .map((exhibitor) => (
+            {votedExhibitorList.map((exhibitor) => (
                 <li
                   key={exhibitor.id}
                   className="flex items-center justify-between gap-2 text-sm"
