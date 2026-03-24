@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -22,9 +22,10 @@ import {
   Mic,
   StickyNote,
   Star,
+  User,
   Zap,
 } from "lucide-react";
-import { Session, Conference } from "@/types/conference";
+import { Session, Conference, UserProfile } from "@/types/conference";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventInput } from "@fullcalendar/core";
@@ -44,6 +45,7 @@ import {
   SESSION_DATA,
   SESSION_SUPPLEMENTAL_TOKEN,
 } from "@/lib/supplementalData";
+import { ATTENDEE_DATA } from "@/lib/userProfileData";
 
 interface CalendarProps {
   events: EventInput[];
@@ -110,6 +112,8 @@ interface SessionCardProps {
   isVoted?: boolean;
   onToggleVote?: (sessionId: string) => void;
   voteCount?: number;
+  /** Attendees who have selected this session (from static profile data). */
+  sessionAttendees?: UserProfile[];
 }
 
 function SessionCard({
@@ -125,6 +129,7 @@ function SessionCard({
   isVoted,
   onToggleVote,
   voteCount,
+  sessionAttendees,
 }: SessionCardProps) {
   const sessionRef = useRef<HTMLDivElement>(null);
   const [showNoteEditor, setShowNoteEditor] = useState(false);
@@ -262,6 +267,32 @@ function SessionCard({
               <span>{session.speaker}</span>
             </div>
           </div>
+          {/* Attendee profiles — linked names for public profiles, greyed placeholder for private */}
+          {sessionAttendees && sessionAttendees.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              {sessionAttendees.map((attendee) =>
+                attendee.profileVisible !== false ? (
+                  <Link
+                    key={attendee.uid}
+                    to={`/attendees?highlight=${attendee.uid}`}
+                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline dark:text-blue-400"
+                  >
+                    <User className="h-3 w-3" />
+                    {attendee.displayName || attendee.callsign || "Attendee"}
+                  </Link>
+                ) : (
+                  <span
+                    key={attendee.uid}
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground opacity-60 cursor-default select-none"
+                    aria-label="Anonymous attendee"
+                  >
+                    <User className="h-3 w-3" />
+                    Anonymous
+                  </span>
+                ),
+              )}
+            </div>
+          )}
           {/* Notes section — only shown when the parent provides a save handler */}
           {onSaveNote && (
             <div className="mt-3">
@@ -387,6 +418,18 @@ export function ScheduleView({
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [showNowAndNext, setShowNowAndNext] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string>("all");
+
+  // Build a reverse map: sessionId → list of attendees who have selected it
+  const sessionAttendeeMap = useMemo(() => {
+    const map = new Map<string, UserProfile[]>();
+    for (const attendee of ATTENDEE_DATA[activeConference.id] ?? []) {
+      for (const sessionId of attendee.sessions ?? []) {
+        if (!map.has(sessionId)) map.set(sessionId, []);
+        map.get(sessionId)!.push(attendee);
+      }
+    }
+    return map;
+  }, [activeConference.id]);
 
   // Collect unique "room" names from all sessions, sorted alphabetically
   const collectedRooms = useMemo(
@@ -576,6 +619,7 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
+                    sessionAttendees={sessionAttendeeMap.get(session.id)}
                   />
                 ))}
               </div>
@@ -613,6 +657,7 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
+                    sessionAttendees={sessionAttendeeMap.get(session.id)}
                   />
                 ))
               ) : (
