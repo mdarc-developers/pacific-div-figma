@@ -422,6 +422,8 @@ export async function setUserSpeakerSessions(
     { speakerSessions: { [conferenceId]: sessions } },
     { merge: true },
   );
+}
+
 export interface ExhibitorMemberSettings {
   isExhibitorMember: boolean;
   exhibitorMemberId: string;

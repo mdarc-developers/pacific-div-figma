@@ -305,8 +305,8 @@ export const syncPublicProfile = onDocumentWritten(
     }
 
     // Build the safe-to-share subset of the user document.
-    // displayName, callsign, displayProfile, and exhibitors are included.
-    // email, groups, sessions, and prizesDonated are intentionally
+    // displayName, callsign, displayProfile, exhibitors, and speakerSessions
+    // are included. email, groups, and prizesDonated are intentionally
     // excluded to minimise exposure of attendee data.
     const publicData: Record<string, unknown> = { uid };
     const allowedStringFields = [
@@ -323,6 +323,17 @@ export const syncPublicProfile = onDocumentWritten(
     // This lets the /exhibitors page show staff profiles for each exhibitor.
     if (Array.isArray(data["exhibitors"]) && (data["exhibitors"] as unknown[]).length > 0) {
       publicData["exhibitors"] = data["exhibitors"];
+    }
+    // Include speakerSessions map if present and non-empty.
+    // This lets /schedule and /forums show self-registered presenters per session.
+    const speakerSessions = data["speakerSessions"];
+    if (
+      speakerSessions !== null &&
+      typeof speakerSessions === "object" &&
+      !Array.isArray(speakerSessions) &&
+      Object.keys(speakerSessions as object).length > 0
+    ) {
+      publicData["speakerSessions"] = speakerSessions;
     }
 
     try {

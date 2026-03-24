@@ -137,6 +137,46 @@ describe("fetchPublicAttendees", () => {
     expect(result[1]).toEqual({ uid: "uid2", displayName: "Bob Jones" });
   });
 
+  it("includes speakerSessions when present in Firestore data", async () => {
+    mockGetDocs.mockResolvedValue({
+      docs: [
+        {
+          id: "uid1",
+          data: () => ({
+            displayName: "Alice Smith",
+            speakerSessions: {
+              "quartzfest-2027": ["session-a", "session-b"],
+            },
+          }),
+        },
+      ],
+    });
+
+    const result = await fetchPublicAttendees();
+    expect(result[0]).toEqual({
+      uid: "uid1",
+      displayName: "Alice Smith",
+      speakerSessions: { "quartzfest-2027": ["session-a", "session-b"] },
+    });
+  });
+
+  it("omits speakerSessions when the map is empty", async () => {
+    mockGetDocs.mockResolvedValue({
+      docs: [
+        {
+          id: "uid1",
+          data: () => ({
+            displayName: "Alice Smith",
+            speakerSessions: {},
+          }),
+        },
+      ],
+    });
+
+    const result = await fetchPublicAttendees();
+    expect(result[0]).not.toHaveProperty("speakerSessions");
+  });
+
   it("omits fields that are absent or empty strings", async () => {
     mockGetDocs.mockResolvedValue({
       docs: [
@@ -208,6 +248,25 @@ describe("writePublicProfile", () => {
         displayName: "Carol",
         callsign: "KD6XYZ",
         exhibitors: ["flexradio", "arrl"],
+      },
+      { merge: true },
+    );
+  });
+
+  it("includes speakerSessions when present", async () => {
+    mockSetDoc.mockResolvedValue(undefined);
+    const profile: PublicAttendeeProfile = {
+      uid: "uid4",
+      displayName: "Dave",
+      speakerSessions: { "quartzfest-2027": ["session-x"] },
+    };
+    await writePublicProfile("uid4", profile);
+    expect(mockSetDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "publicProfiles/uid4" }),
+      {
+        uid: "uid4",
+        displayName: "Dave",
+        speakerSessions: { "quartzfest-2027": ["session-x"] },
       },
       { merge: true },
     );

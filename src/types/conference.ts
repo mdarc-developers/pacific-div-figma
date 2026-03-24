@@ -145,11 +145,13 @@ export interface UserProfile {
  * Synced automatically by the `syncPublicProfile` Cloud Function whenever a
  * `users/{uid}` document changes and `profileVisible` is true.
  *
- * Fields intentionally excluded: email, groups, sessions, prizesDonated.
+ * Fields intentionally excluded: email, groups, prizesDonated.
  * These are considered private and must never be stored in publicProfiles.
  * The `exhibitors` field is included as it represents a non-sensitive
  * organisational affiliation (employer / vendor / volunteer) that users
  * explicitly opt into by populating their own profile.
+ * The `speakerSessions` field is included because presenting at a session
+ * is explicitly opted into by the user via the Speaker card.
  */
 export interface PublicAttendeeProfile {
   uid: string;
@@ -158,6 +160,11 @@ export interface PublicAttendeeProfile {
   displayProfile?: string;
   /** Exhibitor IDs this person is associated with (employee, owner, volunteer, etc.). */
   exhibitors?: string[];
+  /**
+   * Sessions this person has opted in to present at, keyed by conferenceId.
+   * Set via the Speaker card on the profile page; reflected in /schedule and /forums.
+   */
+  speakerSessions?: Record<string, string[]>;
 }
 
 export interface Message {

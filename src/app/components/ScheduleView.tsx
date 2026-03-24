@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -22,9 +22,10 @@ import {
   Mic,
   StickyNote,
   Star,
+  User,
   Zap,
 } from "lucide-react";
-import { Session, Conference } from "@/types/conference";
+import { Session, Conference, PublicAttendeeProfile } from "@/types/conference";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventInput } from "@fullcalendar/core";
@@ -44,6 +45,9 @@ import {
   SESSION_DATA,
   SESSION_SUPPLEMENTAL_TOKEN,
 } from "@/lib/supplementalData";
+import { usePublicAttendees } from "@/app/hooks/usePublicAttendees";
+import { useSpeakerSessions } from "@/app/hooks/useSpeakerSessions";
+import { useProfileVisible } from "@/app/hooks/useProfileVisible";
 
 interface CalendarProps {
   events: EventInput[];
@@ -110,6 +114,12 @@ interface SessionCardProps {
   isVoted?: boolean;
   onToggleVote?: (sessionId: string) => void;
   voteCount?: number;
+  /** Public attendees who have self-registered as presenters for this session. */
+  sessionPresenters?: PublicAttendeeProfile[];
+  /** Whether the current logged-in user has selected this session as a presenter. */
+  currentUserIsSpeaker?: boolean;
+  /** Whether the current user's attendee profile is public. */
+  currentUserProfileVisible?: boolean;
 }
 
 function SessionCard({
@@ -125,6 +135,9 @@ function SessionCard({
   isVoted,
   onToggleVote,
   voteCount,
+  sessionPresenters = [],
+  currentUserIsSpeaker = false,
+  currentUserProfileVisible = false,
 }: SessionCardProps) {
   const sessionRef = useRef<HTMLDivElement>(null);
   const [showNoteEditor, setShowNoteEditor] = useState(false);
@@ -226,6 +239,38 @@ function SessionCard({
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
             {session.description}
           </p>
+          {/* Registered attendee presenters for this session */}
+          {(sessionPresenters.length > 0 ||
+            (currentUserIsSpeaker && !currentUserProfileVisible)) && (
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              {sessionPresenters.map((presenter) => (
+                <Button
+                  key={presenter.uid}
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                >
+                  <Link to={`/attendees?highlight=${presenter.uid}`}>
+                    <User className="h-3 w-3" />
+                    {presenter.displayName || presenter.callsign || "Attendee"}
+                  </Link>
+                </Button>
+              ))}
+              {currentUserIsSpeaker && !currentUserProfileVisible && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled
+                  className="h-7 text-xs gap-1 opacity-50 cursor-not-allowed"
+                  title="Make your profile public in /profile to show your name here"
+                >
+                  <User className="h-3 w-3" />
+                  You (profile private)
+                </Button>
+              )}
+            </div>
+          )}
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Clock className="h-4 w-4" />
@@ -387,6 +432,29 @@ export function ScheduleView({
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [showNowAndNext, setShowNowAndNext] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string>("all");
+
+  // Load public attendees to show self-registered presenters on session cards.
+  const { attendees: publicAttendees } = usePublicAttendees();
+  // Current user's speaker sessions and profile visibility for the greyed-out button.
+  const { speakerSessions: userSpeakerSessions } = useSpeakerSessions(
+    activeConference.id,
+  );
+  const { profileVisible: userProfileVisible } = useProfileVisible();
+
+  // Build a map from sessionId → list of public attendees who registered as presenter.
+  const sessionPresentersMap = useMemo(() => {
+    const map = new Map<string, PublicAttendeeProfile[]>();
+    for (const attendee of publicAttendees) {
+      const sessions =
+        attendee.speakerSessions?.[activeConference.id] ?? [];
+      for (const sid of sessions) {
+        const list = map.get(sid) ?? [];
+        list.push(attendee);
+        map.set(sid, list);
+      }
+    }
+    return map;
+  }, [publicAttendees, activeConference.id]);
 
   // Collect unique "room" names from all sessions, sorted alphabetically
   const collectedRooms = useMemo(
@@ -576,6 +644,11 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
+                    sessionPresenters={sessionPresentersMap.get(session.id)}
+                    currentUserIsSpeaker={userSpeakerSessions.includes(
+                      session.id,
+                    )}
+                    currentUserProfileVisible={userProfileVisible}
                   />
                 ))}
               </div>
@@ -613,6 +686,11 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
+                    sessionPresenters={sessionPresentersMap.get(session.id)}
+                    currentUserIsSpeaker={userSpeakerSessions.includes(
+                      session.id,
+                    )}
+                    currentUserProfileVisible={userProfileVisible}
                   />
                 ))
               ) : (
