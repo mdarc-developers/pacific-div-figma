@@ -6,10 +6,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type BoothType =
-  | "vendor-booth" // Blue
-  | "vendor-table" // Orange
-  | "nonprofit-table" // Yellow
-  | "activity" // Dark green — lobby, kit building, W1AW
+  | "vendor-booth" // Blue (#77CFF4)
+  | "vendor-table" // Orange (#FFC000)
+  | "nonprofit-table" // Yellow (#FFFF00)
+  | "activity" // Green (#7ABB33) — lobby, kit building, W1AW
   | "room" // Deep green — ballrooms
   | "hallway" // Light gray — hallway labels, patio
   | "service"; // Medium gray — registration, restrooms
@@ -29,10 +29,10 @@ export const COLORS: Record<
   BoothType,
   { fill: string; stroke: string; text: string }
 > = {
-  "vendor-booth": { fill: "#7EC8E3", stroke: "#2A7A9B", text: "#0D2B3E" },
-  "vendor-table": { fill: "#F5A623", stroke: "#C07800", text: "#3D2200" },
-  "nonprofit-table": { fill: "#F5E030", stroke: "#B8A000", text: "#2D2700" },
-  activity: { fill: "#4A8F3F", stroke: "#2A5C23", text: "#FFFFFF" },
+  "vendor-booth": { fill: "#77CFF4", stroke: "#2A7A9B", text: "#0D2B3E" },
+  "vendor-table": { fill: "#FFC000", stroke: "#B38600", text: "#3D2200" },
+  "nonprofit-table": { fill: "#FFFF00", stroke: "#B8A000", text: "#2D2700" },
+  activity: { fill: "#7ABB33", stroke: "#4A7A1E", text: "#FFFFFF" },
   room: { fill: "#2D5C1E", stroke: "#1A3D10", text: "#FFFFFF" },
   hallway: { fill: "#D8D8D8", stroke: "#999999", text: "#333333" },
   service: { fill: "#888888", stroke: "#555555", text: "#FFFFFF" },
