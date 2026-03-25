@@ -61,6 +61,7 @@ export function PacificonSvgExhibitorMap() {
             key={`tp-${i}`}
             fill={p.fill}
             stroke={p.stroke}
+            {...(p.strokeWidth !== undefined && { strokeWidth: p.strokeWidth })}
             d={p.d}
           />
         ))}
@@ -75,6 +76,7 @@ export function PacificonSvgExhibitorMap() {
             fontWeight={t.fontWeight}
             fill={t.fill}
             fontFamily="Arial, sans-serif"
+            {...(t.transform && { transform: t.transform })}
             {...(t.textLength !== null && {
               textLength: t.textLength,
               lengthAdjust: "spacingAndGlyphs",
