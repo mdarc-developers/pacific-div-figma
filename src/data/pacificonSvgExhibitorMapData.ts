@@ -513,7 +513,7 @@ export const BOOTHS: Booth[] = [
   },
   {
     id: "b4",
-    label: "4\nARRL",
+    label: "4",
     type: "vendor-booth",
     x: X_VH1,
     y: Y_VH4,
@@ -1127,7 +1127,6 @@ export const TABLE_PATHS: SvgTablePath[] = [
   { fill: 'rgb(255,192,0)', stroke: 'none', d: 'M 15402,16929 L 14349,16929 14349,18388 15402,18388 15402,16929 Z' },
   { fill: 'none', stroke: 'rgb(0,0,0)', strokeWidth: 25, d: 'M 15402,16929 L 14349,16929 14349,18388 15402,18388 15402,16929 Z' },
 
-  { fill: 'rgb(119,207,244)', stroke: 'none', d: 'M 19034,19129 L 19034,21789 19739,21789 19739,19129 19034,19129 Z' },
   { fill: 'rgb(119,207,244)', stroke: 'none', d: 'M 3348,11186 L 4401,11186 4401,9735 3348,9735 3348,11186 Z' },
   { fill: 'none', stroke: 'rgb(0,0,0)', strokeWidth: 25, d: 'M 3348,11186 L 4401,11186 4401,9735 3348,9735 3348,11186 Z' },
   { fill: 'rgb(255,255,0)', stroke: 'none', d: 'M 8548,12000 L 9700,12000 9700,11354 8548,11354 8548,12000 Z' },
@@ -1212,7 +1211,6 @@ export const TABLE_TEXTS: SvgTableText[] = [
   { x: 16208, y: 37118, fontSize: '353px', fontWeight: '700', fill: 'rgb(0,0,0)', textLength: 996, content: 'NP-15', transform: 'rotate(90 16208 37118)' },
   { x: 15388, y: 31853, fontSize: '353px', fontWeight: '700', fill: 'rgb(0,0,0)', textLength: 703, content: 'T-17', transform: 'rotate(90 15388 31853)' },
   { x: 16837, y: 37224, fontSize: '282px', fontWeight: '700', fill: 'rgb(0,0,0)', textLength: 783, content: 'DATV', transform: 'rotate(90 16837 37224)' },
-  { x: 19257, y: 20057, fontSize: '282px', fontWeight: '700', fill: 'rgb(0,0,0)', textLength: 804, content: 'ARRL', transform: 'rotate(90 19257 20057)' },
   { x: 15833, y: 33248, fontSize: '353px', fontWeight: '700', fill: 'rgb(0,0,0)', textLength: 703, content: 'T-18', transform: 'rotate(90 15833 33248)' },
   { x: 18556, y: 18455, fontSize: '423px', fontWeight: '700', fill: 'rgb(0,0,0)', textLength: 235, content: '3' },
   { x: 18556, y: 15552, fontSize: '423px', fontWeight: '700', fill: 'rgb(0,0,0)', textLength: 235, content: '1' },
