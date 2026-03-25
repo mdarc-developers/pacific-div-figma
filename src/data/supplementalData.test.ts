@@ -789,10 +789,6 @@ interface Loomis2026Module {
 const loomisModule = loomis2026Module as Loomis2026Module;
 
 describe("loomis-2026 missing optional data", () => {
-  it("conferenceMaps is undefined (not yet added)", () => {
-    expect(loomisModule.conferenceMaps).toBeUndefined();
-  });
-
   it("mapSessions is undefined (not yet added)", () => {
     expect(loomisModule.mapSessions).toBeUndefined();
   });
