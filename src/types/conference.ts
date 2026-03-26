@@ -57,6 +57,10 @@ export interface Booth {
   labelRotation?: number;
   /** Horizontal text justification for the booth label. */
   labelJustify?: "left" | "center" | "right";
+  /** Exhibitor label text overlaid on the booth (centered horiz/vert, center justified). Defaults to "". */
+  ExhibitorLabel?: string;
+  /** Rotation in degrees for the ExhibitorLabel text. */
+  ExhibitorLabelRotate?: number;
 }
 
 export interface Exhibitor {
