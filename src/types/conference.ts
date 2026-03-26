@@ -47,6 +47,16 @@ export interface Booth {
   id: number;
   coords: [number, number][];
   locationZone: string;
+  /** Default booth label (overrides numeric id; e.g. "NP-5", "T-3"). */
+  label?: string;
+  /** X offset from the booth centre for placing the label, in the map's coordinate units. */
+  labelOffsetX?: number;
+  /** Y offset from the booth centre for placing the label, in the map's coordinate units. */
+  labelOffsetY?: number;
+  /** Label rotation in degrees. */
+  labelRotation?: number;
+  /** Horizontal text justification for the booth label. */
+  labelJustify?: "left" | "center" | "right";
 }
 
 export interface Exhibitor {
