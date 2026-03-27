@@ -265,7 +265,7 @@ export function ConferenceHeader() {
 
   // Conference name with website link, logo, and conference selector dropdown
   const renderNameAndLogoRow = () => (
-    <div className="flex justify-between items-center self-stretch w-full gap-6">
+    <div className="flex justify-between items-start flex-wrap self-stretch w-full gap-3">
       <div>
         <h1 className="text-3xl md:text-4xl font-bold mb-3 flex">
           {activeConference.name}
