@@ -50,7 +50,7 @@ export const allConferences: ConferenceListItem[] = [
     venueGridSquare: "CM88sh",
     venueWebsite:
       "https://sonomaucc.org/",
-    timezoneNumeric: "-0700", // PDT in March (Pacific Daylight Time)
+    timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
     parkingWebsite: "",
     icalUrl: "",
     googlecalUrl: "",
