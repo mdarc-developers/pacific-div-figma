@@ -35,37 +35,37 @@ import { ConferenceListItem } from "@/types/conference";
 
 export const allConferences: ConferenceListItem[] = [
   {
-    id: "loomis-2026",
-    name: "Loomis Hamfest 2026",
-    location: "5775 Horseshoe Bar Rd, Loomis, CA 95650",
-    venue: "Historic Loomis Train Station",
-    startDate: "2026-03-28",
-    endDate: "2026-03-28",
+    id: "vomarc-2026",
+    name: "Valley Of the Moon ARC Hamfest 2026",
+    location: "252 W Spain St, Sonoma, CA 95476",
+    venue: "First Congregational Church",
+    startDate: "2026-04-18",
+    endDate: "2026-04-18",
     timezone: "America/Los_Angeles",
     primaryColor: "#000080",
     secondaryColor: "#DCBf33",
-    conferenceWebsite: "https://hamfest.w6ek.org",
+    conferenceWebsite: "https://vomarc.org",
     venuePhone: "+1-916-652-1840",
-    venueGPS: "38.8213,-121.1932",
-    venueGridSquare: "CM98jt",
+    venueGPS: "38.2945,-122.4621",
+    venueGridSquare: "CM88sh",
     venueWebsite:
-      "https://loomis.ca.gov/locations/historic-loomis-train-depot-plaza/",
+      "https://sonomaucc.org/",
     timezoneNumeric: "-0700", // PDT in March (Pacific Daylight Time)
     parkingWebsite: "",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@w6ek.org",
-    logoUrl: "/assets/images/loomis-2026.png",
+    contactEmail: "valleyofthemoonarc@gmail.com",
+    logoUrl: "/assets/images/vomarc-logo.png",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
     //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
     conferenceProgramUrl:
-      "/assets/programs/2026_loomishamfest_03082026_01-scaled.png",
+      "/assets/programs/2026_vomarc_hamfest.pdf",
     conferenceProgramSourceUrl:
-      "https://www.w6ek.org/wp-content/uploads/2023/02/2026_loomishamfest_03082026_01-scaled.png", // upstream filename reflects the year it was published, not the conference year
-    conferenceAppPageUrl: "https://pacific-div.web.app/",
-    firstConferenceYear: 2016,
+      "https://vomarc.org/events/Hamfest%20Flyer.pdf", // upstream filename reflects the year it was published, not the conference year
+    conferenceAppPageUrl: "https://pacific-div.web/app/",
+    firstConferenceYear: 1973,
     estimatedAttendees: 400,
   },
   {
@@ -281,6 +281,40 @@ Roadrunner Camping Area",
     estimatedAttendees: 1200,
   },
   { id: "---" },
+  {
+    id: "loomis-2026",
+    name: "Loomis Hamfest 2026",
+    location: "5775 Horseshoe Bar Rd, Loomis, CA 95650",
+    venue: "Historic Loomis Train Station",
+    startDate: "2026-03-28",
+    endDate: "2026-03-28",
+    timezone: "America/Los_Angeles",
+    primaryColor: "#000080",
+    secondaryColor: "#DCBf33",
+    conferenceWebsite: "https://hamfest.w6ek.org",
+    venuePhone: "+1-916-652-1840",
+    venueGPS: "38.8213,-121.1932",
+    venueGridSquare: "CM98jt",
+    venueWebsite:
+      "https://loomis.ca.gov/locations/historic-loomis-train-depot-plaza/",
+    timezoneNumeric: "-0700", // PDT in March (Pacific Daylight Time)
+    parkingWebsite: "",
+    icalUrl: "",
+    googlecalUrl: "",
+    contactEmail: "info@w6ek.org",
+    logoUrl: "/assets/images/loomis-2026.png",
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
+    conferenceProgramUrl:
+      "/assets/programs/2026_loomishamfest_03082026_01-scaled.png",
+    conferenceProgramSourceUrl:
+      "https://www.w6ek.org/wp-content/uploads/2023/02/2026_loomishamfest_03082026_01-scaled.png", // upstream filename reflects the year it was published, not the conference year
+    conferenceAppPageUrl: "https://pacific-div.web/app/",
+    firstConferenceYear: 2016,
+    estimatedAttendees: 400,
+  },
   {
     id: "yuma-2026",
     name: "Yuma Hamfest 2026",
