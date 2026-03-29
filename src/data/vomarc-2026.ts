@@ -16,8 +16,8 @@ export const conferenceMaps: MapImage[] = [
     name: "Parking",
     url: "/assets/maps/vomarc-20260329.png",
     order: 1,
-    origWidthNum: 1548,
-    origHeightNum: 843,
+    origWidthNum: 1234,
+    origHeightNum: 634,
   },
 ];
 
