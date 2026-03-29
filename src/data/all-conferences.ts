@@ -42,7 +42,7 @@ export const allConferences: ConferenceListItem[] = [
     startDate: "2026-04-18",
     endDate: "2026-04-18",
     timezone: "America/Los_Angeles",
-    primaryColor: "#000080",
+    primaryColor: "#9A2E7C",
     secondaryColor: "#DCBf33",
     conferenceWebsite: "https://vomarc.org",
     venuePhone: "+1-916-652-1840",
