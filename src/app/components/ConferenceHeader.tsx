@@ -220,6 +220,13 @@ export function ConferenceHeader() {
     const startDateNum = start.split("-")[2];
     const endDateNum = end.split("-")[2];
 
+    if (startDateNum === endDateNum &&
+      startDate.getMonth() === endDate.getMonth() &&
+      startDate.getFullYear() === endDate.getFullYear()
+    ) {
+      return `${formatHeaderFull(startDate, activeConference.timezone)}`;
+    }
+
     if (
       startDate.getMonth() === endDate.getMonth() &&
       startDate.getFullYear() === endDate.getFullYear()
