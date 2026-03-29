@@ -215,8 +215,8 @@ export function ConferenceHeader() {
   };
 
   const formatDateRange = (start: string, end: string) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+    const startDate = new Date(`${start}T00:00:00${activeConference.timezoneNumeric}`);
+    const endDate = new Date(`${end}T00:00:00${activeConference.timezoneNumeric}`);
     const startDateNum = start.split("-")[2];
     const endDateNum = end.split("-")[2];
 
