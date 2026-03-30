@@ -13,7 +13,8 @@ import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 
 type CombinedResult =
   | { kind: "session"; result: SearchResult }
-  | { kind: "exhibitor"; result: ExhibitorSearchResult };
+  | { kind: "exhibitor"; result: ExhibitorSearchResult }
+  | { kind: "merged"; forumResult: SearchResult; eventResult: SearchResult };
 
 interface SearchBarProps {
   onSelectSession?: (session: Session) => void;
@@ -73,10 +74,37 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
         const sessionResults = searchService.search(searchQuery, undefined, 7);
         const exhibitorResults = searchService.searchExhibitors(searchQuery, 5);
+
+        // Merge session pairs that share a startTime where one is "Forums" and one is "Events"
+        // Pass 1: group sessions by startTime
+        const forumsByTime = new Map<string, SearchResult>();
+        const eventsByTime = new Map<string, SearchResult>();
+        for (const r of sessionResults) {
+          if (r.session.category === "Forums" && !forumsByTime.has(r.session.startTime)) {
+            forumsByTime.set(r.session.startTime, r);
+          } else if (r.session.category === "Events" && !eventsByTime.has(r.session.startTime)) {
+            eventsByTime.set(r.session.startTime, r);
+          }
+        }
+        // Pass 2: build merged and standalone results preserving Fuse relevance order
+        const mergedIds = new Set<string>();
+        const mergedSessions: CombinedResult[] = [];
+        for (const r of sessionResults) {
+          if (mergedIds.has(r.session.id)) continue;
+          const forumAtTime = forumsByTime.get(r.session.startTime);
+          const eventAtTime = eventsByTime.get(r.session.startTime);
+          if (forumAtTime && eventAtTime && !mergedIds.has(forumAtTime.session.id) && !mergedIds.has(eventAtTime.session.id)) {
+            mergedSessions.push({ kind: "merged", forumResult: forumAtTime, eventResult: eventAtTime });
+            mergedIds.add(forumAtTime.session.id);
+            mergedIds.add(eventAtTime.session.id);
+          } else {
+            mergedSessions.push({ kind: "session", result: r });
+            mergedIds.add(r.session.id);
+          }
+        }
+
         const combined: CombinedResult[] = [
-          ...sessionResults.map(
-            (r): CombinedResult => ({ kind: "session", result: r }),
-          ),
+          ...mergedSessions,
           ...exhibitorResults.map(
             (r): CombinedResult => ({ kind: "exhibitor", result: r }),
           ),
@@ -117,6 +145,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         onSelectSession(item.result.session);
       }
       navigate(`/search?highlight=${item.result.session.id}`);
+    } else if (item.kind === "merged") {
+      if (onSelectSession) {
+        onSelectSession(item.forumResult.session);
+      }
+      navigate(`/search?highlight=${item.forumResult.session.id}`);
     } else {
       if (onSelectExhibitor) {
         onSelectExhibitor(item.result.exhibitor);
@@ -222,7 +255,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 key={
                   item.kind === "session"
                     ? `session-${item.result.session.id}`
-                    : `exhibitor-${item.result.exhibitor.id}`
+                    : item.kind === "merged"
+                      ? `merged-${item.forumResult.session.id}-${item.eventResult.session.id}`
+                      : `exhibitor-${item.result.exhibitor.id}`
                 }
                 onClick={() => handleSelectResult(item)}
                 onMouseEnter={() => setSelectedIndex(index)}
@@ -232,7 +267,46 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     : "hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
                 }`}
               >
-                {item.kind === "session" ? (
+                {item.kind === "merged" ? (
+                  <div className="flex flex-col gap-1">
+                    {/* Forum session title (primary) */}
+                    <p className="font-semibold text-sm">
+                      {item.forumResult.session.title}
+                    </p>
+
+                    {/* Speaker and side-by-side category badges */}
+                    <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                      {item.forumResult.session.speaker && (
+                        <span>by {item.forumResult.session.speaker}</span>
+                      )}
+                      <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">
+                        {item.forumResult.session.category}
+                      </span>
+                      <span className="inline-block px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded text-xs">
+                        {item.eventResult.session.category}
+                      </span>
+                      {item.forumResult.session.location && (
+                        <span className="text-xs">
+                          {item.forumResult.session.location}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Time */}
+                    {item.forumResult.session.startTime && (
+                      <p className="text-xs text-gray-500 dark:text-gray-500">
+                        {new Date(
+                          item.forumResult.session.startTime +
+                            activeConference.timezoneNumeric,
+                        ).toLocaleTimeString("en-US", {
+                          timeZone: activeConference.timezone,
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    )}
+                  </div>
+                ) : item.kind === "session" ? (
                   <div className="flex flex-col gap-1">
                     {/* Session Title */}
                     <p className="font-semibold text-sm">
