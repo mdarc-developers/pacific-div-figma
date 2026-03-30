@@ -164,8 +164,8 @@ export const conferenceMaps: MapImage[] = [
     url: "/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf", // for Booth[]
     //floor: '2',
     order: 1,
-    origHeightNum: 745,
-    origWidthNum: 961,
+    origHeightNum: 612,
+    origWidthNum: 792,
   },
   {
     id: "map-2",

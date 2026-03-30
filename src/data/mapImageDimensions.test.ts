@@ -8,10 +8,12 @@ import { conferenceModules } from "@/lib/conferenceData";
 const PROJECT_ROOT = resolve(__dirname, "../../");
 
 /**
- * Returns { width, height } for a PNG, JPEG, or SVG file buffer.
+ * Returns { width, height } for a PNG, JPEG, SVG, or PDF file buffer.
  * For SVG, dimensions are read from the viewBox attribute (preferred) or
  * from the width/height attributes (fallback), returned as rounded integers.
- * Skips non-image formats (e.g. PDF) by returning null.
+ * For PDF, dimensions are the first page's MediaBox in points (1/72 inch),
+ * with width/height swapped when a /Rotate 90 or 270 entry is present.
+ * Returns null only when the format is unrecognised or dimensions cannot be parsed.
  */
 function getImageDimensions(
   buf: Buffer,
@@ -91,7 +93,39 @@ function getImageDimensions(
     }
   }
 
-  // Unsupported format (e.g. PDF)
+  // PDF: magic bytes are "%PDF" (0x25 0x50 0x44 0x46).
+  // The first page's /MediaBox entry specifies [llx lly urx ury] in user-space
+  // units (points, 1/72 inch by default).  width = urx - llx, height = ury - lly.
+  // A /Rotate value of 90 or 270 means the page is displayed in landscape
+  // orientation, so the logical width and height must be swapped.
+  // We search a generous leading slice of the raw bytes (decoded as latin-1 to
+  // avoid UTF-8 decode errors in binary streams) because all PDF object
+  // dictionaries are plain ASCII even when content streams are compressed.
+  if (buf[0] === 0x25 && buf[1] === 0x50 && buf[2] === 0x44 && buf[3] === 0x46) {
+    const pdfHeader = buf.toString("latin1", 0, Math.min(buf.length, 8192));
+    const mbMatch =
+      /\/MediaBox\s*\[\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\]/i.exec(
+        pdfHeader,
+      );
+    if (mbMatch) {
+      const llx = parseFloat(mbMatch[1]);
+      const lly = parseFloat(mbMatch[2]);
+      const urx = parseFloat(mbMatch[3]);
+      const ury = parseFloat(mbMatch[4]);
+      let width = Math.round(urx - llx);
+      let height = Math.round(ury - lly);
+      // /Rotate 90 or 270 swaps the display width and height.
+      const rotateMatch = /\/Rotate\s+(\d+)/.exec(pdfHeader);
+      const rotate = rotateMatch ? parseInt(rotateMatch[1], 10) : 0;
+      if (rotate === 90 || rotate === 270) {
+        [width, height] = [height, width];
+      }
+      return { width, height };
+    }
+    return null;
+  }
+
+  // Unsupported format
   return null;
 }
 
@@ -126,8 +160,8 @@ describe("MapImage declared dimensions match actual image file dimensions", () =
 
           const actual = getImageDimensions(buf);
           if (actual === null) {
-            // Non-image format (e.g. PDF) — dimension measurement is not
-            // supported; skip with a notice rather than fail.
+            // Unrecognised format — dimension measurement is not supported;
+            // skip with a notice rather than fail.
             console.warn(
               `[mapImageDimensions] Unsupported format for dimension check (skipping): ${filePath}`,
             );
