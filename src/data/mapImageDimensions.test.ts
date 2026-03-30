@@ -8,7 +8,9 @@ import { conferenceModules } from "@/lib/conferenceData";
 const PROJECT_ROOT = resolve(__dirname, "../../");
 
 /**
- * Returns { width, height } for a PNG or JPEG file buffer.
+ * Returns { width, height } for a PNG, JPEG, or SVG file buffer.
+ * For SVG, dimensions are read from the viewBox attribute (preferred) or
+ * from the width/height attributes (fallback), returned as rounded integers.
  * Skips non-image formats (e.g. PDF) by returning null.
  */
 function getImageDimensions(
@@ -54,6 +56,38 @@ function getImageDimensions(
       // includes the 2 length bytes themselves but not the 0xFF 0xXX marker).
       const segmentLength = buf.readUInt16BE(offset + 2);
       offset += 2 + segmentLength;
+    }
+  }
+
+  // SVG: text-based format; look for an <svg> opening tag in the first 2 kB.
+  // The tag can be multi-line (Inkscape style), so [^>]* handles embedded newlines.
+  // Prefer viewBox (native coordinate space) over width/height attributes.
+  const header = buf.toString("utf8", 0, Math.min(buf.length, 2048));
+  const svgTagMatch = /<svg\b[^>]*>/i.exec(header);
+  if (svgTagMatch) {
+    const tag = svgTagMatch[0];
+    // viewBox="minX minY width height"
+    const vbMatch = /viewBox\s*=\s*["']([^"']*)["']/i.exec(tag);
+    if (vbMatch) {
+      const parts = vbMatch[1].trim().split(/[\s,]+/);
+      if (parts.length === 4) {
+        const w = parseFloat(parts[2]);
+        const h = parseFloat(parts[3]);
+        if (isFinite(w) && isFinite(h) && w > 0 && h > 0) {
+          return { width: Math.round(w), height: Math.round(h) };
+        }
+      }
+    }
+    // Fall back to plain-number width/height attributes (no unit suffix).
+    // Use a negative lookbehind to avoid matching compound attributes like stroke-width.
+    const wMatch = /(?<![a-z-])width\s*=\s*["']([0-9.]+)["']/i.exec(tag);
+    const hMatch = /(?<![a-z-])height\s*=\s*["']([0-9.]+)["']/i.exec(tag);
+    if (wMatch && hMatch) {
+      const w = parseFloat(wMatch[1]);
+      const h = parseFloat(hMatch[1]);
+      if (isFinite(w) && isFinite(h) && w > 0 && h > 0) {
+        return { width: Math.round(w), height: Math.round(h) };
+      }
     }
   }
 

@@ -181,40 +181,40 @@ export const conferenceMaps: MapImage[] = [
     name: "Building 1 Maxim",
     url: "/assets/maps/hamvention-2026-building-1-maxim.svg", // for Booth[] (SVG interactive map)
     order: 3,
-    origHeightNum: 816,
-    origWidthNum: 1056,
+    origHeightNum: 248,
+    origWidthNum: 240,
   },
   {
     id: "map-4",
     name: "Building 2 Tesla",
     url: "/assets/maps/hamvention-2026-building-2-tesla.svg", // for Booth[] (SVG interactive map)
     order: 3,
-    origHeightNum: 816,
-    origWidthNum: 1056,
+    origHeightNum: 184,
+    origWidthNum: 152,
   },
   {
     id: "map-5",
     name: "Building 3 Marconi",
     url: "/assets/maps/hamvention-2026-building-3-marconi.svg", // for Booth[] (SVG interactive map)
     order: 4,
-    origHeightNum: 816,
-    origWidthNum: 1056,
+    origHeightNum: 232,
+    origWidthNum: 232,
   },
   {
     id: "map-6",
     name: "Building 4 Volta",
     url: "/assets/maps/hamvention-2026-building-4-volta.svg", // for Booth[] (SVG interactive map)
     order: 5,
-    origHeightNum: 816,
-    origWidthNum: 1056,
+    origHeightNum: 206,
+    origWidthNum: 74,
   },
   {
     id: "map-7",
     name: "Building 5 Hertz",
     url: "/assets/maps/hamvention-2026-building-5-hertz.svg", // for Booth[] (SVG interactive map)
     order: 6,
-    origHeightNum: 816,
-    origWidthNum: 1056,
+    origHeightNum: 174,
+    origWidthNum: 90,
   },
 ];
 
