@@ -77,19 +77,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Auth-state changes triggered by the result are handled by the
     // onAuthStateChanged listener above; here we only ensure the Firestore
     // user document exists for first-time Google sign-ins via redirect.
+    let cancelled = false;
     getRedirectResult(auth)
       .then((result) => {
-        if (result?.user) {
+        if (!cancelled && result?.user) {
           ensureUserDoc(result.user).catch(console.error);
         }
       })
       .catch((err) => {
-        // Redirect errors (e.g. auth/invalid-credential) must not crash the
-        // app — log them and leave the UI in the unauthenticated state.
-        console.error("Redirect sign-in error:", err);
+        if (!cancelled) {
+          // Redirect errors (e.g. auth/invalid-credential) must not crash the
+          // app — log them and leave the UI in the unauthenticated state.
+          console.error("Redirect sign-in error:", err);
+        }
       });
 
-    return unsubscribe;
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
