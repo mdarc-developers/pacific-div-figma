@@ -7,11 +7,22 @@ import { conferenceModules } from "@/lib/conferenceData";
 // Root of the Vite project — images live under public/ here
 const PROJECT_ROOT = resolve(__dirname, "../../");
 
+// PDF parsing constants
+/** Number of bytes scanned from the start of a PDF to locate its page dictionary entries. */
+const PDF_HEADER_SCAN_BYTES = 8192;
+/** Matches /MediaBox [llx lly urx ury] — the visible page rectangle in PDF user units. */
+const PDF_MEDIABOX_PATTERN =
+  /\/MediaBox\s*\[\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\]/i;
+/** Matches /Rotate <degrees> — the clockwise page rotation declared in the PDF page dictionary. */
+const PDF_ROTATE_PATTERN = /\/Rotate\s+(\d+)/;
+
 /**
- * Returns { width, height } for a PNG, JPEG, or SVG file buffer.
+ * Returns { width, height } for a PNG, JPEG, SVG, or PDF file buffer.
  * For SVG, dimensions are read from the viewBox attribute (preferred) or
  * from the width/height attributes (fallback), returned as rounded integers.
- * Skips non-image formats (e.g. PDF) by returning null.
+ * For PDF, dimensions are derived from the /MediaBox entry, with /Rotate
+ * applied when the value is 90 or 270.
+ * Returns null only if the format is unrecognised.
  */
 function getImageDimensions(
   buf: Buffer,
@@ -59,6 +70,30 @@ function getImageDimensions(
     }
   }
 
+  // PDF: magic bytes are %PDF- (0x25 0x50 0x44 0x46 0x2D).
+  // Read the first PDF_HEADER_SCAN_BYTES bytes as latin-1 (safe across
+  // compressed streams) to locate the page dictionary.
+  // /MediaBox [llx lly urx ury] gives the visible page dimensions in user
+  // units (1/72 inch each).  An optional /Rotate value of 90 or 270 means
+  // the page is displayed in landscape, so width and height are swapped.
+  if (buf[0] === 0x25 && buf[1] === 0x50 && buf[2] === 0x44 && buf[3] === 0x46) {
+    const pdfHeader = buf.toString(
+      "latin1",
+      0,
+      Math.min(buf.length, PDF_HEADER_SCAN_BYTES),
+    );
+    const mbMatch = PDF_MEDIABOX_PATTERN.exec(pdfHeader);
+    if (mbMatch) {
+      let width = Math.round(parseFloat(mbMatch[3]) - parseFloat(mbMatch[1]));
+      let height = Math.round(parseFloat(mbMatch[4]) - parseFloat(mbMatch[2]));
+      const rotateMatch = PDF_ROTATE_PATTERN.exec(pdfHeader);
+      const rotate = rotateMatch ? parseInt(rotateMatch[1], 10) : 0;
+      if (rotate === 90 || rotate === 270) [width, height] = [height, width];
+      return { width, height };
+    }
+    return null;
+  }
+
   // SVG: text-based format; look for an <svg> opening tag in the first 2 kB.
   // The tag can be multi-line (Inkscape style), so [^>]* handles embedded newlines.
   // Prefer viewBox (native coordinate space) over width/height attributes.
@@ -91,7 +126,7 @@ function getImageDimensions(
     }
   }
 
-  // Unsupported format (e.g. PDF)
+  // Unrecognised format
   return null;
 }
 
@@ -126,10 +161,10 @@ describe("MapImage declared dimensions match actual image file dimensions", () =
 
           const actual = getImageDimensions(buf);
           if (actual === null) {
-            // Non-image format (e.g. PDF) — dimension measurement is not
-            // supported; skip with a notice rather than fail.
+            // Unrecognised format — dimension measurement not supported;
+            // skip with a notice rather than fail.
             console.warn(
-              `[mapImageDimensions] Unsupported format for dimension check (skipping): ${filePath}`,
+              `[mapImageDimensions] Unrecognised format for dimension check (skipping): ${filePath}`,
             );
             return;
           }
