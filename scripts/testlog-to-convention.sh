@@ -13,9 +13,29 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Change to the project root so all relative paths resolve correctly
+cd "$PROJECT_ROOT"
+
 INPUT="$PROJECT_ROOT/test-results/testoutput.txt"
 OUTPUT_DIR="$PROJECT_ROOT/test-results"
 DATE="$(date +%Y%m%d)"
+
+# Verify required directories and input file exist before doing any work
+if [[ ! -d "$PROJECT_ROOT/test-results" ]]; then
+  echo "ERROR: Directory test-results/ not found in $PROJECT_ROOT. Run 'npm run testsave' first." >&2
+  exit 1
+fi
+
+if [[ ! -d "$PROJECT_ROOT/src/data" ]]; then
+  echo "ERROR: Directory src/data/ not found in $PROJECT_ROOT." >&2
+  exit 1
+fi
+
+if [[ ! -f "$INPUT" ]]; then
+  echo "ERROR: $INPUT not found. Run 'npm run testsave' first." >&2
+  exit 1
+fi
 
 # Build conventions array from src/data/*-20??.ts filenames
 conventions=()
@@ -26,11 +46,6 @@ done
 
 if [[ ${#conventions[@]} -eq 0 ]]; then
   echo "ERROR: No convention files found in $PROJECT_ROOT/src/data/" >&2
-  exit 1
-fi
-
-if [[ ! -f "$INPUT" ]]; then
-  echo "ERROR: $INPUT not found. Run 'npm run testsave' first." >&2
   exit 1
 fi
 
