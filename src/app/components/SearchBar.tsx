@@ -11,6 +11,15 @@ import { useNavigate } from "react-router-dom";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 
+/** Minimum dropdown height in pixels — prevents the list from becoming unusably short. */
+const MIN_DROPDOWN_HEIGHT = 200;
+/** Default / fallback dropdown max-height in pixels (matches Tailwind's max-h-96). */
+const DEFAULT_DROPDOWN_HEIGHT = 384;
+/** Approximate gap between the bottom of the input and the top of the dropdown (Tailwind mt-2). */
+const DROPDOWN_TOP_OFFSET = 8;
+/** Bottom margin kept clear between the dropdown and the viewport edge. */
+const DROPDOWN_BOTTOM_MARGIN = 16;
+
 type CombinedResult =
   | { kind: "session"; result: SearchResult }
   | { kind: "exhibitor"; result: ExhibitorSearchResult }
@@ -37,6 +46,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
+  const [dropdownMaxHeight, setDropdownMaxHeight] = useState<number>(DEFAULT_DROPDOWN_HEIGHT);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -205,6 +215,36 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     };
   }, []);
 
+  // Dynamically size the dropdown to fill available viewport space below the input.
+  // While open, recalculate on scroll and only ever increase the height so that
+  // scrolling back up does not shrink the already-expanded dropdown.
+  const updateDropdownHeight = useCallback(() => {
+    if (!inputRef.current) return;
+    const inputRect = inputRef.current.getBoundingClientRect();
+    const dropdownTop = inputRect.bottom + DROPDOWN_TOP_OFFSET;
+    const available = window.innerHeight - dropdownTop - DROPDOWN_BOTTOM_MARGIN;
+    setDropdownMaxHeight((prev) => Math.max(prev, Math.max(available, MIN_DROPDOWN_HEIGHT)));
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setDropdownMaxHeight(DEFAULT_DROPDOWN_HEIGHT); // reset when closed so next open recalculates
+      return;
+    }
+    updateDropdownHeight();
+    // Debounce the scroll handler to avoid excessive recalculations.
+    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
+    const handleScroll = () => {
+      if (scrollTimer) clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(updateDropdownHeight, 50);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimer) clearTimeout(scrollTimer);
+    };
+  }, [isOpen, updateDropdownHeight]);
+
   return (
     //<div className="gap-2 p-1 rounded-lg mb-2">
     <div
@@ -248,7 +288,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         {isOpen && results.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute top-full left-0 right-0 z-50 mt-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 shadow-lg max-h-96 overflow-y-auto"
+            className="absolute top-full left-0 right-0 z-50 mt-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 shadow-lg overflow-y-auto"
+            style={{ maxHeight: `${dropdownMaxHeight}px` }}
           >
             {results.map((item, index) => (
               <button
