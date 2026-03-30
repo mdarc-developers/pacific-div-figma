@@ -77,6 +77,13 @@ firebase deploy --only functions
 
 ## Running tests
 
+### Unit tests
+
+```bash
+npm run test          # run the Vitest unit test suite once
+npm run testverbose   # same, with verbose per-test output
+```
+
 Run `npm run test` to execute the unit test suite (must be run from within the project directory tree).
 
 To run tests from **any** directory (including outside the project tree or any subdirectory), use the included wrapper scripts:
@@ -98,9 +105,40 @@ C:\path\to\pacific-div-figma\test.bat
 
 You can add the project root to your `PATH` (or create a shell alias / Windows shortcut) so you can invoke `test.sh` or `test.bat` without the full path.
 
+### Saving test output
+
+```bash
+npm run testsave   # run tests and save timestamped output to test-results/testoutput.txt
+```
+
+`testsave.sh` records the UTC start/end timestamps and the hostname alongside the full Vitest output. The saved file can then be split by conference name (see below).
+
+### Map image size tests
+
+```bash
+npm run testimagesizes   # validate that every map image in public/ matches the dimensions declared in its conference data file
+```
+
+This runs `src/data/mapImageDimensions.test.ts`, which reads the actual PNG/JPEG headers from the `public/` directory and asserts that each `MapImage` record's `width` and `height` match the real pixel dimensions of the file. Run this after adding or replacing any venue map images.
+
 ### End-to-end tests
 
 ```bash
-npm run build:test  # build with --mode test (stub Firebase keys are fine)
-npm run test:e2e    # Playwright tests against http://127.0.0.1:5173
+npm run build:test   # build with --mode test (stub Firebase keys are fine)
+npm run test:e2e     # Playwright tests against http://127.0.0.1:5173
+npm run test:e2e:ui  # same tests with the Playwright interactive UI (trace viewer, step-through)
 ```
+
+Always build first (`npm run build:test`) before running the E2E suite; Playwright exercises the production bundle served by `vite preview`.
+
+### Splitting saved test output by conference
+
+After running `npm run testsave`, you can break the combined `test-results/testoutput.txt` into per-conference files:
+
+```bash
+bash scripts/testlog-to-convention.sh
+```
+
+The script discovers all conference data files matching `src/data/*-20??.ts`, then routes each line of `testoutput.txt` to the first matching `test-results/testoutput-{conference}-YYYYMMDD.txt` file. Lines that do not match any conference name go to `testoutput-other-YYYYMMDD.txt`. Each output line is prefixed with its original line number so you can cross-reference the full log.
+
+This is useful for quickly scanning warnings or failures that belong to a specific conference's data file rather than reading one large log.
