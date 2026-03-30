@@ -208,7 +208,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return (
     //<div className="gap-2 p-1 rounded-lg mb-2">
     <div
-      className={`relative w-full ${classNameProp} gap-2 p-1 rounded-lg mb-2`}
+      className={`relative z-10 w-full ${classNameProp} gap-2 p-1 rounded-lg mb-2`}
     >
       <form onSubmit={(e) => e.preventDefault()} className="relative">
         <div className="relative flex items-center">

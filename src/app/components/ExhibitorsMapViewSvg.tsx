@@ -496,7 +496,7 @@ export function ExhibitorsMapViewSvg({
   const isZoomed = vb.w < vbW;
 
   return (
-    <div style={{ position: "relative", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ position: "relative", zIndex: 0, fontFamily: "Arial, sans-serif" }}>
       {/* Zoom control buttons */}
       <div
         style={{
