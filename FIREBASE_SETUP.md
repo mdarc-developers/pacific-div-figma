@@ -289,16 +289,40 @@ To enable the admin interfaces for Forums Chair and Prizes Chair:
 2. Create admin pages that check user roles
 3. Build forms for adding/editing sessions, prizes, and winners
 
-## 9. Cloud Functions — Welcome Email
+## 9. Cloud Functions — Welcome and Verification Emails
 
-The `functions/` directory contains a Firebase Cloud Function (`sendWelcomeEmail`)
-that fires on every new user registration and sends a welcome email via the
-**Gmail API** authenticated through `google-auth-library`.
+The `functions/` directory contains Firebase Cloud Functions that handle email delivery
+for new user registrations via the **Gmail API** authenticated through `google-auth-library`.
 
-The function is implemented as a **Cloud Functions v2 blocking function**
-(`beforeUserCreated` from `firebase-functions/v2/identity`). It runs on Node.js 24
-and uses the Compute Engine default service account, which exists in all GCP projects
-that have Cloud Functions v2 enabled — no App Engine setup required.
+### `sendWelcomeEmail`
+
+The `sendWelcomeEmail` function fires on every new user registration and sends a
+welcome email.  It is implemented as a **Cloud Functions v2 blocking function**
+(`beforeUserCreated` from `firebase-functions/v2/identity`).  It runs on Node.js 24
+and uses the Compute Engine default service account.
+
+Because it is a v2 blocking function, email delivery failures are caught and logged
+without blocking user registration.
+
+### `sendVerificationEmailOnCreate`
+
+The `sendVerificationEmailOnCreate` function fires after every new email/password user
+record is created (`auth.user().onCreate`, v1 trigger).  It generates a Firebase
+one-time email-verification link via the Admin SDK and delivers it through the Gmail API
+instead of Firebase's built-in SMTP channel (`noreply@*.firebaseapp.com`), ensuring
+reliable delivery to corporate email domains.
+
+> **Why a separate v1 `onCreate` trigger?**  `beforeUserCreated` runs _before_ the
+> Firebase Auth record exists — `generateEmailVerificationLink()` requires the record to
+> already exist, so a post-creation trigger is used.
+
+### `resendVerificationEmail`
+
+The `resendVerificationEmail` HTTPS Callable function lets authenticated users request a
+fresh email-verification link from the Profile page.  It generates a new link via the
+Admin SDK and delivers it through the Gmail API.  This replaces the previous direct
+`sendEmailVerification()` call from the Firebase client SDK, which sent from
+`noreply@*.firebaseapp.com`.
 
 ### Prerequisites
 
@@ -381,12 +405,13 @@ firebase emulators:start --only functions,auth
 
 ### How it works
 
-The function (`functions/src/index.ts`) uses `google-auth-library`'s `JWT` client
-to impersonate the sender address via service-account domain-wide delegation, then
-calls `gmail.users.messages.send` to deliver the welcome email.
+All three email functions (`sendWelcomeEmail`, `sendVerificationEmailOnCreate`, and
+`resendVerificationEmail`) use `google-auth-library`'s `JWT` client to impersonate the
+sender address via service-account domain-wide delegation, then call
+`gmail.users.messages.send` to deliver the email.
 
-Because it is a v2 blocking function, email delivery failures are caught and logged
-without blocking user registration.
+Email delivery failures are caught and logged without blocking user registration or
+throwing errors to the caller.
 
 ## 10. Notifications
 
