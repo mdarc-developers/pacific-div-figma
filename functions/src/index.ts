@@ -578,3 +578,166 @@ export const resendVerificationEmail = onCall(
     return { success: true };
   },
 );
+
+/**
+ * HTTPS Callable — adminLookupUser
+ *
+ * Called from the UserAdminPage to look up a Firebase Auth user by email.
+ * Returns the user's uid, displayName, emailVerified status, and creation
+ * time.
+ *
+ * The caller must be authenticated and a member of the `user-admin` group
+ * (checked via the `groups/user-admin` Firestore document).
+ */
+export const adminLookupUser = onCall(async (request) => {
+  const callerUid = request.auth?.uid;
+  if (!callerUid) {
+    throw new HttpsError(
+      "unauthenticated",
+      "You must be signed in to use this function.",
+    );
+  }
+
+  // Verify caller is in the user-admin group
+  const groupDoc = await admin
+    .firestore()
+    .doc("groups/user-admin")
+    .get();
+  const isMember =
+    groupDoc.exists && groupDoc.data()?.members?.[callerUid] === true;
+  if (!isMember) {
+    throw new HttpsError(
+      "permission-denied",
+      "Your account does not have user-admin group membership.",
+    );
+  }
+
+  const { targetEmail } = request.data as { targetEmail?: string };
+  if (!targetEmail || typeof targetEmail !== "string") {
+    throw new HttpsError("invalid-argument", "targetEmail is required.");
+  }
+
+  let userRecord: admin.auth.UserRecord;
+  try {
+    userRecord = await admin.auth().getUserByEmail(targetEmail);
+  } catch (err: unknown) {
+    const code = (err as { code?: string }).code;
+    if (code === "auth/user-not-found") {
+      throw new HttpsError("not-found", "No user found with that email address.");
+    }
+    logger.error("adminLookupUser: error fetching user", { targetEmail, err });
+    throw new HttpsError("internal", "Failed to look up user.");
+  }
+
+  return {
+    uid: userRecord.uid,
+    email: userRecord.email ?? null,
+    displayName: userRecord.displayName ?? null,
+    emailVerified: userRecord.emailVerified,
+    creationTime: userRecord.metadata.creationTime ?? null,
+  };
+});
+
+/**
+ * HTTPS Callable — adminResendVerificationEmail
+ *
+ * Called from the UserAdminPage to resend an email-verification link to a
+ * specific user on their behalf.  The caller must be authenticated and a
+ * member of the `user-admin` group.
+ *
+ * Required Firebase Secrets:
+ *   GMAIL_SERVICE_ACCOUNT_JSON  — JSON key file for the service account
+ *   GMAIL_SENDER_EMAIL          — The "From" address (must match the delegated user)
+ */
+export const adminResendVerificationEmail = onCall(
+  {
+    secrets: [gmailServiceAccountJson, gmailSenderEmail],
+  },
+  async (request) => {
+    const callerUid = request.auth?.uid;
+    if (!callerUid) {
+      throw new HttpsError(
+        "unauthenticated",
+        "You must be signed in to use this function.",
+      );
+    }
+
+    // Verify caller is in the user-admin group
+    const groupDoc = await admin
+      .firestore()
+      .doc("groups/user-admin")
+      .get();
+    const isMember =
+      groupDoc.exists && groupDoc.data()?.members?.[callerUid] === true;
+    if (!isMember) {
+      throw new HttpsError(
+        "permission-denied",
+        "Your account does not have user-admin group membership.",
+      );
+    }
+
+    const { targetUid } = request.data as { targetUid?: string };
+    if (!targetUid || typeof targetUid !== "string") {
+      throw new HttpsError("invalid-argument", "targetUid is required.");
+    }
+
+    let userRecord: admin.auth.UserRecord;
+    try {
+      userRecord = await admin.auth().getUser(targetUid);
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code;
+      if (code === "auth/user-not-found") {
+        throw new HttpsError("not-found", "Target user not found.");
+      }
+      logger.error("adminResendVerificationEmail: error fetching user", {
+        targetUid,
+        err,
+      });
+      throw new HttpsError("internal", "Failed to look up target user.");
+    }
+
+    if (!userRecord.email) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Target user has no email address.",
+      );
+    }
+
+    if (userRecord.emailVerified) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Target user's email address is already verified.",
+      );
+    }
+
+    const serviceAccountJson = gmailServiceAccountJson.value();
+    const senderEmail = gmailSenderEmail.value();
+
+    if (!serviceAccountJson || !senderEmail) {
+      logger.error(
+        "adminResendVerificationEmail: GMAIL_SERVICE_ACCOUNT_JSON and GMAIL_SENDER_EMAIL secrets must be set.",
+      );
+      throw new HttpsError("internal", "Email service not configured.");
+    }
+
+    const ok = await sendVerificationLinkViaGmail(
+      userRecord.email,
+      userRecord.displayName,
+      serviceAccountJson,
+      senderEmail,
+      targetUid,
+    );
+
+    if (!ok) {
+      throw new HttpsError("internal", "Failed to send verification email.");
+    }
+
+    logger.info("adminResendVerificationEmail: sent by admin", {
+      callerUid,
+      targetUid,
+      targetEmail: userRecord.email,
+    });
+
+    return { success: true };
+  },
+);

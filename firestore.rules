@@ -24,6 +24,15 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/groups/prize-admin).data.members.get(request.auth.uid, false) == true;
     }
 
+    // Helper: returns true when the authenticated user is listed in the
+    // groups/user-admin document.  That document must be created via the
+    // Firebase Console or admin SDK with the same structure:
+    //   { members: { "<uid>": true, "<uid2>": true, ... } }
+    function isUserAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/groups/user-admin).data.members.get(request.auth.uid, false) == true;
+    }
+
     // ── Conferences, Sessions, Maps — public read ─────────────────────────
     match /conferences/{conferenceId} {
       allow read: if true;
@@ -60,11 +69,12 @@ service cloud.firestore {
     }
 
     // ── Audit logs — users may create entries in their own subcollection;
-    //    mdarc-developers may read all audit logs for compliance review.
+    //    mdarc-developers and user-admins may read all audit logs for compliance review.
     match /users/{userId}/auditLog/{entryId} {
       allow create: if request.auth != null && request.auth.uid == userId;
       allow read: if (request.auth != null && request.auth.uid == userId)
-        || isMdarcDeveloper();
+        || isMdarcDeveloper()
+        || isUserAdmin();
       allow update, delete: if false;
     }
 

@@ -7,12 +7,14 @@ interface AdminCardProps {
   isPrizesAdmin?: boolean;
   isExhibitorAdmin?: boolean;
   isSessionAdmin?: boolean;
+  isUserAdmin?: boolean;
 }
 
 export function AdminCard({
   isPrizesAdmin = false,
   isExhibitorAdmin = false,
   isSessionAdmin = false,
+  isUserAdmin = false,
 }: AdminCardProps) {
   return (
     <Card className="flex flex-wrap gap-3 px-3 py-1.5 mb-2 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs font-medium">
@@ -36,6 +38,11 @@ export function AdminCard({
             {isSessionAdmin && (
               <Button asChild variant="link" size="sm" className="px-0 h-auto">
                 <Link to="/admin/sessions">Sessions Management →</Link>
+              </Button>
+            )}
+            {isUserAdmin && (
+              <Button asChild variant="link" size="sm" className="px-0 h-auto">
+                <Link to="/admin/users">User Management →</Link>
               </Button>
             )}
           </div>
