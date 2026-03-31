@@ -38,6 +38,19 @@ Sample data has been loaded for:
 
 ## Development
 
+### Node.js version
+
+This project requires **Node.js 25**. The required version is declared in both `package.json` (`"engines": { "node": "25" }`) and `.nvmrc`.
+
+If you use [nvm](https://github.com/nvm-sh/nvm) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows):
+
+```bash
+nvm install   # reads .nvmrc and installs Node 25 if not already present
+nvm use       # switches to the version declared in .nvmrc
+```
+
+After switching to Node 25, reinstall dependencies:
+
 ```bash
 npm install        # install node_modules dependencies
 npm run dev        # Vite dev server with hot reload at localhost:5173
@@ -142,3 +155,15 @@ bash scripts/testlog-to-convention.sh
 The script discovers all conference data files matching `src/data/*-20??.ts`, then routes each line of `testoutput.txt` to the first matching `test-results/testoutput-{conference}-YYYYMMDD.txt` file. Lines that do not match any conference name go to `testoutput-other-YYYYMMDD.txt`. Each output line is prefixed with its original line number so you can cross-reference the full log.
 
 This is useful for quickly scanning warnings or failures that belong to a specific conference's data file rather than reading one large log.
+
+### Expected `stderr` output during unit tests
+
+All tests pass (`✓`). The following `stderr` messages appear during a normal run and are **not failures**:
+
+| Message | Source | Why it appears |
+|---|---|---|
+| `[userProfile] "loomis-2026" user "…" has unrecognised group "more-admin"` | `userProfileData.ts` | `loomis-2026` and `vomarc-2026` intentionally contain `"more-admin"` as sample test data to exercise the unknown-group warning path. Verified by `userProfileData.test.ts`. |
+| `[data] <conference>: exhibitor "…" location … not found in any booth map` | `exhibitorData.test.ts` | Advisory-only assertions about exhibitor booth assignments that span multiple floor plans. No data needs to change; these are informational for map layout work. |
+| `[data] <conference>: exhibitor "…" location(s) […] not in URL-matched booth map` | `exhibitorData.test.ts` | Same advisory as above — the exhibitor's `mapUrl` points to a different floor plan than the one where their booth IDs are defined. The runtime fallback finds the correct map automatically. |
+| `SearchService: No sessions provided to buildIndex` | `searchService.test.ts` | The test explicitly exercises the empty-array path and expects this warning. |
+| `Redirect sign-in error: Error: auth/invalid-credential` | `AuthContext.test.tsx` | The test verifies that `AuthContext` does not crash when `getRedirectResult` rejects — the error is thrown intentionally by the mock. |
