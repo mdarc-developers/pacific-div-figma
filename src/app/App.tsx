@@ -97,6 +97,11 @@ const ConferenceRedirectPage = lazy(() =>
     default: m.ConferenceRedirectPage,
   })),
 );
+const FeedbackPage = lazy(() =>
+  import("@/app/pages/FeedbackPage").then((m) => ({
+    default: m.FeedbackPage,
+  })),
+);
 
 function AppLayout() {
   const isMdarcDeveloper = useMdarcDeveloper();
@@ -174,6 +179,7 @@ export default function App() {
           <Route path="/admin/sessions" element={<SessionAdminPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
           <Route
             path="/pacificonfloormap"
             element={<PacificonSvgExhibitorMap />}
