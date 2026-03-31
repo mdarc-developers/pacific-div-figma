@@ -24,6 +24,10 @@ vi.mock("firebase/auth", async (importOriginal) => {
       cb(null);
       return () => {};
     }),
+    // getRedirectResult is a browser-only API that throws
+    // auth/operation-not-supported-in-this-environment in Node.js.
+    // Stub it out so AuthProvider's mount effect resolves cleanly.
+    getRedirectResult: vi.fn().mockResolvedValue(null),
   };
 });
 
