@@ -1,12 +1,14 @@
-# Amateur Radio Conference Attendee Companion App
+# Amateur Radio Conference Companion  AttendeeApp
 
-This is an attendee companion web app designed for attendees of several ARRL conferences.
-The goals are to enhance the attendee experience and provide the tools that conference organizers need.
+This is a web companion attendee app designed for attendees of several ARRL conferences.
+The goals are to enhance the attendee experience and provide the tools that conference organizers need. The goal is to provide a native iOS app through the Apple App Store and an Android app through the Googple Play Store.
 This React 19 app hosted on Google Firebase enables development and authentication.
-The planned iOS and Android apps developed with expo.dev will provide the best experience.
+The iOS and Android apps will be developed with expo.dev and provide the best experience.
 Great care and testing will enable seamless offline use by using a local-first LoFi.so architecture.
 
 Live app: **https://pacific-div.web.app**
+
+registered domain: attendeeapp.com
 
 ## Implemented Features
 
