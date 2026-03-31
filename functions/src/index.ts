@@ -17,6 +17,7 @@ import {
 } from "./welcomeEmail";
 export { purgeExpiredUserData } from "./dataRetention";
 export { notifyPrizeWinner } from "./prizeNotification";
+export { sendFeedbackEmail } from "./feedbackEmail";
 
 admin.initializeApp();
 
