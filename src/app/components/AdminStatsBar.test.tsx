@@ -61,22 +61,48 @@ describe("AdminStatsBar", () => {
     expect(screen.getByTestId("admin-stats-count")).toHaveTextContent("0");
   });
 
-  it("shows error indicator on fetch failure", () => {
+  it("shows error indicator on non-permission fetch failure", () => {
     mockUseAdminStats.mockReturnValue({
       userProfileCount: null,
       signupCount: null,
       loading: false,
-      error: "Permission denied",
+      error: "Service unavailable – check your connection and try again",
+      permissionDenied: false,
     });
     render(<AdminStatsBar />);
     expect(screen.getByTestId("admin-stats-error")).toBeInTheDocument();
     expect(screen.getByTestId("admin-stats-error")).toHaveTextContent(
-      "Permission denied",
+      "Service unavailable – check your connection and try again",
     );
     expect(screen.getByTestId("admin-stats-error")).toHaveAttribute(
       "title",
-      "Permission denied",
+      "Service unavailable – check your connection and try again",
     );
+  });
+
+  it("renders nothing when permissionDenied is true", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: null,
+      signupCount: null,
+      loading: false,
+      error: "Permission denied – your account cannot read these stats",
+      permissionDenied: true,
+    });
+    const { container } = render(<AdminStatsBar />);
+    expect(container.firstChild).toBeNull();
+    expect(screen.queryByTestId("admin-stats-bar")).not.toBeInTheDocument();
+  });
+
+  it("renders nothing when unauthenticated (permissionDenied is true)", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: null,
+      signupCount: null,
+      loading: false,
+      error: "Not signed in",
+      permissionDenied: true,
+    });
+    const { container } = render(<AdminStatsBar />);
+    expect(container.firstChild).toBeNull();
   });
 
   it("shows the signup count from the cloud function counter", () => {
