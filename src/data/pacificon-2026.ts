@@ -93,6 +93,16 @@ export const mapUserProfileGroups: UserProfileGroups[] = [
       "exhibitor-admin",
     ],
   },
+  {
+    uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
+    groups: [
+      "prize-admin",
+      "user-admin",
+      "mdarc-developers",
+      "session-admin",
+      "exhibitor-admin",
+    ],
+  },
 ];
 
 // Sample user profiles — groups simulate Google Cloud Groups membership.
@@ -100,6 +110,16 @@ export const mapUserProfileGroups: UserProfileGroups[] = [
 export const mapUserProfiles: UserProfile[] = [
   {
     uid: "LvdbEAmmSNa8D4snsQHPCBGtXm42",
+    email: "grantbow@mdarc.org",
+    darkMode: false,
+    bookmarkedSessions: [],
+    notificationsEnabled: true,
+    smsNotifications: true,
+    displayName: "Grant B",
+    callsign: "K6CBK",
+  },
+  {
+    uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
     email: "grantbow@mdarc.org",
     darkMode: false,
     bookmarkedSessions: [],
