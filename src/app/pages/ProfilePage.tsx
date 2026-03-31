@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { usePrizesAdmin } from "@/app/hooks/usePrizesAdmin";
 import { useExhibitorAdmin } from "@/app/hooks/useExhibitorAdmin";
 import { useSessionAdmin } from "@/app/hooks/useSessionAdmin";
+import { useUserAdmin } from "@/app/hooks/useUserAdmin";
 import { useUserGroups } from "@/app/hooks/useUserGroups";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
@@ -54,6 +55,7 @@ export function ProfilePage() {
   const isPrizesAdmin = usePrizesAdmin();
   const isExhibitorAdmin = useExhibitorAdmin();
   const isSessionAdmin = useSessionAdmin();
+  const isUserAdmin = useUserAdmin();
   const userGroups = useUserGroups();
   const {
     bookmarkedItems: bookmarkedSessions,
@@ -222,11 +224,12 @@ export function ProfilePage() {
       />
 
       {/* Admin card */}
-      {(isPrizesAdmin || isExhibitorAdmin || isSessionAdmin) && (
+      {(isPrizesAdmin || isExhibitorAdmin || isSessionAdmin || isUserAdmin) && (
         <AdminCard
           isPrizesAdmin={isPrizesAdmin}
           isExhibitorAdmin={isExhibitorAdmin}
           isSessionAdmin={isSessionAdmin}
+          isUserAdmin={isUserAdmin}
         />
       )}
 
