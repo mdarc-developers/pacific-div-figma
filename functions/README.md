@@ -1,6 +1,6 @@
 # Firebase Cloud Functions
 
-This directory contains the Firebase Cloud Functions for the Pacific Division Conference Attendee App.
+This directory contains the Firebase Cloud Functions for the Amateur Radio Conference Companion AttendeeApp.
 
 ## Functions
 

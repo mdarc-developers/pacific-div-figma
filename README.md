@@ -1,4 +1,4 @@
-# Amateur Radio Conference Companion  AttendeeApp
+# Amateur Radio Conference Companion AttendeeApp
 
 This is a web companion attendee app designed for attendees of several ARRL conferences.
 The goals are to enhance the attendee experience and provide the tools that conference organizers need. The goal is to provide a native iOS app through the Apple App Store and an Android app through the Googple Play Store.
@@ -8,7 +8,7 @@ Great care and testing will enable seamless offline use by using a local-first L
 
 Live app: **https://pacific-div.web.app**
 
-registered domain: attendeeapp.com
+Registered domain: attendeeapp.com
 
 ## Implemented Features
 
