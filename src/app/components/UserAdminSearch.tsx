@@ -22,6 +22,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { Toaster, toast } from "sonner";
+import { GroupsWriteButton } from "@/app/components/GroupsWriteButton";
 
 interface LookupResult {
   uid: string;
@@ -323,6 +324,8 @@ export function UserAdminSearch() {
           </CardContent>
         </Card>
       )}
+
+      <GroupsWriteButton />
     </div>
   );
 }
