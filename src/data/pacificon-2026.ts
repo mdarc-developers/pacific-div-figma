@@ -84,9 +84,10 @@ export const samplePrizeWinners: PrizeWinner[] = [
 
 export const mapUserProfileGroups: UserProfileGroups[] = [
   {
-    uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
+    uid: "LvdbEAmmSNa8D4snsQHPCBGtXm42",
     groups: [
       "prize-admin",
+      "user-admin",
       "mdarc-developers",
       "session-admin",
       "exhibitor-admin",
@@ -98,7 +99,7 @@ export const mapUserProfileGroups: UserProfileGroups[] = [
 // prize-admin group grants access to the prize management admin page.
 export const mapUserProfiles: UserProfile[] = [
   {
-    uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
+    uid: "LvdbEAmmSNa8D4snsQHPCBGtXm42",
     email: "grantbow@mdarc.org",
     darkMode: false,
     bookmarkedSessions: [],
