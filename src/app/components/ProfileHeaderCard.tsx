@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, LogOut } from "lucide-react";
+import { AlertCircle, Camera, CheckCircle, LogOut } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -7,7 +7,16 @@ import {
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
+import { updateProfile } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebase";
 import type { User } from "firebase/auth";
+import { useRef, useState } from "react";
 
 interface ProfileHeaderCardProps {
   user: User;
@@ -20,22 +29,103 @@ export function ProfileHeaderCard({
   initials,
   onLogout,
 }: ProfileHeaderCardProps) {
+  const isGoogleUser = user.providerData.some(
+    (p) => p.providerId === "google.com",
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [localPhotoURL, setLocalPhotoURL] = useState<string | null>(null);
+
+  const displayPhotoURL = localPhotoURL ?? user.photoURL;
+
+  const handleAvatarClick = () => {
+    if (isGoogleUser) {
+      window.open("https://myaccount.google.com/", "_blank", "noopener,noreferrer");
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const MAX_FILE_SIZE_MB = 5;
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please select a valid image file.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setUploadError(`Image must be smaller than ${MAX_FILE_SIZE_MB} MB.`);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const storageRef = ref(storage, `profile-images/${user.uid}/profile`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      await updateProfile(user, { photoURL: downloadURL });
+      setLocalPhotoURL(downloadURL);
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? err.message : "Failed to upload profile picture",
+      );
+    } finally {
+      setUploading(false);
+      // Clear the input so the same file can be re-selected if needed
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const avatarTooltipText = isGoogleUser
+    ? "Change your profile picture at myaccount.google.com"
+    : "Click to upload a new profile picture";
+
   return (
     <Card>
       <CardContent className="pt-6">
         <div className="flex items-start gap-4">
-          <Avatar className="h-16 w-16 text-2xl shrink-0">
-            {user.photoURL && (
-              <AvatarImage
-                src={user.photoURL}
-                alt="Profile picture"
-                referrerPolicy="no-referrer"
-              />
-            )}
-            <AvatarFallback className="text-xl font-semibold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="relative h-16 w-16 shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 group"
+                onClick={handleAvatarClick}
+                disabled={uploading}
+                aria-label={avatarTooltipText}
+              >
+                <Avatar className="h-16 w-16 text-2xl pointer-events-none">
+                  {displayPhotoURL && (
+                    <AvatarImage
+                      src={displayPhotoURL}
+                      alt="Profile picture"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
+                  <AvatarFallback className="text-xl font-semibold">
+                    {uploading ? "…" : initials}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <Camera className="h-5 w-5 text-white" />
+                </span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{avatarTooltipText}</TooltipContent>
+          </Tooltip>
+          {!isGoogleUser && (
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          )}
           <div className="flex-1 min-w-0">
             {user.displayName && (
               <p className="text-lg font-semibold truncate">
@@ -75,6 +165,9 @@ export function ProfileHeaderCard({
             Sign out
           </Button>
         </div>
+        {uploadError && (
+          <p className="mt-2 text-sm text-destructive">{uploadError}</p>
+        )}
       </CardContent>
     </Card>
   );
