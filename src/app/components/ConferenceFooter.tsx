@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useConference } from "@/app/contexts/ConferenceContext";
 
 export function ConferenceFooter() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
+  const location = useLocation();
+  const feedbackUrl = `/feedback?referrer=${encodeURIComponent(window.location.origin + location.pathname + location.search)}`;
   const sha = import.meta.env.VITE_GIT_SHA;
   const shortSha = sha ? sha.slice(0, 7) : null;
   const buildDate = import.meta.env.VITE_BUILD_DATE; // format 2026-02-27T22:35:18.692Z
@@ -41,13 +43,13 @@ export function ConferenceFooter() {
           </a>
         </p>
         <p className="mt-2">
-          App questions or suggestions?{" "}
-          <a
-            href={"mailto:pacific-div@mdarc.org"}
+          App questions, errors or omissions?{" "}
+          <Link
+            to={feedbackUrl}
             className="text-blue-600 dark:text-blue-400 hover:underline"
           >
-            pacific-div@mdarc.org
-          </a>
+            Let us know with the URL.
+          </Link>
         </p>
         <p className="mt-2">Built for offline use</p>
         <p className="mt-2">
