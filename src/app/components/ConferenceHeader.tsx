@@ -79,7 +79,7 @@ export function ConferenceHeader() {
 
   // --- URL display helpers ---
 
-  const venueWebsiteDisplay = (iurl: string) => {
+  const venueUrlDisplay = (iurl: string) => {
     if (!iurl || iurl === "") return "";
     else
       return (
@@ -279,7 +279,7 @@ export function ConferenceHeader() {
           &nbsp;&nbsp;
           {/* Conference website link */}
           <a
-            href={activeConference.conferenceWebsite}
+            href={activeConference.conferenceUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:underline"
@@ -300,7 +300,7 @@ export function ConferenceHeader() {
       {/* Conference logo (linked to website) */}
       {activeConference.logoUrl && !isHeaderCollapsed ? (
         <a
-          href={activeConference.conferenceWebsite}
+          href={activeConference.conferenceUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 hover:underline"
@@ -352,7 +352,7 @@ export function ConferenceHeader() {
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <span className="flex items-center gap-1">
           {/* Venue name linked to venue website */}
-          {venueWebsiteDisplay(activeConference.venueWebsite)}
+          {venueUrlDisplay(activeConference.venueUrl)}
         </span>
         <span className="flex items-center gap-1">
           {/* City/location text */}

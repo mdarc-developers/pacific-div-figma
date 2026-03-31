@@ -44,17 +44,17 @@ export const allConferences: ConferenceListItem[] = [
     timezone: "America/Los_Angeles",
     primaryColor: "#9A2E7C",
     secondaryColor: "#DCBf33",
-    conferenceWebsite: "https://vomarc.org",
+    conferenceUrl: "https://vomarc.org",
     venuePhone: "+1-916-652-1840",
     venueGPS: "38.2945,-122.4621",
     venueGridSquare: "CM88sh",
-    venueWebsite:
+    venueUrl:
       "https://sonomaucc.org/",
     timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
-    parkingWebsite: "",
+    parkingUrl: "",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "valleyofthemoonarc@gmail.com",
+    conferenceContactEmail: "valleyofthemoonarc@gmail.com",
     logoUrl: "/assets/images/vomarc-logo.png",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
@@ -78,16 +78,16 @@ export const allConferences: ConferenceListItem[] = [
     timezone: "America/New_York",
     primaryColor: "#dc2626",
     secondaryColor: "#ef4444",
-    conferenceWebsite: "https://www.hamvention.org",
+    conferenceUrl: "https://www.hamvention.org",
     venuePhone: "937-372-8621x12",
     venueGPS: "39.6990,-83.9412",
     venueGridSquare: "EM89aq",
-    venueWebsite: "https://greenecoexpocenter.com/",
+    venueUrl: "https://greenecoexpocenter.com/",
     timezoneNumeric: "-0400", // EDT in May (Eastern Daylight Time)
-    parkingWebsite: "https://hamvention.org/travel-parking/directions/",
+    parkingUrl: "https://hamvention.org/travel-parking/directions/",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@hamvention.org",
+    conferenceContactEmail: "info@hamvention.org",
     logoUrl: "/assets/images/hamvention_logo.png",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
@@ -110,16 +110,16 @@ export const allConferences: ConferenceListItem[] = [
     timezone: "America/Los_Angeles",
     primaryColor: "#87CEEB",
     secondaryColor: "#253C61",
-    conferenceWebsite: "https://www.seapac.org",
+    conferenceUrl: "https://www.seapac.org",
     venuePhone: "(503) 738-8585",
     venueGPS: "45.9940,-123.9280",
     venueGridSquare: "CN85ax",
-    venueWebsite: "https://www.seasideconvention.com",
+    venueUrl: "https://www.seasideconvention.com",
     timezoneNumeric: "-0700", // PDT in June (Pacific Daylight Time)
-    parkingWebsite: "https://seapac.org/#map",
+    parkingUrl: "https://seapac.org/#map",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@seapac.org",
+    conferenceContactEmail: "info@seapac.org",
     logoUrl: "/assets/images/seapac-logo.png",
     //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
     //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
@@ -136,16 +136,16 @@ export const allConferences: ConferenceListItem[] = [
     timezone: "America/Chicago",
     primaryColor: "#7c3aed",
     secondaryColor: "#8b5cf6",
-    conferenceWebsite: "https://www.hamfest.org",
+    conferenceUrl: "https://www.hamfest.org",
     venuePhone: "256-533-1953",
     venueGPS: "34.7269,-86.5934",
     venueGridSquare: "EM64qr",
-    venueWebsite: "http://www.vonbrauncenter.com/",
+    venueUrl: "http://www.vonbrauncenter.com/",
     timezoneNumeric: "-0500", // CDT in August (Central Daylight Time)
-    parkingWebsite: "https://hamfest.org/directions",
+    parkingUrl: "https://hamfest.org/directions",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@hamfest.org",
+    conferenceContactEmail: "info@hamfest.org",
     logoUrl: "/assets/images/huntsville-logo.png",
     //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
     //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
@@ -167,18 +167,18 @@ export const allConferences: ConferenceListItem[] = [
     primaryColor: "#3d71a3", // our blue
     secondaryColor: "#3b82f6", // blue-500
     location: "2600 Bishop Drive, San Ramon, CA 94583", // changed
-    conferenceWebsite: "https://www.pacificon.org", // changed
+    conferenceUrl: "https://www.pacificon.org", // changed
     venuePhone: "925-867-9200",
     venueGPS: "37.7629,-121.9674",
     venueGridSquare: "CM97as",
-    venueWebsite:
+    venueUrl:
       "https://www.marriott.com/en-us/hotels/oaksr-san-ramon-marriott/overview/",
     timezoneNumeric: "-0700", // DST, PDT ends early Nov
-    parkingWebsite: "https://www.pacificon.org/resources/parking",
+    parkingUrl: "https://www.pacificon.org/resources/parking",
     icalUrl: "/assets/maps/pacificon-2026.ics",
     googlecalUrl:
       "https://calendar.google.com/calendar/event?action=TEMPLATE&amp;tmeid=MW9yajdlbDEwNmYwczN2bzl1aTM0OGwzbDEgZ3JhbnRib3dAbWRhcmMub3Jn&amp;tmsrc=grantbow%40mdarc.org",
-    contactEmail: "webmaster@pacificon.org",
+    conferenceContactEmail: "webmaster@pacificon.org",
     logoUrl: "/assets/images/pacificon-2026-logo-208-110.jpg",
     //mapSessionsUrl: '/assets/maps/pacificon-hotel-2025.jpg', // for Room[] and Session[] - move to attribute in MapImage[]?
     //mapExhibitorsUrl: ['/assets/maps/pacificon-exhibitors-2025.png'], // for Booth[] and Exhibitor[] - move to attribute in MapImage[]?
@@ -204,16 +204,16 @@ Roadrunner Camping Area",
     timezone: "America/Phoenix",
     primaryColor: "#53DEBF",
     secondaryColor: "#f97316",
-    conferenceWebsite: "https://www.quartzfest.org",
+    conferenceUrl: "https://www.quartzfest.org",
     venuePhone: "",
     venueGPS: "33.5852,-114.2225",
     venueGridSquare: "DM23vn",
-    venueWebsite: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
+    venueUrl: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
     timezoneNumeric: "-0700", // does not observe DST
-    parkingWebsite: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
+    parkingUrl: "https://www.blm.gov/visit/la-posa-long-term-visitor-area",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "hkey073@gmail.com",
+    conferenceContactEmail: "hkey073@gmail.com",
     logoUrl: "/assets/images/quartzfest-logo-w1000_h1000.webp",
     //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
     //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
@@ -230,16 +230,16 @@ Roadrunner Camping Area",
     timezone: "America/New_York",
     primaryColor: "#000000",
     secondaryColor: "#f97316",
-    conferenceWebsite: "https://www.hamcation.com",
+    conferenceUrl: "https://www.hamcation.com",
     venuePhone: "407-385-3247",
     venueGPS: "28.5556,-81.4402",
     venueGridSquare: "EL98gn",
-    venueWebsite: "https://www.centralfloridafair.com/",
+    venueUrl: "https://www.centralfloridafair.com/",
     timezoneNumeric: "-0500", // EST in February (Eastern Standard Time)
-    parkingWebsite: "",
+    parkingUrl: "",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@hamcation.com",
+    conferenceContactEmail: "info@hamcation.com",
     logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]
@@ -262,16 +262,16 @@ Roadrunner Camping Area",
     timezone: "America/Phoenix",
     primaryColor: "#F5E556",
     secondaryColor: "#253C61",
-    conferenceWebsite: "https://www.yumahamfest.com",
+    conferenceUrl: "https://www.yumahamfest.com",
     venuePhone: "(928) 726-4420",
     venueGPS: "32.6707,-114.5943",
     venueGridSquare: "DM22qq",
-    venueWebsite: "https://www.yumafair.com",
+    venueUrl: "https://www.yumafair.com",
     timezoneNumeric: "-0700", // does not observe DST
-    parkingWebsite: "https://www.yumahamfest.com/parking.html",
+    parkingUrl: "https://www.yumahamfest.com/parking.html",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@yumahamfest.org",
+    conferenceContactEmail: "info@yumahamfest.org",
     logoUrl: "/assets/images/yuma-buzzard.webp",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
@@ -291,17 +291,17 @@ Roadrunner Camping Area",
     timezone: "America/Los_Angeles",
     primaryColor: "#000080",
     secondaryColor: "#DCBf33",
-    conferenceWebsite: "https://hamfest.w6ek.org",
+    conferenceUrl: "https://hamfest.w6ek.org",
     venuePhone: "+1-916-652-1840",
     venueGPS: "38.8213,-121.1932",
     venueGridSquare: "CM98jt",
-    venueWebsite:
+    venueUrl:
       "https://loomis.ca.gov/locations/historic-loomis-train-depot-plaza/",
     timezoneNumeric: "-0700", // PDT in March (Pacific Daylight Time)
-    parkingWebsite: "",
+    parkingUrl: "",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@w6ek.org",
+    conferenceContactEmail: "info@w6ek.org",
     logoUrl: "/assets/images/loomis-2026.png",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
@@ -325,16 +325,16 @@ Roadrunner Camping Area",
     timezone: "America/Phoenix",
     primaryColor: "#F5E556",
     secondaryColor: "#253C61",
-    conferenceWebsite: "https://www.yumahamfest.com",
+    conferenceUrl: "https://www.yumahamfest.com",
     venuePhone: "(928) 726-4420",
     venueGPS: "32.6707,-114.5943",
     venueGridSquare: "DM22qq",
-    venueWebsite: "https://www.yumafair.com",
+    venueUrl: "https://www.yumafair.com",
     timezoneNumeric: "-0700", // does not observe DST
-    parkingWebsite: "https://www.yumahamfest.com/parking.html",
+    parkingUrl: "https://www.yumahamfest.com/parking.html",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@yumahamfest.org",
+    conferenceContactEmail: "info@yumahamfest.org",
     logoUrl: "/assets/images/yuma-buzzard.webp",
     //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
@@ -353,16 +353,16 @@ Roadrunner Camping Area",
     timezone: "America/New_York",
     primaryColor: "#000000",
     secondaryColor: "#f97316",
-    conferenceWebsite: "https://www.hamcation.com",
+    conferenceUrl: "https://www.hamcation.com",
     venuePhone: "407-385-3247",
     venueGPS: "28.5556,-81.4402",
     venueGridSquare: "EL98gn",
-    venueWebsite: "https://www.centralfloridafair.com/",
+    venueUrl: "https://www.centralfloridafair.com/",
     timezoneNumeric: "-0700", // DST, PDT ends early Nov
-    parkingWebsite: "",
+    parkingUrl: "",
     icalUrl: "",
     googlecalUrl: "",
-    contactEmail: "info@hamcation.com",
+    conferenceContactEmail: "info@hamcation.com",
     logoUrl: "/assets/images/hamcation-2026-logo.png",
     //mapSessionsUrl: '/assets/maps/hamcation-2026-pavilion.png', // for Room[]
     //mapExhibitorsUrl: [ '/assets/maps/hamcation-2026-north.png', '/assets/maps/hamcation-2026-eastwest.png'], // for Booth[]

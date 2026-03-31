@@ -34,10 +34,10 @@ export function ConferenceFooter() {
         <p>
           Conference questions or suggestions?{" "}
           <a
-            href={"mailto:" + activeConference.contactEmail}
+            href={"mailto:" + activeConference.conferenceContactEmail}
             className="text-blue-600 dark:text-blue-400 hover:underline"
           >
-            {activeConference.contactEmail}
+            {activeConference.conferenceContactEmail}
           </a>
         </p>
         <p className="mt-2">
