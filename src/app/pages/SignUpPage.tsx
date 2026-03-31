@@ -5,8 +5,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { UserPlus, LogIn } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
-import { sendEmailVerification } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -52,13 +50,6 @@ export function SignUpPage() {
       setLoading(true);
       isSigningUpRef.current = true;
       await signUp(email, password);
-      if (auth.currentUser != null) {
-        try {
-          await sendEmailVerification(auth.currentUser);
-        } catch (verifyErr: unknown) {
-          console.error("Failed to send verification email:", verifyErr);
-        }
-      }
       setSignedUp(true);
     } catch (err: unknown) {
       isSigningUpRef.current = false;

@@ -38,8 +38,10 @@ import { Conference } from "@/types/conference";
 import { SESSION_DATA, EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { PRIZE_DATA, PRIZE_WINNER_DATA } from "@/lib/prizesData";
 import { useState } from "react";
-import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import firebaseApp from "@/lib/firebase";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import { Toaster, toast } from "sonner";
 
 export function ProfilePage() {
@@ -140,14 +142,16 @@ export function ProfilePage() {
     try {
       setError("");
       if (user != null) {
-        await sendEmailVerification(user);
+        const functions = getFunctions(firebaseApp);
+        const resend = httpsCallable(functions, "resendVerificationEmail");
+        await resend();
         toast("Email Verification Sent");
       } else {
         toast("No Email To Verify");
       }
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to sendEmailVerification";
+        err instanceof Error ? err.message : "Failed to send verification email";
       setError(message);
     }
   };

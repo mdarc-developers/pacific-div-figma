@@ -86,9 +86,9 @@ export function buildWelcomeEmailHtml(
                 Whether you attending for the first time or have attended before you will want to address a number of related concerns to make your trip enjoyable:
               </p>
               <ul style="color:#444444;font-size:15px;line-height:1.8;margin:0 0 24px;padding-left:20px;">
-                <li>Please click the link in the separate email verification message</a></li>
+                <li>Please click the link in the email verification message from us</li>
                 <li>Complete your attendee registration</li>
-                <li>Arrange your travel and accomodations</li>
+                <li>Arrange your travel and accommodations</li>
                 <li>If you have attended before, consider helping the volunteers that make our conferences happen and providing feedback to the busy team</li>
               </ul>
               <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">

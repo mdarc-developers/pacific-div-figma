@@ -4,6 +4,8 @@ import {
   onDocumentDeleted,
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import * as functionsV1 from "firebase-functions/v1";
 import { logger } from "firebase-functions";
 //import { onRequest } from "firebase-functions/https";
 import { defineSecret, defineString } from "firebase-functions/params";
@@ -15,6 +17,10 @@ import {
   buildRawMessage,
   buildWelcomeEmailHtml,
 } from "./welcomeEmail";
+import {
+  VERIFICATION_EMAIL_SUBJECT,
+  buildVerificationEmailHtml,
+} from "./verificationEmail";
 export { purgeExpiredUserData } from "./dataRetention";
 export { notifyPrizeWinner } from "./prizeNotification";
 export { sendFeedbackEmail } from "./feedbackEmail";
@@ -346,5 +352,229 @@ export const syncPublicProfile = onDocumentWritten(
         err,
       });
     }
+  },
+);
+
+// ─── Email-verification helpers ──────────────────────────────────────────────
+
+/** The Firebase app URL used as the post-verification redirect target. */
+const APP_URL = "https://pacific-div.web.app";
+
+/**
+ * Builds a Gmail API client authenticated via the service-account credentials
+ * stored in the GMAIL_SERVICE_ACCOUNT_JSON secret.
+ */
+function buildGmailClient(serviceAccountJson: string, senderEmail: string) {
+  const credentials = JSON.parse(serviceAccountJson) as Record<
+    string,
+    unknown
+  >;
+  const authClient = new JWT({
+    email: credentials.client_email as string,
+    key: credentials.private_key as string,
+    scopes: ["https://www.googleapis.com/auth/gmail.send"],
+    subject: senderEmail,
+  });
+  return google.gmail({ version: "v1", auth: authClient });
+}
+
+/**
+ * Generates a Firebase email-verification link for `email` and sends it to
+ * the user via the Gmail API so that delivery goes through the same trusted
+ * channel as the welcome email.
+ *
+ * Returns `true` on success, `false` on any non-fatal error.
+ */
+async function sendVerificationLinkViaGmail(
+  email: string,
+  displayName: string | undefined,
+  serviceAccountJson: string,
+  senderEmail: string,
+  uid: string,
+): Promise<boolean> {
+  let verificationLink: string;
+  try {
+    verificationLink = await admin
+      .auth()
+      .generateEmailVerificationLink(email, {
+        url: APP_URL,
+      });
+  } catch (err) {
+    logger.error(
+      "sendVerificationLinkViaGmail: failed to generate verification link",
+      { uid, email, err },
+    );
+    return false;
+  }
+
+  let gmail: ReturnType<typeof google.gmail>;
+  try {
+    gmail = buildGmailClient(serviceAccountJson, senderEmail);
+  } catch (err) {
+    logger.error(
+      "sendVerificationLinkViaGmail: failed to build Gmail client",
+      { uid, err },
+    );
+    return false;
+  }
+
+  const htmlBody = buildVerificationEmailHtml(
+    displayName,
+    email,
+    verificationLink,
+  );
+  const raw = buildRawMessage(
+    senderEmail,
+    email,
+    VERIFICATION_EMAIL_SUBJECT,
+    htmlBody,
+  );
+
+  try {
+    await gmail.users.messages.send({
+      userId: "me",
+      requestBody: { raw },
+    });
+    logger.info("sendVerificationLinkViaGmail: verification email sent", {
+      uid,
+      email,
+    });
+    return true;
+  } catch (err) {
+    logger.error(
+      "sendVerificationLinkViaGmail: failed to send verification email",
+      { uid, email, err },
+    );
+    return false;
+  }
+}
+
+/**
+ * Sends a Firebase email-verification link to a newly registered user via the
+ * Gmail API.
+ *
+ * This function is intentionally separate from `sendWelcomeEmail` so that the
+ * verification link is generated AFTER the Firebase Auth user record exists
+ * (which is required by `admin.auth().generateEmailVerificationLink()`).
+ *
+ * `sendWelcomeEmail` is a `beforeUserCreated` blocking function and therefore
+ * cannot generate verification links because the Auth record does not yet
+ * exist at that point.
+ *
+ * Required Firebase Secrets:
+ *   GMAIL_SERVICE_ACCOUNT_JSON  — JSON key file for the service account
+ *   GMAIL_SENDER_EMAIL          — The "From" address (must match the delegated user)
+ */
+export const sendVerificationEmailOnCreate = functionsV1
+  .runWith({
+    secrets: ["GMAIL_SERVICE_ACCOUNT_JSON", "GMAIL_SENDER_EMAIL"],
+  })
+  .auth.user()
+  .onCreate(async (user) => {
+    const { uid, email, displayName } = user;
+
+    if (!email) {
+      logger.info(
+        "sendVerificationEmailOnCreate: user has no email, skipping",
+        { uid },
+      );
+      return;
+    }
+
+    // Skip Google sign-in users — their email is already verified by Google.
+    if (user.emailVerified) {
+      logger.info(
+        "sendVerificationEmailOnCreate: email already verified, skipping",
+        { uid },
+      );
+      return;
+    }
+
+    // process.env is used here (not gmailServiceAccountJson.value()) because
+    // this is a Firebase Functions v1 trigger.  Secrets for v1 functions are
+    // injected via runWith({ secrets: [...] }) and exposed as environment
+    // variables, whereas .value() is the v2 params API.
+    const serviceAccountJson = process.env.GMAIL_SERVICE_ACCOUNT_JSON ?? "";
+    const senderEmail = process.env.GMAIL_SENDER_EMAIL ?? "";
+
+    if (!serviceAccountJson || !senderEmail) {
+      logger.error(
+        "sendVerificationEmailOnCreate: GMAIL_SERVICE_ACCOUNT_JSON and " +
+          "GMAIL_SENDER_EMAIL secrets must be set.",
+      );
+      return;
+    }
+
+    await sendVerificationLinkViaGmail(
+      email,
+      displayName,
+      serviceAccountJson,
+      senderEmail,
+      uid,
+    );
+  });
+
+/**
+ * HTTPS Callable — resendVerificationEmail
+ *
+ * Called from the client-side "Send verification" button on the Profile page.
+ * Generates a fresh Firebase email-verification link and delivers it via the
+ * Gmail API.
+ *
+ * The caller must be authenticated.  Sending to any address other than the
+ * caller's own verified email is not permitted.
+ *
+ * Required Firebase Secrets:
+ *   GMAIL_SERVICE_ACCOUNT_JSON  — JSON key file for the service account
+ *   GMAIL_SENDER_EMAIL          — The "From" address (must match the delegated user)
+ */
+export const resendVerificationEmail = onCall(
+  {
+    secrets: [gmailServiceAccountJson, gmailSenderEmail],
+  },
+  async (request) => {
+    const uid = request.auth?.uid;
+    const email = request.auth?.token?.email as string | undefined;
+
+    if (!uid || !email) {
+      throw new HttpsError(
+        "unauthenticated",
+        "You must be signed in to request email verification.",
+      );
+    }
+
+    if (request.auth?.token?.email_verified) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Your email address is already verified.",
+      );
+    }
+
+    const serviceAccountJson = gmailServiceAccountJson.value();
+    const senderEmail = gmailSenderEmail.value();
+
+    if (!serviceAccountJson || !senderEmail) {
+      logger.error(
+        "resendVerificationEmail: GMAIL_SERVICE_ACCOUNT_JSON and " +
+          "GMAIL_SENDER_EMAIL secrets must be set.",
+      );
+      throw new HttpsError("internal", "Email service not configured.");
+    }
+
+    const displayName = request.auth?.token?.name as string | undefined;
+
+    const ok = await sendVerificationLinkViaGmail(
+      email,
+      displayName,
+      serviceAccountJson,
+      senderEmail,
+      uid,
+    );
+
+    if (!ok) {
+      throw new HttpsError("internal", "Failed to send verification email.");
+    }
+
+    return { success: true };
   },
 );
