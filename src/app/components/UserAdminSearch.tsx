@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShieldAlert, ShieldCheck, Search, Send, User } from "lucide-react";
+import { ShieldAlert, ShieldCheck, Search, Send, User, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useUserAdmin } from "@/app/hooks/useUserAdmin";
@@ -168,6 +168,39 @@ export function UserAdminSearch() {
     }
   };
 
+  const projectId =
+    import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined;
+
+  /** Build a Cloud Logging URL pre-filtered for a given UID. */
+  const cloudLoggingUrl = (uid: string): string => {
+    // Encode the UID within the log filter so any unusual characters don't
+    // break the query syntax (Firebase UIDs are alphanumeric but we encode
+    // defensively).
+    const encodedUid = encodeURIComponent(uid);
+    const query = encodeURIComponent(
+      `resource.type="cloud_run_revision"\n("${encodedUid}")`,
+    );
+    const base = "https://console.cloud.google.com/logs/query";
+    return projectId
+      ? `${base};query=${query}?project=${projectId}`
+      : `${base};query=${query}`;
+  };
+
+  /** Firebase Console Auth users URL (project-scoped when possible). */
+  const authUsersUrl = projectId
+    ? `https://console.firebase.google.com/project/${projectId}/authentication/users`
+    : "https://console.firebase.google.com";
+
+  /** Firestore groups collection URL. */
+  const firestoreGroupsUrl = projectId
+    ? `https://console.firebase.google.com/project/${projectId}/firestore/databases/-default-/data/~2Fgroups`
+    : "https://console.firebase.google.com";
+
+  /** Cloud Functions dashboard URL. */
+  const functionsUrl = projectId
+    ? `https://console.firebase.google.com/project/${projectId}/functions`
+    : "https://console.firebase.google.com";
+
   const formatTimestamp = (ts: AuditEntry["timestamp"]): string => {
     if (!ts) return "—";
     if (ts.toDate) {
@@ -274,6 +307,84 @@ export function UserAdminSearch() {
                 {resending ? "Sending…" : "Resend Verification Email"}
               </Button>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Console Resources */}
+      {lookupResult && (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <ExternalLink className="h-4 w-4" />
+              Console Resources
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              Quick links to investigate this user in Firebase and Google Cloud
+              consoles. Paste the UID above into the Firebase Auth search box to
+              locate this account directly.
+            </p>
+            <ul className="text-sm space-y-2">
+              <li>
+                <a
+                  href={authUsersUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                >
+                  Firebase Auth → Users
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <span className="text-gray-500 dark:text-gray-400 ml-1">
+                  — verify email status, disable, reset password
+                </span>
+              </li>
+              <li>
+                <a
+                  href={firestoreGroupsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                >
+                  Firestore → groups collection
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <span className="text-gray-500 dark:text-gray-400 ml-1">
+                  — add/remove mdarc-developers, user-admin, prize-admin
+                  membership
+                </span>
+              </li>
+              <li>
+                <a
+                  href={cloudLoggingUrl(lookupResult.uid)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                >
+                  Cloud Logging — events for this user
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <span className="text-gray-500 dark:text-gray-400 ml-1">
+                  — pre-filtered by UID across all Cloud Functions
+                </span>
+              </li>
+              <li>
+                <a
+                  href={functionsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                >
+                  Cloud Functions dashboard
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <span className="text-gray-500 dark:text-gray-400 ml-1">
+                  — check deployment status and recent errors
+                </span>
+              </li>
+            </ul>
           </CardContent>
         </Card>
       )}
