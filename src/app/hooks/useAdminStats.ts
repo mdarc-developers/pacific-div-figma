@@ -5,6 +5,7 @@ import {
   getCountFromServer,
   doc,
   getDoc,
+  FirestoreError,
 } from "firebase/firestore";
 
 export interface AdminStats {
@@ -12,6 +13,47 @@ export interface AdminStats {
   signupCount: number | null;
   loading: boolean;
   error: string | null;
+  /** True when the error is specifically a permission or authentication failure. */
+  permissionDenied: boolean;
+}
+
+/**
+ * Classifies a Firestore (or unknown) error into a user-friendly message and
+ * a flag indicating whether it is a permission/auth failure.
+ */
+function classifyError(err: unknown): {
+  message: string;
+  permissionDenied: boolean;
+} {
+  if (err instanceof FirestoreError) {
+    switch (err.code) {
+      case "permission-denied":
+        return {
+          message: "Permission denied – your account cannot read these stats",
+          permissionDenied: true,
+        };
+      case "unauthenticated":
+        return {
+          message: "Not signed in",
+          permissionDenied: true,
+        };
+      case "unavailable":
+        return {
+          message: "Service unavailable – check your connection and try again",
+          permissionDenied: false,
+        };
+      case "deadline-exceeded":
+        return { message: "Request timed out", permissionDenied: false };
+      case "resource-exhausted":
+        return { message: "Quota exceeded", permissionDenied: false };
+      default:
+        return { message: err.message, permissionDenied: false };
+    }
+  }
+  return {
+    message: err instanceof Error ? err.message : "Failed to load stats",
+    permissionDenied: false,
+  };
 }
 
 /**
@@ -20,6 +62,9 @@ export interface AdminStats {
  *   - userProfileCount: live count of documents in the `users` collection
  *   - signupCount: cumulative counter maintained by the `incrementSignupCounter`
  *     Cloud Function (stored at `stats/signupCounter`)
+ *   - permissionDenied: true when the Firestore query was rejected due to
+ *     missing permissions or the user not being authenticated.  Callers should
+ *     hide the admin UI entirely in this case.
  *
  * Requires the requesting user to be listed in the `groups/mdarc-developers`
  * Firestore document (members map) and for the `stats` collection to be
@@ -35,11 +80,13 @@ export function useAdminStats(): AdminStats {
   const [signupCount, setSignupCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setPermissionDenied(false);
 
     Promise.allSettled([
       getCountFromServer(collection(db, "users")),
@@ -50,8 +97,11 @@ export function useAdminStats(): AdminStats {
       if (usersResult.status === "fulfilled") {
         setUserProfileCount(usersResult.value.data().count);
       } else {
-        const err = usersResult.reason;
-        setError(err instanceof Error ? err.message : "Failed to load stats");
+        const { message, permissionDenied: isDenied } = classifyError(
+          usersResult.reason,
+        );
+        setError(message);
+        setPermissionDenied(isDenied);
       }
 
       if (counterResult.status === "fulfilled") {
@@ -73,5 +123,5 @@ export function useAdminStats(): AdminStats {
     };
   }, []);
 
-  return { userProfileCount, signupCount, loading, error };
+  return { userProfileCount, signupCount, loading, error, permissionDenied };
 }

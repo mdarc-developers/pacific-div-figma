@@ -8,7 +8,13 @@ import { useAdminStats } from "@/app/hooks/useAdminStats";
  * to Firebase Console and Google Cloud Logging.
  */
 export function AdminStatsBar() {
-  const { userProfileCount, signupCount, loading, error } = useAdminStats();
+  const { userProfileCount, signupCount, loading, error, permissionDenied } =
+    useAdminStats();
+
+  // If the Firestore queries were rejected due to missing permissions or the
+  // user not being authenticated, hide the bar entirely — it should only be
+  // visible when the user genuinely has access.
+  if (permissionDenied) return null;
 
   return (
     <div
