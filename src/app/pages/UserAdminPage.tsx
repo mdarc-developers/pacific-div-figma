@@ -112,9 +112,8 @@ export function UserAdminPage() {
       }));
       setAuditLog(entries);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to look up user";
-      setSearchError(message);
+      const detail = err instanceof Error ? err.message : String(err);
+      setSearchError(`Failed to look up user: ${detail}`);
     } finally {
       setSearching(false);
     }
