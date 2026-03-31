@@ -1,10 +1,11 @@
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 // ── Mock Firebase so AuthContext initialises without credentials ──────────────
 vi.mock("@/lib/firebase", () => ({
+  default: {},
   auth: {
     onAuthStateChanged: vi.fn((_a: unknown, cb: (u: null) => void) => {
       cb(null);
@@ -26,9 +27,12 @@ vi.mock("firebase/auth", async (importOriginal) => {
   };
 });
 
+// ── Hoisted mock callable so it can be configured per-test ───────────────────
+const mockCallableFn = vi.hoisted(() => vi.fn());
+
 vi.mock("firebase/functions", () => ({
   getFunctions: vi.fn(),
-  httpsCallable: vi.fn(),
+  httpsCallable: vi.fn(() => mockCallableFn),
 }));
 
 vi.mock("firebase/firestore", async (importOriginal) => {
@@ -62,7 +66,7 @@ vi.mock("@/app/hooks/useUserAdmin", () => ({
 }));
 
 // Static import — vi.mock calls above are hoisted before this by Vitest
-import { UserAdminPage } from "@/app/pages/UserAdminPage";
+import { UserAdminPage, parseFunctionsError } from "@/app/pages/UserAdminPage";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 function renderUserAdminPage() {
@@ -151,5 +155,208 @@ describe("UserAdminPage (authenticated, user-admin)", () => {
     mockIsUserAdmin = true;
     renderUserAdminPage();
     expect(screen.getByRole("button", { name: /search/i })).toBeInTheDocument();
+  });
+});
+
+// ── Search interaction tests ───────────────────────────────────────────────────
+describe("UserAdminPage (search interactions)", () => {
+  beforeEach(() => {
+    mockUser = { email: "admin@example.com", uid: "uid-admin" };
+    mockLoading = false;
+    mockIsUserAdmin = true;
+    mockCallableFn.mockReset();
+  });
+
+  it("does not call the callable function when the email input is empty", () => {
+    renderUserAdminPage();
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    expect(mockCallableFn).not.toHaveBeenCalled();
+  });
+
+  it("shows user details after a successful lookup", async () => {
+    mockCallableFn.mockResolvedValue({
+      data: {
+        uid: "uid-found",
+        email: "found@example.com",
+        displayName: "Found User",
+        emailVerified: true,
+        creationTime: "2024-01-01T00:00:00Z",
+      },
+    });
+    renderUserAdminPage();
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "found@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await waitFor(() =>
+      expect(screen.getByText("uid-found")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("found@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Found User")).toBeInTheDocument();
+  });
+
+  it("shows a descriptive error when permission is denied (user-admin document not configured)", async () => {
+    const err = Object.assign(
+      new Error("Your account does not have user-admin group membership."),
+      { code: "functions/permission-denied" },
+    );
+    mockCallableFn.mockRejectedValue(err);
+    renderUserAdminPage();
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "admin@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/groups\/user-admin firestore document/i),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("shows a descriptive error when the user is not found", async () => {
+    const err = Object.assign(
+      new Error("No user found with that email address."),
+      { code: "functions/not-found" },
+    );
+    mockCallableFn.mockRejectedValue(err);
+    renderUserAdminPage();
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "missing@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/no user found with that email address/i),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("shows a descriptive error for an internal server error", async () => {
+    const err = Object.assign(new Error("internal"), {
+      code: "functions/internal",
+    });
+    mockCallableFn.mockRejectedValue(err);
+    renderUserAdminPage();
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/groups\/user-admin.*firestore document may not exist/i),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("shows a descriptive error for an invalid-argument error", async () => {
+    const err = Object.assign(new Error("targetEmail is required."), {
+      code: "functions/invalid-argument",
+    });
+    mockCallableFn.mockRejectedValue(err);
+    renderUserAdminPage();
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "bad-email" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/valid email address/i),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("shows a descriptive error for an unauthenticated error", async () => {
+    const err = Object.assign(
+      new Error("You must be signed in to use this function."),
+      { code: "functions/unauthenticated" },
+    );
+    mockCallableFn.mockRejectedValue(err);
+    renderUserAdminPage();
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/authentication required/i),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("shows a generic error message for an unknown error code", async () => {
+    const err = Object.assign(new Error("something unexpected"), {
+      code: "functions/unknown",
+    });
+    mockCallableFn.mockRejectedValue(err);
+    renderUserAdminPage();
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/failed to look up user/i),
+      ).toBeInTheDocument(),
+    );
+  });
+});
+
+// ── parseFunctionsError unit tests ────────────────────────────────────────────
+describe("parseFunctionsError", () => {
+  it("returns a permission-denied message mentioning the Firestore document", () => {
+    const err = Object.assign(new Error("denied"), {
+      code: "functions/permission-denied",
+    });
+    expect(parseFunctionsError(err)).toMatch(/groups\/user-admin/i);
+  });
+
+  it("returns a not-found message for functions/not-found", () => {
+    const err = Object.assign(new Error("not found"), {
+      code: "functions/not-found",
+    });
+    expect(parseFunctionsError(err)).toMatch(/no user found/i);
+  });
+
+  it("returns an invalid-argument message for functions/invalid-argument", () => {
+    const err = Object.assign(new Error("bad arg"), {
+      code: "functions/invalid-argument",
+    });
+    expect(parseFunctionsError(err)).toMatch(/valid email address/i);
+  });
+
+  it("returns an unauthenticated message for functions/unauthenticated", () => {
+    const err = Object.assign(new Error("unauth"), {
+      code: "functions/unauthenticated",
+    });
+    expect(parseFunctionsError(err)).toMatch(/authentication required/i);
+  });
+
+  it("returns an internal error message mentioning the Firestore document for functions/internal", () => {
+    const err = Object.assign(new Error("internal"), {
+      code: "functions/internal",
+    });
+    const msg = parseFunctionsError(err);
+    expect(msg).toMatch(/internal server error/i);
+    expect(msg).toMatch(/groups\/user-admin/i);
+  });
+
+  it("falls back to the error message for an unknown code", () => {
+    const err = Object.assign(new Error("weird error"), {
+      code: "functions/deadline-exceeded",
+    });
+    expect(parseFunctionsError(err, "do the thing")).toMatch(
+      /failed to do the thing: weird error/i,
+    );
+  });
+
+  it("falls back gracefully for non-Error objects", () => {
+    expect(parseFunctionsError("string error", "run")).toMatch(
+      /failed to run/i,
+    );
+  });
+
+  it("falls back gracefully for null/undefined", () => {
+    expect(parseFunctionsError(null, "run")).toMatch(/failed to run/i);
+    expect(parseFunctionsError(undefined, "run")).toMatch(/failed to run/i);
   });
 });
