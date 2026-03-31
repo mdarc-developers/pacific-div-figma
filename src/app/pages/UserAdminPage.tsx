@@ -38,6 +38,41 @@ interface AuditEntry {
   metadata?: Record<string, unknown>;
 }
 
+/**
+ * Converts a Firebase Functions callable error into a user-friendly message.
+ * Firebase "internal" errors do not expose their server-side message to the
+ * client, so error codes are mapped to descriptive strings here.
+ */
+export function parseFunctionsError(err: unknown, action = "operation"): string {
+  if (err && typeof err === "object" && "code" in err) {
+    const code = String((err as { code: unknown }).code);
+    switch (code) {
+      case "functions/permission-denied":
+        return (
+          "Permission denied. Your UID may not be listed in the " +
+          "groups/user-admin Firestore document. Contact an mdarc-developer to add you."
+        );
+      case "functions/not-found":
+        return "No user found with that email address.";
+      case "functions/invalid-argument":
+        return "Invalid request. Please enter a valid email address.";
+      case "functions/unauthenticated":
+        return "Authentication required. Please sign out and sign back in.";
+      case "functions/internal":
+        return (
+          "An internal server error occurred. The groups/user-admin " +
+          "Firestore document may not exist yet — contact an mdarc-developer to set it up."
+        );
+      default: {
+        const detail = err instanceof Error ? err.message : String(err);
+        return `Failed to ${action}: ${detail}`;
+      }
+    }
+  }
+  const detail = err instanceof Error ? err.message : String(err);
+  return `Failed to ${action}: ${detail}`;
+}
+
 export function UserAdminPage() {
   const { user, loading } = useAuth();
   const isUserAdmin = useUserAdmin();
@@ -112,8 +147,7 @@ export function UserAdminPage() {
       }));
       setAuditLog(entries);
     } catch (err: unknown) {
-      const detail = err instanceof Error ? err.message : String(err);
-      setSearchError(`Failed to look up user: ${detail}`);
+      setSearchError(parseFunctionsError(err, "look up user"));
     } finally {
       setSearching(false);
     }
@@ -128,9 +162,7 @@ export function UserAdminPage() {
       await resend({ targetUid: lookupResult.uid });
       toast(`Verification email sent to ${lookupResult.email ?? lookupResult.uid}`);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to send verification email";
-      toast.error(message);
+      toast.error(parseFunctionsError(err, "send verification email"));
     } finally {
       setResending(false);
     }
