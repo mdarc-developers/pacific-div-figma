@@ -7,6 +7,7 @@
  */
 export const KNOWN_GROUPS: ReadonlySet<string> = new Set([
   "prize-admin",
+  "user-admin",
   "session-admin",
   "exhibitor-admin",
   "mdarc-developers",

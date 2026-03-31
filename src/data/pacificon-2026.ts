@@ -88,6 +88,7 @@ export const mapUserProfileGroups: UserProfileGroups[] = [
     groups: [
       "prize-admin",
       "user-admin",
+      "other-admin",
       "mdarc-developers",
       "session-admin",
       "exhibitor-admin",
@@ -98,6 +99,7 @@ export const mapUserProfileGroups: UserProfileGroups[] = [
     groups: [
       "prize-admin",
       "user-admin",
+      "other-admin",
       "mdarc-developers",
       "session-admin",
       "exhibitor-admin",
