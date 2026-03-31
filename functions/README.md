@@ -4,13 +4,20 @@ This directory contains the Firebase Cloud Functions for the Pacific Division Co
 
 ## Functions
 
-| Function                   | Trigger                                                           | Purpose                                                                                                              |
-| -------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `sendWelcomeEmail`         | `beforeUserCreated` (blocking, v2)                                | Sends a welcome email via the Gmail API when a new Firebase Auth user is created.                                    |
-| `incrementSignupCounter`   | `onDocumentCreated("users/{uid}")`                                | Increments `stats/signupCounter.count` in Firestore whenever a new user document is created.                         |
-| `notifyPrizeWinner`        | `onDocumentCreated("prizeWinners/{winnerId}")`                    | Sends SMS via Twilio and email via Gmail API to the attendee whose raffle ticket matches a newly drawn prize winner. |
-| `incrementAttendeeCounter` | `onDocumentCreated("conferences/{conferenceId}/attendees/{uid}")` | Increments `conferences/{conferenceId}.attendeeCounter` when a user marks themselves as attending.                   |
-| `decrementAttendeeCounter` | `onDocumentDeleted("conferences/{conferenceId}/attendees/{uid}")` | Decrements `conferences/{conferenceId}.attendeeCounter` when a user removes their attendance.                        |
+| Function                          | Trigger                                                           | Purpose                                                                                                                                            |
+| --------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sendWelcomeEmail`                | `beforeUserCreated` (blocking, v2)                                | Sends a welcome email via the Gmail API when a new Firebase Auth user is created.                                                                  |
+| `sendVerificationEmailOnCreate`   | `auth.user().onCreate` (v1)                                       | Generates a Firebase one-time email-verification link and delivers it via the Gmail API whenever a new email/password user is created.             |
+| `resendVerificationEmail`         | HTTPS Callable                                                    | Lets an authenticated user request a fresh email-verification link delivered via the Gmail API (replaces the direct Firebase SDK call).            |
+| `sendFeedbackEmail`               | HTTPS Callable                                                    | Forwards app-feedback form submissions to the team via the Gmail API; optionally CCs the submitter.                                                |
+| `incrementSignupCounter`          | `onDocumentCreated("users/{uid}")`                                | Increments `stats/signupCounter.count` in Firestore whenever a new user document is created.                                                       |
+| `notifyPrizeWinner`               | `onDocumentCreated("prizeWinners/{winnerId}")`                    | Sends SMS via Twilio and email via Gmail API to the attendee whose raffle ticket matches a newly drawn prize winner.                                |
+| `incrementAttendeeCounter`        | `onDocumentCreated("conferences/{conferenceId}/attendees/{uid}")` | Increments `conferences/{conferenceId}.attendeeCounter` when a user marks themselves as attending.                                                  |
+| `decrementAttendeeCounter`        | `onDocumentDeleted("conferences/{conferenceId}/attendees/{uid}")` | Decrements `conferences/{conferenceId}.attendeeCounter` when a user removes their attendance.                                                       |
+| `syncPublicProfile`               | `onDocumentWritten("users/{uid}")`                                | Writes or removes the `publicProfiles/{uid}` document whenever a user document changes, exposing only the safe-to-share subset of profile fields.  |
+| `purgeExpiredUserData`            | Scheduled (`every day 03:00 UTC`)                                 | Removes per-conference user data (bookmarks, votes, notes, etc.) for conferences whose retention window (endDate + 90 days) has passed.            |
+| `adminLookupUser`                 | HTTPS Callable                                                    | Looks up a Firebase Auth user by email address; requires `user-admin` group membership.                                                            |
+| `adminResendVerificationEmail`    | HTTPS Callable                                                    | Admin-initiated resend of the email-verification link to a target user; requires `user-admin` group membership.                                    |
 
 ### `sendWelcomeEmail`
 
@@ -19,6 +26,37 @@ A **Cloud Functions v2 blocking function** (`beforeUserCreated`) that fires befo
 - Sends a branded welcome email to the newly registered user via the **Gmail API**.
 - Authenticates using a service account with domain-wide delegation (`google-auth-library` JWT client).
 - Never blocks user registration — email delivery failures are caught, logged, and silently ignored.
+
+### `sendVerificationEmailOnCreate`
+
+A **Firebase Auth v1 trigger** (`auth.user().onCreate`) that fires after every new email/password user record is created.
+
+- Generates a Firebase one-time email-verification link via the Admin SDK (`admin.auth().generateEmailVerificationLink()`).
+- Delivers the link via the **Gmail API** using the same service-account pathway as `sendWelcomeEmail`.
+- Skips users who sign in with Google (their email is already verified by Google).
+- Skips users without an email address.
+- Email delivery failures are caught and logged without preventing registration.
+
+> **Why a v1 `onCreate` trigger instead of `beforeUserCreated`?**
+> `beforeUserCreated` is a blocking function that runs _before_ the Firebase Auth record exists.
+> `generateEmailVerificationLink()` requires the Auth record to already exist, so a separate
+> post-creation trigger is necessary.
+
+### `resendVerificationEmail`
+
+An **HTTPS Callable** function invoked from the "Send verification" button on the Profile page.
+
+- The caller must be authenticated; sending to any address other than the caller's own is not permitted.
+- Generates a fresh Firebase email-verification link and delivers it via the Gmail API.
+- Returns `{ success: true }` on success; throws an `HttpsError` on failure.
+
+### `sendFeedbackEmail`
+
+An **HTTPS Callable** function that handles App Feedback form submissions.
+
+- Accepts `{ email?, pageUrl, message, ccSender }` from the client.
+- Sends the feedback to the configured team address (`pacific-div@mdarc.org`) via the Gmail API.
+- Optionally CCs the submitter when `ccSender` is `true` and a valid email is supplied.
 
 ### `incrementSignupCounter`
 
@@ -49,6 +87,39 @@ A **Firestore trigger** (`onDocumentCreated`) that fires whenever a new document
 - Sends an **SMS** via Twilio if the matched user has `smsNotifications: true` and a `phoneNumber` set in their profile.
 - Sends an **email** via the Gmail API if the matched user has an email address and Gmail secrets are configured.
 - Updates the winner document with a `notifiedAt` timestamp after all notifications are dispatched.
+
+### `syncPublicProfile`
+
+A **Firestore trigger** (`onDocumentWritten`) that fires whenever a `users/{uid}` document is created, updated, or deleted.
+
+- If the document is deleted, or if the user has set `profileVisible: false`, the corresponding `publicProfiles/{uid}` document is removed.
+- Otherwise, writes a safe-to-share subset of the user document to `publicProfiles/{uid}`: `displayName`, `callsign`, `displayProfile`, `exhibitors`, and `speakerSessions`.
+- Sensitive fields (`email`, `groups`, `prizesDonated`, etc.) are intentionally excluded.
+
+### `purgeExpiredUserData`
+
+A **scheduled function** that runs daily at 03:00 UTC.
+
+- Reads the `conferences` Firestore collection to determine the `endDate` of each conference.
+- Identifies conferences whose retention window (endDate + 90 days) has passed.
+- For each affected user document, removes per-conference data keys from: `bookmarks`, `prevBookmarks`, `exhibitorBookmarks`, `prevExhibitorBookmarks`, `notes`, `exhibitorNotes`, `sessionVotes`, and `exhibitorVotes`.
+- Writes an `auditLog` subcollection entry on each purged user document.
+
+### `adminLookupUser`
+
+An **HTTPS Callable** function that looks up a Firebase Auth user by email address.
+
+- The caller must be authenticated and a member of the `groups/user-admin` Firestore document.
+- Returns `{ uid, email, displayName, emailVerified, creationTime }`.
+- Used by the `UserAdminPage` for user lookup and support workflows.
+
+### `adminResendVerificationEmail`
+
+An **HTTPS Callable** function that lets a user-admin resend the email-verification link to a target user on their behalf.
+
+- The caller must be authenticated and a member of the `groups/user-admin` Firestore document.
+- Generates a fresh Firebase email-verification link and delivers it via the Gmail API.
+- Used by the `UserAdminPage` when supporting users whose verification email was not received.
 
 ---
 
@@ -129,7 +200,7 @@ npm install
 
 ### 2. Store secrets in Firebase Secret Manager
 
-The `sendWelcomeEmail` function reads two secrets at runtime, and `notifyPrizeWinner` reads three required secrets (plus two optional Gmail secrets shared with `sendWelcomeEmail`). Provision them once before the first deployment:
+The Gmail functions (`sendWelcomeEmail`, `sendVerificationEmailOnCreate`, `resendVerificationEmail`, `sendFeedbackEmail`, and `adminResendVerificationEmail`) all share two secrets. `notifyPrizeWinner` additionally requires three Twilio secrets. Provision them once before the first deployment:
 
 ```bash
 # From the repo root (firebase.json must be present)
@@ -319,6 +390,175 @@ Required Firebase Secrets:
 | `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account (shared with `sendWelcomeEmail`; skip if email notifications are not needed) |
 | `GMAIL_SENDER_EMAIL`         | The "From" address for prize winner emails (shared with `sendWelcomeEmail`; skip if email notifications are not needed)                  |
 
+### `sendVerificationEmailOnCreate`
+
+```
+New email/password user created in Firebase Auth
+       │
+       ▼
+auth.user().onCreate fires (v1 trigger)
+       │
+       ├─ No email? → skip
+       ├─ Email already verified (Google sign-in)? → skip
+       ├─ Secrets missing? → log error, skip
+       │
+       ▼
+admin.auth().generateEmailVerificationLink(email)
+       │
+       ▼
+JWT auth via google-auth-library
+(service account impersonates GMAIL_SENDER_EMAIL)
+       │
+       ▼
+gmail.users.messages.send()
+       │
+       ├─ Success → log info
+       └─ Failure → log error (registration unaffected)
+```
+
+Required Firebase Secrets (same as `sendWelcomeEmail`):
+
+| Name                         | Description                                                                         |
+| ---------------------------- | ----------------------------------------------------------------------------------- |
+| `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account                         |
+| `GMAIL_SENDER_EMAIL`         | The "From" address (must be the account the service account delegates on behalf of) |
+
+### `resendVerificationEmail`
+
+```
+Authenticated user clicks "Send verification" on Profile page
+       │
+       ▼
+resendVerificationEmail callable invoked
+       │
+       ├─ Not authenticated? → throw unauthenticated
+       ├─ Email already verified? → throw failed-precondition
+       ├─ Secrets missing? → log error, throw internal
+       │
+       ▼
+admin.auth().generateEmailVerificationLink(email)
+       │
+       ▼
+gmail.users.messages.send()
+       │
+       ├─ Success → return { success: true }
+       └─ Failure → throw internal
+```
+
+Required Firebase Secrets (same as `sendWelcomeEmail`):
+
+| Name                         | Description                                                                         |
+| ---------------------------- | ----------------------------------------------------------------------------------- |
+| `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account                         |
+| `GMAIL_SENDER_EMAIL`         | The "From" address (must be the account the service account delegates on behalf of) |
+
+### `sendFeedbackEmail`
+
+```
+User submits feedback form
+       │
+       ▼
+sendFeedbackEmail callable invoked
+       │
+       ├─ Missing pageUrl or message? → throw invalid-argument
+       ├─ Secrets missing? → log error, throw internal
+       │
+       ▼
+Build HTML email (pageUrl, message, optional submitter email)
+       │
+       ▼
+gmail.users.messages.send() → pacific-div@mdarc.org
+       │                        (+ optional Cc to submitter)
+       ├─ Success → return { success: true }
+       └─ Failure → throw internal
+```
+
+Required Firebase Secrets (same as `sendWelcomeEmail`):
+
+| Name                         | Description                                                                         |
+| ---------------------------- | ----------------------------------------------------------------------------------- |
+| `GMAIL_SERVICE_ACCOUNT_JSON` | Full JSON key file for the Gmail delegation service account                         |
+| `GMAIL_SENDER_EMAIL`         | The "From" address (must be the account the service account delegates on behalf of) |
+
+### `syncPublicProfile`
+
+```
+users/{uid} document created, updated, or deleted
+       │
+       ▼
+onDocumentWritten fires (Firestore trigger)
+       │
+       ├─ Document deleted? → delete publicProfiles/{uid}
+       ├─ profileVisible !== true? → delete publicProfiles/{uid}
+       │
+       ▼
+Extract safe subset: displayName, callsign, displayProfile,
+                     exhibitors, speakerSessions
+       │
+       ▼
+publicProfiles/{uid}.set(safeSubset)
+```
+
+No secrets or environment variables are required for this function.
+
+### `purgeExpiredUserData`
+
+```
+Daily schedule fires at 03:00 UTC
+       │
+       ▼
+Load endDate from all conferences/* documents
+       │
+       ▼
+Identify conferences where endDate + 90 days < now
+       │
+       ├─ None expired? → log info, exit
+       │
+       ▼
+For each users/{uid} document (paginated, 100 at a time):
+       │
+       ├─ Remove expired conferenceId keys from:
+       │    bookmarks, prevBookmarks, exhibitorBookmarks,
+       │    prevExhibitorBookmarks, notes, exhibitorNotes,
+       │    sessionVotes, exhibitorVotes
+       │
+       └─ Write auditLog entry: { action, timestamp, metadata }
+```
+
+No secrets or environment variables are required for this function.
+
+### `adminLookupUser` and `adminResendVerificationEmail`
+
+```
+UserAdminPage calls adminLookupUser({ targetEmail })
+       │
+       ├─ Caller not authenticated? → throw unauthenticated
+       ├─ Caller not in groups/user-admin? → throw permission-denied
+       ├─ targetEmail missing? → throw invalid-argument
+       │
+       ▼
+admin.auth().getUserByEmail(targetEmail)
+       │
+       └─ Returns { uid, email, displayName, emailVerified, creationTime }
+
+UserAdminPage calls adminResendVerificationEmail({ targetUid })
+       │
+       ├─ Caller not authenticated? → throw unauthenticated
+       ├─ Caller not in groups/user-admin? → throw permission-denied
+       ├─ targetUid missing? → throw invalid-argument
+       │
+       ▼
+admin.auth().getUser(targetUid) → generateEmailVerificationLink
+       │
+       ▼
+gmail.users.messages.send()
+       │
+       ├─ Success → return { success: true }
+       └─ Failure → throw internal
+```
+
+`adminResendVerificationEmail` requires the same Gmail secrets as `sendWelcomeEmail`.
+
 ---
 
 ## Directory structure
@@ -326,10 +566,22 @@ Required Firebase Secrets:
 ```
 functions/
 ├── src/
-│   ├── index.ts               # Exported Cloud Function definitions
-│   ├── welcomeEmail.ts        # Email content helpers (subject, HTML builder, base64 encoder)
-│   ├── prizeNotification.ts   # notifyPrizeWinner trigger (SMS via Twilio + email via Gmail API)
-│   └── index.test.ts          # Vitest unit tests
+│   ├── index.ts                    # Cloud Function definitions (sendWelcomeEmail,
+│   │                               #   sendVerificationEmailOnCreate, resendVerificationEmail,
+│   │                               #   adminLookupUser, adminResendVerificationEmail,
+│   │                               #   incrementSignupCounter, syncPublicProfile,
+│   │                               #   incrementAttendeeCounter, decrementAttendeeCounter)
+│   ├── welcomeEmail.ts             # Welcome email content helpers (subject, HTML, base64 encoder)
+│   ├── verificationEmail.ts        # Verification email content helpers (subject, HTML builder)
+│   ├── prizeNotification.ts        # notifyPrizeWinner trigger (SMS via Twilio + email via Gmail API)
+│   ├── feedbackEmail.ts            # sendFeedbackEmail callable (forwards feedback form submissions)
+│   ├── feedbackEmailContent.ts     # Feedback email HTML template
+│   ├── dataRetention.ts            # purgeExpiredUserData scheduled function
+│   ├── index.test.ts               # Vitest unit tests for functions in index.ts
+│   ├── verificationEmail.test.ts   # Vitest unit tests for verificationEmail.ts
+│   ├── prizeNotification.test.ts   # Vitest unit tests for prizeNotification.ts
+│   ├── feedbackEmail.test.ts       # Vitest unit tests for feedbackEmail.ts
+│   └── dataRetention.test.ts       # Vitest unit tests for dataRetention.ts
 ├── .env.example          # Template for required environment variables
 ├── .gitignore
 ├── package.json
