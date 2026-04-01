@@ -48,8 +48,7 @@ export const allConferences: ConferenceListItem[] = [
     venuePhone: "+1-916-652-1840",
     venueGPS: "38.2945,-122.4621",
     venueGridSquare: "CM88sh",
-    venueUrl:
-      "https://sonomaucc.org/",
+    venueUrl: "https://sonomaucc.org/",
     timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
     parkingUrl: "",
     icalUrl: "",
@@ -60,10 +59,8 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
     //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
-    conferenceProgramUrl:
-      "/assets/programs/2026_vomarc_hamfest.pdf",
-    conferenceProgramSourceUrl:
-      "https://vomarc.org/events/Hamfest%20Flyer.pdf", // upstream filename reflects the year it was published, not the conference year
+    conferenceProgramUrl: "/assets/programs/2026_vomarc_hamfest.pdf",
+    conferenceProgramSourceUrl: "https://vomarc.org/events/Hamfest%20Flyer.pdf", // upstream filename reflects the year it was published, not the conference year
     conferenceAppPageUrl: "https://pacific-div.web/app/",
     firstConferenceYear: 1973,
     estimatedAttendees: 400,
@@ -93,10 +90,8 @@ export const allConferences: ConferenceListItem[] = [
     //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
     //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
     //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
-    conferenceProgramUrl:
-      "/assets/programs/renohamswap-2026.pdf",
-    conferenceProgramSourceUrl:
-      "https://snars.org/activities/renohamswap/", // upstream filename reflects the year it was published, not the conference year
+    conferenceProgramUrl: "/assets/programs/renohamswap-2026.pdf",
+    conferenceProgramSourceUrl: "https://snars.org/activities/renohamswap/", // upstream filename reflects the year it was published, not the conference year
     conferenceAppPageUrl: "https://pacific-div.web/app/",
     firstConferenceYear: 2016,
     estimatedAttendees: 400,

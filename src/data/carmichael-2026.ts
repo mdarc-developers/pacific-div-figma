@@ -1,6 +1,6 @@
 import {
   //  Session,
-    MapImage,
+  MapImage,
   //  Room,
   //  Exhibitor,
   //  Booth,

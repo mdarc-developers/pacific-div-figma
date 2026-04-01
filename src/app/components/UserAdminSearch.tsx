@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { ShieldAlert, ShieldCheck, Search, Send, User, ExternalLink } from "lucide-react";
+import {
+  ShieldAlert,
+  ShieldCheck,
+  Search,
+  Send,
+  User,
+  ExternalLink,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useUserAdmin } from "@/app/hooks/useUserAdmin";
@@ -14,13 +21,7 @@ import {
 import firebaseApp from "@/lib/firebase";
 import { db } from "@/lib/firebase";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import {
-  collection,
-  query,
-  orderBy,
-  limit,
-  getDocs,
-} from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { Toaster, toast } from "sonner";
 import { GroupsWriteButton } from "@/app/components/GroupsWriteButton";
 
@@ -44,7 +45,10 @@ interface AuditEntry {
  * Firebase "internal" errors do not expose their server-side message to the
  * client, so error codes are mapped to descriptive strings here.
  */
-export function parseFunctionsError(err: unknown, action = "operation"): string {
+export function parseFunctionsError(
+  err: unknown,
+  action = "operation",
+): string {
   if (err && typeof err === "object" && "code" in err) {
     const code = String((err as { code: unknown }).code);
     switch (code) {
@@ -161,7 +165,9 @@ export function UserAdminSearch() {
       const functions = getFunctions(firebaseApp);
       const resend = httpsCallable(functions, "adminResendVerificationEmail");
       await resend({ targetUid: lookupResult.uid });
-      toast(`Verification email sent to ${lookupResult.email ?? lookupResult.uid}`);
+      toast(
+        `Verification email sent to ${lookupResult.email ?? lookupResult.uid}`,
+      );
     } catch (err: unknown) {
       toast.error(parseFunctionsError(err, "send verification email"));
     } finally {
@@ -169,8 +175,9 @@ export function UserAdminSearch() {
     }
   };
 
-  const projectId =
-    import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined;
+  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID as
+    | string
+    | undefined;
 
   /** Build a Cloud Logging URL pre-filtered for a given UID. */
   const cloudLoggingUrl = (uid: string): string => {
@@ -228,8 +235,8 @@ export function UserAdminSearch() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-            Enter the user&apos;s email address to look up their account details and
-            activity log.
+            Enter the user&apos;s email address to look up their account details
+            and activity log.
           </p>
           <div className="flex gap-2">
             <Input
@@ -268,7 +275,9 @@ export function UserAdminSearch() {
               <dt className="font-medium text-gray-600 dark:text-gray-400">
                 UID
               </dt>
-              <dd className="font-mono text-xs break-all">{lookupResult.uid}</dd>
+              <dd className="font-mono text-xs break-all">
+                {lookupResult.uid}
+              </dd>
               <dt className="font-medium text-gray-600 dark:text-gray-400">
                 Email
               </dt>
@@ -420,7 +429,9 @@ export function UserAdminSearch() {
                         <td className="py-2 pr-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                           {formatTimestamp(entry.timestamp)}
                         </td>
-                        <td className="py-2 pr-4 font-medium">{entry.action}</td>
+                        <td className="py-2 pr-4 font-medium">
+                          {entry.action}
+                        </td>
                         <td className="py-2 text-gray-600 dark:text-gray-400">
                           {entry.metadata
                             ? JSON.stringify(entry.metadata)

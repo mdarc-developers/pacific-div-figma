@@ -25,7 +25,12 @@ import {
   User,
   Zap,
 } from "lucide-react";
-import { Session, Conference, UserProfile, PublicAttendeeProfile } from "@/types/conference";
+import {
+  Session,
+  Conference,
+  UserProfile,
+  PublicAttendeeProfile,
+} from "@/types/conference";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventInput } from "@fullcalendar/core";
@@ -486,8 +491,7 @@ export function ScheduleView({
   const sessionPresentersMap = useMemo(() => {
     const map = new Map<string, PublicAttendeeProfile[]>();
     for (const attendee of publicAttendees) {
-      const sessions =
-        attendee.speakerSessions?.[activeConference.id] ?? [];
+      const sessions = attendee.speakerSessions?.[activeConference.id] ?? [];
       for (const sid of sessions) {
         const list = map.get(sid) ?? [];
         list.push(attendee);

@@ -70,7 +70,10 @@ function renderBoothLabel(booth: PacificonMapBooth): React.ReactNode {
       fontFamily={FONT_FAMILY}
       {...(booth.labelTransform ? { transform: booth.labelTransform } : {})}
       {...(booth.labelTextLength != null
-        ? { textLength: booth.labelTextLength, lengthAdjust: "spacingAndGlyphs" }
+        ? {
+            textLength: booth.labelTextLength,
+            lengthAdjust: "spacingAndGlyphs",
+          }
         : {})}
     >
       {booth.label}

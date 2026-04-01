@@ -328,7 +328,10 @@ export const syncPublicProfile = onDocumentWritten(
     }
     // Include exhibitors array if present and non-empty.
     // This lets the /exhibitors page show staff profiles for each exhibitor.
-    if (Array.isArray(data["exhibitors"]) && (data["exhibitors"] as unknown[]).length > 0) {
+    if (
+      Array.isArray(data["exhibitors"]) &&
+      (data["exhibitors"] as unknown[]).length > 0
+    ) {
       publicData["exhibitors"] = data["exhibitors"];
     }
     // Include speakerSessions map if present and non-empty.
@@ -365,10 +368,7 @@ const APP_URL = "https://pacific-div.web.app";
  * stored in the GMAIL_SERVICE_ACCOUNT_JSON secret.
  */
 function buildGmailClient(serviceAccountJson: string, senderEmail: string) {
-  const credentials = JSON.parse(serviceAccountJson) as Record<
-    string,
-    unknown
-  >;
+  const credentials = JSON.parse(serviceAccountJson) as Record<string, unknown>;
   const authClient = new JWT({
     email: credentials.client_email as string,
     key: credentials.private_key as string,
@@ -394,11 +394,9 @@ async function sendVerificationLinkViaGmail(
 ): Promise<boolean> {
   let verificationLink: string;
   try {
-    verificationLink = await admin
-      .auth()
-      .generateEmailVerificationLink(email, {
-        url: APP_URL,
-      });
+    verificationLink = await admin.auth().generateEmailVerificationLink(email, {
+      url: APP_URL,
+    });
   } catch (err) {
     logger.error(
       "sendVerificationLinkViaGmail: failed to generate verification link",
@@ -411,10 +409,10 @@ async function sendVerificationLinkViaGmail(
   try {
     gmail = buildGmailClient(serviceAccountJson, senderEmail);
   } catch (err) {
-    logger.error(
-      "sendVerificationLinkViaGmail: failed to build Gmail client",
-      { uid, err },
-    );
+    logger.error("sendVerificationLinkViaGmail: failed to build Gmail client", {
+      uid,
+      err,
+    });
     return false;
   }
 
@@ -599,10 +597,7 @@ export const adminLookupUser = onCall(async (request) => {
   }
 
   // Verify caller is in the user-admin group
-  const groupDoc = await admin
-    .firestore()
-    .doc("groups/user-admin")
-    .get();
+  const groupDoc = await admin.firestore().doc("groups/user-admin").get();
   const isMember =
     groupDoc.exists && groupDoc.data()?.members?.[callerUid] === true;
   if (!isMember) {
@@ -623,7 +618,10 @@ export const adminLookupUser = onCall(async (request) => {
   } catch (err: unknown) {
     const code = (err as { code?: string }).code;
     if (code === "auth/user-not-found") {
-      throw new HttpsError("not-found", "No user found with that email address.");
+      throw new HttpsError(
+        "not-found",
+        "No user found with that email address.",
+      );
     }
     logger.error("adminLookupUser: error fetching user", { targetEmail, err });
     throw new HttpsError("internal", "Failed to look up user.");
@@ -663,10 +661,7 @@ export const adminResendVerificationEmail = onCall(
     }
 
     // Verify caller is in the user-admin group
-    const groupDoc = await admin
-      .firestore()
-      .doc("groups/user-admin")
-      .get();
+    const groupDoc = await admin.firestore().doc("groups/user-admin").get();
     const isMember =
       groupDoc.exists && groupDoc.data()?.members?.[callerUid] === true;
     if (!isMember) {

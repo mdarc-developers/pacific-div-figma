@@ -46,7 +46,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
-  const [dropdownMaxHeight, setDropdownMaxHeight] = useState<number>(DEFAULT_DROPDOWN_HEIGHT);
+  const [dropdownMaxHeight, setDropdownMaxHeight] = useState<number>(
+    DEFAULT_DROPDOWN_HEIGHT,
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -90,9 +92,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         const forumsByTime = new Map<string, SearchResult>();
         const eventsByTime = new Map<string, SearchResult>();
         for (const r of sessionResults) {
-          if (r.session.category === "Forums" && !forumsByTime.has(r.session.startTime)) {
+          if (
+            r.session.category === "Forums" &&
+            !forumsByTime.has(r.session.startTime)
+          ) {
             forumsByTime.set(r.session.startTime, r);
-          } else if (r.session.category === "Events" && !eventsByTime.has(r.session.startTime)) {
+          } else if (
+            r.session.category === "Events" &&
+            !eventsByTime.has(r.session.startTime)
+          ) {
             eventsByTime.set(r.session.startTime, r);
           }
         }
@@ -103,8 +111,17 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           if (mergedIds.has(r.session.id)) continue;
           const forumAtTime = forumsByTime.get(r.session.startTime);
           const eventAtTime = eventsByTime.get(r.session.startTime);
-          if (forumAtTime && eventAtTime && !mergedIds.has(forumAtTime.session.id) && !mergedIds.has(eventAtTime.session.id)) {
-            mergedSessions.push({ kind: "merged", forumResult: forumAtTime, eventResult: eventAtTime });
+          if (
+            forumAtTime &&
+            eventAtTime &&
+            !mergedIds.has(forumAtTime.session.id) &&
+            !mergedIds.has(eventAtTime.session.id)
+          ) {
+            mergedSessions.push({
+              kind: "merged",
+              forumResult: forumAtTime,
+              eventResult: eventAtTime,
+            });
             mergedIds.add(forumAtTime.session.id);
             mergedIds.add(eventAtTime.session.id);
           } else {
@@ -223,7 +240,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     const inputRect = inputRef.current.getBoundingClientRect();
     const dropdownTop = inputRect.bottom + DROPDOWN_TOP_OFFSET;
     const available = window.innerHeight - dropdownTop - DROPDOWN_BOTTOM_MARGIN;
-    setDropdownMaxHeight((prev) => Math.max(prev, Math.max(available, MIN_DROPDOWN_HEIGHT)));
+    setDropdownMaxHeight((prev) =>
+      Math.max(prev, Math.max(available, MIN_DROPDOWN_HEIGHT)),
+    );
   }, []);
 
   useEffect(() => {

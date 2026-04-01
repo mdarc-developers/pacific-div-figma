@@ -41,7 +41,11 @@ export function ProfileHeaderCard({
 
   const handleAvatarClick = () => {
     if (isGoogleUser) {
-      window.open("https://myaccount.google.com/", "_blank", "noopener,noreferrer");
+      window.open(
+        "https://myaccount.google.com/",
+        "_blank",
+        "noopener,noreferrer",
+      );
     } else {
       fileInputRef.current?.click();
     }

@@ -218,12 +218,17 @@ export function ConferenceHeader() {
   };
 
   const formatDateRange = (start: string, end: string) => {
-    const startDate = new Date(`${start}T00:00:00${activeConference.timezoneNumeric}`);
-    const endDate = new Date(`${end}T00:00:00${activeConference.timezoneNumeric}`);
+    const startDate = new Date(
+      `${start}T00:00:00${activeConference.timezoneNumeric}`,
+    );
+    const endDate = new Date(
+      `${end}T00:00:00${activeConference.timezoneNumeric}`,
+    );
     const startDateNum = start.split("-")[2];
     const endDateNum = end.split("-")[2];
 
-    if (startDateNum === endDateNum &&
+    if (
+      startDateNum === endDateNum &&
       startDate.getMonth() === endDate.getMonth() &&
       startDate.getFullYear() === endDate.getFullYear()
     ) {

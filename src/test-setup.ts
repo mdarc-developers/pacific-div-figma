@@ -66,14 +66,18 @@ global.ResizeObserver = class ResizeObserver {
         typeof prop === "string" &&
         Object.prototype.hasOwnProperty.call(store, prop)
       )
-        return { value: store[prop], writable: true, enumerable: true, configurable: true };
+        return {
+          value: store[prop],
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        };
       return undefined;
     },
     has(_t, prop: string | symbol) {
       return (
         typeof prop === "string" &&
-        (METHODS.has(prop) ||
-          Object.prototype.hasOwnProperty.call(store, prop))
+        (METHODS.has(prop) || Object.prototype.hasOwnProperty.call(store, prop))
       );
     },
   });

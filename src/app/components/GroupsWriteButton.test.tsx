@@ -157,7 +157,9 @@ describe("GroupsWriteButton (render)", () => {
 
   it("renders the instruction card about removing users from groups", () => {
     renderGroupsWriteButton();
-    expect(screen.getByText(/to remove a user from a group/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/to remove a user from a group/i),
+    ).toBeInTheDocument();
   });
 
   it("renders a link to console.firebase.google.com", () => {
@@ -312,9 +314,7 @@ describe("GroupsWriteButton (preview)", () => {
     await waitForPreviewLoaded();
 
     expect(screen.queryByTestId("groups-preview")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/loading preview/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/loading preview/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/all entries already present/i),
     ).not.toBeInTheDocument();
@@ -504,9 +504,7 @@ describe("GroupsWriteButton (write interactions)", () => {
     fireEvent.click(btn);
 
     await waitFor(() =>
-      expect(
-        screen.getByRole("button", { name: /writing…/i }),
-      ).toBeDisabled(),
+      expect(screen.getByRole("button", { name: /writing…/i })).toBeDisabled(),
     );
   });
 });

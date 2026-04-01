@@ -162,10 +162,10 @@ This is useful for quickly scanning warnings or failures that belong to a specif
 
 All tests pass (`✓`). The following `stderr` messages appear during a normal run and are **not failures**:
 
-| Message | Source | Why it appears |
-|---|---|---|
-| `[userProfile] "loomis-2026" user "…" has unrecognised group "more-admin"` | `userProfileData.ts` | `loomis-2026` and `vomarc-2026` intentionally contain `"more-admin"` as sample test data to exercise the unknown-group warning path. Verified by `userProfileData.test.ts`. |
-| `[data] <conference>: exhibitor "…" location … not found in any booth map` | `exhibitorData.test.ts` | Advisory-only assertions about exhibitor booth assignments that span multiple floor plans. No data needs to change; these are informational for map layout work. |
+| Message                                                                           | Source                  | Why it appears                                                                                                                                                                               |
+| --------------------------------------------------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `[userProfile] "loomis-2026" user "…" has unrecognised group "more-admin"`        | `userProfileData.ts`    | `loomis-2026` and `vomarc-2026` intentionally contain `"more-admin"` as sample test data to exercise the unknown-group warning path. Verified by `userProfileData.test.ts`.                  |
+| `[data] <conference>: exhibitor "…" location … not found in any booth map`        | `exhibitorData.test.ts` | Advisory-only assertions about exhibitor booth assignments that span multiple floor plans. No data needs to change; these are informational for map layout work.                             |
 | `[data] <conference>: exhibitor "…" location(s) […] not in URL-matched booth map` | `exhibitorData.test.ts` | Same advisory as above — the exhibitor's `mapUrl` points to a different floor plan than the one where their booth IDs are defined. The runtime fallback finds the correct map automatically. |
-| `SearchService: No sessions provided to buildIndex` | `searchService.test.ts` | The test explicitly exercises the empty-array path and expects this warning. |
-| `Redirect sign-in error: Error: auth/invalid-credential` | `AuthContext.test.tsx` | The test verifies that `AuthContext` does not crash when `getRedirectResult` rejects — the error is thrown intentionally by the mock. |
+| `SearchService: No sessions provided to buildIndex`                               | `searchService.test.ts` | The test explicitly exercises the empty-array path and expects this warning.                                                                                                                 |
+| `Redirect sign-in error: Error: auth/invalid-credential`                          | `AuthContext.test.tsx`  | The test verifies that `AuthContext` does not crash when `getRedirectResult` rejects — the error is thrown intentionally by the mock.                                                        |

@@ -86,19 +86,23 @@
          Load the script only from production — do NOT add it here unconditionally
          because the site key is not authorized for localhost and will produce a
          visible badge error that also breaks offline use. -->
-    
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NEE5D0SP8R"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
 
-    gtag('config', 'G-NEE5D0SP8R');
-  </script>
-    
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-NEE5D0SP8R"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-NEE5D0SP8R");
+    </script>
   </head>
-  
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

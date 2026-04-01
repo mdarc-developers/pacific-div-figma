@@ -76,7 +76,12 @@ function getImageDimensions(
   // /MediaBox [llx lly urx ury] gives the visible page dimensions in user
   // units (1/72 inch each).  An optional /Rotate value of 90 or 270 means
   // the page is displayed in landscape, so width and height are swapped.
-  if (buf[0] === 0x25 && buf[1] === 0x50 && buf[2] === 0x44 && buf[3] === 0x46) {
+  if (
+    buf[0] === 0x25 &&
+    buf[1] === 0x50 &&
+    buf[2] === 0x44 &&
+    buf[3] === 0x46
+  ) {
     const pdfHeader = buf.toString(
       "latin1",
       0,

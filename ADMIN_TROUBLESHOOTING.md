@@ -9,17 +9,17 @@ The Firebase project ID for this app is **`pacific-div`**.
 
 ## Console Quick-Links
 
-| Console | URL |
-|---------|-----|
-| Firebase Console — project home | <https://console.firebase.google.com/project/pacific-div/overview> |
-| Firebase Authentication — Users | <https://console.firebase.google.com/project/pacific-div/authentication/users> |
-| Firestore — Database browser | <https://console.firebase.google.com/project/pacific-div/firestore/databases/-default-/data> |
-| Cloud Functions — Dashboard | <https://console.firebase.google.com/project/pacific-div/functions> |
-| Cloud Functions — Logs (Firebase view) | <https://console.firebase.google.com/project/pacific-div/functions/logs> |
-| Google Cloud Logging | <https://console.cloud.google.com/logs/query?project=pacific-div> |
-| Google Cloud Functions (GCP view) | <https://console.cloud.google.com/functions/list?project=pacific-div> |
-| Google Cloud Secret Manager | <https://console.cloud.google.com/security/secret-manager?project=pacific-div> |
-| Google Cloud IAM | <https://console.cloud.google.com/iam-admin/iam?project=pacific-div> |
+| Console                                | URL                                                                                          |
+| -------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Firebase Console — project home        | <https://console.firebase.google.com/project/pacific-div/overview>                           |
+| Firebase Authentication — Users        | <https://console.firebase.google.com/project/pacific-div/authentication/users>               |
+| Firestore — Database browser           | <https://console.firebase.google.com/project/pacific-div/firestore/databases/-default-/data> |
+| Cloud Functions — Dashboard            | <https://console.firebase.google.com/project/pacific-div/functions>                          |
+| Cloud Functions — Logs (Firebase view) | <https://console.firebase.google.com/project/pacific-div/functions/logs>                     |
+| Google Cloud Logging                   | <https://console.cloud.google.com/logs/query?project=pacific-div>                            |
+| Google Cloud Functions (GCP view)      | <https://console.cloud.google.com/functions/list?project=pacific-div>                        |
+| Google Cloud Secret Manager            | <https://console.cloud.google.com/security/secret-manager?project=pacific-div>               |
+| Google Cloud IAM                       | <https://console.cloud.google.com/iam-admin/iam?project=pacific-div>                         |
 
 ---
 
@@ -38,7 +38,7 @@ This is the primary list of every registered account. From here you can:
 - **Disable or delete** an account.
 - **Send a password-reset email** using the three-dot menu on any user row.
 
-> **Note:** The in-app *User Management* page (`/admin/users`) mirrors much of
+> **Note:** The in-app _User Management_ page (`/admin/users`) mirrors much of
 > this functionality for `user-admin` members without requiring Firebase Console
 > access. Use the Firebase Console when deeper inspection or bulk operations are
 > needed.
@@ -61,11 +61,11 @@ Contains:
 
 The app uses three group documents to control admin access:
 
-| Document | Who it grants access to |
-|----------|-------------------------|
-| `groups/mdarc-developers` | Full developer / super-admin. Can read all user documents and audit logs; bypasses most Firestore rules. |
-| `groups/user-admin` | Can look up any user by email via the in-app User Management page (`/admin/users`) and read all audit log entries. |
-| `groups/prize-admin` | Can create and delete prize-winner entries and trigger winner notifications. |
+| Document                  | Who it grants access to                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `groups/mdarc-developers` | Full developer / super-admin. Can read all user documents and audit logs; bypasses most Firestore rules.           |
+| `groups/user-admin`       | Can look up any user by email via the in-app User Management page (`/admin/users`) and read all audit log entries. |
+| `groups/prize-admin`      | Can create and delete prize-winner entries and trigger winner notifications.                                       |
 
 Each document uses the same structure:
 
@@ -97,17 +97,17 @@ Each document uses the same structure:
 
 Each document ID is a Firebase Auth UID. Key fields:
 
-| Field | Purpose |
-|-------|---------|
-| `email` | The address the account was registered with. |
-| `callsign` | Ham radio callsign (user-provided). |
-| `displayName` | Display name shown in the attendees list. |
-| `displayProfile` | `true` if the user has opted in to the public attendees list. |
-| `emailVerified` | Mirrors the Auth record. |
-| `attendance` | Array of `conferenceId` strings for registered conferences. |
-| `raffleTickets` | Map of `{conferenceId: ticketNumber}`. |
-| `notificationsEnabled`, `smsNotifications`, `cloudNotifications` | Notification preferences. |
-| `fcmTokens` | Array of FCM push-notification device tokens. |
+| Field                                                            | Purpose                                                       |
+| ---------------------------------------------------------------- | ------------------------------------------------------------- |
+| `email`                                                          | The address the account was registered with.                  |
+| `callsign`                                                       | Ham radio callsign (user-provided).                           |
+| `displayName`                                                    | Display name shown in the attendees list.                     |
+| `displayProfile`                                                 | `true` if the user has opted in to the public attendees list. |
+| `emailVerified`                                                  | Mirrors the Auth record.                                      |
+| `attendance`                                                     | Array of `conferenceId` strings for registered conferences.   |
+| `raffleTickets`                                                  | Map of `{conferenceId: ticketNumber}`.                        |
+| `notificationsEnabled`, `smsNotifications`, `cloudNotifications` | Notification preferences.                                     |
+| `fcmTokens`                                                      | Array of FCM push-notification device tokens.                 |
 
 **Subcollection `users/{uid}/auditLog`:**  
 Immutable audit trail written by the app and Cloud Functions. Entries record
@@ -154,11 +154,13 @@ write structured logs that are queryable here.
 Paste any of these into the **Log Explorer** query box:
 
 **All Cloud Function executions (last 24 hours):**
+
 ```
 resource.type="cloud_run_revision"
 ```
 
 **Logs for a specific function by name:**
+
 ```
 resource.type="cloud_run_revision"
 resource.labels.service_name="sendwelcomeemail"
@@ -170,22 +172,23 @@ resource.labels.service_name="sendwelcomeemail"
 > `sendwelcomeemail`). Use the lowercase form in `resource.labels.service_name`
 > queries. The table below maps each function's export name to its log label:
 >
-> | Function export name | Cloud Logging `service_name` |
-> |----------------------|------------------------------|
-> | `sendWelcomeEmail` | `sendwelcomeemail` |
-> | `sendVerificationEmailOnCreate` | `sendverificationemailoncreate` |
-> | `resendVerificationEmail` | `resendverificationemail` |
-> | `adminLookupUser` | `adminlookupuser` |
-> | `adminResendVerificationEmail` | `adminresendverificationemail` |
-> | `incrementSignupCounter` | `incrementsignupcounter` |
-> | `incrementAttendeeCounter` | `incrementattendeecounter` |
-> | `decrementAttendeeCounter` | `decrementattendeecounter` |
-> | `syncPublicProfile` | `syncpublicprofile` |
-> | `purgeExpiredUserData` | `purgeexpireduserdata` |
-> | `notifyPrizeWinner` | `notifyprizewinneronwrite` |
-> | `sendFeedbackEmail` | `sendFeedbackEmail` → `sendfeedbackemail` |
+> | Function export name            | Cloud Logging `service_name`              |
+> | ------------------------------- | ----------------------------------------- |
+> | `sendWelcomeEmail`              | `sendwelcomeemail`                        |
+> | `sendVerificationEmailOnCreate` | `sendverificationemailoncreate`           |
+> | `resendVerificationEmail`       | `resendverificationemail`                 |
+> | `adminLookupUser`               | `adminlookupuser`                         |
+> | `adminResendVerificationEmail`  | `adminresendverificationemail`            |
+> | `incrementSignupCounter`        | `incrementsignupcounter`                  |
+> | `incrementAttendeeCounter`      | `incrementattendeecounter`                |
+> | `decrementAttendeeCounter`      | `decrementattendeecounter`                |
+> | `syncPublicProfile`             | `syncpublicprofile`                       |
+> | `purgeExpiredUserData`          | `purgeexpireduserdata`                    |
+> | `notifyPrizeWinner`             | `notifyprizewinneronwrite`                |
+> | `sendFeedbackEmail`             | `sendFeedbackEmail` → `sendfeedbackemail` |
 
 **All ERROR-level logs across functions:**
+
 ```
 resource.type="cloud_run_revision"
 severity>=ERROR
@@ -193,12 +196,14 @@ severity>=ERROR
 
 **Logs mentioning a specific user UID** (replace `<UID>` with the actual UID
 found via Authentication → Users or the in-app User Management page):
+
 ```
 resource.type="cloud_run_revision"
 ("<UID>")
 ```
 
 **Welcome or verification email failures for a specific email address:**
+
 ```
 resource.type="cloud_run_revision"
 ("sendWelcomeEmail" OR "sendVerificationEmailOnCreate")
@@ -206,6 +211,7 @@ resource.type="cloud_run_revision"
 ```
 
 **Prize winner notification failures:**
+
 ```
 resource.type="cloud_run_revision"
 resource.labels.service_name="notifyprizewinneronwrite"
@@ -213,6 +219,7 @@ severity>=ERROR
 ```
 
 **Feedback email failures:**
+
 ```
 resource.type="cloud_run_revision"
 resource.labels.service_name="sendfeedbackemail"
@@ -241,13 +248,13 @@ automatically).
 
 Stores the secrets consumed by Cloud Functions:
 
-| Secret name | Used by |
-|-------------|---------|
+| Secret name                  | Used by                                                                                                                             |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `GMAIL_SERVICE_ACCOUNT_JSON` | `sendWelcomeEmail`, `sendVerificationEmailOnCreate`, `resendVerificationEmail`, `adminResendVerificationEmail`, `sendFeedbackEmail` |
-| `GMAIL_SENDER_EMAIL` | Same email functions |
-| `TWILIO_ACCOUNT_SID` | `notifyPrizeWinner` (SMS) |
-| `TWILIO_AUTH_TOKEN` | `notifyPrizeWinner` (SMS) |
-| `TWILIO_PHONE_NUMBER` | `notifyPrizeWinner` (SMS) |
+| `GMAIL_SENDER_EMAIL`         | Same email functions                                                                                                                |
+| `TWILIO_ACCOUNT_SID`         | `notifyPrizeWinner` (SMS)                                                                                                           |
+| `TWILIO_AUTH_TOKEN`          | `notifyPrizeWinner` (SMS)                                                                                                           |
+| `TWILIO_PHONE_NUMBER`        | `notifyPrizeWinner` (SMS)                                                                                                           |
 
 If emails or SMS messages are silently failing, verify that the latest secret
 version is **enabled** (not disabled or destroyed) and that the Cloud Functions
@@ -272,7 +279,7 @@ Confirm that the Compute Engine default service account
 ### 3.1 "I never received my verification email"
 
 1. **Firebase Console → Authentication → Users:** find the user by email and
-   check the *Email verified* column. If it already shows a check mark,
+   check the _Email verified_ column. If it already shows a check mark,
    verification succeeded and the user just needs to refresh/re-sign-in.
 2. **In-app User Management (`/admin/users`):** look up the user by email. If
    `emailVerified = No`, click **Resend Verification Email** — this calls the
@@ -291,6 +298,7 @@ Confirm that the Compute Engine default service account
 ### 3.2 "I can't sign in — it says my email is not verified"
 
 Same steps as §3.1. After resending the verification email, ask the user to:
+
 1. Check their spam/junk folder.
 2. Click the link within 72 hours (Firebase verification links expire).
 3. Sign out of the app and sign back in after clicking the link.
@@ -300,12 +308,12 @@ Same steps as §3.1. After resending the verification email, ask the user to:
 The in-app admin pages require group membership. The error message identifies
 which group is missing.
 
-| Admin page | Required group document |
-|------------|------------------------|
-| `/admin/users` | `groups/user-admin` |
-| `/admin/prizes` | `groups/prize-admin` |
+| Admin page          | Required group document                           |
+| ------------------- | ------------------------------------------------- |
+| `/admin/users`      | `groups/user-admin`                               |
+| `/admin/prizes`     | `groups/prize-admin`                              |
 | `/admin/exhibitors` | `groups/mdarc-developers` (no separate group yet) |
-| `/admin/sessions` | `groups/mdarc-developers` (no separate group yet) |
+| `/admin/sessions`   | `groups/mdarc-developers` (no separate group yet) |
 
 **To grant access:**
 
@@ -316,11 +324,13 @@ which group is missing.
 ### 3.4 "My account doesn't appear in the Attendees list"
 
 The attendees list shows users who have:
+
 1. Registered for the conference (created a document in
    `conferences/{conferenceId}/attendees/{uid}`), **and**
 2. Set `displayProfile = true` in their `users/{uid}` Firestore document.
 
 **To diagnose:**
+
 - In **Firestore → `users/{uid}`**: check `displayProfile` and `attendance`.
 - In **Firestore → `conferences/{conferenceId}/attendees`**: search for the
   user's UID to confirm conference registration.
@@ -347,6 +357,7 @@ The in-app User Management page searches by **exact email address only** (the
 
 For partial-match searches use **Firebase Console → Authentication → Users**,
 which supports substring search in the UI. Alternatively:
+
 - Search **Firestore → `users`** by callsign field using the filter panel
   (click the **Filter** icon, choose field = `callsign`, operator = `==`,
   value = the callsign).
@@ -354,7 +365,7 @@ which supports substring search in the UI. Alternatively:
 ### 3.7 Cloud Functions are not firing at all
 
 1. **Firebase Console → Functions** (§1.6): confirm the functions are
-   deployed and show a recent *Last deployed* timestamp.
+   deployed and show a recent _Last deployed_ timestamp.
 2. **Google Cloud Functions** (§2.2): check per-function invocation counts.
    Zero invocations after a trigger event indicates a deployment or configuration
    problem.
@@ -365,6 +376,7 @@ which supports substring search in the UI. Alternatively:
 ### 3.8 "I accidentally deleted my account — can it be recovered?"
 
 Firebase Auth account deletions are **irreversible**. However:
+
 - The user's Firestore `users/{uid}` document may still exist if the
   `purgeExpiredUserData` function has not yet run.
 - The audit log (`users/{uid}/auditLog`) is preserved until the data-retention
@@ -376,37 +388,37 @@ Firebase Auth account deletions are **irreversible**. However:
 
 ## 4. Deployed Cloud Functions Reference
 
-| Function name | Trigger | What it does |
-|---------------|---------|--------------|
-| `sendWelcomeEmail` | `beforeUserCreated` (v2 blocking) | Sends a welcome email via Gmail API. Non-fatal if email fails. |
-| `sendVerificationEmailOnCreate` | `auth.user().onCreate` (v1) | Generates and sends an email-verification link via Gmail API. |
-| `resendVerificationEmail` | HTTPS Callable | Lets a signed-in user request a new verification email. |
-| `adminLookupUser` | HTTPS Callable | Returns Auth record for an email address. Requires `user-admin` group. |
-| `adminResendVerificationEmail` | HTTPS Callable | Sends verification email to another user. Requires `user-admin` group. |
-| `incrementSignupCounter` | Firestore `users/{uid}` created | Increments `stats/signupCounter`. |
-| `incrementAttendeeCounter` | Firestore `conferences/{id}/attendees/{uid}` created | Increments conference attendee count. |
-| `decrementAttendeeCounter` | Firestore `conferences/{id}/attendees/{uid}` deleted | Decrements conference attendee count. |
-| `syncPublicProfile` | Firestore `users/{uid}` written/deleted | Keeps `publicProfiles/{uid}` in sync (strips sensitive fields). |
-| `purgeExpiredUserData` | Scheduled (daily) | Removes raffle-ticket and attendance data older than the retention window. |
-| `notifyPrizeWinner` | Firestore `prizeWinners/{id}` created | Sends SMS (Twilio) and email notification to the prize winner. |
-| `sendFeedbackEmail` | HTTPS Callable | Forwards user feedback form submissions via Gmail API. |
+| Function name                   | Trigger                                              | What it does                                                               |
+| ------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------- |
+| `sendWelcomeEmail`              | `beforeUserCreated` (v2 blocking)                    | Sends a welcome email via Gmail API. Non-fatal if email fails.             |
+| `sendVerificationEmailOnCreate` | `auth.user().onCreate` (v1)                          | Generates and sends an email-verification link via Gmail API.              |
+| `resendVerificationEmail`       | HTTPS Callable                                       | Lets a signed-in user request a new verification email.                    |
+| `adminLookupUser`               | HTTPS Callable                                       | Returns Auth record for an email address. Requires `user-admin` group.     |
+| `adminResendVerificationEmail`  | HTTPS Callable                                       | Sends verification email to another user. Requires `user-admin` group.     |
+| `incrementSignupCounter`        | Firestore `users/{uid}` created                      | Increments `stats/signupCounter`.                                          |
+| `incrementAttendeeCounter`      | Firestore `conferences/{id}/attendees/{uid}` created | Increments conference attendee count.                                      |
+| `decrementAttendeeCounter`      | Firestore `conferences/{id}/attendees/{uid}` deleted | Decrements conference attendee count.                                      |
+| `syncPublicProfile`             | Firestore `users/{uid}` written/deleted              | Keeps `publicProfiles/{uid}` in sync (strips sensitive fields).            |
+| `purgeExpiredUserData`          | Scheduled (daily)                                    | Removes raffle-ticket and attendance data older than the retention window. |
+| `notifyPrizeWinner`             | Firestore `prizeWinners/{id}` created                | Sends SMS (Twilio) and email notification to the prize winner.             |
+| `sendFeedbackEmail`             | HTTPS Callable                                       | Forwards user feedback form submissions via Gmail API.                     |
 
 ---
 
 ## 5. Key Firestore Paths at a Glance
 
-| Path | Purpose |
-|------|---------|
-| `users/{uid}` | Per-user settings, preferences, and profile fields. |
-| `users/{uid}/auditLog/{entryId}` | Immutable audit trail for the account. |
-| `groups/mdarc-developers` | Super-admin group membership map. |
-| `groups/user-admin` | User-admin group membership map. |
-| `groups/prize-admin` | Prize-admin group membership map. |
-| `conferences/{conferenceId}/attendees/{uid}` | Conference registration record. |
-| `publicProfiles/{uid}` | Publicly visible subset of the user profile (no email). |
-| `prizeWinners/{winnerId}` | Prize-winner records with contact info and notification status. |
-| `stats/signupCounter` | Running total of registered users. |
-| `stats/…` (other documents) | mdarc-developers-only stats. |
+| Path                                         | Purpose                                                         |
+| -------------------------------------------- | --------------------------------------------------------------- |
+| `users/{uid}`                                | Per-user settings, preferences, and profile fields.             |
+| `users/{uid}/auditLog/{entryId}`             | Immutable audit trail for the account.                          |
+| `groups/mdarc-developers`                    | Super-admin group membership map.                               |
+| `groups/user-admin`                          | User-admin group membership map.                                |
+| `groups/prize-admin`                         | Prize-admin group membership map.                               |
+| `conferences/{conferenceId}/attendees/{uid}` | Conference registration record.                                 |
+| `publicProfiles/{uid}`                       | Publicly visible subset of the user profile (no email).         |
+| `prizeWinners/{winnerId}`                    | Prize-winner records with contact info and notification status. |
+| `stats/signupCounter`                        | Running total of registered users.                              |
+| `stats/…` (other documents)                  | mdarc-developers-only stats.                                    |
 
 ---
 

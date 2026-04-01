@@ -172,11 +172,7 @@ export function GroupsWriteButton() {
         }
 
         if (Object.keys(toWrite).length > 0) {
-          await setDoc(
-            groupDocRef,
-            { members: toWrite },
-            { merge: true },
-          );
+          await setDoc(groupDocRef, { members: toWrite }, { merge: true });
         }
       }
 
@@ -191,7 +187,9 @@ export function GroupsWriteButton() {
 
       // Show toast summary.
       if (written.length === 0) {
-        toast(`[${timestamp}] No new group members to write — all UIDs already present.`);
+        toast(
+          `[${timestamp}] No new group members to write — all UIDs already present.`,
+        );
       } else {
         const lines = written.map(
           ({ uid, email, group }) =>
@@ -262,7 +260,8 @@ export function GroupsWriteButton() {
                         <span className="font-mono">{uid}</span>
                         {email && (
                           <span className="text-gray-500 dark:text-gray-400">
-                            {" "}({email})
+                            {" "}
+                            ({email})
                           </span>
                         )}
                       </li>
@@ -275,9 +274,7 @@ export function GroupsWriteButton() {
 
           {/* Instruction block */}
           <div className="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950 p-3 text-sm text-amber-800 dark:text-amber-200">
-            <p className="font-medium mb-1">
-              To remove a user from a group:
-            </p>
+            <p className="font-medium mb-1">To remove a user from a group:</p>
             <ol className="list-decimal list-inside space-y-1">
               <li>
                 Remove the group entry from the corresponding{" "}

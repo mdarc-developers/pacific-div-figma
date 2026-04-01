@@ -153,7 +153,9 @@ export function ProfilePage() {
       }
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to send verification email";
+        err instanceof Error
+          ? err.message
+          : "Failed to send verification email";
       setError(message);
     }
   };

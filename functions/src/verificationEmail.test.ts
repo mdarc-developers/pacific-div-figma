@@ -32,7 +32,11 @@ describe("buildVerificationEmailHtml", () => {
 
   it("embeds the verification link as an anchor href", () => {
     const link = "https://example.com/verify?token=abc123";
-    const html = buildVerificationEmailHtml("Charlie", "charlie@example.com", link);
+    const html = buildVerificationEmailHtml(
+      "Charlie",
+      "charlie@example.com",
+      link,
+    );
     expect(html).toContain(`href="${link}"`);
   });
 

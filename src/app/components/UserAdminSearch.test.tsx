@@ -66,7 +66,10 @@ vi.mock("@/app/hooks/useUserAdmin", () => ({
 }));
 
 // Static import — vi.mock calls above are hoisted before this by Vitest
-import { UserAdminSearch, parseFunctionsError } from "@/app/components/UserAdminSearch";
+import {
+  UserAdminSearch,
+  parseFunctionsError,
+} from "@/app/components/UserAdminSearch";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 function renderUserAdminSearch() {
@@ -243,7 +246,9 @@ describe("UserAdminSearch (search interactions)", () => {
     fireEvent.click(screen.getByRole("button", { name: /search/i }));
     await waitFor(() =>
       expect(
-        screen.getByText(/groups\/user-admin.*firestore document may not exist/i),
+        screen.getByText(
+          /groups\/user-admin.*firestore document may not exist/i,
+        ),
       ).toBeInTheDocument(),
     );
   });
@@ -259,9 +264,7 @@ describe("UserAdminSearch (search interactions)", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /search/i }));
     await waitFor(() =>
-      expect(
-        screen.getByText(/valid email address/i),
-      ).toBeInTheDocument(),
+      expect(screen.getByText(/valid email address/i)).toBeInTheDocument(),
     );
   });
 
@@ -277,9 +280,7 @@ describe("UserAdminSearch (search interactions)", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /search/i }));
     await waitFor(() =>
-      expect(
-        screen.getByText(/authentication required/i),
-      ).toBeInTheDocument(),
+      expect(screen.getByText(/authentication required/i)).toBeInTheDocument(),
     );
   });
 
@@ -294,9 +295,7 @@ describe("UserAdminSearch (search interactions)", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /search/i }));
     await waitFor(() =>
-      expect(
-        screen.getByText(/failed to look up user/i),
-      ).toBeInTheDocument(),
+      expect(screen.getByText(/failed to look up user/i)).toBeInTheDocument(),
     );
   });
 });

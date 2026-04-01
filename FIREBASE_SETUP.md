@@ -297,8 +297,8 @@ for new user registrations via the **Gmail API** authenticated through `google-a
 ### `sendWelcomeEmail`
 
 The `sendWelcomeEmail` function fires on every new user registration and sends a
-welcome email.  It is implemented as a **Cloud Functions v2 blocking function**
-(`beforeUserCreated` from `firebase-functions/v2/identity`).  It runs on Node.js 24
+welcome email. It is implemented as a **Cloud Functions v2 blocking function**
+(`beforeUserCreated` from `firebase-functions/v2/identity`). It runs on Node.js 24
 and uses the Compute Engine default service account.
 
 Because it is a v2 blocking function, email delivery failures are caught and logged
@@ -307,20 +307,20 @@ without blocking user registration.
 ### `sendVerificationEmailOnCreate`
 
 The `sendVerificationEmailOnCreate` function fires after every new email/password user
-record is created (`auth.user().onCreate`, v1 trigger).  It generates a Firebase
+record is created (`auth.user().onCreate`, v1 trigger). It generates a Firebase
 one-time email-verification link via the Admin SDK and delivers it through the Gmail API
 instead of Firebase's built-in SMTP channel (`noreply@*.firebaseapp.com`), ensuring
 reliable delivery to corporate email domains.
 
-> **Why a separate v1 `onCreate` trigger?**  `beforeUserCreated` runs _before_ the
+> **Why a separate v1 `onCreate` trigger?** `beforeUserCreated` runs _before_ the
 > Firebase Auth record exists — `generateEmailVerificationLink()` requires the record to
 > already exist, so a post-creation trigger is used.
 
 ### `resendVerificationEmail`
 
 The `resendVerificationEmail` HTTPS Callable function lets authenticated users request a
-fresh email-verification link from the Profile page.  It generates a new link via the
-Admin SDK and delivers it through the Gmail API.  This replaces the previous direct
+fresh email-verification link from the Profile page. It generates a new link via the
+Admin SDK and delivers it through the Gmail API. This replaces the previous direct
 `sendEmailVerification()` call from the Firebase client SDK, which sent from
 `noreply@*.firebaseapp.com`.
 
