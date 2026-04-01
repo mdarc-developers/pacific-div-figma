@@ -9,16 +9,36 @@ export function hexToRGBArray(hex: string): number[] {
   return rgb;
 }
 
+function getLuma(color: string): number {
+  const rgb = hexToRGBArray(color);
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+
 export function contrastingColor(color: string): string {
-  const rgb = typeof color === "string" ? hexToRGBArray(color) : color;
-  const luma = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  const luma = getLuma(color);
   return luma >= 165 ? "#000000" : "#FFFFFF";
 }
 
 export function contrastingLinkColor(color: string): string {
-  const rgb = typeof color === "string" ? hexToRGBArray(color) : color;
-  const luma = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  const luma = getLuma(color);
   return luma >= 165 ? "#155dfc" : "#9098dc";
+}
+
+/**
+ * Returns the conference secondaryColor as the link color when it provides
+ * sufficient luma contrast against the primaryColor (difference ≥ 60).
+ * Falls back to contrastingLinkColor(primaryColor) otherwise.
+ */
+export function secondaryLinkColor(
+  primaryColor: string,
+  secondaryColor: string,
+): string {
+  const primaryLuma = getLuma(primaryColor);
+  const secondaryLuma = getLuma(secondaryColor);
+  if (Math.abs(primaryLuma - secondaryLuma) >= 60) {
+    return secondaryColor;
+  }
+  return contrastingLinkColor(primaryColor);
 }
 
 /** Blend a hex color toward white by the given ratio (0 = original, 1 = white). */

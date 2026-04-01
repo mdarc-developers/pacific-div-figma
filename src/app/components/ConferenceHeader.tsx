@@ -14,7 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
-import { contrastingColor, contrastingLinkColor } from "@/lib/colorUtils";
+import { contrastingColor, secondaryLinkColor } from "@/lib/colorUtils";
 import { ConferenceHeaderSelector } from "@/app/components/ConferenceHeaderSelector";
 
 //import { forwardRef } from 'react';
@@ -75,7 +75,10 @@ export function ConferenceHeader() {
   const { activeConference } = useConference();
 
   const headerTextColor = contrastingColor(activeConference.primaryColor);
-  const headerLinkColor = contrastingLinkColor(activeConference.primaryColor);
+  const headerLinkColor = secondaryLinkColor(
+    activeConference.primaryColor,
+    activeConference.secondaryColor,
+  );
 
   // --- URL display helpers ---
 

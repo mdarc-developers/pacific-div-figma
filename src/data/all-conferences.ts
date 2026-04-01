@@ -77,7 +77,7 @@ export const allConferences: ConferenceListItem[] = [
     endDate: "2026-05-09",
     timezone: "America/Los_Angeles",
     primaryColor: "#4EA9D5",
-    secondaryColor: "#1a30ff",
+    secondaryColor: "#FFFFFF",
     conferenceUrl: "https://renohamswap.org",
     venuePhone: "+1-775-829-4100",
     venueGPS: "39.5131,-119.9688",
