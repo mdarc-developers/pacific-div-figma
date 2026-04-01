@@ -134,6 +134,37 @@ export const allConferences: ConferenceListItem[] = [
     estimatedAttendees: 36814,
   },
   {
+    id: "carmichael-2026",
+    name: "Carmichael Hamfest 2026",
+    location: "5631 Cypress Ave, Carmichael, CA 95608",
+    venue: "Elks Lodge",
+    startDate: "2026-05-31",
+    endDate: "2026-05-31",
+    timezone: "America/Los_Angeles",
+    primaryColor: "#F5F2F0",
+    secondaryColor: "#333333",
+    conferenceUrl: "https://sites.google.com/site/rcarcs/hamfest",
+    venuePhone: "+1-916-489-2103",
+    venueGPS: "38.6396,-121.3329",
+    venueGridSquare: "CM98ip",
+    venueUrl: "https://www.carmichaelelks2103.org/",
+    timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
+    parkingUrl: "",
+    icalUrl: "",
+    googlecalUrl: "",
+    conferenceContactEmail: "contact@n6na.org",
+    logoUrl: "/assets/images/n6na-logo.png",
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
+    conferenceProgramUrl: "/assets/programs/carmichael-2026.pdf",
+    conferenceProgramSourceUrl: "https://sites.google.com/site/rcarcs/hamfest", // upstream filename reflects the year it was published, not the conference year
+    conferenceAppPageUrl: "https://pacific-div.web/app/",
+    firstConferenceYear: 2012,
+    estimatedAttendees: 400,
+  },
+  {
     id: "seapac-2026",
     name: "Sea-Pac 2026",
     location: "415 First Avenue, Seaside, OR 97138",
