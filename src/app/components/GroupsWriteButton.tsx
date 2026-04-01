@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Users } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -77,11 +77,63 @@ export function emailForUid(uid: string): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+/** A single entry in the pre-write preview: one member that would be added. */
+export interface GroupsPreviewEntry {
+  group: string;
+  uid: string;
+  email: string;
+}
+
 export function GroupsWriteButton() {
   const [writing, setWriting] = useState(false);
   const [log, setLog] = useState<GroupsWriteLogEntry[]>(() =>
     loadFromStorage<GroupsWriteLogEntry[]>(LOG_STORAGE_KEY, []),
   );
+
+  // ── Preview state ──────────────────────────────────────────────────────────
+  const [preview, setPreview] = useState<GroupsPreviewEntry[] | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+
+  /**
+   * Read the current Firestore state and compute which entries would be written
+   * (i.e. are present in local data but missing / not-true in Firestore).
+   */
+  const loadPreview = useCallback(async () => {
+    setLoadingPreview(true);
+    try {
+      const groupMembers = buildGroupMembersMap();
+      const toAdd: GroupsPreviewEntry[] = [];
+
+      for (const [group, uids] of groupMembers) {
+        if (uids.size === 0) continue;
+
+        const groupDocRef = doc(db, "groups", group);
+        const snap = await getDoc(groupDocRef);
+        const existing: Record<string, boolean> = snap.exists()
+          ? ((snap.data()?.members ?? {}) as Record<string, boolean>)
+          : {};
+
+        for (const uid of uids) {
+          if (existing[uid] !== true) {
+            toAdd.push({ group, uid, email: emailForUid(uid) });
+          }
+        }
+      }
+
+      setPreview(toAdd);
+    } catch (err) {
+      // Preview is best-effort; log for debugging but do not surface to the user.
+      console.error("[GroupsWriteButton] Preview load failed:", err);
+      setPreview(null);
+    } finally {
+      setLoadingPreview(false);
+    }
+  }, []);
+
+  // Load the preview when the component first mounts.
+  useEffect(() => {
+    void loadPreview();
+  }, [loadPreview]);
 
   const handleClearLog = () => {
     saveToStorage<GroupsWriteLogEntry[]>(LOG_STORAGE_KEY, []);
@@ -154,6 +206,8 @@ export function GroupsWriteButton() {
       toast.error(`Groups write failed: ${msg}`);
     } finally {
       setWriting(false);
+      // Refresh the preview so it reflects the updated Firestore state.
+      void loadPreview();
     }
   };
 
@@ -173,14 +227,51 @@ export function GroupsWriteButton() {
             written; existing <code>true</code> values are left unchanged.
           </p>
 
-          <Button
-            onClick={() => void handleWriteGroups()}
-            disabled={writing}
-            className="flex items-center gap-2"
-          >
-            <Users className="h-4 w-4" />
-            {writing ? "Writing…" : "Write Groups to Firestore"}
-          </Button>
+          {/* Button + inline preview (side-by-side on wider screens) */}
+          <div className="flex flex-wrap items-start gap-4">
+            <Button
+              onClick={() => void handleWriteGroups()}
+              disabled={writing || loadingPreview}
+              className="flex items-center gap-2 shrink-0"
+            >
+              <Users className="h-4 w-4" />
+              {writing ? "Writing…" : "Write Groups to Firestore"}
+            </Button>
+
+            {/* Pre-write preview: shows what would be added */}
+            <div className="flex-1 min-w-[260px]">
+              {loadingPreview ? (
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                  Loading preview…
+                </p>
+              ) : preview === null ? null : preview.length === 0 ? (
+                <p className="text-xs text-green-700 dark:text-green-400 font-medium">
+                  ✓ All entries already present in Firestore — nothing to write.
+                </p>
+              ) : (
+                <div data-testid="groups-preview">
+                  <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Will add {preview.length} member
+                    {preview.length === 1 ? "" : "s"}:
+                  </p>
+                  <ul className="text-xs space-y-0.5 max-h-40 overflow-y-auto">
+                    {preview.map(({ group, uid, email }, i) => (
+                      <li key={i} className="text-gray-700 dark:text-gray-300">
+                        <span className="font-medium">{group}</span>
+                        {" — "}
+                        <span className="font-mono">{uid}</span>
+                        {email && (
+                          <span className="text-gray-500 dark:text-gray-400">
+                            {" "}({email})
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Instruction block */}
           <div className="rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950 p-3 text-sm text-amber-800 dark:text-amber-200">

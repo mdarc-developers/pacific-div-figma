@@ -86,6 +86,15 @@ function renderGroupsWriteButton() {
   return render(<GroupsWriteButton />);
 }
 
+/** Wait until the write button is enabled (preview finished loading). */
+async function waitForPreviewLoaded() {
+  const btn = await screen.findByRole("button", {
+    name: /write groups to firestore/i,
+  });
+  await waitFor(() => expect(btn).not.toBeDisabled());
+  return btn;
+}
+
 // ── Unit tests for pure helpers ───────────────────────────────────────────────
 describe("buildGroupMembersMap", () => {
   it("returns a map keyed by known groups", () => {
@@ -204,6 +213,153 @@ describe("GroupsWriteButton (render)", () => {
   });
 });
 
+// ── Preview tests ─────────────────────────────────────────────────────────────
+describe("GroupsWriteButton (preview)", () => {
+  beforeEach(() => {
+    for (const key of Object.keys(storageStore)) {
+      delete storageStore[key];
+    }
+    mockGetDoc.mockReset();
+    mockSetDoc.mockReset();
+    mockDoc.mockReset();
+    mockDoc.mockReturnValue("mock-doc-ref");
+  });
+
+  it("shows 'Loading preview…' while Firestore is being read on mount", async () => {
+    mockGetDoc.mockReturnValue(new Promise(() => {})); // never resolves
+
+    renderGroupsWriteButton();
+
+    await waitFor(() =>
+      expect(screen.getByText(/loading preview…/i)).toBeInTheDocument(),
+    );
+  });
+
+  it("disables the write button while the preview is loading", async () => {
+    mockGetDoc.mockReturnValue(new Promise(() => {})); // never resolves
+
+    renderGroupsWriteButton();
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: /write groups to firestore/i }),
+      ).toBeDisabled(),
+    );
+  });
+
+  it("shows the groups, UIDs and emails that would be added", async () => {
+    // No existing members → all local entries would be written
+    mockGetDoc.mockResolvedValue({ exists: () => false, data: () => ({}) });
+
+    renderGroupsWriteButton();
+
+    await waitFor(() =>
+      expect(screen.getByTestId("groups-preview")).toBeInTheDocument(),
+    );
+
+    const preview = screen.getByTestId("groups-preview");
+
+    // uid-alpha is in user-admin and prize-admin with email
+    expect(preview).toHaveTextContent("uid-alpha");
+    expect(preview).toHaveTextContent("alpha@example.com");
+
+    // uid-beta is in prize-admin with email
+    expect(preview).toHaveTextContent("uid-beta");
+    expect(preview).toHaveTextContent("beta@example.com");
+
+    // uid-gamma is in user-admin (email not in ALL_USER_PROFILES)
+    expect(preview).toHaveTextContent("uid-gamma");
+  });
+
+  it("shows the member count in the preview heading", async () => {
+    mockGetDoc.mockResolvedValue({ exists: () => false, data: () => ({}) });
+
+    renderGroupsWriteButton();
+
+    // uid-alpha (user-admin + prize-admin), uid-beta (prize-admin), uid-gamma (user-admin) = 4 entries
+    await waitFor(() =>
+      expect(screen.getByText(/will add 4 members/i)).toBeInTheDocument(),
+    );
+  });
+
+  it("shows 'all entries already present' when nothing would be written", async () => {
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({
+        members: {
+          "uid-alpha": true,
+          "uid-beta": true,
+          "uid-gamma": true,
+        },
+      }),
+    });
+
+    renderGroupsWriteButton();
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/all entries already present in firestore/i),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("does not show the preview panel when Firestore errors on mount", async () => {
+    mockGetDoc.mockRejectedValue(new Error("permission-denied"));
+
+    renderGroupsWriteButton();
+
+    // Button re-enables after silent error
+    await waitForPreviewLoaded();
+
+    expect(screen.queryByTestId("groups-preview")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/loading preview/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/all entries already present/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("refreshes the preview after a successful write", async () => {
+    // Initial preview: all entries missing → preview shows 4 members to add
+    mockGetDoc
+      .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // preview: user-admin
+      .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // preview: prize-admin
+      // Write calls:
+      .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // write: user-admin
+      .mockResolvedValueOnce({ exists: () => false, data: () => ({}) }) // write: prize-admin
+      // Post-write preview: all entries now present
+      .mockResolvedValue({
+        exists: () => true,
+        data: () => ({
+          members: {
+            "uid-alpha": true,
+            "uid-beta": true,
+            "uid-gamma": true,
+          },
+        }),
+      });
+    mockSetDoc.mockResolvedValue(undefined);
+
+    renderGroupsWriteButton();
+    const btn = await waitForPreviewLoaded();
+
+    // Initial preview shows members to add
+    await waitFor(() =>
+      expect(screen.getByTestId("groups-preview")).toBeInTheDocument(),
+    );
+
+    fireEvent.click(btn);
+
+    // After write, the preview should refresh and show "all present"
+    await waitFor(() =>
+      expect(
+        screen.getByText(/all entries already present in firestore/i),
+      ).toBeInTheDocument(),
+    );
+  });
+});
+
 // ── Write interaction tests ───────────────────────────────────────────────────
 describe("GroupsWriteButton (write interactions)", () => {
   beforeEach(() => {
@@ -221,14 +377,16 @@ describe("GroupsWriteButton (write interactions)", () => {
     mockSetDoc.mockResolvedValue(undefined);
 
     renderGroupsWriteButton();
-    fireEvent.click(
-      screen.getByRole("button", { name: /write groups to firestore/i }),
-    );
 
-    // user-admin has uid-alpha + uid-gamma; prize-admin has uid-alpha + uid-beta
-    // mdarc-developers has no members → skipped
+    // Wait for the initial preview to finish (button re-enables)
+    const btn = await waitForPreviewLoaded();
+    fireEvent.click(btn);
+
+    // 2 getDoc calls for the initial preview + 2 for the write = at least 4.
+    // The post-write preview refresh adds 2 more calls, so the total can be 6
+    // before this assertion settles — toBeGreaterThanOrEqual avoids that race.
     await waitFor(() => {
-      expect(mockGetDoc).toHaveBeenCalledTimes(2); // user-admin + prize-admin
+      expect(mockGetDoc.mock.calls.length).toBeGreaterThanOrEqual(4);
     });
   });
 
@@ -237,9 +395,8 @@ describe("GroupsWriteButton (write interactions)", () => {
     mockSetDoc.mockResolvedValue(undefined);
 
     renderGroupsWriteButton();
-    fireEvent.click(
-      screen.getByRole("button", { name: /write groups to firestore/i }),
-    );
+    const btn = await waitForPreviewLoaded();
+    fireEvent.click(btn);
 
     await waitFor(() => {
       expect(mockSetDoc).toHaveBeenCalled();
@@ -267,9 +424,8 @@ describe("GroupsWriteButton (write interactions)", () => {
     );
 
     renderGroupsWriteButton();
-    fireEvent.click(
-      screen.getByRole("button", { name: /write groups to firestore/i }),
-    );
+    const btn = await waitForPreviewLoaded();
+    fireEvent.click(btn);
 
     await waitFor(() => {
       expect(mockGetDoc).toHaveBeenCalled();
@@ -283,9 +439,8 @@ describe("GroupsWriteButton (write interactions)", () => {
     mockSetDoc.mockResolvedValue(undefined);
 
     renderGroupsWriteButton();
-    fireEvent.click(
-      screen.getByRole("button", { name: /write groups to firestore/i }),
-    );
+    const btn = await waitForPreviewLoaded();
+    fireEvent.click(btn);
 
     await waitFor(() => {
       expect(screen.getByText(/write log/i)).toBeInTheDocument();
@@ -312,9 +467,8 @@ describe("GroupsWriteButton (write interactions)", () => {
     );
 
     renderGroupsWriteButton();
-    fireEvent.click(
-      screen.getByRole("button", { name: /write groups to firestore/i }),
-    );
+    const btn = await waitForPreviewLoaded();
+    fireEvent.click(btn);
 
     await waitFor(() =>
       expect(screen.getByText(/no new entries written/i)).toBeInTheDocument(),
@@ -325,9 +479,9 @@ describe("GroupsWriteButton (write interactions)", () => {
     mockGetDoc.mockRejectedValue(new Error("Firestore unavailable"));
 
     renderGroupsWriteButton();
-    fireEvent.click(
-      screen.getByRole("button", { name: /write groups to firestore/i }),
-    );
+    // Preview load fails silently → button re-enables
+    const btn = await waitForPreviewLoaded();
+    fireEvent.click(btn);
 
     // Button should re-enable after error
     await waitFor(() => {
@@ -338,13 +492,16 @@ describe("GroupsWriteButton (write interactions)", () => {
   });
 
   it("disables the button while writing", async () => {
-    // Return a never-resolving promise to keep writing state active
-    mockGetDoc.mockReturnValue(new Promise(() => {}));
+    // Resolve the 2 preview calls (user-admin, prize-admin) so the button
+    // becomes enabled, then hang indefinitely on the write calls.
+    mockGetDoc
+      .mockResolvedValueOnce({ exists: () => false, data: () => ({}) })
+      .mockResolvedValueOnce({ exists: () => false, data: () => ({}) })
+      .mockReturnValue(new Promise(() => {})); // write calls — never resolve
 
     renderGroupsWriteButton();
-    fireEvent.click(
-      screen.getByRole("button", { name: /write groups to firestore/i }),
-    );
+    const btn = await waitForPreviewLoaded();
+    fireEvent.click(btn);
 
     await waitFor(() =>
       expect(
