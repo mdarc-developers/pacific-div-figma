@@ -7,6 +7,21 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
+// jsdom does not implement the Notification API — provide a minimal stub so
+// that tests exercising FCM / push-permission code run in every environment
+// (Windows/WSL, CI, headless Node). The default permission is "default"
+// (not yet asked), which means requestFcmToken() will return null unless a
+// test explicitly overrides this via Object.defineProperty (the descriptor is
+// configurable so individual tests can replace it as needed).
+Object.defineProperty(globalThis, "Notification", {
+  configurable: true,
+  writable: true,
+  value: {
+    requestPermission: (): Promise<NotificationPermission> =>
+      Promise.resolve("default"),
+  },
+});
+
 // ── Portable localStorage mock ────────────────────────────────────────────────
 // jsdom's built-in localStorage implementation is absent or incomplete in some
 // environments (Windows/WSL, certain Node.js versions, or when the Node.js

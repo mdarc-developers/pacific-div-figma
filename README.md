@@ -120,6 +120,18 @@ C:\path\to\pacific-div-figma\test.bat
 
 You can add the project root to your `PATH` (or create a shell alias / Windows shortcut) so you can invoke `test.sh` or `test.bat` without the full path.
 
+### Cloud Functions unit tests
+
+The Firebase Cloud Functions have their own independent test suite under `functions/`. These tests are **not** run by `npm run test` at the project root — they must be run separately from within the `functions/` directory:
+
+```bash
+cd functions
+npm install   # only needed once, or after updating functions/package.json
+npm test
+```
+
+No Firebase project credentials or secrets are needed; the test suite runs fully offline with mocked Firebase Admin and mocked Twilio/Gmail clients.
+
 ### Saving test output
 
 ```bash
