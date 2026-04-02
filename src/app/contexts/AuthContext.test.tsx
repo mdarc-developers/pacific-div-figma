@@ -91,10 +91,11 @@ describe("AuthContext — redirect result handling on init", () => {
       </AuthProvider>,
     );
 
+    // Both assertions share one polling loop so a slow async chain
+    // (getRedirectResult → ensureUserDoc → getDoc → setDoc) cannot cause the
+    // second assertion to time out independently.
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
-    });
-    await waitFor(() => {
       expect(mockSetDoc).toHaveBeenCalledWith(
         expect.objectContaining({ path: "users/uid-123" }),
         expect.objectContaining({
@@ -119,10 +120,11 @@ describe("AuthContext — redirect result handling on init", () => {
       </AuthProvider>,
     );
 
+    // Both assertions share one polling loop so the getDoc call (which fires
+    // inside ensureUserDoc after getRedirectResult resolves) cannot cause the
+    // second assertion to time out independently.
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
-    });
-    await waitFor(() => {
       expect(mockGetDoc).toHaveBeenCalled();
     });
     // setDoc should NOT be called since the doc already exists.
