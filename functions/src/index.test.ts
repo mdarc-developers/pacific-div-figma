@@ -234,74 +234,69 @@ describe("incrementSignupCounter (onDocumentCreated users/{uid})", () => {
 
 // ── incrementAttendeeCounter ──────────────────────────────────────────────────
 
-describe(
-  "incrementAttendeeCounter (onDocumentCreated conferences/{conferenceId}/attendees/{uid})",
-  () => {
-    it("increments attendeeCounter on the conference document", async () => {
-      await incrementAttendeeCounter.run({
-        params: { conferenceId: "conf-2026", uid: "user-abc" },
+describe("incrementAttendeeCounter (onDocumentCreated conferences/{conferenceId}/attendees/{uid})", () => {
+  it("increments attendeeCounter on the conference document", async () => {
+    await incrementAttendeeCounter.run({
+      params: { conferenceId: "conf-2026", uid: "user-abc" },
+      data: {},
+    } as Parameters<typeof incrementAttendeeCounter.run>[0]);
+
+    expect(mockSet).toHaveBeenCalledOnce();
+    const [updatePayload, options] = mockSet.mock.calls[0];
+    expect(updatePayload).toMatchObject({
+      attendeeCounter: { _increment: 1 },
+    });
+    expect(options).toEqual({ merge: true });
+  });
+
+  it("does not throw when the Firestore write fails", async () => {
+    mockSet.mockRejectedValueOnce(new Error("Firestore unavailable"));
+
+    await expect(
+      incrementAttendeeCounter.run({
+        params: { conferenceId: "conf-2026", uid: "user-xyz" },
         data: {},
-      } as Parameters<typeof incrementAttendeeCounter.run>[0]);
-
-      expect(mockSet).toHaveBeenCalledOnce();
-      const [updatePayload, options] = mockSet.mock.calls[0];
-      expect(updatePayload).toMatchObject({
-        attendeeCounter: { _increment: 1 },
-      });
-      expect(options).toEqual({ merge: true });
-    });
-
-    it("does not throw when the Firestore write fails", async () => {
-      mockSet.mockRejectedValueOnce(new Error("Firestore unavailable"));
-
-      await expect(
-        incrementAttendeeCounter.run({
-          params: { conferenceId: "conf-2026", uid: "user-xyz" },
-          data: {},
-        } as Parameters<typeof incrementAttendeeCounter.run>[0]),
-      ).resolves.not.toThrow();
-    });
-  },
-);
+      } as Parameters<typeof incrementAttendeeCounter.run>[0]),
+    ).resolves.not.toThrow();
+  });
+});
 
 // ── decrementAttendeeCounter ──────────────────────────────────────────────────
 
-describe(
-  "decrementAttendeeCounter (onDocumentDeleted conferences/{conferenceId}/attendees/{uid})",
-  () => {
-    it("decrements attendeeCounter on the conference document", async () => {
-      await decrementAttendeeCounter.run({
-        params: { conferenceId: "conf-2026", uid: "user-abc" },
+describe("decrementAttendeeCounter (onDocumentDeleted conferences/{conferenceId}/attendees/{uid})", () => {
+  it("decrements attendeeCounter on the conference document", async () => {
+    await decrementAttendeeCounter.run({
+      params: { conferenceId: "conf-2026", uid: "user-abc" },
+      data: {},
+    } as Parameters<typeof decrementAttendeeCounter.run>[0]);
+
+    expect(mockSet).toHaveBeenCalledOnce();
+    const [updatePayload, options] = mockSet.mock.calls[0];
+    expect(updatePayload).toMatchObject({
+      attendeeCounter: { _increment: -1 },
+    });
+    expect(options).toEqual({ merge: true });
+  });
+
+  it("does not throw when the Firestore write fails", async () => {
+    mockSet.mockRejectedValueOnce(new Error("Firestore unavailable"));
+
+    await expect(
+      decrementAttendeeCounter.run({
+        params: { conferenceId: "conf-2026", uid: "user-xyz" },
         data: {},
-      } as Parameters<typeof decrementAttendeeCounter.run>[0]);
-
-      expect(mockSet).toHaveBeenCalledOnce();
-      const [updatePayload, options] = mockSet.mock.calls[0];
-      expect(updatePayload).toMatchObject({
-        attendeeCounter: { _increment: -1 },
-      });
-      expect(options).toEqual({ merge: true });
-    });
-
-    it("does not throw when the Firestore write fails", async () => {
-      mockSet.mockRejectedValueOnce(new Error("Firestore unavailable"));
-
-      await expect(
-        decrementAttendeeCounter.run({
-          params: { conferenceId: "conf-2026", uid: "user-xyz" },
-          data: {},
-        } as Parameters<typeof decrementAttendeeCounter.run>[0]),
-      ).resolves.not.toThrow();
-    });
-  },
-);
+      } as Parameters<typeof decrementAttendeeCounter.run>[0]),
+    ).resolves.not.toThrow();
+  });
+});
 
 // ── syncPublicProfile ─────────────────────────────────────────────────────────
 
 /** Minimal mock of a Firestore DocumentSnapshot. */
-function makeAfterSnap(
-  data: Record<string, unknown> | null,
-): { exists: boolean; data: () => Record<string, unknown> | undefined } {
+function makeAfterSnap(data: Record<string, unknown> | null): {
+  exists: boolean;
+  data: () => Record<string, unknown> | undefined;
+} {
   return {
     exists: data !== null,
     data: () => data ?? undefined,
@@ -393,9 +388,9 @@ describe("resendVerificationEmail (onCall)", () => {
   const wrapped = tester.wrap(resendVerificationEmail);
 
   it("throws unauthenticated when the caller is not signed in", async () => {
-    await expect(
-      wrapped({ auth: undefined, data: {} }),
-    ).rejects.toMatchObject({ code: "unauthenticated" });
+    await expect(wrapped({ auth: undefined, data: {} })).rejects.toMatchObject({
+      code: "unauthenticated",
+    });
   });
 
   it("throws failed-precondition when the caller's email is already verified", async () => {
