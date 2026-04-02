@@ -5,6 +5,5 @@ dist
 .env.local
 .eslintcache
 playwright-report
-test-results/*
-!test-results/.gitkeep
+test-results/
 
