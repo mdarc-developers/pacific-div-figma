@@ -53,6 +53,36 @@ describe("buildFeedbackEmailHtml", () => {
     expect(html).toContain("Line two");
   });
 
+  it("includes the user-agent string when provided", () => {
+    const html = buildFeedbackEmailHtml(
+      "https://pacific-div.web.app/schedule",
+      "Crashes on load",
+      undefined,
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+    );
+    expect(html).toContain("Mozilla/5.0 (iPhone");
+    expect(html).toContain("User-Agent:");
+  });
+
+  it("omits the User-Agent line when not provided", () => {
+    const html = buildFeedbackEmailHtml(
+      "https://pacific-div.web.app/schedule",
+      "No UA provided",
+    );
+    expect(html).not.toContain("User-Agent:");
+  });
+
+  it("escapes HTML special characters in the user-agent string", () => {
+    const html = buildFeedbackEmailHtml(
+      "https://pacific-div.web.app/",
+      "Test",
+      undefined,
+      "<script>evil</script>",
+    );
+    expect(html).not.toContain("<script>evil</script>");
+    expect(html).toContain("&lt;script&gt;evil&lt;/script&gt;");
+  });
+
   it("includes a link to pacific-div.web.app", () => {
     const html = buildFeedbackEmailHtml(
       "https://pacific-div.web.app/alerts",

@@ -24,6 +24,7 @@ export function FeedbackPage() {
   const [pageUrl, setPageUrl] = useState(referrer);
   const [message, setMessage] = useState("");
   const [ccSender, setCcSender] = useState(false);
+  const [userAgent, setUserAgent] = useState(navigator.userAgent);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,6 +47,7 @@ export function FeedbackPage() {
         pageUrl,
         message,
         ccSender,
+        userAgent: userAgent.trim() || undefined,
       });
       // Redirect back to the originating page on success.
       // Extract just the path from a full URL so react-router navigate works.
@@ -118,6 +120,23 @@ export function FeedbackPage() {
             >
               Send me a copy of this feedback
             </label>
+          </div>
+          <div>
+            <label
+              htmlFor="feedback-ua"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block"
+            >
+              Browser / device info
+            </label>
+            <p className="text-xs text-muted-foreground mb-1">
+              Your browser automatically provides this string to servers. It
+              helps us reproduce reported behaviors on the same platform.
+            </p>
+            <Input
+              id="feedback-ua"
+              value={userAgent}
+              onChange={(e) => setUserAgent(e.target.value)}
+            />
           </div>
           <div>
             <label
