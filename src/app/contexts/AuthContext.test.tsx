@@ -91,10 +91,11 @@ describe("AuthContext — redirect result handling on init", () => {
       </AuthProvider>,
     );
 
+    // Both assertions share one polling loop so a slow async chain
+    // (getRedirectResult → ensureUserDoc → getDoc → setDoc) cannot cause the
+    // second assertion to time out independently.
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
-    });
-    await waitFor(() => {
       expect(mockSetDoc).toHaveBeenCalledWith(
         expect.objectContaining({ path: "users/uid-123" }),
         expect.objectContaining({
@@ -119,10 +120,11 @@ describe("AuthContext — redirect result handling on init", () => {
       </AuthProvider>,
     );
 
+    // Both assertions share one polling loop so the getDoc call (which fires
+    // inside ensureUserDoc after getRedirectResult resolves) cannot cause the
+    // second assertion to time out independently.
     await waitFor(() => {
       expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
-    });
-    await waitFor(() => {
       expect(mockGetDoc).toHaveBeenCalled();
     });
     // setDoc should NOT be called since the doc already exists.
@@ -130,6 +132,11 @@ describe("AuthContext — redirect result handling on init", () => {
   });
 
   it("does not crash the app when getRedirectResult rejects", async () => {
+    // Suppress the expected console.error so it doesn't pollute test output.
+    const consoleSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
     mockGetRedirectResult.mockRejectedValue(
       Object.assign(new Error("auth/invalid-credential"), {
         code: "auth/invalid-credential",
@@ -137,21 +144,22 @@ describe("AuthContext — redirect result handling on init", () => {
     );
 
     const { AuthProvider } = await import("./AuthContext");
-    // Should render without throwing.
-    expect(() =>
-      render(
-        <AuthProvider>
-          <div data-testid="child" />
-        </AuthProvider>,
-      ),
-    ).not.toThrow();
+    render(
+      <AuthProvider>
+        <div data-testid="child" />
+      </AuthProvider>,
+    );
 
-    // Give the rejected promise time to settle.
-    await act(async () => {
-      await waitFor(() =>
-        expect(mockGetRedirectResult).toHaveBeenCalledTimes(1),
+    // Wait for getRedirectResult to be called and its rejection to be handled.
+    await waitFor(() => {
+      expect(mockGetRedirectResult).toHaveBeenCalledTimes(1);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Redirect sign-in error:",
+        expect.any(Error),
       );
     });
+
+    consoleSpy.mockRestore();
   });
 
   it("is a no-op when getRedirectResult resolves with null (no pending redirect)", async () => {
