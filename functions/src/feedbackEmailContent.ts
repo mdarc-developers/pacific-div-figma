@@ -9,25 +9,35 @@
 /** The feedback recipient address. */
 export const FEEDBACK_RECIPIENT = "pacific-div@mdarc.org";
 
+/** Escapes HTML special characters in a plain-text string. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 /**
  * Builds the HTML body for a feedback notification email.
  *
  * @param pageUrl    - The app page where the feedback was submitted.
  * @param message    - The user's feedback message.
  * @param senderEmail - Optional submitter email address to show in the body.
+ * @param userAgent  - Optional browser user-agent string submitted with the form.
  */
 export function buildFeedbackEmailHtml(
   pageUrl: string,
   message: string,
   senderEmail?: string,
+  userAgent?: string,
 ): string {
-  const escapedMessage = message
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\n/g, "<br />");
+  const escapedMessage = escapeHtml(message).replace(/\n/g, "<br />");
   const senderLine = senderEmail
     ? `<p style="color:#444444;font-size:15px;line-height:1.6;margin:0 0 8px;"><strong>From:</strong> ${senderEmail}</p>`
+    : "";
+  const escapedUserAgent = userAgent ? escapeHtml(userAgent) : "";
+  const userAgentLine = escapedUserAgent
+    ? `<p style="color:#444444;font-size:15px;line-height:1.6;margin:0 0 8px;"><strong>User-Agent:</strong> <span style="font-family:monospace;font-size:13px;">${escapedUserAgent}</span></p>`
     : "";
 
   return `<!DOCTYPE html>
@@ -51,6 +61,7 @@ export function buildFeedbackEmailHtml(
           <tr>
             <td style="padding:40px;">
               ${senderLine}
+              ${userAgentLine}
               <p style="color:#444444;font-size:15px;line-height:1.6;margin:0 0 8px;"><strong>Page:</strong> <a href="${pageUrl}" style="color:#1a3a5c;">${pageUrl}</a></p>
               <p style="color:#444444;font-size:15px;line-height:1.6;margin:16px 0 8px;"><strong>Message:</strong></p>
               <p style="color:#444444;font-size:15px;line-height:1.6;margin:0 0 24px;">${escapedMessage}</p>

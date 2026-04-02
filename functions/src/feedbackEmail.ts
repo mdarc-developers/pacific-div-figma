@@ -26,6 +26,7 @@ interface FeedbackRequest {
   pageUrl: string;
   message: string;
   ccSender: boolean;
+  userAgent?: string;
 }
 
 /**
@@ -80,7 +81,7 @@ export const sendFeedbackEmail = onCall(
   },
   async (request) => {
     const data = request.data as FeedbackRequest;
-    const { email, pageUrl, message, ccSender } = data;
+    const { email, pageUrl, message, ccSender, userAgent } = data;
 
     if (!pageUrl || typeof pageUrl !== "string") {
       throw new HttpsError("invalid-argument", "pageUrl is required");
@@ -119,7 +120,7 @@ export const sendFeedbackEmail = onCall(
 
     const gmail = google.gmail({ version: "v1", auth: authClient });
     const subject = "App Feedback";
-    const htmlBody = buildFeedbackEmailHtml(pageUrl, message, email);
+    const htmlBody = buildFeedbackEmailHtml(pageUrl, message, email, userAgent);
     const ccEmail = ccSender && email?.trim() ? email.trim() : undefined;
     const raw = buildRawMessageWithCc(
       senderEmail,
