@@ -23,32 +23,7 @@ import { useConference } from "@/app/contexts/ConferenceContext";
 import { useTheme, type Theme } from "@/app/contexts/ThemeContext";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 import { contrastingColor } from "@/lib/colorUtils";
-
-function formatHeaderFull(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: tzString,
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-  return timeFormatter.format(isoDate);
-}
-
-function formatHeaderMonth(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: tzString,
-    month: "long",
-  });
-  return timeFormatter.format(isoDate);
-}
-
-function formatHeaderYear(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: tzString,
-    year: "numeric",
-  });
-  return timeFormatter.format(isoDate);
-}
+import { formatDateRange } from "@/lib/dateUtils";
 
 export function ConferenceHeaderSelector() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
@@ -56,25 +31,6 @@ export function ConferenceHeaderSelector() {
     useConference();
   const { theme, setTheme } = useTheme();
 
-  const formatDateRange = (start: string, end: string) => {
-    const startDate = new Date(
-      `${start}T00:00:00${activeConference.timezoneNumeric}`,
-    );
-    const endDate = new Date(
-      `${end}T00:00:00${activeConference.timezoneNumeric}`,
-    );
-    const startDateNum = start.split("-")[2];
-    const endDateNum = end.split("-")[2];
-
-    if (
-      startDate.getMonth() === endDate.getMonth() &&
-      startDate.getFullYear() === endDate.getFullYear()
-    ) {
-      return `${formatHeaderMonth(startDate, activeConference.timezone)} ${startDateNum}-${endDateNum}, ${formatHeaderYear(startDate, activeConference.timezone)}`;
-    }
-
-    return `${formatHeaderFull(startDate, activeConference.timezone)} - ${formatHeaderFull(endDate, activeConference.timezone)}`;
-  };
 
   const isUpcoming = (conference: Conference) => {
     const startDate = new Date(
@@ -192,6 +148,8 @@ export function ConferenceHeaderSelector() {
                               {formatDateRange(
                                 conference.startDate,
                                 conference.endDate,
+                                conference.timezoneNumeric,
+                                conference.timezone,
                               )}
                             </span>
                           </div>
