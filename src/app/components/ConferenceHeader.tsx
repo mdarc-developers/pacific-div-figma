@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { contrastingColor, secondaryLinkColor } from "@/lib/colorUtils";
+import { formatDateRange } from "@/lib/dateUtils";
 import { ConferenceHeaderSelector } from "@/app/components/ConferenceHeaderSelector";
 
 //import { forwardRef } from 'react';
@@ -35,24 +36,6 @@ import { ConferenceHeaderSelector } from "@/app/components/ConferenceHeaderSelec
 //
 //export { Button };
 
-function formatHeaderFull(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: tzString,
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-  return timeFormatter.format(isoDate);
-}
-
-function formatHeaderMonth(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: tzString,
-    month: "long",
-  });
-  return timeFormatter.format(isoDate);
-}
-
 // had tz difficulties, used split instead
 //function formatHeaderDay(isoDate: Date, tzString: string) {
 //  const timeFormatter = new Intl.DateTimeFormat ('en-US', {
@@ -61,14 +44,6 @@ function formatHeaderMonth(isoDate: Date, tzString: string) {
 //  });
 //  return timeFormatter.format(isoDate);
 //};
-
-function formatHeaderYear(isoDate: Date, tzString: string) {
-  const timeFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: tzString,
-    year: "numeric",
-  });
-  return timeFormatter.format(isoDate);
-}
 
 export function ConferenceHeader() {
   const { isHeaderCollapsed, setIsHeaderCollapsed } = useHeaderCollapsed();
@@ -217,33 +192,6 @@ export function ConferenceHeader() {
     );
   };
 
-  const formatDateRange = (start: string, end: string) => {
-    const startDate = new Date(
-      `${start}T00:00:00${activeConference.timezoneNumeric}`,
-    );
-    const endDate = new Date(
-      `${end}T00:00:00${activeConference.timezoneNumeric}`,
-    );
-    const startDateNum = start.split("-")[2];
-    const endDateNum = end.split("-")[2];
-
-    if (
-      startDateNum === endDateNum &&
-      startDate.getMonth() === endDate.getMonth() &&
-      startDate.getFullYear() === endDate.getFullYear()
-    ) {
-      return `${formatHeaderFull(startDate, activeConference.timezone)}`;
-    }
-
-    if (
-      startDate.getMonth() === endDate.getMonth() &&
-      startDate.getFullYear() === endDate.getFullYear()
-    ) {
-      return `${formatHeaderMonth(startDate, activeConference.timezone)} ${startDateNum}-${endDateNum}, ${formatHeaderYear(startDate, activeConference.timezone)}`;
-    }
-
-    return `${formatHeaderFull(startDate, activeConference.timezone)} - ${formatHeaderFull(endDate, activeConference.timezone)}`;
-  };
 
   // --- Navigation items ---
 
@@ -334,7 +282,7 @@ export function ConferenceHeader() {
     <div className="flex items-center gap-4">
       <Calendar className="h-5 w-5" />
       <span>
-        {formatDateRange(activeConference.startDate, activeConference.endDate)}
+        {formatDateRange(activeConference.startDate, activeConference.endDate, activeConference.timezoneNumeric, activeConference.timezone)}
       </span>
       <span>
         {/* Year first established */}
