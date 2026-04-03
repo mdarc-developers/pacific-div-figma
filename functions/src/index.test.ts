@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { buildRawMessage, buildWelcomeEmailHtml } from "./welcomeEmail";
+import type { DecodedIdToken } from "firebase-admin/auth";
+import type { CallableRequest } from "firebase-functions/v2/https";
 
 // ── Cloud Function tests — following Firebase unit testing recommendations ────
 // https://firebase.google.com/docs/functions/unit-testing
@@ -32,12 +34,13 @@ const {
   // Build a chainable Firestore mock supporting both:
   //   admin.firestore().collection(name).doc(id) — used by counter functions
   //   admin.firestore().doc(path)                — used by adminLookupUser
-  const mockDocRef = (): {
+  type MockDocRefResult = {
     set: typeof mockSet;
     delete: typeof mockDelete;
     get: typeof mockGet;
-    collection: () => { doc: () => ReturnType<typeof mockDocRef> };
-  } => ({
+    collection: () => { doc: () => MockDocRefResult };
+  };
+  const mockDocRef = (): MockDocRefResult => ({
     set: mockSet,
     delete: mockDelete,
     get: mockGet,
@@ -388,7 +391,7 @@ describe("resendVerificationEmail (onCall)", () => {
   const wrapped = tester.wrap(resendVerificationEmail);
 
   it("throws unauthenticated when the caller is not signed in", async () => {
-    await expect(wrapped({ auth: undefined, data: {} })).rejects.toMatchObject({
+    await expect(wrapped({ auth: undefined, data: {} } as unknown as CallableRequest<unknown>)).rejects.toMatchObject({
       code: "unauthenticated",
     });
   });
@@ -398,10 +401,10 @@ describe("resendVerificationEmail (onCall)", () => {
       wrapped({
         auth: {
           uid: "user-abc",
-          token: { email: "alice@example.com", email_verified: true },
+          token: { email: "alice@example.com", email_verified: true } as unknown as DecodedIdToken,
         },
         data: {},
-      }),
+      } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "failed-precondition" });
   });
 });
@@ -413,7 +416,7 @@ describe("adminLookupUser (onCall)", () => {
 
   it("throws unauthenticated when the caller is not signed in", async () => {
     await expect(
-      wrapped({ auth: undefined, data: { targetEmail: "target@example.com" } }),
+      wrapped({ auth: undefined, data: { targetEmail: "target@example.com" } } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "unauthenticated" });
   });
 
@@ -426,9 +429,9 @@ describe("adminLookupUser (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "non-admin-uid", token: {} },
+        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
         data: { targetEmail: "target@example.com" },
-      }),
+      } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "permission-denied" });
   });
 
@@ -437,9 +440,9 @@ describe("adminLookupUser (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "non-admin-uid", token: {} },
+        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
         data: { targetEmail: "target@example.com" },
-      }),
+      } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "permission-denied" });
   });
 
@@ -452,9 +455,9 @@ describe("adminLookupUser (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "admin-uid", token: {} },
+        auth: { uid: "admin-uid", token: {} as unknown as DecodedIdToken },
         data: {},
-      }),
+      } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "invalid-argument" });
   });
 
@@ -472,9 +475,9 @@ describe("adminLookupUser (onCall)", () => {
     });
 
     const result = await wrapped({
-      auth: { uid: "admin-uid", token: {} },
+      auth: { uid: "admin-uid", token: {} as unknown as DecodedIdToken },
       data: { targetEmail: "target@example.com" },
-    });
+    } as unknown as CallableRequest<unknown>);
 
     expect(result).toMatchObject({
       uid: "target-uid",
