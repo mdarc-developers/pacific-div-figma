@@ -224,7 +224,7 @@ export const allConferences: ConferenceListItem[] = [
     endDate: "2026-10-18",
     timezone: "America/Los_Angeles",
     primaryColor: "#3d71a3", // our blue
-    secondaryColor: "#3b82f6", // blue-500
+    secondaryColor: "#fcf400", // logo yellow
     location: "2600 Bishop Drive, San Ramon, CA 94583", // changed
     conferenceUrl: "https://www.pacificon.org", // changed
     venuePhone: "925-867-9200",
