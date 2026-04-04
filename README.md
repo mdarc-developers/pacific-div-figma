@@ -1,9 +1,9 @@
 # Amateur Radio Conference Companion AttendeeApp
 
 This is a web companion attendee app designed for attendees of several ARRL conferences.
-The goals are to enhance the attendee experience and provide the tools that conference organizers need. The goal is to provide a native iOS app through the Apple App Store and an Android app through the Googple Play Store.
+The goals are to enhance the attendee experience and provide the tools that conference organizers need. The goal is to provide a native iOS app through the Apple App Store and an Android app through the Google Play Store.
 This React 19 app hosted on Google Firebase enables development and authentication.
-The iOS and Android apps will be developed with expo.dev and provide the best experience.
+The iOS and Android apps will likely be developed with expo.dev and provide the best experience.
 Great care and testing will enable seamless offline use by using a local-first LoFi.so architecture.
 
 Live app: **https://pacific-div.web.app**
@@ -33,7 +33,10 @@ Sample data has been loaded for:
 - Quartzfest — Jan, Quartzsite, AZ
 - Hamcation — Feb, Orlando, FL
 - Yuma Hamfest — Feb, Yuma, AZ
+- VOMARC Hamfest — Apr, Sonoma, CA
+- Reno Ham Swap — May, Reno, NV 
 - Hamvention — May, Dayton, OH
+- Carmichael Ham Swap — May, Carmichael, CA
 - SeaPac — Jun, Portland, OR
 - Huntsville Hamfest — Aug, Huntsville, AL
 - Pacificon — Oct, San Ramon, CA
@@ -172,12 +175,4 @@ This is useful for quickly scanning warnings or failures that belong to a specif
 
 ### Expected `stderr` output during unit tests
 
-All tests pass (`✓`). The following `stderr` messages appear during a normal run and are **not failures**:
-
-| Message                                                                           | Source                  | Why it appears                                                                                                                                                                               |
-| --------------------------------------------------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `[userProfile] "loomis-2026" user "…" has unrecognised group "more-admin"`        | `userProfileData.ts`    | `loomis-2026` and `vomarc-2026` intentionally contain `"more-admin"` as sample test data to exercise the unknown-group warning path. Verified by `userProfileData.test.ts`.                  |
-| `[data] <conference>: exhibitor "…" location … not found in any booth map`        | `exhibitorData.test.ts` | Advisory-only assertions about exhibitor booth assignments that span multiple floor plans. No data needs to change; these are informational for map layout work.                             |
-| `[data] <conference>: exhibitor "…" location(s) […] not in URL-matched booth map` | `exhibitorData.test.ts` | Same advisory as above — the exhibitor's `mapUrl` points to a different floor plan than the one where their booth IDs are defined. The runtime fallback finds the correct map automatically. |
-| `SearchService: No sessions provided to buildIndex`                               | `searchService.test.ts` | The test explicitly exercises the empty-array path and expects this warning.                                                                                                                 |
-| `Redirect sign-in error: Error: auth/invalid-credential`                          | `AuthContext.test.tsx`  | The test verifies that `AuthContext` does not crash when `getRedirectResult` rejects — the error is thrown intentionally by the mock.                                                        |
+All tests are expexcted to pass (`✓`). Some `stderr` messages are expected to appear during a normal run and are **not failures**.
