@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { getGoogleAccessToken } from "@/lib/googleDrive";
+import {
+  getGoogleAccessToken,
+  uploadFileToDrive,
+  uploadTextToDrive,
+  logoAssetPath,
+  programAssetPath,
+  mapAssetPath,
+  conferenceYear,
+} from "@/lib/googleDrive";
 import { Button } from "@/app/components/ui/button";
 import { Separator } from "@/app/components/ui/separator";
 import {
@@ -34,73 +42,9 @@ import {
 // Google Drive upload helpers
 // ---------------------------------------------------------------------------
 
-const DRIVE_SUBMISSIONS_FOLDER_ID = import.meta.env
-  .VITE_GOOGLE_DRIVE_SUBMISSIONS_FOLDER_ID as string | undefined;
-
-async function uploadFileToDrive(
-  accessToken: string,
-  folderId: string,
-  filename: string,
-  file: File,
-): Promise<string> {
-  const metadata = { name: filename, parents: [folderId] };
-  const form = new FormData();
-  form.append(
-    "metadata",
-    new Blob([JSON.stringify(metadata)], { type: "application/json" }),
-  );
-  form.append("file", file);
-  const res = await fetch(
-    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}` },
-      body: form,
-    },
-  );
-  if (!res.ok) throw new Error(`Drive upload failed: ${res.statusText}`);
-  const data = (await res.json()) as { id: string };
-  return data.id;
-}
-
-async function uploadTextToDrive(
-  accessToken: string,
-  folderId: string,
-  filename: string,
-  content: string,
-): Promise<string> {
-  return uploadFileToDrive(
-    accessToken,
-    folderId,
-    filename,
-    new File([content], filename, { type: "text/plain" }),
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Asset path helpers — single source of truth for calculated hidden fields
-// ---------------------------------------------------------------------------
-
-function logoAssetPath(filename: string): string {
-  return `/assets/images/${filename}`;
-}
-
-function programAssetPath(filename: string): string {
-  return `/assets/programs/${filename}`;
-}
-
-function mapAssetPath(filename: string): string {
-  return `/assets/maps/${filename}`;
-}
-
-// ---------------------------------------------------------------------------
-// Conference year helper — derived from startDate when possible
-// ---------------------------------------------------------------------------
-
-function conferenceYear(startDate: string, slug: string): string {
-  const year = startDate ? startDate.slice(0, 4) : new Date().getFullYear().toString();
-  return `${slug}-${year}`;
-}
+const DRIVE_FOLDER_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID as
+  | string
+  | undefined;
 
 // ---------------------------------------------------------------------------
 // TypeScript data file generator
@@ -326,19 +270,19 @@ export function SubmitConferencePage() {
       const driveMapFileIds: string[] = [];
       let driveTsFileId = "";
 
-      if (DRIVE_SUBMISSIONS_FOLDER_ID) {
+      if (DRIVE_FOLDER_ID) {
         const accessToken = await getGoogleAccessToken();
 
         driveLogoFileId = await uploadFileToDrive(
           accessToken,
-          DRIVE_SUBMISSIONS_FOLDER_ID,
+          DRIVE_FOLDER_ID,
           `images-${slug}-${assets.logoFile!.name}`,
           assets.logoFile!,
         );
 
         driveProgramFileId = await uploadFileToDrive(
           accessToken,
-          DRIVE_SUBMISSIONS_FOLDER_ID,
+          DRIVE_FOLDER_ID,
           `programs-${slug}-${assets.programFile!.name}`,
           assets.programFile!,
         );
@@ -346,7 +290,7 @@ export function SubmitConferencePage() {
         for (const mapFile of assets.mapFiles) {
           const id = await uploadFileToDrive(
             accessToken,
-            DRIVE_SUBMISSIONS_FOLDER_ID,
+            DRIVE_FOLDER_ID,
             `maps-${slug}-${mapFile.name}`,
             mapFile,
           );
@@ -363,7 +307,7 @@ export function SubmitConferencePage() {
         );
         driveTsFileId = await uploadTextToDrive(
           accessToken,
-          DRIVE_SUBMISSIONS_FOLDER_ID,
+          DRIVE_FOLDER_ID,
           `${conferenceId}.ts`,
           tsContent,
         );
