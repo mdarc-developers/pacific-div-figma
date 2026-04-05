@@ -34,3 +34,70 @@ export async function deleteDriveFile(
   if (!res.ok && res.status !== 404)
     throw new Error(`Drive delete failed: ${res.statusText}`);
 }
+
+export async function uploadFileToDrive(
+  accessToken: string,
+  folderId: string,
+  filename: string,
+  file: File,
+): Promise<string> {
+  const metadata = { name: filename, parents: [folderId] };
+  const form = new FormData();
+  form.append(
+    "metadata",
+    new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+  );
+  form.append("file", file);
+  const res = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      body: form,
+    },
+  );
+  if (!res.ok) throw new Error(`Drive upload failed: ${res.statusText}`);
+  const data = (await res.json()) as { id: string };
+  return data.id;
+}
+
+export async function uploadTextToDrive(
+  accessToken: string,
+  folderId: string,
+  filename: string,
+  content: string,
+): Promise<string> {
+  return uploadFileToDrive(
+    accessToken,
+    folderId,
+    filename,
+    new File([content], filename, { type: "text/plain" }),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Asset path helpers — single source of truth for calculated hidden fields
+// ---------------------------------------------------------------------------
+
+export function logoAssetPath(filename: string): string {
+  return `/assets/images/${filename}`;
+}
+
+export function programAssetPath(filename: string): string {
+  return `/assets/programs/${filename}`;
+}
+
+export function mapAssetPath(filename: string): string {
+  return `/assets/maps/${filename}`;
+}
+
+// ---------------------------------------------------------------------------
+// Conference year helper — derived from startDate when possible
+// ---------------------------------------------------------------------------
+
+export function conferenceYear(startDate: string, slug: string): string {
+  const year = startDate
+    ? startDate.slice(0, 4)
+    : new Date().getFullYear().toString();
+  return `${slug}-${year}`;
+}
