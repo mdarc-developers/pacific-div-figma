@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { SearchBar } from "@/app/components/SearchBar";
 import { Navigation } from "@/app/components/Navigation";
+import { ProtectedRoute } from "@/app/components/ProtectedRoute";
 import { FirebaseThemeSync } from "@/app/components/FirebaseThemeSync";
 import { FirebaseConferenceSync } from "@/app/components/FirebaseConferenceSync";
 import { FirebaseBookmarkSync } from "@/app/components/FirebaseBookmarkSync";
@@ -193,7 +194,15 @@ export default function App() {
           <Route path="/feedback" element={<FeedbackPage />} />
           <Route
             path="/submitconvention"
-            element={<SubmitConferencePage />}
+            element={<Navigate to="/submitconference" replace />}
+          />
+          <Route
+            path="/submitconference"
+            element={
+              <ProtectedRoute>
+                <SubmitConferencePage />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/pacificonfloormap"
