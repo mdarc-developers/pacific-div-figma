@@ -53,7 +53,7 @@ function Field({
   );
 }
 
-export function SubmitConventionWhere({ data, onChange }: Props) {
+export function SubmitConferenceWhereCard({ data, onChange }: Props) {
   const set =
     (key: keyof WhereData) => (e: React.ChangeEvent<HTMLInputElement>) =>
       onChange({ ...data, [key]: e.target.value });

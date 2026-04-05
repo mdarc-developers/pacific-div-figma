@@ -104,7 +104,7 @@ interface Props {
   onChange: (data: WhenData) => void;
 }
 
-export function SubmitConventionWhen({ data, onChange }: Props) {
+export function SubmitConferenceWhenCard({ data, onChange }: Props) {
   const set =
     (key: keyof WhenData) => (e: React.ChangeEvent<HTMLInputElement>) =>
       onChange({ ...data, [key]: e.target.value });

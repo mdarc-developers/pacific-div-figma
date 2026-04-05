@@ -107,9 +107,9 @@ const FeedbackPage = lazy(() =>
     default: m.FeedbackPage,
   })),
 );
-const SubmitConventionPage = lazy(() =>
-  import("@/app/pages/SubmitConventionPage").then((m) => ({
-    default: m.SubmitConventionPage,
+const SubmitConferencePage = lazy(() =>
+  import("@/app/pages/SubmitConferencePage").then((m) => ({
+    default: m.SubmitConferencePage,
   })),
 );
 
@@ -193,7 +193,7 @@ export default function App() {
           <Route path="/feedback" element={<FeedbackPage />} />
           <Route
             path="/submitconvention"
-            element={<SubmitConventionPage />}
+            element={<SubmitConferencePage />}
           />
           <Route
             path="/pacificonfloormap"

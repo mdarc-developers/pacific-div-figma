@@ -16,7 +16,7 @@ interface Props {
   onChange: (data: ColorData) => void;
 }
 
-export function SubmitConventionColor({ data, onChange }: Props) {
+export function SubmitConferenceColorCard({ data, onChange }: Props) {
   return (
     <Card>
       <CardHeader>
