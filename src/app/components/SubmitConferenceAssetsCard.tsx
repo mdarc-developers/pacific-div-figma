@@ -20,7 +20,7 @@ interface Props {
   onChange: (data: AssetsData) => void;
 }
 
-export function SubmitConventionAssets({ data, slug, onChange }: Props) {
+export function SubmitConferenceAssetsCard({ data, slug, onChange }: Props) {
   const logoRef = useRef<HTMLInputElement>(null);
   const programRef = useRef<HTMLInputElement>(null);
   const mapsRef = useRef<HTMLInputElement>(null);

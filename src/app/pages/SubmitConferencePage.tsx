@@ -5,30 +5,30 @@ import { getGoogleAccessToken } from "@/lib/googleDrive";
 import { Button } from "@/app/components/ui/button";
 import { Separator } from "@/app/components/ui/separator";
 import {
-  SubmitConventionTitle,
+  SubmitConferenceTitleCard,
   type TitleData,
-} from "@/app/components/SubmitConventionTitle";
+} from "@/app/components/SubmitConferenceTitleCard";
 import {
-  SubmitConventionAssets,
+  SubmitConferenceAssetsCard,
   type AssetsData,
-} from "@/app/components/SubmitConventionAssets";
+} from "@/app/components/SubmitConferenceAssetsCard";
 import {
-  SubmitConventionColor,
+  SubmitConferenceColorCard,
   type ColorData,
-} from "@/app/components/SubmitConventionColor";
+} from "@/app/components/SubmitConferenceColorCard";
 import {
-  SubmitConventionWhere,
+  SubmitConferenceWhereCard,
   type WhereData,
-} from "@/app/components/SubmitConventionWhere";
+} from "@/app/components/SubmitConferenceWhereCard";
 import {
-  SubmitConventionWhen,
+  SubmitConferenceWhenCard,
   type WhenData,
   calcTimezoneNumeric,
-} from "@/app/components/SubmitConventionWhen";
+} from "@/app/components/SubmitConferenceWhenCard";
 import {
-  SubmitConventionContext,
+  SubmitConferenceContextCard,
   type ContextData,
-} from "@/app/components/SubmitConventionContext";
+} from "@/app/components/SubmitConferenceContextCard";
 
 // ---------------------------------------------------------------------------
 // Google Drive upload helpers
@@ -234,7 +234,7 @@ function validate(
 // Page
 // ---------------------------------------------------------------------------
 
-export function SubmitConventionPage() {
+export function SubmitConferencePage() {
   const [title, setTitle] = useState<TitleData>({
     submitterEmail: "",
     slug: "",
@@ -431,10 +431,10 @@ export function SubmitConventionPage() {
             Submission received!
           </h2>
           <p className="text-sm text-green-700 dark:text-green-300">
-            Thank you for submitting your convention. We will review your
+            Thank you for submitting your conference. We will review your
             information and contact you at{" "}
             <strong>{title.submitterEmail}</strong> if we have questions. After
-            verification, your convention will be added to the app.
+            verification, your conference will be added to the app.
           </p>
         </div>
       </div>
@@ -445,7 +445,7 @@ export function SubmitConventionPage() {
     <div className="max-w-2xl mx-auto py-6 space-y-6">
       {/* Introduction */}
       <div className="space-y-3">
-        <h1 className="text-2xl font-bold">Submit a Convention</h1>
+        <h1 className="text-2xl font-bold">Submit a Conference</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
           We are preparing this app in the{" "}
           <strong>ARRL Pacific Division (pacific-div)</strong> to be available
@@ -465,7 +465,7 @@ export function SubmitConventionPage() {
           app, including but not limited to verifying the data submitted.
         </p>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          To use these web and app facilities for your convention attendees,
+          To use these web and app facilities for your conference attendees,
           please upload five items and submit the data below.
         </p>
       </div>
@@ -495,16 +495,16 @@ export function SubmitConventionPage() {
       )}
 
       {/* Cards */}
-      <SubmitConventionTitle data={title} onChange={setTitle} />
-      <SubmitConventionAssets
+      <SubmitConferenceTitleCard data={title} onChange={setTitle} />
+      <SubmitConferenceAssetsCard
         data={assets}
         slug={title.slug}
         onChange={setAssets}
       />
-      <SubmitConventionColor data={color} onChange={setColor} />
-      <SubmitConventionWhere data={where} onChange={setWhere} />
-      <SubmitConventionWhen data={when} onChange={handleWhenChange} />
-      <SubmitConventionContext data={context} onChange={setContext} />
+      <SubmitConferenceColorCard data={color} onChange={setColor} />
+      <SubmitConferenceWhereCard data={where} onChange={setWhere} />
+      <SubmitConferenceWhenCard data={when} onChange={handleWhenChange} />
+      <SubmitConferenceContextCard data={context} onChange={setContext} />
 
       {/* Submit */}
       <div className="flex flex-col gap-2">
@@ -513,7 +513,7 @@ export function SubmitConventionPage() {
           disabled={submitting}
           onClick={handleSubmit}
         >
-          {submitting ? "Submitting…" : "Submit Convention"}
+          {submitting ? "Submitting…" : "Submit Conference"}
         </Button>
         <p className="text-xs text-muted-foreground text-center">
           Fields marked <span className="text-red-500">*</span> are required.

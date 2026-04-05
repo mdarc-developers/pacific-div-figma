@@ -19,7 +19,7 @@ interface Props {
   onChange: (data: ContextData) => void;
 }
 
-export function SubmitConventionContext({ data, onChange }: Props) {
+export function SubmitConferenceContextCard({ data, onChange }: Props) {
   const set =
     (key: keyof ContextData) => (e: React.ChangeEvent<HTMLInputElement>) =>
       onChange({ ...data, [key]: e.target.value });

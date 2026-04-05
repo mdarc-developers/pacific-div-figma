@@ -16,7 +16,7 @@ interface Props {
   onChange: (data: TitleData) => void;
 }
 
-export function SubmitConventionTitle({ data, onChange }: Props) {
+export function SubmitConferenceTitleCard({ data, onChange }: Props) {
   return (
     <Card>
       <CardHeader>
