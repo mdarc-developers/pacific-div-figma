@@ -1,10 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export function ConferenceFooter() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { activeConference, allConferencesList, setActiveConference } =
     useConference();
+  const { user } = useAuth();
   const location = useLocation();
   const feedbackUrl = `/feedback?referrer=${encodeURIComponent(window.location.origin + location.pathname + location.search)}`;
   const sha = import.meta.env.VITE_GIT_SHA;
@@ -67,6 +69,16 @@ export function ConferenceFooter() {
             Terms of Use
           </Link>
         </p>
+        {user && (
+          <p className="mt-2">
+            <Link
+              to="/submitconference"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Submit a Conference
+            </Link>
+          </p>
+        )}
         {formattedDate && (
           <p className="mt-2">
             <span title={buildTooltip} className="cursor-default">
