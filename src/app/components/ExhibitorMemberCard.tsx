@@ -39,53 +39,51 @@ export function ExhibitorMemberCard({
           Exhibitor
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="exhibitor-member"
-              checked={isExhibitorMember}
-              onCheckedChange={(checked) => {
-                const value = checked === true;
-                onIsExhibitorMemberChange(value);
-                if (!value) {
-                  onExhibitorMemberIdChange("");
-                }
-              }}
-            />
-            <Label
-              htmlFor="exhibitor-member"
-              className="text-sm font-medium cursor-pointer"
-            >
-              Exhibitor Member
-            </Label>
-          </div>
-          {isExhibitorMember && exhibitors.length > 0 && (
-            <Select
-              value={exhibitorMemberId}
-              onValueChange={onExhibitorMemberIdChange}
-            >
-              <SelectTrigger
-                className="flex-1 text-sm"
-                aria-label="Select your exhibitor"
-              >
-                <SelectValue placeholder="Select exhibitor…" />
-              </SelectTrigger>
-              <SelectContent>
-                {exhibitors.map((e) => (
-                  <SelectItem key={e.id} value={e.id}>
-                    {e.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-          {isExhibitorMember && exhibitors.length === 0 && (
-            <p className="text-xs text-muted-foreground italic">
-              No exhibitors available for this conference.
-            </p>
-          )}
+      <CardContent className="space-y-3">
+        <div className="flex items-center gap-2 justify-end">
+          <Label
+            htmlFor="exhibitor-member"
+            className="text-sm font-medium cursor-pointer"
+          >
+            Exhibitor Member
+          </Label>
+          <Checkbox
+            id="exhibitor-member"
+            checked={isExhibitorMember}
+            onCheckedChange={(checked) => {
+              const value = checked === true;
+              onIsExhibitorMemberChange(value);
+              if (!value) {
+                onExhibitorMemberIdChange("");
+              }
+            }}
+          />
         </div>
+        {isExhibitorMember && exhibitors.length > 0 && (
+          <Select
+            value={exhibitorMemberId}
+            onValueChange={onExhibitorMemberIdChange}
+          >
+            <SelectTrigger
+              className="w-full text-sm"
+              aria-label="Select your exhibitor"
+            >
+              <SelectValue placeholder="Select exhibitor…" />
+            </SelectTrigger>
+            <SelectContent>
+              {exhibitors.map((e) => (
+                <SelectItem key={e.id} value={e.id}>
+                  {e.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        {isExhibitorMember && exhibitors.length === 0 && (
+          <p className="text-xs text-muted-foreground italic">
+            No exhibitors available for this conference.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
