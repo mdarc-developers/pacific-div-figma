@@ -45,7 +45,7 @@ export function ExhibitorMemberCard({
             htmlFor="exhibitor-member"
             className="text-sm font-medium cursor-pointer"
           >
-            Exhibitor Member
+            I am exhibiting at this conference
           </Label>
           <Checkbox
             id="exhibitor-member"
