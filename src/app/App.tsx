@@ -107,6 +107,11 @@ const FeedbackPage = lazy(() =>
     default: m.FeedbackPage,
   })),
 );
+const SubmitConventionPage = lazy(() =>
+  import("@/app/pages/SubmitConventionPage").then((m) => ({
+    default: m.SubmitConventionPage,
+  })),
+);
 
 function AppLayout() {
   const isMdarcDeveloper = useMdarcDeveloper();
@@ -186,6 +191,10 @@ export default function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="/feedback" element={<FeedbackPage />} />
+          <Route
+            path="/submitconvention"
+            element={<SubmitConventionPage />}
+          />
           <Route
             path="/pacificonfloormap"
             element={<PacificonSvgExhibitorMap />}
