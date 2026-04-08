@@ -198,6 +198,24 @@ describe("AdminStatsBar", () => {
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
+  it("renders a link to the Firebase Authentication users page", () => {
+    mockUseAdminStats.mockReturnValue({
+      userProfileCount: 5,
+      signupCount: 10,
+      loading: false,
+      error: null,
+    });
+    render(<AdminStatsBar />);
+    const link = screen.getByTestId("admin-firebase-users-link");
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      "href",
+      "https://console.firebase.google.com/u/3/project/pacific-div/authentication/users",
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
   it("renders a link to the Twilio Console", () => {
     mockUseAdminStats.mockReturnValue({
       userProfileCount: 5,
