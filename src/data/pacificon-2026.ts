@@ -83,37 +83,39 @@ export const samplePrizeWinners: PrizeWinner[] = [
 ];
 
 export const mapUserProfileGroups: UserProfileGroups[] = [
-  {
+  { // K6CBK google grantbow@gmail.com
     uid: "LvdbEAmmSNa8D4snsQHPCBGtXm42",
     groups: [
       "prize-admin",
       "user-admin",
       "other-admin",
-      "mdarc-developers",
       "session-admin",
       "exhibitor-admin",
+      "forums-admin",
+      "mdarc-developers",
     ],
   },
-  {
+  { // K6CBK google grantbow@mdarc.org
     uid: "FNLvRnWJSuOalAC0WQf46gNERPi2",
     groups: [
       "prize-admin",
       "user-admin",
       "other-admin",
-      "mdarc-developers",
       "session-admin",
       "exhibitor-admin",
+      "forums-admin",
+      "mdarc-developers",
     ],
   },
-  {
+  { // N6JGA email mapa@ieee.org
     uid: "p1dc7qSnvwaiMaK3x9U160lBUux2",
     groups: [
       "prize-admin",
       "user-admin",
-      "other-admin",
-      "mdarc-developers",
       "session-admin",
       "exhibitor-admin",
+      "forums-admin",
+      "mdarc-developers",
     ],
   },
 ];
