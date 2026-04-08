@@ -105,6 +105,17 @@ export const mapUserProfileGroups: UserProfileGroups[] = [
       "exhibitor-admin",
     ],
   },
+  {
+    uid: "p1dc7qSnvwaiMaK3x9U160lBUux2",
+    groups: [
+      "prize-admin",
+      "user-admin",
+      "other-admin",
+      "mdarc-developers",
+      "session-admin",
+      "exhibitor-admin",
+    ],
+  },
 ];
 
 // Sample user profiles — groups simulate Google Cloud Groups membership.
