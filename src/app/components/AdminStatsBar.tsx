@@ -92,7 +92,7 @@ export function AdminStatsBar() {
         </a>
         <a
           data-testid="admin-firebase-users-link"
-          href="https://console.firebase.google.com/u/3/project/pacific-div/authentication/users"
+          href="https://console.firebase.google.com/project/pacific-div/authentication/users"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
