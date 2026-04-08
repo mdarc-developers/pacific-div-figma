@@ -102,6 +102,17 @@ export function AdminStatsBar() {
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
         <a
+          data-testid="admin-firebase-groups-link"
+          href="https://console.firebase.google.com/project/pacific-div/firestore/databases/-default-/data/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 underline hover:text-amber-600 dark:hover:text-amber-400"
+          title="console.firebase.google.com/firestore/databases/-default-/data"
+        >
+          firebase_groups
+          <ExternalLink className="h-3 w-3" aria-hidden="true" />
+        </a>
+        <a
           data-testid="admin-twilio-console-link"
           href="https://console.twilio.com"
           target="_blank"
