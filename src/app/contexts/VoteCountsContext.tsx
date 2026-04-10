@@ -28,7 +28,7 @@ interface VoteCountsContextType {
   ) => void;
   /**
    * Optimistically adjusts a session's local vote count by `delta` (+1 or -1).
-   * Called by FirebaseVoteSync immediately when a vote is toggled
+   * Called by FirebaseSessionVoteSync immediately when a vote is toggled
    * so the UI reflects the change before the Firestore write completes.
    */
   adjustSessionVoteCount: (sessionId: string, delta: 1 | -1) => void;

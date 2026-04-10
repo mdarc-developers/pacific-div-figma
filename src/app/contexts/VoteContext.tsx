@@ -29,7 +29,7 @@ function saveToLS(key: string, items: string[]): void {
 interface VoteContextType {
   votedSessions: string[];
   toggleSessionVote: (sessionId: string) => void;
-  /** Used by FirebaseVoteSync to apply values loaded from Firestore. */
+  /** Used by FirebaseSessionVoteSync to apply values loaded from Firestore. */
   overrideSessionVotes: (items: string[]) => void;
 }
 
@@ -73,7 +73,7 @@ export function VoteProvider({ children }: { children: React.ReactNode }) {
 
   /**
    * Replaces the in-memory vote state and persists to localStorage.
-   * Called by FirebaseVoteSync after loading from Firestore so that
+   * Called by FirebaseSessionVoteSync after loading from Firestore so that
    * the Firestore values win over any stale localStorage data.
    */
   const overrideSessionVotes = useCallback(
