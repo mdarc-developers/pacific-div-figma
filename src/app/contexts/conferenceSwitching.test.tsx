@@ -50,7 +50,10 @@ import {
   ExhibitorBookmarkProvider,
   useExhibitorBookmarkContext,
 } from "@/app/contexts/ExhibitorBookmarkContext";
-import { VoteProvider, useVoteContext } from "@/app/contexts/VoteContext";
+import {
+  SessionVoteProvider,
+  useSessionVoteContext,
+} from "@/app/contexts/SessionVoteContext";
 import {
   ExhibitorVoteProvider,
   useExhibitorVoteContext,
@@ -122,13 +125,13 @@ function AllContextsWrapper({ children }: { children: React.ReactNode }) {
     <ConferenceProvider>
       <BookmarkProvider>
         <ExhibitorBookmarkProvider>
-          <VoteProvider>
+          <SessionVoteProvider>
             <ExhibitorVoteProvider>
               <NotesProvider>
                 <ExhibitorNotesProvider>{children}</ExhibitorNotesProvider>
               </NotesProvider>
             </ExhibitorVoteProvider>
-          </VoteProvider>
+          </SessionVoteProvider>
         </ExhibitorBookmarkProvider>
       </BookmarkProvider>
     </ConferenceProvider>
@@ -140,7 +143,7 @@ function useAllConferenceData() {
   const { activeConference, setActiveConference } = useConference();
   const { bookmarkedItems } = useBookmarkContext();
   const { bookmarkedExhibitors } = useExhibitorBookmarkContext();
-  const { votedSessions } = useVoteContext();
+  const { votedSessions } = useSessionVoteContext();
   const { votedExhibitors } = useExhibitorVoteContext();
   const { notes: sessionNotes } = useNotesContext();
   const { notes: exhibitorNotes } = useExhibitorNotesContext();

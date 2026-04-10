@@ -23,7 +23,7 @@ import { useUserGroups } from "@/app/hooks/useUserGroups";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useExhibitorBookmarkContext } from "@/app/contexts/ExhibitorBookmarkContext";
 import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
-import { useVoteContext } from "@/app/contexts/VoteContext";
+import { useSessionVoteContext } from "@/app/contexts/SessionVoteContext";
 import { useExhibitorVoteContext } from "@/app/contexts/ExhibitorVoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useNotesContext } from "@/app/contexts/NotesContext";
@@ -70,7 +70,7 @@ export function ProfilePage() {
     removePrevExhibitorBookmark,
   } = useExhibitorBookmarkContext();
   const { sessionCounts, exhibitorCounts } = useBookmarkCountsContext();
-  const { votedSessions, toggleSessionVote } = useVoteContext();
+  const { votedSessions, toggleSessionVote } = useSessionVoteContext();
   const { votedExhibitors, toggleExhibitorVote } = useExhibitorVoteContext();
   const { sessionVoteCounts, exhibitorVoteCounts } = useVoteCountsContext();
   const { notes } = useNotesContext();

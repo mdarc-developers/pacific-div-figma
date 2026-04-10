@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { useVoteContext } from "@/app/contexts/VoteContext";
+import { useSessionVoteContext } from "@/app/contexts/SessionVoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import {
   getUserSessionVotes,
@@ -12,7 +12,7 @@ import { incrementSessionVoteCount } from "@/services/voteCountsService";
 /**
  * Headless sync component.
  * - On user login (or conference change while logged in): loads saved session
- *   votes from Firestore and applies them via the shared VoteContext.
+ *   votes from Firestore and applies them via the shared SessionVoteContext.
  * - On vote change (after initial load): persists updated votes to Firestore
  *   and updates the aggregate vote count for the changed session.
  * - On logout: clears the loaded state so the next login re-reads Firestore.
@@ -20,7 +20,7 @@ import { incrementSessionVoteCount } from "@/services/voteCountsService";
 export function FirebaseSessionVoteSync() {
   const { user } = useAuth();
   const { activeConference } = useConference();
-  const { votedSessions, overrideSessionVotes } = useVoteContext();
+  const { votedSessions, overrideSessionVotes } = useSessionVoteContext();
   const { adjustSessionVoteCount } = useVoteCountsContext();
 
   const conferenceId = activeConference.id;

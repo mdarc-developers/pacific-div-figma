@@ -46,7 +46,7 @@ import { ThemeProvider } from "@/app/contexts/ThemeContext";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 import { ExhibitorBookmarkProvider } from "@/app/contexts/ExhibitorBookmarkContext";
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
-import { VoteProvider } from "@/app/contexts/VoteContext";
+import { SessionVoteProvider } from "@/app/contexts/SessionVoteContext";
 import { ExhibitorVoteProvider } from "@/app/contexts/ExhibitorVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
@@ -64,7 +64,7 @@ function renderProfilePage() {
             <BookmarkProvider>
               <ExhibitorBookmarkProvider>
                 <BookmarkCountsProvider>
-                  <VoteProvider>
+                  <SessionVoteProvider>
                     <ExhibitorVoteProvider>
                       <VoteCountsProvider>
                         <NotesProvider>
@@ -78,7 +78,7 @@ function renderProfilePage() {
                         </NotesProvider>
                       </VoteCountsProvider>
                     </ExhibitorVoteProvider>
-                  </VoteProvider>
+                  </SessionVoteProvider>
                 </BookmarkCountsProvider>
               </ExhibitorBookmarkProvider>
             </BookmarkProvider>
