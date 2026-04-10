@@ -159,7 +159,7 @@ import { ForumsPage } from "@/app/pages/ForumsPage";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
-import { VoteProvider } from "@/app/contexts/VoteContext";
+import { SessionVoteProvider } from "@/app/contexts/SessionVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 
 // ── Pin the active conference to hamvention-2026 for all tests in this file ───
@@ -182,7 +182,7 @@ function renderForumsPage() {
     <ConferenceProvider>
       <BookmarkProvider>
         <BookmarkCountsProvider>
-          <VoteProvider>
+          <SessionVoteProvider>
             <VoteCountsProvider>
               <NotesProvider>
                 <SearchProvider>
@@ -190,7 +190,7 @@ function renderForumsPage() {
                 </SearchProvider>
               </NotesProvider>
             </VoteCountsProvider>
-          </VoteProvider>
+          </SessionVoteProvider>
         </BookmarkCountsProvider>
       </BookmarkProvider>
     </ConferenceProvider>,

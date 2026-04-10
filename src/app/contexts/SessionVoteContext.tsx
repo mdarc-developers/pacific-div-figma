@@ -27,24 +27,32 @@ function saveToLS(key: string, items: string[]): void {
   }
 }
 
-interface VoteContextType {
+interface SessionVoteContextType {
   votedSessions: string[];
   toggleSessionVote: (sessionId: string) => void;
   /** Used by FirebaseSessionVoteSync to apply values loaded from Firestore. */
   overrideSessionVotes: (items: string[]) => void;
 }
 
-const VoteContext = createContext<VoteContextType | undefined>(undefined);
+const SessionVoteContext = createContext<SessionVoteContextType | undefined>(
+  undefined,
+);
 
-export function useVoteContext(): VoteContextType {
-  const ctx = useContext(VoteContext);
+export function useSessionVoteContext(): SessionVoteContextType {
+  const ctx = useContext(SessionVoteContext);
   if (!ctx) {
-    throw new Error("useVoteContext must be used within a VoteProvider");
+    throw new Error(
+      "useSessionVoteContext must be used within a SessionVoteProvider",
+    );
   }
   return ctx;
 }
 
-export function VoteProvider({ children }: { children: React.ReactNode }) {
+export function SessionVoteProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { activeConference } = useConference();
   const conferenceId = activeConference.id;
 
@@ -84,10 +92,10 @@ export function VoteProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <VoteContext.Provider
+    <SessionVoteContext.Provider
       value={{ votedSessions, toggleSessionVote, overrideSessionVotes }}
     >
       {children}
-    </VoteContext.Provider>
+    </SessionVoteContext.Provider>
   );
 }

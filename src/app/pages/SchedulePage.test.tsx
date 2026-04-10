@@ -36,7 +36,7 @@ import { SchedulePage } from "@/app/pages/SchedulePage";
 import { BookmarkProvider } from "@/app/contexts/BookmarkContext";
 import { BookmarkCountsProvider } from "@/app/contexts/BookmarkCountsContext";
 import { NotesProvider } from "@/app/contexts/NotesContext";
-import { VoteProvider } from "@/app/contexts/VoteContext";
+import { SessionVoteProvider } from "@/app/contexts/SessionVoteContext";
 import { VoteCountsProvider } from "@/app/contexts/VoteCountsContext";
 import { ConferenceProvider } from "@/app/contexts/ConferenceContext";
 
@@ -47,13 +47,13 @@ function renderSchedulePage() {
       <ConferenceProvider>
         <BookmarkProvider>
           <BookmarkCountsProvider>
-            <VoteProvider>
+            <SessionVoteProvider>
               <VoteCountsProvider>
                 <NotesProvider>
                   <SchedulePage />
                 </NotesProvider>
               </VoteCountsProvider>
-            </VoteProvider>
+            </SessionVoteProvider>
           </BookmarkCountsProvider>
         </BookmarkProvider>
       </ConferenceProvider>

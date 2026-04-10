@@ -6,7 +6,7 @@ import { useSearch } from "@/app/contexts/SearchContext";
 import { useBookmarkContext } from "@/app/contexts/BookmarkContext";
 import { useBookmarkCountsContext } from "@/app/contexts/BookmarkCountsContext";
 import { useNotesContext } from "@/app/contexts/NotesContext";
-import { useVoteContext } from "@/app/contexts/VoteContext";
+import { useSessionVoteContext } from "@/app/contexts/SessionVoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
 import { useMdarcDeveloper } from "@/app/hooks/useMdarcDeveloper";
 import { MAP_DATA, ROOM_DATA, SESSION_DATA } from "@/lib/supplementalData";
@@ -20,7 +20,7 @@ export function ForumsPage() {
   const { bookmarkedItems, toggleBookmark } = useBookmarkContext();
   const { sessionCounts } = useBookmarkCountsContext();
   const { notes, setNote } = useNotesContext();
-  const { votedSessions, toggleSessionVote } = useVoteContext();
+  const { votedSessions, toggleSessionVote } = useSessionVoteContext();
   const { sessionVoteCounts } = useVoteCountsContext();
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
   const conferenceMaps = MAP_DATA[activeConference.id] || [];
