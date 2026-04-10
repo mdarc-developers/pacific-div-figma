@@ -23,6 +23,7 @@ import { blendWithWhite, contrastingColor } from "@/lib/colorUtils";
 import { EXHIBITOR_DATA } from "@/lib/supplementalData";
 import { ATTENDEE_DATA } from "@/lib/userProfileData";
 import { sanitizeExhibitorUrl } from "@/lib/urlUtils";
+import { MAX_VOTES } from "@/lib/vote";
 
 interface ExhibitorViewProps {
   bookmarkedExhibitors?: string[];
@@ -52,6 +53,8 @@ interface ExhibitorCardProps {
   isVoted?: boolean;
   onToggleVote?: (exhibitorId: string) => void;
   voteCount?: number;
+  /** True when the user has already used their one vote on a different exhibitor. */
+  voteAtLimit?: boolean;
   note?: string;
   onSaveNote?: (exhibitorId: string, text: string) => void;
   /** Attendee profiles associated with this exhibitor. */
@@ -68,6 +71,7 @@ function ExhibitorCard({
   isVoted,
   onToggleVote,
   voteCount,
+  voteAtLimit = false,
   note,
   onSaveNote,
   staffProfiles = [],
@@ -161,8 +165,18 @@ function ExhibitorCard({
                   variant="ghost"
                   size="icon"
                   onClick={() => onToggleVote(exhibitor.id)}
+                  disabled={voteAtLimit && !isVoted}
                   aria-label={
-                    isVoted ? "Remove vote" : "Vote for this exhibitor"
+                    isVoted
+                      ? "Remove vote"
+                      : voteAtLimit
+                        ? "You have already voted for another exhibitor"
+                        : "Vote for this exhibitor"
+                  }
+                  title={
+                    voteAtLimit && !isVoted
+                      ? "You can only vote for one exhibitor. Remove your current vote first to change it."
+                      : undefined
                   }
                 >
                   <Star
@@ -354,6 +368,9 @@ export function ExhibitorView({
     return map;
   }, [allAttendeeProfiles]);
 
+  // True when the user has already used their one vote on some exhibitor.
+  const exhibitorVoteAtLimit = votedExhibitors.length >= MAX_VOTES;
+
   // Group exhibitors by type
   const groupExhibitorsByType = (exhibitors: Exhibitor[]) => {
     const grouped: Record<string, Exhibitor[]> = {};
@@ -411,6 +428,7 @@ export function ExhibitorView({
                     isVoted={votedExhibitors.includes(exhibitor.id)}
                     onToggleVote={onToggleVote}
                     voteCount={exhibitorVoteCounts[exhibitor.id]}
+                    voteAtLimit={exhibitorVoteAtLimit}
                     note={exhibitorNotes[exhibitor.id]}
                     onSaveNote={onSaveExhibitorNote}
                     staffProfiles={staffByExhibitor[exhibitor.id] ?? []}
@@ -436,6 +454,7 @@ export function ExhibitorView({
                   isVoted={votedExhibitors.includes(exhibitor.id)}
                   onToggleVote={onToggleVote}
                   voteCount={exhibitorVoteCounts[exhibitor.id]}
+                  voteAtLimit={exhibitorVoteAtLimit}
                   note={exhibitorNotes[exhibitor.id]}
                   onSaveNote={onSaveExhibitorNote}
                   staffProfiles={staffByExhibitor[exhibitor.id] ?? []}

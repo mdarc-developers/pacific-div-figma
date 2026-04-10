@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Toaster } from "sonner";
 import { SearchBar } from "@/app/components/SearchBar";
 import { Navigation } from "@/app/components/Navigation";
 import { ProtectedRoute } from "@/app/components/ProtectedRoute";
@@ -118,6 +119,7 @@ function AppLayout() {
   const isMdarcDeveloper = useMdarcDeveloper();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Toaster />
       <FirebaseThemeSync />
       <FirebaseConferenceSync />
       <FirebaseBookmarkSync />
