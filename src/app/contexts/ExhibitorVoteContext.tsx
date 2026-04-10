@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { castVote } from "@/lib/vote";
 
 const STORAGE_KEY_PREFIX = "exhibitor_votes_";
 
@@ -69,9 +70,7 @@ export function ExhibitorVoteProvider({
   const toggleExhibitorVote = useCallback(
     (exhibitorId: string) => {
       setVotedExhibitors((prev) => {
-        const next = prev.includes(exhibitorId)
-          ? prev.filter((id) => id !== exhibitorId)
-          : [...prev, exhibitorId];
+        const next = castVote(prev, exhibitorId, "exhibitor");
         saveToLS(voteKey, next);
         return next;
       });

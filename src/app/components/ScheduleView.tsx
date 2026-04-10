@@ -54,6 +54,7 @@ import { ATTENDEE_DATA } from "@/lib/userProfileData";
 import { usePublicAttendees } from "@/app/hooks/usePublicAttendees";
 import { useSpeakerSessions } from "@/app/hooks/useSpeakerSessions";
 import { useProfileVisible } from "@/app/hooks/useProfileVisible";
+import { MAX_VOTES } from "@/lib/vote";
 
 interface CalendarProps {
   events: EventInput[];
@@ -120,6 +121,8 @@ interface SessionCardProps {
   isVoted?: boolean;
   onToggleVote?: (sessionId: string) => void;
   voteCount?: number;
+  /** True when the user has already used their one vote on a different session. */
+  voteAtLimit?: boolean;
   /** Attendees who have selected this session (from static profile data). */
   sessionAttendees?: UserProfile[];
   /** Public attendees who have self-registered as presenters for this session. */
@@ -143,6 +146,7 @@ function SessionCard({
   isVoted,
   onToggleVote,
   voteCount,
+  voteAtLimit = false,
   sessionAttendees,
   sessionPresenters = [],
   currentUserIsSpeaker = false,
@@ -232,7 +236,19 @@ function SessionCard({
                   variant="ghost"
                   size="icon"
                   onClick={() => onToggleVote(session.id)}
-                  aria-label={isVoted ? "Remove vote" : "Vote for this session"}
+                  disabled={voteAtLimit && !isVoted}
+                  aria-label={
+                    isVoted
+                      ? "Remove vote"
+                      : voteAtLimit
+                        ? "You have already voted for another session"
+                        : "Vote for this session"
+                  }
+                  title={
+                    voteAtLimit && !isVoted
+                      ? "You can only vote for one session. Remove your current vote first to change it."
+                      : undefined
+                  }
                 >
                   <Star
                     className={`h-5 w-5 ${
@@ -487,6 +503,9 @@ export function ScheduleView({
   );
   const { profileVisible: userProfileVisible } = useProfileVisible();
 
+  // True when the user has already used their one vote on some session.
+  const sessionVoteAtLimit = votedSessions.length >= MAX_VOTES;
+
   // Build a map from sessionId → list of public attendees who registered as presenter.
   const sessionPresentersMap = useMemo(() => {
     const map = new Map<string, PublicAttendeeProfile[]>();
@@ -689,6 +708,7 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
+                    voteAtLimit={sessionVoteAtLimit}
                     sessionAttendees={sessionAttendeeMap.get(session.id)}
                     sessionPresenters={
                       sessionPresentersMap.get(session.id) ?? []
@@ -734,6 +754,7 @@ export function ScheduleView({
                     isVoted={votedSessions.includes(session.id)}
                     onToggleVote={onToggleSessionVote}
                     voteCount={sessionVoteCounts[session.id]}
+                    voteAtLimit={sessionVoteAtLimit}
                     sessionAttendees={sessionAttendeeMap.get(session.id)}
                     sessionPresenters={
                       sessionPresentersMap.get(session.id) ?? []

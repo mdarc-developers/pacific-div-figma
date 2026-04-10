@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import { useConference } from "@/app/contexts/ConferenceContext";
+import { castVote } from "@/lib/vote";
 
 const STORAGE_KEY_PREFIX = "session_votes_";
 
@@ -61,9 +62,7 @@ export function VoteProvider({ children }: { children: React.ReactNode }) {
   const toggleSessionVote = useCallback(
     (sessionId: string) => {
       setVotedSessions((prev) => {
-        const next = prev.includes(sessionId)
-          ? prev.filter((id) => id !== sessionId)
-          : [...prev, sessionId];
+        const next = castVote(prev, sessionId, "session");
         saveToLS(voteKey, next);
         return next;
       });
