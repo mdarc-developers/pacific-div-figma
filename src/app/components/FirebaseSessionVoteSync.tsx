@@ -17,7 +17,7 @@ import { incrementSessionVoteCount } from "@/services/voteCountsService";
  *   and updates the aggregate vote count for the changed session.
  * - On logout: clears the loaded state so the next login re-reads Firestore.
  */
-export function FirebaseVoteSync() {
+export function FirebaseSessionVoteSync() {
   const { user } = useAuth();
   const { activeConference } = useConference();
   const { votedSessions, overrideSessionVotes } = useVoteContext();

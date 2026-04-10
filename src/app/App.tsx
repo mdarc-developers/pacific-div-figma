@@ -10,7 +10,7 @@ import { FirebaseExhibitorBookmarkSync } from "@/app/components/FirebaseExhibito
 import { FirebaseBookmarkCountsSync } from "@/app/components/FirebaseBookmarkCountsSync";
 import { FirebaseNotesSync } from "@/app/components/FirebaseNotesSync";
 import { FirebaseExhibitorNotesSync } from "@/app/components/FirebaseExhibitorNotesSync";
-import { FirebaseVoteSync } from "@/app/components/FirebaseVoteSync";
+import { FirebaseSessionVoteSync } from "@/app/components/FirebaseSessionVoteSync";
 import { FirebaseExhibitorVoteSync } from "@/app/components/FirebaseExhibitorVoteSync";
 import { FirebaseHeaderCollapsedSync } from "@/app/components/FirebaseHeaderCollapsedSync";
 import { FirebaseVoteCountsSync } from "@/app/components/FirebaseVoteCountsSync";
@@ -125,7 +125,7 @@ function AppLayout() {
       <FirebaseBookmarkCountsSync />
       <FirebaseNotesSync />
       <FirebaseExhibitorNotesSync />
-      <FirebaseVoteSync />
+      <FirebaseSessionVoteSync />
       <FirebaseExhibitorVoteSync />
       <FirebaseVoteCountsSync />
       <FirebaseHeaderCollapsedSync />

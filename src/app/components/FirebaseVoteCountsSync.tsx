@@ -12,7 +12,7 @@ import {
  * Headless sync component.
  * - On conference or auth change: loads aggregate vote counts from Firestore
  *   and applies them via the shared VoteCountsContext.
- * - Individual count increments are handled by FirebaseVoteSync and
+ * - Individual count increments are handled by FirebaseSessionVoteSync and
  *   FirebaseExhibitorVoteSync when a user-initiated toggle occurs.
  */
 export function FirebaseVoteCountsSync() {
