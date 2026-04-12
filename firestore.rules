@@ -33,6 +33,17 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/groups/user-admin).data.members.get(request.auth.uid, false) == true;
     }
 
+    // Helper: returns true when the authenticated user has a completed profile,
+    // meaning their `users/{uid}` document contains a non-empty callsign.
+    // Only licensed amateur radio operators have callsigns, so this check
+    // prevents throwaway accounts from affecting shared data (votes, bookmarks,
+    // messages, attendance).
+    function hasRealProfile() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.callsign is string
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.callsign.size() > 0;
+    }
+
     // ── Conferences, Sessions, Maps — public read ─────────────────────────
     match /conferences/{conferenceId} {
       allow read: if true;
@@ -42,11 +53,14 @@ service cloud.firestore {
 
     // ── Conference attendees — owner-only; not exposed as a public list.
     // The primary record is written/deleted by the authenticated user for their own uid.
+    // Creating an attendance record requires a completed profile (callsign set).
+    // Deleting is allowed without that check so users can always remove themselves.
     // Admin read is allowed for mdarc-developers.
     match /conferences/{conferenceId}/attendees/{uid} {
       allow read: if (request.auth != null && request.auth.uid == uid)
         || isMdarcDeveloper();
-      allow write: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid && hasRealProfile();
+      allow delete: if request.auth != null && request.auth.uid == uid;
     }
 
     match /sessions/{sessionId} {
@@ -111,10 +125,12 @@ service cloud.firestore {
       allow write: if isPrizeAdmin() || isMdarcDeveloper();
     }
 
-    // ── Bookmark counts — public read; authenticated write ────────────────
+    // ── Bookmark counts — public read; real-profile write ────────────────
+    // Requires a completed profile (callsign) so only licensed operators
+    // affect the shared bookmark-count aggregates.
     match /bookmarkCounts/{conferenceId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasRealProfile();
     }
 
     // ── Vote counts — public read; server-only write ──────────────────────
@@ -140,11 +156,14 @@ service cloud.firestore {
     }
 
     // ── Messages ──────────────────────────────────────────────────────────
+    // Creating a message requires a completed profile (callsign) so only
+    // licensed operators can initiate conversations.
+    // Updating or deleting a message only requires ownership.
     match /messages/{messageId} {
       allow read: if resource.data.isPublic == true
         || (request.auth != null
           && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid));
-      allow create: if request.auth != null;
+      allow create: if hasRealProfile();
       allow update: if request.auth != null && resource.data.from == request.auth.uid;
       allow delete: if request.auth != null && resource.data.from == request.auth.uid;
     }

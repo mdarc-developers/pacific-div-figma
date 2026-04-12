@@ -587,13 +587,40 @@ describe("castVote (onCall)", () => {
     ).rejects.toMatchObject({ code: "not-found" });
   });
 
+  it("throws failed-precondition when the user profile has no callsign", async () => {
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            // No callsign field — profile is incomplete.
+            data: () => ({ sessionVotes: { "conf-1": [] } }),
+          }),
+          set: vi.fn(),
+        });
+      },
+    );
+
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "conf-1",
+          voteType: "session",
+          itemId: "session-a",
+          action: "add",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "failed-precondition" });
+  });
+
   it("throws already-exists when the user has already voted for the item", async () => {
     mockRunTransaction.mockImplementationOnce(
       async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ sessionVotes: { "conf-1": ["session-a"] } }),
+            data: () => ({ callsign: "W6AB", sessionVotes: { "conf-1": ["session-a"] } }),
           }),
           set: vi.fn(),
         });
@@ -620,7 +647,7 @@ describe("castVote (onCall)", () => {
           get: vi.fn().mockResolvedValue({
             exists: true,
             // "session-b" is already voted (MAX_VOTES = 1 reached)
-            data: () => ({ sessionVotes: { "conf-1": ["session-b"] } }),
+            data: () => ({ callsign: "W6AB", sessionVotes: { "conf-1": ["session-b"] } }),
           }),
           set: vi.fn(),
         });
@@ -647,7 +674,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ sessionVotes: { "conf-1": [] } }),
+            data: () => ({ callsign: "W6AB", sessionVotes: { "conf-1": [] } }),
           }),
           set: txSet,
         });
@@ -684,7 +711,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ exhibitorVotes: { "conf-1": [] } }),
+            data: () => ({ callsign: "W6AB", exhibitorVotes: { "conf-1": [] } }),
           }),
           set: txSet,
         });
@@ -714,7 +741,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ sessionVotes: { "conf-1": ["session-a"] } }),
+            data: () => ({ callsign: "W6AB", sessionVotes: { "conf-1": ["session-a"] } }),
           }),
           set: txSet,
         });
@@ -746,7 +773,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ sessionVotes: { "conf-1": [] } }),
+            data: () => ({ callsign: "W6AB", sessionVotes: { "conf-1": [] } }),
           }),
           set: vi.fn(),
         });

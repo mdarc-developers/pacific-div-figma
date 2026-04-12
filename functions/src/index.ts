@@ -30,6 +30,7 @@ import {
   validateAddVote,
   validateRemoveVote,
 } from "./voteValidation";
+import { validateRealProfile } from "./profileValidation";
 
 admin.initializeApp();
 
@@ -771,10 +772,12 @@ interface CastVoteOutput {
  *
  *  1. The caller must be authenticated (throws `unauthenticated`).
  *  2. A user document must exist for the caller (throws `not-found`).
- *  3. The per-conference per-category vote limit (MAX_VOTES = 1) is enforced
+ *  3. The caller's profile must be complete — a callsign is required
+ *     (throws `failed-precondition` when the callsign is absent or blank).
+ *  4. The per-conference per-category vote limit (MAX_VOTES = 1) is enforced
  *     (throws `already-exists` when the same item is voted twice, or
  *     `resource-exhausted` when the limit is already reached).
- *  4. The user's vote array in `users/{uid}` and the aggregate count in
+ *  5. The user's vote array in `users/{uid}` and the aggregate count in
  *     `voteCounts/{conferenceId}` are updated atomically inside a Firestore
  *     transaction.
  *
@@ -838,6 +841,16 @@ export const castVote = onCall<CastVoteInput, Promise<CastVoteOutput>>(
       }
 
       const userData = userSnap.data() as Record<string, unknown>;
+
+      // 4. Require a completed profile (callsign must be set).
+      const profileErr = validateRealProfile(userData);
+      if (profileErr === "missing-callsign") {
+        throw new HttpsError(
+          "failed-precondition",
+          "You must set a callsign in your profile before voting.",
+        );
+      }
+
       const currentVotes = sanitizeVotes(
         (userData[votesField] as Record<string, unknown> | undefined)?.[
           conferenceId
