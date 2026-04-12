@@ -117,10 +117,14 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // ── Vote counts — public read; authenticated write ────────────────────
+    // ── Vote counts — public read; server-only write ──────────────────────
+    // Clients must use the castVote Cloud Function (HTTPS Callable) to update
+    // vote counts.  The Cloud Functions service account (admin SDK) bypasses
+    // these rules and is the only writer.  Direct client writes are denied to
+    // prevent vote-count manipulation.
     match /voteCounts/{conferenceId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if false;
     }
 
     // ── Public Profiles — readable by authenticated users with verified email;

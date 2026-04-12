@@ -23,6 +23,7 @@ const {
   mockGetUserByEmail,
   mockGetUser,
   mockGenerateEmailVerificationLink,
+  mockRunTransaction,
 } = vi.hoisted(() => {
   const mockSet = vi.fn().mockResolvedValue(undefined);
   const mockDelete = vi.fn().mockResolvedValue(undefined);
@@ -30,6 +31,17 @@ const {
     exists: false,
     data: () => undefined,
   });
+
+  // Default transaction mock: delegates get/set to the top-level mocks.
+  // Individual tests can override with mockRunTransaction.mockImplementationOnce.
+  const mockRunTransaction = vi.fn().mockImplementation(
+    async (fn: (t: {
+      get: typeof mockGet;
+      set: typeof mockSet;
+    }) => Promise<unknown>) => {
+      return fn({ get: mockGet, set: mockSet });
+    },
+  );
 
   // Build a chainable Firestore mock supporting both:
   //   admin.firestore().collection(name).doc(id) — used by counter functions
@@ -51,6 +63,7 @@ const {
     vi.fn(() => ({
       collection: vi.fn(() => ({ doc: vi.fn(() => mockDocRef()) })),
       doc: vi.fn(() => mockDocRef()),
+      runTransaction: mockRunTransaction,
     })),
     {
       FieldValue: {
@@ -75,6 +88,7 @@ const {
     mockGetUserByEmail,
     mockGetUser,
     mockGenerateEmailVerificationLink,
+    mockRunTransaction,
   };
 });
 
@@ -196,6 +210,7 @@ import {
   syncPublicProfile,
   resendVerificationEmail,
   adminLookupUser,
+  castVote,
 } from "./index";
 
 // Initialize offline mode — sets fake FIREBASE_CONFIG env var so firebase-admin
@@ -485,5 +500,269 @@ describe("adminLookupUser (onCall)", () => {
       displayName: "Target User",
       emailVerified: true,
     });
+  });
+});
+
+// ── castVote (onCall) ─────────────────────────────────────────────────────────
+
+describe("castVote (onCall)", () => {
+  const wrapped = tester.wrap(castVote);
+
+  it("throws unauthenticated when the caller is not signed in", async () => {
+    await expect(
+      wrapped({
+        auth: undefined,
+        data: {
+          conferenceId: "conf-1",
+          voteType: "session",
+          itemId: "session-a",
+          action: "add",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "unauthenticated" });
+  });
+
+  it("throws invalid-argument when conferenceId is empty", async () => {
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "",
+          voteType: "session",
+          itemId: "session-a",
+          action: "add",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+
+  it("throws invalid-argument when voteType is not 'session' or 'exhibitor'", async () => {
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "conf-1",
+          voteType: "invalid",
+          itemId: "session-a",
+          action: "add",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+
+  it("throws invalid-argument when action is not 'add' or 'remove'", async () => {
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "conf-1",
+          voteType: "session",
+          itemId: "session-a",
+          action: "toggle",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+
+  it("throws not-found when the user document does not exist", async () => {
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({ exists: false, data: () => undefined }),
+          set: vi.fn(),
+        });
+      },
+    );
+
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "conf-1",
+          voteType: "session",
+          itemId: "session-a",
+          action: "add",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "not-found" });
+  });
+
+  it("throws already-exists when the user has already voted for the item", async () => {
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            data: () => ({ sessionVotes: { "conf-1": ["session-a"] } }),
+          }),
+          set: vi.fn(),
+        });
+      },
+    );
+
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "conf-1",
+          voteType: "session",
+          itemId: "session-a",
+          action: "add",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "already-exists" });
+  });
+
+  it("throws resource-exhausted when the vote limit is already reached", async () => {
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            // "session-b" is already voted (MAX_VOTES = 1 reached)
+            data: () => ({ sessionVotes: { "conf-1": ["session-b"] } }),
+          }),
+          set: vi.fn(),
+        });
+      },
+    );
+
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "conf-1",
+          voteType: "session",
+          itemId: "session-a", // different item
+          action: "add",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "resource-exhausted" });
+  });
+
+  it("successfully adds a session vote and returns the updated votes array", async () => {
+    const txSet = vi.fn();
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            data: () => ({ sessionVotes: { "conf-1": [] } }),
+          }),
+          set: txSet,
+        });
+      },
+    );
+
+    const result = await wrapped({
+      auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+      data: {
+        conferenceId: "conf-1",
+        voteType: "session",
+        itemId: "session-a",
+        action: "add",
+      },
+    } as unknown as CallableRequest<unknown>);
+
+    expect(result).toMatchObject({ votes: ["session-a"] });
+    // Two set calls: user doc update + voteCounts update
+    expect(txSet).toHaveBeenCalledTimes(2);
+    // First call: user doc votes
+    expect(txSet.mock.calls[0][1]).toMatchObject({
+      sessionVotes: { "conf-1": ["session-a"] },
+    });
+    // Second call: aggregate count increment
+    expect(txSet.mock.calls[1][1]).toMatchObject({
+      sessions: { "session-a": { _increment: 1 } },
+    });
+  });
+
+  it("successfully adds an exhibitor vote", async () => {
+    const txSet = vi.fn();
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            data: () => ({ exhibitorVotes: { "conf-1": [] } }),
+          }),
+          set: txSet,
+        });
+      },
+    );
+
+    const result = await wrapped({
+      auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+      data: {
+        conferenceId: "conf-1",
+        voteType: "exhibitor",
+        itemId: "exhibitor-x",
+        action: "add",
+      },
+    } as unknown as CallableRequest<unknown>);
+
+    expect(result).toMatchObject({ votes: ["exhibitor-x"] });
+    expect(txSet.mock.calls[1][1]).toMatchObject({
+      exhibitors: { "exhibitor-x": { _increment: 1 } },
+    });
+  });
+
+  it("successfully removes a vote", async () => {
+    const txSet = vi.fn();
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            data: () => ({ sessionVotes: { "conf-1": ["session-a"] } }),
+          }),
+          set: txSet,
+        });
+      },
+    );
+
+    const result = await wrapped({
+      auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+      data: {
+        conferenceId: "conf-1",
+        voteType: "session",
+        itemId: "session-a",
+        action: "remove",
+      },
+    } as unknown as CallableRequest<unknown>);
+
+    expect(result).toMatchObject({ votes: [] });
+    expect(txSet.mock.calls[0][1]).toMatchObject({
+      sessionVotes: { "conf-1": [] },
+    });
+    expect(txSet.mock.calls[1][1]).toMatchObject({
+      sessions: { "session-a": { _increment: -1 } },
+    });
+  });
+
+  it("throws not-found when removing a vote that does not exist", async () => {
+    mockRunTransaction.mockImplementationOnce(
+      async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
+        return fn({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            data: () => ({ sessionVotes: { "conf-1": [] } }),
+          }),
+          set: vi.fn(),
+        });
+      },
+    );
+
+    await expect(
+      wrapped({
+        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        data: {
+          conferenceId: "conf-1",
+          voteType: "session",
+          itemId: "session-a",
+          action: "remove",
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "not-found" });
   });
 });
