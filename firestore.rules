@@ -34,14 +34,13 @@ service cloud.firestore {
     }
 
     // Helper: returns true when the authenticated user has a completed profile,
-    // meaning their `users/{uid}` document contains a non-empty callsign.
-    // Only licensed amateur radio operators have callsigns, so this check
-    // prevents throwaway accounts from affecting shared data (votes, bookmarks,
-    // messages, attendance).
+    // meaning their `users/{uid}` document contains a non-empty displayName.
+    // All attendees must set a display name — callsign is optional and not
+    // required for a valid profile.
     function hasRealProfile() {
       return request.auth != null
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.callsign is string
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.callsign.size() > 0;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.displayName is string
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.displayName.size() > 0;
     }
 
     // ── Conferences, Sessions, Maps — public read ─────────────────────────

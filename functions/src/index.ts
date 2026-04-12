@@ -772,8 +772,8 @@ interface CastVoteOutput {
  *
  *  1. The caller must be authenticated (throws `unauthenticated`).
  *  2. A user document must exist for the caller (throws `not-found`).
- *  3. The caller's profile must be complete — a callsign is required
- *     (throws `failed-precondition` when the callsign is absent or blank).
+ *  3. The caller's profile must be complete — a display name is required
+ *     (throws `failed-precondition` when the display name is absent or blank).
  *  4. The per-conference per-category vote limit (MAX_VOTES = 1) is enforced
  *     (throws `already-exists` when the same item is voted twice, or
  *     `resource-exhausted` when the limit is already reached).
@@ -842,12 +842,12 @@ export const castVote = onCall<CastVoteInput, Promise<CastVoteOutput>>(
 
       const userData = userSnap.data() as Record<string, unknown>;
 
-      // 4. Require a completed profile (callsign must be set).
+      // 3. Require a completed profile (displayName must be set).
       const profileErr = validateRealProfile(userData);
-      if (profileErr === "missing-callsign") {
+      if (profileErr === "missing-display-name") {
         throw new HttpsError(
           "failed-precondition",
-          "You must set a callsign in your profile before voting.",
+          "You must set a display name in your profile before voting.",
         );
       }
 
