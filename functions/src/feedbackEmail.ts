@@ -9,7 +9,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { logger } from "firebase-functions";
-import * as admin from "firebase-admin";
 import { google } from "googleapis";
 import { JWT } from "google-auth-library";
 import {
@@ -90,18 +89,12 @@ export const sendFeedbackEmail = onCall(
       );
     }
 
-    // Require a real profile (non-empty displayName).
-    const userSnap = await admin.firestore().doc(`users/${uid}`).get();
-    if (!userSnap.exists) {
-      throw new HttpsError("not-found", "User profile not found.");
-    }
-    const profileErr = validateRealProfile(
-      userSnap.data() as Record<string, unknown>,
-    );
-    if (profileErr === "missing-display-name") {
+    // Require a real profile (verified email or Google sign-in).
+    const profileErr = validateRealProfile(request.auth.token);
+    if (profileErr === "unverified-email") {
       throw new HttpsError(
         "failed-precondition",
-        "You must set a display name on your profile before submitting feedback.",
+        "You must have a verified email address before submitting feedback.",
       );
     }
 

@@ -2,62 +2,82 @@ import { describe, it, expect } from "vitest";
 import { validateRealProfile } from "./profileValidation";
 
 describe("validateRealProfile", () => {
-  it("returns null when displayName is a non-empty string", () => {
-    expect(validateRealProfile({ displayName: "Alice K6ABC" })).toBeNull();
+  // ── email_verified: true ──────────────────────────────────────────────────
+
+  it("returns null when email_verified is true", () => {
+    expect(validateRealProfile({ email_verified: true })).toBeNull();
   });
 
-  it("returns null when displayName has leading/trailing spaces (non-empty after trim)", () => {
-    expect(validateRealProfile({ displayName: "  Alice  " })).toBeNull();
-  });
-
-  it("returns missing-display-name when displayName is absent", () => {
-    expect(validateRealProfile({})).toBe("missing-display-name");
-  });
-
-  it("returns missing-display-name when displayName is an empty string", () => {
-    expect(validateRealProfile({ displayName: "" })).toBe(
-      "missing-display-name",
-    );
-  });
-
-  it("returns missing-display-name when displayName is only whitespace", () => {
-    expect(validateRealProfile({ displayName: "   " })).toBe(
-      "missing-display-name",
-    );
-  });
-
-  it("returns missing-display-name when displayName is null", () => {
-    expect(validateRealProfile({ displayName: null })).toBe(
-      "missing-display-name",
-    );
-  });
-
-  it("returns missing-display-name when displayName is a number", () => {
-    expect(validateRealProfile({ displayName: 42 })).toBe(
-      "missing-display-name",
-    );
-  });
-
-  it("returns missing-display-name when displayName is an array", () => {
-    expect(validateRealProfile({ displayName: ["Alice"] })).toBe(
-      "missing-display-name",
-    );
-  });
-
-  it("does not require callsign — returns null when callsign is absent", () => {
-    expect(
-      validateRealProfile({ displayName: "Bob W7XYZ" }),
-    ).toBeNull();
-  });
-
-  it("ignores extra fields — returns null with displayName and other fields present", () => {
+  it("returns null when email_verified is true regardless of provider", () => {
     expect(
       validateRealProfile({
-        displayName: "Carol N7ABC",
-        callsign: "N7ABC",
-        email: "carol@example.com",
-        profileVisible: true,
+        email_verified: true,
+        firebase: { sign_in_provider: "password" },
       }),
     ).toBeNull();
   });
+
+  // ── Google sign-in ────────────────────────────────────────────────────────
+
+  it("returns null when sign_in_provider is google.com", () => {
+    expect(
+      validateRealProfile({ firebase: { sign_in_provider: "google.com" } }),
+    ).toBeNull();
+  });
+
+  it("returns null when sign_in_provider is google.com even if email_verified is missing", () => {
+    expect(
+      validateRealProfile({ firebase: { sign_in_provider: "google.com" } }),
+    ).toBeNull();
+  });
+
+  // ── unverified email ──────────────────────────────────────────────────────
+
+  it("returns unverified-email when email_verified is false and provider is not google", () => {
+    expect(
+      validateRealProfile({
+        email_verified: false,
+        firebase: { sign_in_provider: "password" },
+      }),
+    ).toBe("unverified-email");
+  });
+
+  it("returns unverified-email when email_verified is absent", () => {
+    expect(validateRealProfile({})).toBe("unverified-email");
+  });
+
+  it("returns unverified-email when email_verified is false and no firebase field", () => {
+    expect(validateRealProfile({ email_verified: false })).toBe(
+      "unverified-email",
+    );
+  });
+
+  it("returns unverified-email when firebase field is absent and email_verified is absent", () => {
+    expect(validateRealProfile({})).toBe("unverified-email");
+  });
+
+  it("returns unverified-email when sign_in_provider is 'password' and email not verified", () => {
+    expect(
+      validateRealProfile({
+        email_verified: false,
+        firebase: { sign_in_provider: "password" },
+      }),
+    ).toBe("unverified-email");
+  });
+
+  // ── displayName is irrelevant ─────────────────────────────────────────────
+
+  it("ignores displayName — returns null when email_verified is true and displayName is absent", () => {
+    expect(validateRealProfile({ email_verified: true })).toBeNull();
+  });
+
+  it("ignores displayName — returns unverified-email even when displayName is present but email is unverified", () => {
+    expect(
+      validateRealProfile({
+        email_verified: false,
+        firebase: { sign_in_provider: "password" },
+      }),
+    ).toBe("unverified-email");
+  });
 });
+

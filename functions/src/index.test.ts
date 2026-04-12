@@ -413,43 +413,7 @@ describe("resendVerificationEmail (onCall)", () => {
     });
   });
 
-  it("throws not-found when the caller's user profile document does not exist", async () => {
-    // Default mockGet returns { exists: false }, so no extra setup needed.
-    await expect(
-      wrapped({
-        auth: {
-          uid: "user-abc",
-          token: { email: "alice@example.com", email_verified: false } as unknown as DecodedIdToken,
-        },
-        data: {},
-      } as unknown as CallableRequest<unknown>),
-    ).rejects.toMatchObject({ code: "not-found" });
-  });
-
-  it("throws failed-precondition when the caller has no displayName set", async () => {
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ email: "alice@example.com" }), // no displayName
-    });
-
-    await expect(
-      wrapped({
-        auth: {
-          uid: "user-abc",
-          token: { email: "alice@example.com", email_verified: false } as unknown as DecodedIdToken,
-        },
-        data: {},
-      } as unknown as CallableRequest<unknown>),
-    ).rejects.toMatchObject({ code: "failed-precondition" });
-  });
-
   it("throws failed-precondition when the caller's email is already verified", async () => {
-    // Profile check passes first.
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Alice K6ABC" }),
-    });
-
     await expect(
       wrapped({
         auth: {
@@ -473,36 +437,16 @@ describe("adminLookupUser (onCall)", () => {
     ).rejects.toMatchObject({ code: "unauthenticated" });
   });
 
-  it("throws not-found when the caller's user profile document does not exist", async () => {
-    // Default mockGet returns { exists: false }, so no extra setup needed.
+  it("throws failed-precondition when the caller's email is not verified", async () => {
     await expect(
       wrapped({
-        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
-        data: { targetEmail: "target@example.com" },
-      } as unknown as CallableRequest<unknown>),
-    ).rejects.toMatchObject({ code: "not-found" });
-  });
-
-  it("throws failed-precondition when the caller has no displayName set", async () => {
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ email: "admin@example.com" }), // no displayName
-    });
-
-    await expect(
-      wrapped({
-        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "non-admin-uid", token: { email_verified: false } as unknown as DecodedIdToken },
         data: { targetEmail: "target@example.com" },
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "failed-precondition" });
   });
 
   it("throws permission-denied when the caller is not in the user-admin group", async () => {
-    // Profile check passes.
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Non Admin" }),
-    });
     // groups/user-admin document exists but caller uid is not a member.
     mockGet.mockResolvedValueOnce({
       exists: true,
@@ -511,35 +455,25 @@ describe("adminLookupUser (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "non-admin-uid", token: { email_verified: true } as unknown as DecodedIdToken },
         data: { targetEmail: "target@example.com" },
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "permission-denied" });
   });
 
   it("throws permission-denied when the user-admin group document does not exist", async () => {
-    // Profile check passes.
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Non Admin" }),
-    });
     // Group doc doesn't exist.
     mockGet.mockResolvedValueOnce({ exists: false, data: () => undefined });
 
     await expect(
       wrapped({
-        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "non-admin-uid", token: { email_verified: true } as unknown as DecodedIdToken },
         data: { targetEmail: "target@example.com" },
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "permission-denied" });
   });
 
   it("throws invalid-argument when targetEmail is missing", async () => {
-    // Profile check passes.
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Admin User" }),
-    });
     // Caller is a valid admin member.
     mockGet.mockResolvedValueOnce({
       exists: true,
@@ -548,18 +482,13 @@ describe("adminLookupUser (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "admin-uid", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "admin-uid", token: { email_verified: true } as unknown as DecodedIdToken },
         data: {},
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "invalid-argument" });
   });
 
   it("returns user info for a valid admin caller", async () => {
-    // Profile check passes.
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Admin User" }),
-    });
     // Admin group membership check passes.
     mockGet.mockResolvedValueOnce({
       exists: true,
@@ -574,7 +503,7 @@ describe("adminLookupUser (onCall)", () => {
     });
 
     const result = await wrapped({
-      auth: { uid: "admin-uid", token: {} as unknown as DecodedIdToken },
+      auth: { uid: "admin-uid", token: { email_verified: true } as unknown as DecodedIdToken },
       data: { targetEmail: "target@example.com" },
     } as unknown as CallableRequest<unknown>);
 
@@ -598,36 +527,16 @@ describe("adminResendVerificationEmail (onCall)", () => {
     ).rejects.toMatchObject({ code: "unauthenticated" });
   });
 
-  it("throws not-found when the caller's user profile document does not exist", async () => {
-    // Default mockGet returns { exists: false }, so no extra setup needed.
+  it("throws failed-precondition when the caller's email is not verified", async () => {
     await expect(
       wrapped({
-        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
-        data: { targetUid: "target-uid" },
-      } as unknown as CallableRequest<unknown>),
-    ).rejects.toMatchObject({ code: "not-found" });
-  });
-
-  it("throws failed-precondition when the caller has no displayName set", async () => {
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ email: "admin@example.com" }), // no displayName
-    });
-
-    await expect(
-      wrapped({
-        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "non-admin-uid", token: { email_verified: false } as unknown as DecodedIdToken },
         data: { targetUid: "target-uid" },
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "failed-precondition" });
   });
 
   it("throws permission-denied when the caller is not in the user-admin group", async () => {
-    // Profile check passes.
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Non Admin" }),
-    });
     // groups/user-admin document exists but caller uid is not a member.
     mockGet.mockResolvedValueOnce({
       exists: true,
@@ -636,18 +545,13 @@ describe("adminResendVerificationEmail (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "non-admin-uid", token: { email_verified: true } as unknown as DecodedIdToken },
         data: { targetUid: "target-uid" },
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "permission-denied" });
   });
 
   it("throws invalid-argument when targetUid is missing", async () => {
-    // Profile check passes.
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Admin User" }),
-    });
     // Caller is a valid admin member.
     mockGet.mockResolvedValueOnce({
       exists: true,
@@ -656,7 +560,7 @@ describe("adminResendVerificationEmail (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "admin-uid", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "admin-uid", token: { email_verified: true } as unknown as DecodedIdToken },
         data: {},
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "invalid-argument" });
@@ -677,56 +581,31 @@ describe("sendFeedbackEmail (onCall)", () => {
     ).rejects.toMatchObject({ code: "unauthenticated" });
   });
 
-  it("throws not-found when the caller's user profile document does not exist", async () => {
-    // Default mockGet returns { exists: false }, so no extra setup needed.
+  it("throws failed-precondition when the caller's email is not verified", async () => {
     await expect(
       wrapped({
-        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
-        data: { pageUrl: "https://pacific-div.web.app/", message: "Test", ccSender: false },
-      } as unknown as CallableRequest<unknown>),
-    ).rejects.toMatchObject({ code: "not-found" });
-  });
-
-  it("throws failed-precondition when the caller has no displayName set", async () => {
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ email: "user@example.com" }), // no displayName
-    });
-
-    await expect(
-      wrapped({
-        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "user-abc", token: { email_verified: false } as unknown as DecodedIdToken },
         data: { pageUrl: "https://pacific-div.web.app/", message: "Test", ccSender: false },
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "failed-precondition" });
   });
 
   it("throws invalid-argument when pageUrl is missing", async () => {
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Alice K6ABC" }),
-    });
-
     await expect(
       wrapped({
-        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "user-abc", token: { email_verified: true } as unknown as DecodedIdToken },
         data: { message: "Test", ccSender: false },
       } as unknown as CallableRequest<unknown>),
     ).rejects.toMatchObject({ code: "invalid-argument" });
   });
 
   it("passes auth and profile guards and reaches business logic (internal due to missing test secrets)", async () => {
-    mockGet.mockResolvedValueOnce({
-      exists: true,
-      data: () => ({ displayName: "Alice K6ABC" }),
-    });
-
     // Gmail secrets are not available in the test environment, so the function
     // proceeds past auth/profile guards and throws "internal" (email service not
     // configured). This confirms auth and profile validation are passed.
     await expect(
       wrapped({
-        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "user-abc", token: { email_verified: true } as unknown as DecodedIdToken },
         data: {
           pageUrl: "https://pacific-div.web.app/schedule",
           message: "Great app!",
@@ -821,13 +700,12 @@ describe("castVote (onCall)", () => {
     ).rejects.toMatchObject({ code: "not-found" });
   });
 
-  it("throws failed-precondition when the user has no displayName set", async () => {
+  it("throws failed-precondition when the user's email is not verified", async () => {
     mockRunTransaction.mockImplementationOnce(
       async (fn: (t: { get: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> }) => Promise<unknown>) => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            // User document exists but displayName is not set
             data: () => ({ sessionVotes: {} }),
           }),
           set: vi.fn(),
@@ -837,7 +715,7 @@ describe("castVote (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "user-1", token: { email_verified: false } as unknown as DecodedIdToken },
         data: {
           conferenceId: "conf-1",
           voteType: "session",
@@ -854,7 +732,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ displayName: "Alice", sessionVotes: { "conf-1": ["session-a"] } }),
+            data: () => ({ sessionVotes: { "conf-1": ["session-a"] } }),
           }),
           set: vi.fn(),
         });
@@ -863,7 +741,7 @@ describe("castVote (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "user-1", token: { email_verified: true } as unknown as DecodedIdToken },
         data: {
           conferenceId: "conf-1",
           voteType: "session",
@@ -881,7 +759,7 @@ describe("castVote (onCall)", () => {
           get: vi.fn().mockResolvedValue({
             exists: true,
             // "session-b" is already voted (MAX_VOTES = 1 reached)
-            data: () => ({ displayName: "Alice", sessionVotes: { "conf-1": ["session-b"] } }),
+            data: () => ({ sessionVotes: { "conf-1": ["session-b"] } }),
           }),
           set: vi.fn(),
         });
@@ -890,7 +768,7 @@ describe("castVote (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "user-1", token: { email_verified: true } as unknown as DecodedIdToken },
         data: {
           conferenceId: "conf-1",
           voteType: "session",
@@ -908,7 +786,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ displayName: "Alice", sessionVotes: { "conf-1": [] } }),
+            data: () => ({ sessionVotes: { "conf-1": [] } }),
           }),
           set: txSet,
         });
@@ -916,7 +794,7 @@ describe("castVote (onCall)", () => {
     );
 
     const result = await wrapped({
-      auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+      auth: { uid: "user-1", token: { email_verified: true } as unknown as DecodedIdToken },
       data: {
         conferenceId: "conf-1",
         voteType: "session",
@@ -945,7 +823,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ displayName: "Alice", exhibitorVotes: { "conf-1": [] } }),
+            data: () => ({ exhibitorVotes: { "conf-1": [] } }),
           }),
           set: txSet,
         });
@@ -953,7 +831,7 @@ describe("castVote (onCall)", () => {
     );
 
     const result = await wrapped({
-      auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+      auth: { uid: "user-1", token: { email_verified: true } as unknown as DecodedIdToken },
       data: {
         conferenceId: "conf-1",
         voteType: "exhibitor",
@@ -975,7 +853,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ displayName: "Alice", sessionVotes: { "conf-1": ["session-a"] } }),
+            data: () => ({ sessionVotes: { "conf-1": ["session-a"] } }),
           }),
           set: txSet,
         });
@@ -983,7 +861,7 @@ describe("castVote (onCall)", () => {
     );
 
     const result = await wrapped({
-      auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+      auth: { uid: "user-1", token: { email_verified: true } as unknown as DecodedIdToken },
       data: {
         conferenceId: "conf-1",
         voteType: "session",
@@ -1007,7 +885,7 @@ describe("castVote (onCall)", () => {
         return fn({
           get: vi.fn().mockResolvedValue({
             exists: true,
-            data: () => ({ displayName: "Alice", sessionVotes: { "conf-1": [] } }),
+            data: () => ({ sessionVotes: { "conf-1": [] } }),
           }),
           set: vi.fn(),
         });
@@ -1016,7 +894,7 @@ describe("castVote (onCall)", () => {
 
     await expect(
       wrapped({
-        auth: { uid: "user-1", token: {} as unknown as DecodedIdToken },
+        auth: { uid: "user-1", token: { email_verified: true } as unknown as DecodedIdToken },
         data: {
           conferenceId: "conf-1",
           voteType: "session",
