@@ -9,12 +9,14 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { logger } from "firebase-functions";
+import * as admin from "firebase-admin";
 import { google } from "googleapis";
 import { JWT } from "google-auth-library";
 import {
   FEEDBACK_RECIPIENT,
   buildFeedbackEmailHtml,
 } from "./feedbackEmailContent";
+import { validateRealProfile } from "./profileValidation";
 
 export { buildFeedbackEmailHtml } from "./feedbackEmailContent";
 
@@ -80,6 +82,29 @@ export const sendFeedbackEmail = onCall(
     secrets: [gmailServiceAccountJson, gmailSenderEmail],
   },
   async (request) => {
+    const uid = request.auth?.uid;
+    if (!uid) {
+      throw new HttpsError(
+        "unauthenticated",
+        "You must be signed in to submit feedback.",
+      );
+    }
+
+    // Require a real profile (non-empty displayName).
+    const userSnap = await admin.firestore().doc(`users/${uid}`).get();
+    if (!userSnap.exists) {
+      throw new HttpsError("not-found", "User profile not found.");
+    }
+    const profileErr = validateRealProfile(
+      userSnap.data() as Record<string, unknown>,
+    );
+    if (profileErr === "missing-display-name") {
+      throw new HttpsError(
+        "failed-precondition",
+        "You must set a display name on your profile before submitting feedback.",
+      );
+    }
+
     const data = request.data as FeedbackRequest;
     const { email, pageUrl, message, ccSender, userAgent } = data;
 
