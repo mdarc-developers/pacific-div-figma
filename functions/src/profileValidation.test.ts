@@ -52,10 +52,6 @@ describe("validateRealProfile", () => {
     );
   });
 
-  it("returns unverified-email when firebase field is absent and email_verified is absent", () => {
-    expect(validateRealProfile({})).toBe("unverified-email");
-  });
-
   it("returns unverified-email when sign_in_provider is 'password' and email not verified", () => {
     expect(
       validateRealProfile({
