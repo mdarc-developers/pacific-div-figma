@@ -210,7 +210,9 @@ import {
   syncPublicProfile,
   resendVerificationEmail,
   adminLookupUser,
+  adminResendVerificationEmail,
   castVote,
+  sendFeedbackEmail,
 } from "./index";
 
 // Initialize offline mode — sets fake FIREBASE_CONFIG env var so firebase-admin
@@ -411,7 +413,43 @@ describe("resendVerificationEmail (onCall)", () => {
     });
   });
 
+  it("throws not-found when the caller's user profile document does not exist", async () => {
+    // Default mockGet returns { exists: false }, so no extra setup needed.
+    await expect(
+      wrapped({
+        auth: {
+          uid: "user-abc",
+          token: { email: "alice@example.com", email_verified: false } as unknown as DecodedIdToken,
+        },
+        data: {},
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "not-found" });
+  });
+
+  it("throws failed-precondition when the caller has no displayName set", async () => {
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ email: "alice@example.com" }), // no displayName
+    });
+
+    await expect(
+      wrapped({
+        auth: {
+          uid: "user-abc",
+          token: { email: "alice@example.com", email_verified: false } as unknown as DecodedIdToken,
+        },
+        data: {},
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "failed-precondition" });
+  });
+
   it("throws failed-precondition when the caller's email is already verified", async () => {
+    // Profile check passes first.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Alice K6ABC" }),
+    });
+
     await expect(
       wrapped({
         auth: {
@@ -435,7 +473,36 @@ describe("adminLookupUser (onCall)", () => {
     ).rejects.toMatchObject({ code: "unauthenticated" });
   });
 
+  it("throws not-found when the caller's user profile document does not exist", async () => {
+    // Default mockGet returns { exists: false }, so no extra setup needed.
+    await expect(
+      wrapped({
+        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        data: { targetEmail: "target@example.com" },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "not-found" });
+  });
+
+  it("throws failed-precondition when the caller has no displayName set", async () => {
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ email: "admin@example.com" }), // no displayName
+    });
+
+    await expect(
+      wrapped({
+        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        data: { targetEmail: "target@example.com" },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "failed-precondition" });
+  });
+
   it("throws permission-denied when the caller is not in the user-admin group", async () => {
+    // Profile check passes.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Non Admin" }),
+    });
     // groups/user-admin document exists but caller uid is not a member.
     mockGet.mockResolvedValueOnce({
       exists: true,
@@ -451,6 +518,12 @@ describe("adminLookupUser (onCall)", () => {
   });
 
   it("throws permission-denied when the user-admin group document does not exist", async () => {
+    // Profile check passes.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Non Admin" }),
+    });
+    // Group doc doesn't exist.
     mockGet.mockResolvedValueOnce({ exists: false, data: () => undefined });
 
     await expect(
@@ -462,6 +535,11 @@ describe("adminLookupUser (onCall)", () => {
   });
 
   it("throws invalid-argument when targetEmail is missing", async () => {
+    // Profile check passes.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Admin User" }),
+    });
     // Caller is a valid admin member.
     mockGet.mockResolvedValueOnce({
       exists: true,
@@ -477,6 +555,12 @@ describe("adminLookupUser (onCall)", () => {
   });
 
   it("returns user info for a valid admin caller", async () => {
+    // Profile check passes.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Admin User" }),
+    });
+    // Admin group membership check passes.
     mockGet.mockResolvedValueOnce({
       exists: true,
       data: () => ({ members: { "admin-uid": true } }),
@@ -500,6 +584,156 @@ describe("adminLookupUser (onCall)", () => {
       displayName: "Target User",
       emailVerified: true,
     });
+  });
+});
+
+// ── adminResendVerificationEmail (onCall) ─────────────────────────────────────
+
+describe("adminResendVerificationEmail (onCall)", () => {
+  const wrapped = tester.wrap(adminResendVerificationEmail);
+
+  it("throws unauthenticated when the caller is not signed in", async () => {
+    await expect(
+      wrapped({ auth: undefined, data: { targetUid: "target-uid" } } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "unauthenticated" });
+  });
+
+  it("throws not-found when the caller's user profile document does not exist", async () => {
+    // Default mockGet returns { exists: false }, so no extra setup needed.
+    await expect(
+      wrapped({
+        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        data: { targetUid: "target-uid" },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "not-found" });
+  });
+
+  it("throws failed-precondition when the caller has no displayName set", async () => {
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ email: "admin@example.com" }), // no displayName
+    });
+
+    await expect(
+      wrapped({
+        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        data: { targetUid: "target-uid" },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "failed-precondition" });
+  });
+
+  it("throws permission-denied when the caller is not in the user-admin group", async () => {
+    // Profile check passes.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Non Admin" }),
+    });
+    // groups/user-admin document exists but caller uid is not a member.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ members: {} }),
+    });
+
+    await expect(
+      wrapped({
+        auth: { uid: "non-admin-uid", token: {} as unknown as DecodedIdToken },
+        data: { targetUid: "target-uid" },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "permission-denied" });
+  });
+
+  it("throws invalid-argument when targetUid is missing", async () => {
+    // Profile check passes.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Admin User" }),
+    });
+    // Caller is a valid admin member.
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ members: { "admin-uid": true } }),
+    });
+
+    await expect(
+      wrapped({
+        auth: { uid: "admin-uid", token: {} as unknown as DecodedIdToken },
+        data: {},
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+});
+
+// ── sendFeedbackEmail (onCall) ────────────────────────────────────────────────
+
+describe("sendFeedbackEmail (onCall)", () => {
+  const wrapped = tester.wrap(sendFeedbackEmail);
+
+  it("throws unauthenticated when the caller is not signed in", async () => {
+    await expect(
+      wrapped({
+        auth: undefined,
+        data: { pageUrl: "https://pacific-div.web.app/", message: "Test", ccSender: false },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "unauthenticated" });
+  });
+
+  it("throws not-found when the caller's user profile document does not exist", async () => {
+    // Default mockGet returns { exists: false }, so no extra setup needed.
+    await expect(
+      wrapped({
+        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
+        data: { pageUrl: "https://pacific-div.web.app/", message: "Test", ccSender: false },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "not-found" });
+  });
+
+  it("throws failed-precondition when the caller has no displayName set", async () => {
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ email: "user@example.com" }), // no displayName
+    });
+
+    await expect(
+      wrapped({
+        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
+        data: { pageUrl: "https://pacific-div.web.app/", message: "Test", ccSender: false },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "failed-precondition" });
+  });
+
+  it("throws invalid-argument when pageUrl is missing", async () => {
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Alice K6ABC" }),
+    });
+
+    await expect(
+      wrapped({
+        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
+        data: { message: "Test", ccSender: false },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+
+  it("passes auth and profile guards and reaches business logic (internal due to missing test secrets)", async () => {
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({ displayName: "Alice K6ABC" }),
+    });
+
+    // Gmail secrets are not available in the test environment, so the function
+    // proceeds past auth/profile guards and throws "internal" (email service not
+    // configured). This confirms auth and profile validation are passed.
+    await expect(
+      wrapped({
+        auth: { uid: "user-abc", token: {} as unknown as DecodedIdToken },
+        data: {
+          pageUrl: "https://pacific-div.web.app/schedule",
+          message: "Great app!",
+          ccSender: false,
+        },
+      } as unknown as CallableRequest<unknown>),
+    ).rejects.toMatchObject({ code: "internal" });
   });
 });
 
