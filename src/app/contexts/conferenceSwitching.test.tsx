@@ -100,7 +100,9 @@ const DATA_B = {
   raffleTickets: ["2001"],
   bookmarks: ["session-b1"],
   exhibitorBookmarks: ["exhibitor-b1", "exhibitor-b2"],
-  sessionVotes: ["session-b3", "session-b4"],
+  // MAX_VOTES = 1: only one session vote is permitted.  Any additional votes
+  // stored in localStorage are treated as manipulation and capped on load.
+  sessionVotes: ["session-b3"],
   exhibitorVotes: ["exhibitor-b5"],
   sessionNotes: {} as Record<string, string>,
   exhibitorNotes: { "exhibitor-b7": "Note for exhibitor B7" } as Record<

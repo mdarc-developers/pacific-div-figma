@@ -3,11 +3,9 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useSessionVoteContext } from "@/app/contexts/SessionVoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
-import {
-  getUserSessionVotes,
-  setUserSessionVotes,
-} from "@/services/userSettingsService";
-import { incrementSessionVoteCount } from "@/services/voteCountsService";
+import { getUserSessionVotes } from "@/services/userSettingsService";
+import { castVoteServer } from "@/services/voteService";
+import { MAX_VOTES } from "@/lib/vote";
 
 /**
  * Headless sync component.
@@ -55,25 +53,30 @@ export function FirebaseSessionVoteSync() {
       .then((votes) => {
         if (cancelled) return;
 
-        // Preserve any locally-cast votes not yet in Firestore.
+        // Preserve any locally-cast votes not yet in Firestore, respecting
+        // MAX_VOTES so the merged result never exceeds the server-side limit.
         const votesSet = new Set(votes);
         const addedLocally = localVotes.filter((id) => !votesSet.has(id));
-        const merged =
-          addedLocally.length > 0 ? [...votes, ...addedLocally] : votes;
+        const availableSlots = MAX_VOTES - votes.length;
+        const toAdd = availableSlots > 0 ? addedLocally.slice(0, availableSlots) : [];
+        const merged = toAdd.length > 0 ? [...votes, ...toAdd] : votes;
 
         justLoadedRef.current = true;
         savedItemsRef.current = merged;
         overrideSessionVotes(merged);
 
-        // If there were locally-cast votes, persist the merged set to Firestore
-        // and update aggregate vote counts for the newly added items.
-        if (addedLocally.length > 0) {
-          setUserSessionVotes(uidToLoad, conferenceId, merged).catch(
-            console.error,
-          );
-          addedLocally.forEach((id) => {
+        // If there were locally-cast votes that fit within MAX_VOTES, push
+        // them to the server via the castVote callable (which atomically
+        // updates both the user doc and aggregate counts).
+        if (toAdd.length > 0) {
+          toAdd.forEach((id) => {
             adjustSessionVoteCount(id, 1);
-            incrementSessionVoteCount(conferenceId, id, 1).catch(console.error);
+            castVoteServer({
+              conferenceId,
+              voteType: "session",
+              itemId: id,
+              action: "add",
+            }).catch(console.error);
           });
         }
       })
@@ -108,18 +111,26 @@ export function FirebaseSessionVoteSync() {
     added.forEach((id) => adjustSessionVoteCount(id, 1));
     removed.forEach((id) => adjustSessionVoteCount(id, -1));
 
+    // Persist via the castVote callable, which atomically validates, updates
+    // the user doc, and updates the aggregate vote count server-side.
     added.forEach((id) =>
-      incrementSessionVoteCount(conferenceId, id, 1).catch(console.error),
+      castVoteServer({
+        conferenceId,
+        voteType: "session",
+        itemId: id,
+        action: "add",
+      }).catch(console.error),
     );
     removed.forEach((id) =>
-      incrementSessionVoteCount(conferenceId, id, -1).catch(console.error),
+      castVoteServer({
+        conferenceId,
+        voteType: "session",
+        itemId: id,
+        action: "remove",
+      }).catch(console.error),
     );
 
     savedItemsRef.current = [...next];
-
-    setUserSessionVotes(user.uid, conferenceId, votedSessions).catch(
-      console.error,
-    );
   }, [user, loadKey, conferenceId, votedSessions, adjustSessionVoteCount]);
 
   return null;

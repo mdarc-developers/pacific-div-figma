@@ -3,11 +3,9 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useConference } from "@/app/contexts/ConferenceContext";
 import { useExhibitorVoteContext } from "@/app/contexts/ExhibitorVoteContext";
 import { useVoteCountsContext } from "@/app/contexts/VoteCountsContext";
-import {
-  getUserExhibitorVotes,
-  setUserExhibitorVotes,
-} from "@/services/userSettingsService";
-import { incrementExhibitorVoteCount } from "@/services/voteCountsService";
+import { getUserExhibitorVotes } from "@/services/userSettingsService";
+import { castVoteServer } from "@/services/voteService";
+import { MAX_VOTES } from "@/lib/vote";
 
 /**
  * Headless sync component.
@@ -55,27 +53,30 @@ export function FirebaseExhibitorVoteSync() {
       .then((votes) => {
         if (cancelled) return;
 
-        // Preserve any locally-cast votes not yet in Firestore.
+        // Preserve any locally-cast votes not yet in Firestore, respecting
+        // MAX_VOTES so the merged result never exceeds the server-side limit.
         const votesSet = new Set(votes);
         const addedLocally = localVotes.filter((id) => !votesSet.has(id));
-        const merged =
-          addedLocally.length > 0 ? [...votes, ...addedLocally] : votes;
+        const availableSlots = MAX_VOTES - votes.length;
+        const toAdd = availableSlots > 0 ? addedLocally.slice(0, availableSlots) : [];
+        const merged = toAdd.length > 0 ? [...votes, ...toAdd] : votes;
 
         justLoadedRef.current = true;
         savedItemsRef.current = merged;
         overrideExhibitorVotes(merged);
 
-        // If there were locally-cast votes, persist the merged set to Firestore
-        // and update aggregate vote counts for the newly added items.
-        if (addedLocally.length > 0) {
-          setUserExhibitorVotes(uidToLoad, conferenceId, merged).catch(
-            console.error,
-          );
-          addedLocally.forEach((id) => {
+        // If there were locally-cast votes that fit within MAX_VOTES, push
+        // them to the server via the castVote callable (which atomically
+        // updates both the user doc and aggregate counts).
+        if (toAdd.length > 0) {
+          toAdd.forEach((id) => {
             adjustExhibitorVoteCount(id, 1);
-            incrementExhibitorVoteCount(conferenceId, id, 1).catch(
-              console.error,
-            );
+            castVoteServer({
+              conferenceId,
+              voteType: "exhibitor",
+              itemId: id,
+              action: "add",
+            }).catch(console.error);
           });
         }
       })
@@ -110,18 +111,26 @@ export function FirebaseExhibitorVoteSync() {
     added.forEach((id) => adjustExhibitorVoteCount(id, 1));
     removed.forEach((id) => adjustExhibitorVoteCount(id, -1));
 
+    // Persist via the castVote callable, which atomically validates, updates
+    // the user doc, and updates the aggregate vote count server-side.
     added.forEach((id) =>
-      incrementExhibitorVoteCount(conferenceId, id, 1).catch(console.error),
+      castVoteServer({
+        conferenceId,
+        voteType: "exhibitor",
+        itemId: id,
+        action: "add",
+      }).catch(console.error),
     );
     removed.forEach((id) =>
-      incrementExhibitorVoteCount(conferenceId, id, -1).catch(console.error),
+      castVoteServer({
+        conferenceId,
+        voteType: "exhibitor",
+        itemId: id,
+        action: "remove",
+      }).catch(console.error),
     );
 
     savedItemsRef.current = [...next];
-
-    setUserExhibitorVotes(user.uid, conferenceId, votedExhibitors).catch(
-      console.error,
-    );
   }, [user, loadKey, conferenceId, votedExhibitors, adjustExhibitorVoteCount]);
 
   return null;

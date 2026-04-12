@@ -6,14 +6,30 @@ import React, {
   useState,
 } from "react";
 import { useConference } from "@/app/contexts/ConferenceContext";
-import { castVote } from "@/lib/vote";
+import { castVote, MAX_VOTES } from "@/lib/vote";
 
 const STORAGE_KEY_PREFIX = "session_votes_";
 
 function loadFromLS(key: string): string[] {
   try {
     const stored = localStorage.getItem(key);
-    return stored ? (JSON.parse(stored) as string[]) : [];
+    if (!stored) return [];
+    const parsed = JSON.parse(stored) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    // Sanitize: keep only string items and cap at MAX_VOTES to prevent
+    // localStorage manipulation inflating the local vote count.
+    const sanitized = (parsed as unknown[])
+      .filter((v): v is string => typeof v === "string")
+      .slice(0, MAX_VOTES);
+    if (sanitized.length !== parsed.length) {
+      // Write the corrected value back so subsequent loads are clean.
+      try {
+        localStorage.setItem(key, JSON.stringify(sanitized));
+      } catch {
+        // ignore
+      }
+    }
+    return sanitized;
   } catch {
     return [];
   }

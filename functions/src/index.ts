@@ -24,6 +24,12 @@ import {
 export { purgeExpiredUserData } from "./dataRetention";
 export { notifyPrizeWinner } from "./prizeNotification";
 export { sendFeedbackEmail } from "./feedbackEmail";
+import {
+  MAX_VOTES,
+  sanitizeVotes,
+  validateAddVote,
+  validateRemoveVote,
+} from "./voteValidation";
 
 admin.initializeApp();
 
@@ -734,5 +740,170 @@ export const adminResendVerificationEmail = onCall(
     });
 
     return { success: true };
+  },
+);
+
+// ── castVote — HTTPS Callable ─────────────────────────────────────────────────
+
+/**
+ * Input schema for the castVote callable.
+ */
+interface CastVoteInput {
+  conferenceId: string;
+  voteType: "session" | "exhibitor";
+  itemId: string;
+  action: "add" | "remove";
+}
+
+/**
+ * Return value of the castVote callable.
+ */
+interface CastVoteOutput {
+  votes: string[];
+}
+
+/**
+ * HTTPS Callable — castVote
+ *
+ * Server-side vote enforcement for session and exhibitor votes.
+ * Replaces the previous pattern of direct client writes to
+ * `voteCounts/{conferenceId}` and provides the following guarantees:
+ *
+ *  1. The caller must be authenticated (throws `unauthenticated`).
+ *  2. A user document must exist for the caller (throws `not-found`).
+ *  3. The per-conference per-category vote limit (MAX_VOTES = 1) is enforced
+ *     (throws `already-exists` when the same item is voted twice, or
+ *     `resource-exhausted` when the limit is already reached).
+ *  4. The user's vote array in `users/{uid}` and the aggregate count in
+ *     `voteCounts/{conferenceId}` are updated atomically inside a Firestore
+ *     transaction.
+ *
+ * The `voteCounts/{conferenceId}` Firestore document is write-protected by
+ * security rules so that only this function (running as the Cloud Functions
+ * service account, which bypasses rules) can modify it.
+ */
+export const castVote = onCall<CastVoteInput, Promise<CastVoteOutput>>(
+  async (request) => {
+    // 1. Require authentication.
+    if (!request.auth) {
+      throw new HttpsError(
+        "unauthenticated",
+        "You must be signed in to vote.",
+      );
+    }
+
+    const { conferenceId, voteType, itemId, action } = request.data;
+
+    // 2. Validate input fields.
+    if (
+      !conferenceId ||
+      typeof conferenceId !== "string" ||
+      !voteType ||
+      !itemId ||
+      typeof itemId !== "string" ||
+      !action
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "conferenceId, voteType, itemId, and action are required.",
+      );
+    }
+    if (voteType !== "session" && voteType !== "exhibitor") {
+      throw new HttpsError(
+        "invalid-argument",
+        "voteType must be 'session' or 'exhibitor'.",
+      );
+    }
+    if (action !== "add" && action !== "remove") {
+      throw new HttpsError(
+        "invalid-argument",
+        "action must be 'add' or 'remove'.",
+      );
+    }
+
+    const uid = request.auth.uid;
+    const db = admin.firestore();
+    const userRef = db.doc(`users/${uid}`);
+    const voteCountsRef = db.doc(`voteCounts/${conferenceId}`);
+    const votesField =
+      voteType === "session" ? "sessionVotes" : "exhibitorVotes";
+    const countField = voteType === "session" ? "sessions" : "exhibitors";
+
+    // 3. Run a Firestore transaction: read → validate → write.
+    const updatedVotes = await db.runTransaction(async (transaction) => {
+      const userSnap = await transaction.get(userRef);
+
+      if (!userSnap.exists) {
+        throw new HttpsError("not-found", "User profile not found.");
+      }
+
+      const userData = userSnap.data() as Record<string, unknown>;
+      const currentVotes = sanitizeVotes(
+        (userData[votesField] as Record<string, unknown> | undefined)?.[
+          conferenceId
+        ],
+      );
+
+      let nextVotes: string[];
+      let delta: 1 | -1;
+
+      if (action === "add") {
+        const err = validateAddVote(currentVotes, itemId);
+        if (err === "already-voted") {
+          throw new HttpsError(
+            "already-exists",
+            "You have already voted for this item.",
+          );
+        }
+        if (err === "vote-limit-reached") {
+          throw new HttpsError(
+            "resource-exhausted",
+            `You can only vote for ${MAX_VOTES} ${voteType}${MAX_VOTES !== 1 ? "s" : ""} per conference. Remove your current vote first.`,
+          );
+        }
+        nextVotes = [...currentVotes, itemId];
+        delta = 1;
+      } else {
+        const err = validateRemoveVote(currentVotes, itemId);
+        if (err === "not-voted") {
+          throw new HttpsError(
+            "not-found",
+            "You have not voted for this item.",
+          );
+        }
+        nextVotes = currentVotes.filter((v) => v !== itemId);
+        delta = -1;
+      }
+
+      // Atomically update the user's vote list.
+      transaction.set(
+        userRef,
+        { [votesField]: { [conferenceId]: nextVotes } },
+        { merge: true },
+      );
+
+      // Atomically update the aggregate count.
+      transaction.set(
+        voteCountsRef,
+        {
+          [countField]: {
+            [itemId]: admin.firestore.FieldValue.increment(delta),
+          },
+        },
+        { merge: true },
+      );
+
+      return nextVotes;
+    });
+
+    logger.info("castVote: vote recorded", {
+      uid,
+      conferenceId,
+      voteType,
+      itemId,
+      action,
+    });
+
+    return { votes: updatedVotes };
   },
 );
