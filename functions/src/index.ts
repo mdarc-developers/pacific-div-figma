@@ -30,6 +30,7 @@ import {
   validateAddVote,
   validateRemoveVote,
 } from "./voteValidation";
+import { validateRealProfile } from "./profileValidation";
 
 admin.initializeApp();
 
@@ -838,6 +839,15 @@ export const castVote = onCall<CastVoteInput, Promise<CastVoteOutput>>(
       }
 
       const userData = userSnap.data() as Record<string, unknown>;
+
+      // Require a real profile (non-empty displayName) before allowing votes.
+      const profileErr = validateRealProfile(userData);
+      if (profileErr === "missing-display-name") {
+        throw new HttpsError(
+          "failed-precondition",
+          "You must set a display name on your profile before voting.",
+        );
+      }
       const currentVotes = sanitizeVotes(
         (userData[votesField] as Record<string, unknown> | undefined)?.[
           conferenceId

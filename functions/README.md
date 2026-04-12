@@ -17,7 +17,7 @@ This directory contains the Firebase Cloud Functions for the Amateur Radio Confe
 | `syncPublicProfile`             | `onDocumentWritten("users/{uid}")`                                | Writes or removes the `publicProfiles/{uid}` document whenever a user document changes, exposing only the safe-to-share subset of profile fields. |
 | `purgeExpiredUserData`          | Scheduled (`every day 03:00 UTC`)                                 | Removes per-conference user data (bookmarks, votes, notes, etc.) for conferences whose retention window (endDate + 90 days) has passed.           |
 | `adminLookupUser`               | HTTPS Callable                                                    | Looks up a Firebase Auth user by email address; requires `user-admin` group membership.                                                           |
-| `adminResendVerificationEmail`  | HTTPS Callable                                                    | Admin-initiated resend of the email-verification link to a target user; requires `user-admin` group membership.                                   |
+| `castVote`                      | HTTPS Callable                                                    | Server-side vote enforcement: validates auth, real profile, and MAX_VOTES limit, then atomically updates `users/{uid}` votes and `voteCounts/{conferenceId}` in a Firestore transaction. |
 
 ### `sendWelcomeEmail`
 
@@ -120,6 +120,16 @@ An **HTTPS Callable** function that lets a user-admin resend the email-verificat
 - The caller must be authenticated and a member of the `groups/user-admin` Firestore document.
 - Generates a fresh Firebase email-verification link and delivers it via the Gmail API.
 - Used by the `UserAdminPage` when supporting users whose verification email was not received.
+
+### `castVote`
+
+An **HTTPS Callable** function that provides server-side vote enforcement for session and exhibitor votes.
+
+- The caller must be authenticated (throws `unauthenticated`).
+- The caller's `users/{uid}` document must exist (throws `not-found`).
+- The caller must have a "real profile" — a non-empty `displayName` in their user document (throws `failed-precondition`). See `profileValidation.ts`.
+- The per-conference per-category vote limit (`MAX_VOTES = 1`) is enforced (throws `already-exists` or `resource-exhausted`). See `voteValidation.ts`.
+- The user's vote array and the aggregate `voteCounts/{conferenceId}` counter are updated atomically in a Firestore transaction.
 
 ---
 
@@ -570,7 +580,10 @@ functions/
 │   │                               #   sendVerificationEmailOnCreate, resendVerificationEmail,
 │   │                               #   adminLookupUser, adminResendVerificationEmail,
 │   │                               #   incrementSignupCounter, syncPublicProfile,
-│   │                               #   incrementAttendeeCounter, decrementAttendeeCounter)
+│   │                               #   incrementAttendeeCounter, decrementAttendeeCounter,
+│   │                               #   castVote)
+│   ├── profileValidation.ts        # validateRealProfile() — pure profile validation helper
+│   ├── voteValidation.ts           # sanitizeVotes(), validateAddVote(), validateRemoveVote() helpers
 │   ├── welcomeEmail.ts             # Welcome email content helpers (subject, HTML, base64 encoder)
 │   ├── verificationEmail.ts        # Verification email content helpers (subject, HTML builder)
 │   ├── prizeNotification.ts        # notifyPrizeWinner trigger (SMS via Twilio + email via Gmail API)
@@ -578,6 +591,8 @@ functions/
 │   ├── feedbackEmailContent.ts     # Feedback email HTML template
 │   ├── dataRetention.ts            # purgeExpiredUserData scheduled function
 │   ├── index.test.ts               # Vitest unit tests for functions in index.ts
+│   ├── profileValidation.test.ts   # Vitest unit tests for profileValidation.ts
+│   ├── voteValidation.test.ts      # Vitest unit tests for voteValidation.ts
 │   ├── verificationEmail.test.ts   # Vitest unit tests for verificationEmail.ts
 │   ├── prizeNotification.test.ts   # Vitest unit tests for prizeNotification.ts
 │   ├── feedbackEmail.test.ts       # Vitest unit tests for feedbackEmail.ts
