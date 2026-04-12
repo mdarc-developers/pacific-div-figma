@@ -34,14 +34,11 @@ service cloud.firestore {
     }
 
     // Helper: returns true when the authenticated user has a "real profile"
-    // (non-empty displayName field in their users/{uid} document).
+    // (verified email address or Google sign-in).
     // Used to gate protected writes such as posting messages.
     function hasRealProfile() {
-      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
       return request.auth != null
-        && userDoc != null
-        && userDoc.data.displayName is string
-        && userDoc.data.displayName.size() > 0;
+        && request.auth.token.email_verified == true;
     }
 
     // ── Conferences, Sessions, Maps — public read ─────────────────────────

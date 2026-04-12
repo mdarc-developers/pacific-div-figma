@@ -548,21 +548,6 @@ export const resendVerificationEmail = onCall(
       );
     }
 
-    // Require a real profile (non-empty displayName).
-    const userSnap = await admin.firestore().doc(`users/${uid}`).get();
-    if (!userSnap.exists) {
-      throw new HttpsError("not-found", "User profile not found.");
-    }
-    const profileErr = validateRealProfile(
-      userSnap.data() as Record<string, unknown>,
-    );
-    if (profileErr === "missing-display-name") {
-      throw new HttpsError(
-        "failed-precondition",
-        "You must set a display name on your profile before requesting email verification.",
-      );
-    }
-
     if (request.auth?.token?.email_verified) {
       throw new HttpsError(
         "failed-precondition",
@@ -618,18 +603,12 @@ export const adminLookupUser = onCall(async (request) => {
     );
   }
 
-  // Require a real profile (non-empty displayName).
-  const callerSnap = await admin.firestore().doc(`users/${callerUid}`).get();
-  if (!callerSnap.exists) {
-    throw new HttpsError("not-found", "User profile not found.");
-  }
-  const profileErr = validateRealProfile(
-    callerSnap.data() as Record<string, unknown>,
-  );
-  if (profileErr === "missing-display-name") {
+  // Require a real profile (verified email or Google sign-in).
+  const profileErr = validateRealProfile(request.auth.token);
+  if (profileErr === "unverified-email") {
     throw new HttpsError(
       "failed-precondition",
-      "You must set a display name on your profile before using this function.",
+      "You must have a verified email address before using this function.",
     );
   }
 
@@ -697,18 +676,12 @@ export const adminResendVerificationEmail = onCall(
       );
     }
 
-    // Require a real profile (non-empty displayName).
-    const callerSnap = await admin.firestore().doc(`users/${callerUid}`).get();
-    if (!callerSnap.exists) {
-      throw new HttpsError("not-found", "User profile not found.");
-    }
-    const profileErr = validateRealProfile(
-      callerSnap.data() as Record<string, unknown>,
-    );
-    if (profileErr === "missing-display-name") {
+    // Require a real profile (verified email or Google sign-in).
+    const profileErr = validateRealProfile(request.auth.token);
+    if (profileErr === "unverified-email") {
       throw new HttpsError(
         "failed-precondition",
-        "You must set a display name on your profile before using this function.",
+        "You must have a verified email address before using this function.",
       );
     }
 
@@ -885,12 +858,12 @@ export const castVote = onCall<CastVoteInput, Promise<CastVoteOutput>>(
 
       const userData = userSnap.data() as Record<string, unknown>;
 
-      // Require a real profile (non-empty displayName) before allowing votes.
-      const profileErr = validateRealProfile(userData);
-      if (profileErr === "missing-display-name") {
+      // Require a real profile (verified email or Google sign-in) before allowing votes.
+      const profileErr = validateRealProfile(request.auth!.token);
+      if (profileErr === "unverified-email") {
         throw new HttpsError(
           "failed-precondition",
-          "You must set a display name on your profile before voting.",
+          "You must have a verified email address before voting.",
         );
       }
       const currentVotes = sanitizeVotes(
