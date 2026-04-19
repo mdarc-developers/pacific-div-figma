@@ -35,37 +35,6 @@ import { ConferenceListItem } from "@/types/conference";
 
 export const allConferences: ConferenceListItem[] = [
   {
-    id: "vomarc-2026",
-    name: "Valley Of the Moon ARC Hamfest 2026",
-    location: "252 W Spain St, Sonoma, CA 95476",
-    venue: "First Congregational Church",
-    startDate: "2026-04-18",
-    endDate: "2026-04-18",
-    timezone: "America/Los_Angeles",
-    primaryColor: "#9A2E7C",
-    secondaryColor: "#DCBf33",
-    conferenceUrl: "https://vomarc.org",
-    venuePhone: "+1-916-652-1840",
-    venueGPS: "38.2945,-122.4621",
-    venueGridSquare: "CM88sh",
-    venueUrl: "https://sonomaucc.org/",
-    timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
-    parkingUrl: "",
-    icalUrl: "",
-    googlecalUrl: "",
-    conferenceContactEmail: "valleyofthemoonarc@gmail.com",
-    logoUrl: "/assets/images/vomarc-logo.png",
-    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
-    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
-    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
-    conferenceProgramUrl: "/assets/programs/2026_vomarc_hamfest.pdf",
-    conferenceProgramSourceUrl: "https://vomarc.org/events/Hamfest%20Flyer.pdf", // upstream filename reflects the year it was published, not the conference year
-    conferenceAppPageUrl: "https://pacific-div.web/app/",
-    firstConferenceYear: 1973,
-    estimatedAttendees: 400,
-  },
-  {
     id: "renohamswap-2026",
     name: "Reno Ham Swap 2026",
     location: "8650 Boomtown Garson Road, Verdi, NV 89439",
@@ -340,6 +309,37 @@ Roadrunner Camping Area",
     estimatedAttendees: 1200,
   },
   { id: "---" },
+  {
+    id: "vomarc-2026",
+    name: "Valley Of the Moon ARC Hamfest 2026",
+    location: "252 W Spain St, Sonoma, CA 95476",
+    venue: "First Congregational Church",
+    startDate: "2026-04-18",
+    endDate: "2026-04-18",
+    timezone: "America/Los_Angeles",
+    primaryColor: "#9A2E7C",
+    secondaryColor: "#DCBf33",
+    conferenceUrl: "https://vomarc.org",
+    venuePhone: "+1-916-652-1840",
+    venueGPS: "38.2945,-122.4621",
+    venueGridSquare: "CM88sh",
+    venueUrl: "https://sonomaucc.org/",
+    timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
+    parkingUrl: "",
+    icalUrl: "",
+    googlecalUrl: "",
+    conferenceContactEmail: "valleyofthemoonarc@gmail.com",
+    logoUrl: "/assets/images/vomarc-logo.png",
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
+    conferenceProgramUrl: "/assets/programs/2026_vomarc_hamfest.pdf",
+    conferenceProgramSourceUrl: "https://vomarc.org/events/Hamfest%20Flyer.pdf", // upstream filename reflects the year it was published, not the conference year
+    conferenceAppPageUrl: "https://pacific-div.web/app/",
+    firstConferenceYear: 1973,
+    estimatedAttendees: 400,
+  },
   {
     id: "loomis-2026",
     name: "Loomis Hamfest 2026",
