@@ -35,69 +35,6 @@ import { ConferenceListItem } from "@/types/conference";
 
 export const allConferences: ConferenceListItem[] = [
   {
-    id: "renohamswap-2026",
-    name: "Reno Ham Swap 2026",
-    location: "8650 Boomtown Garson Road, Verdi, NV 89439",
-    venue: "Cabelas Reno",
-    startDate: "2026-05-09",
-    endDate: "2026-05-09",
-    timezone: "America/Los_Angeles",
-    primaryColor: "#4EA9D5",
-    secondaryColor: "#FFFFFF",
-    conferenceUrl: "https://renohamswap.org",
-    venuePhone: "+1-775-829-4100",
-    venueGPS: "39.5131,-119.9688",
-    venueGridSquare: "DM09am",
-    venueUrl: "https://www.cabelas.com/home",
-    timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
-    parkingUrl: "",
-    icalUrl: "",
-    googlecalUrl: "",
-    conferenceContactEmail: "snars@snars.org",
-    logoUrl: "/assets/images/renohamswap_logo.png",
-    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
-    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
-    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
-    conferenceProgramUrl: "/assets/programs/renohamswap-2026.pdf",
-    conferenceProgramSourceUrl: "https://snars.org/activities/renohamswap/", // upstream filename reflects the year it was published, not the conference year
-    conferenceAppPageUrl: "https://pacific-div.web/app/",
-    firstConferenceYear: 2016,
-    estimatedAttendees: 400,
-  },
-  {
-    id: "hamvention-2026",
-    name: "Hamvention 2026",
-    location: "120 Fairground Road, Xenia, OH 45385",
-    venue: "Greene County Fairgrounds",
-    startDate: "2026-05-15",
-    endDate: "2026-05-17",
-    timezone: "America/New_York",
-    primaryColor: "#dc2626",
-    secondaryColor: "#ef4444",
-    conferenceUrl: "https://www.hamvention.org",
-    venuePhone: "937-372-8621x12",
-    venueGPS: "39.6990,-83.9412",
-    venueGridSquare: "EM89aq",
-    venueUrl: "https://greenecoexpocenter.com/",
-    timezoneNumeric: "-0400", // EDT in May (Eastern Daylight Time)
-    parkingUrl: "https://hamvention.org/travel-parking/directions/",
-    icalUrl: "",
-    googlecalUrl: "",
-    conferenceContactEmail: "info@hamvention.org",
-    logoUrl: "/assets/images/hamvention_logo.png",
-    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
-    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
-    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
-    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
-    conferenceProgramUrl: "/assets/programs/hamvention-2026-program.pdf",
-    conferenceProgramSourceUrl:
-      "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf", // upstream filename reflects the year it was published, not the conference year
-    conferenceAppPageUrl: "https://hamvention.org/getconnected/",
-    firstConferenceYear: 1952,
-    estimatedAttendees: 36814,
-  },
-  {
     id: "carmichael-2026",
     name: "Carmichael Hamfest 2026",
     location: "5631 Cypress Ave, Carmichael, CA 95608",
@@ -309,6 +246,69 @@ Roadrunner Camping Area",
     estimatedAttendees: 1200,
   },
   { id: "---" },
+  {
+    id: "hamvention-2026",
+    name: "Hamvention 2026",
+    location: "120 Fairground Road, Xenia, OH 45385",
+    venue: "Greene County Fairgrounds",
+    startDate: "2026-05-15",
+    endDate: "2026-05-17",
+    timezone: "America/New_York",
+    primaryColor: "#dc2626",
+    secondaryColor: "#ef4444",
+    conferenceUrl: "https://www.hamvention.org",
+    venuePhone: "937-372-8621x12",
+    venueGPS: "39.6990,-83.9412",
+    venueGridSquare: "EM89aq",
+    venueUrl: "https://greenecoexpocenter.com/",
+    timezoneNumeric: "-0400", // EDT in May (Eastern Daylight Time)
+    parkingUrl: "https://hamvention.org/travel-parking/directions/",
+    icalUrl: "",
+    googlecalUrl: "",
+    conferenceContactEmail: "info@hamvention.org",
+    logoUrl: "/assets/images/hamvention_logo.png",
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
+    conferenceProgramUrl: "/assets/programs/hamvention-2026-program.pdf",
+    conferenceProgramSourceUrl:
+      "https://hamvention.org/wp-content/uploads/2025/05/2025-Program-Web3.pdf", // upstream filename reflects the year it was published, not the conference year
+    conferenceAppPageUrl: "https://hamvention.org/getconnected/",
+    firstConferenceYear: 1952,
+    estimatedAttendees: 36814,
+  },
+  {
+    id: "renohamswap-2026",
+    name: "Reno Ham Swap 2026",
+    location: "8650 Boomtown Garson Road, Verdi, NV 89439",
+    venue: "Cabelas Reno",
+    startDate: "2026-05-09",
+    endDate: "2026-05-09",
+    timezone: "America/Los_Angeles",
+    primaryColor: "#4EA9D5",
+    secondaryColor: "#FFFFFF",
+    conferenceUrl: "https://renohamswap.org",
+    venuePhone: "+1-775-829-4100",
+    venueGPS: "39.5131,-119.9688",
+    venueGridSquare: "DM09am",
+    venueUrl: "https://www.cabelas.com/home",
+    timezoneNumeric: "-0700", // PDT in April (Pacific Daylight Time)
+    parkingUrl: "",
+    icalUrl: "",
+    googlecalUrl: "",
+    conferenceContactEmail: "snars@snars.org",
+    logoUrl: "/assets/images/renohamswap_logo.png",
+    //mapSessionsUrl: '/assets/maps/hamvention-forums-2026-2.png', // for Room[]
+    //mapExhibitorsUrl: ['/assets/maps/hamvention-2026-Booths-Exhibits-Overview-v20.pdf'], // for Booth[]
+    //mapSessionRooms?: [string, boolean, boolean]; // dynamic [mapUrl, sessions loaded, rooms loaded]
+    //mapExhibitorBooths?: [string, boolean, boolean]; // dynamic [mapUrl, exhibitors loaded, booths loaded]
+    conferenceProgramUrl: "/assets/programs/renohamswap-2026.pdf",
+    conferenceProgramSourceUrl: "https://snars.org/activities/renohamswap/", // upstream filename reflects the year it was published, not the conference year
+    conferenceAppPageUrl: "https://pacific-div.web/app/",
+    firstConferenceYear: 2016,
+    estimatedAttendees: 400,
+  },
   {
     id: "vomarc-2026",
     name: "Valley Of the Moon ARC Hamfest 2026",
